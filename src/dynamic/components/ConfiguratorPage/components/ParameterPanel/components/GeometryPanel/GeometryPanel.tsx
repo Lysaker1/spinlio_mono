@@ -1,6 +1,6 @@
-import React from 'react';
-import { Slider, Select } from '@mantine/core';
-import { ParameterDefinition } from '../../types';  // Update path
+import React, { useState, useEffect } from 'react';
+import { Slider, Select, SelectProps } from '@mantine/core';
+import { ParameterDefinition } from '../../types';
 import './GeometryPanel.css';
 
 interface ParameterPanelGeometryProps {
@@ -14,13 +14,82 @@ const ParameterPanelGeometry: React.FC<ParameterPanelGeometryProps> = ({
   parameterValues,
   handleParameterChange,
 }) => {
-  // Function to determine if parameter should use float values
+  const [isDragging, setIsDragging] = useState<string | null>(null);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [dropdownDirection, setDropdownDirection] = useState<string | null>(null);
+
   const useFloatValues = (parameterId: string) => {
     return [
       'f108eb45-6305-4ee7-8840-328004938ac6', // Seat tube angle
       'ac5a259d-c2b7-45c0-af16-4a5782b21f1c', // Head tube angle
     ].includes(parameterId);
   };
+
+  const calculateSliderPosition = (value: number, min: number, max: number) => {
+    return ((value - min) / (max - min)) * 100;
+  };
+
+  const handleSliderInteraction = (
+    e: React.MouseEvent | React.TouchEvent,
+    definition: ParameterDefinition
+  ) => {
+    const container = e.currentTarget as HTMLDivElement;
+    const rect = container.getBoundingClientRect();
+    const clientX = 'touches' in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
+    const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
+    const percentage = x / rect.width;
+    
+    const range = definition.max! - definition.min!;
+    const rawValue = definition.min! + (range * percentage);
+    const value = useFloatValues(definition.id)
+      ? Number(rawValue.toFixed(1))
+      : Math.round(rawValue);
+
+    handleParameterChange(value, definition);
+  };
+
+  const handleDropdownClick = (definitionId: string) => {
+    // Check if dropdown should open upward or downward
+    const dropdownElement = document.querySelector(`[data-dropdown-id="${definitionId}"]`);
+    if (dropdownElement) {
+      const rect = dropdownElement.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const shouldOpenUpward = spaceBelow < 200; // Adjust this value as needed
+
+      setDropdownDirection(shouldOpenUpward ? 'up' : 'down');
+    }
+    setOpenDropdown(openDropdown === definitionId ? null : definitionId);
+  };
+
+  const handleOptionSelect = (value: string, definition: ParameterDefinition) => {
+    handleParameterChange(value, definition);
+    setOpenDropdown(null);
+  };
+
+  useEffect(() => {
+    const handleMouseUp = () => {
+      setIsDragging(null);
+    };
+
+    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('touchend', handleMouseUp);
+
+    return () => {
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('touchend', handleMouseUp);
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (openDropdown && !(e.target as Element).closest('.custom-dropdown')) {
+        setOpenDropdown(null);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [openDropdown]);
 
   return (
     <div className="parameter-panel-parameters">
@@ -33,68 +102,96 @@ const ParameterPanelGeometry: React.FC<ParameterPanelGeometryProps> = ({
                 {useFloatValues(definition.id) 
                   ? Number(parameterValues[definition.id]).toFixed(1)
                   : Math.round(Number(parameterValues[definition.id]))}
+                {definition.unit || ''}
               </span>
             )}
           </div>
           {definition.type === 'slider' && (
             <>
-              <Slider
-                min={definition.min}
-                max={definition.max}
-                value={Number(parameterValues[definition.id])}
-                onChange={(value) => {
-                  // Round the value if it's not supposed to use floats
-                  const finalValue = useFloatValues(definition.id) 
-                    ? value 
-                    : Math.round(value);
-                  handleParameterChange(finalValue, definition);
+              <div 
+                className="slider-container"
+                onMouseDown={(e) => {
+                  setIsDragging(definition.id);
+                  handleSliderInteraction(e, definition);
                 }}
-                step={useFloatValues(definition.id) ? 0.1 : 1}
-                styles={{
-                  root: { width: '100%' },
-                  track: { backgroundColor: 'rgba(0, 0, 0, 0.05)' },
-                  bar: {
-                    background:
-                      'linear-gradient(90deg, rgba(77, 77, 77, 1.00) 0%, rgba(31, 31, 31, 1.00) 100%)',
-                  },
-                  thumb: { backgroundColor: 'white', borderColor: 'rgba(0, 0, 0, 0.25)' },
+                onMouseMove={(e) => {
+                  if (isDragging === definition.id) {
+                    handleSliderInteraction(e, definition);
+                  }
                 }}
-              />
+                onTouchStart={(e) => {
+                  setIsDragging(definition.id);
+                  handleSliderInteraction(e, definition);
+                }}
+                onTouchMove={(e) => {
+                  if (isDragging === definition.id) {
+                    handleSliderInteraction(e, definition);
+                  }
+                }}
+              >
+                <div className="slider-track" />
+                <div 
+                  className={`slider-fill ${isDragging === definition.id ? 'active' : ''}`}
+                  style={{
+                    width: `${calculateSliderPosition(
+                      Number(parameterValues[definition.id]),
+                      definition.min!,
+                      definition.max!
+                    )}%`
+                  }}
+                />
+                <div 
+                  className={`slider-thumb ${isDragging === definition.id ? 'active' : ''}`}
+                  style={{
+                    left: `${calculateSliderPosition(
+                      Number(parameterValues[definition.id]),
+                      definition.min!,
+                      definition.max!
+                    )}%`
+                  }}
+                />
+              </div>
               <div className="parameter-range">
-                <span className="range-min">{definition.min}</span>
-                <span className="range-max">{definition.max}</span>
+                <span>{definition.min}{definition.unit || ''}</span>
+                <span>{definition.max}{definition.unit || ''}</span>
               </div>
             </>
           )}
           {definition.type === 'dropdown' && (
-            <Select
-              data={definition.options?.map(option => ({
-                label: option.label,
-                value: option.value.toString()
-              })) || []}
-              value={parameterValues[definition.id]}
-              onChange={(value) => handleParameterChange(value, definition)}
-              styles={{
-                root: { width: '100%', marginTop: '8px' },
-                input: {
-                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                  borderColor: 'rgba(255, 255, 255, 0.2)',
-                  color: 'white',
-                },
-                dropdown: {
-                  backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                  borderColor: 'rgba(255, 255, 255, 0.2)',
-                },
-                option: {
-                  color: 'white',
-                },
-              }}
-            />
+            <div className="custom-dropdown">
+              <div 
+                className="dropdown-header"
+                onClick={() => handleDropdownClick(definition.id)}
+              >
+                <span className="dropdown-value">
+                  {definition.options?.find(opt => opt.value === parameterValues[definition.id])?.label}
+                </span>
+                <div className="dropdown-arrows">
+                  <span className="arrow up">▲</span>
+                  <span className="arrow down">▼</span>
+                </div>
+              </div>
+              <div 
+                className={`dropdown-options ${openDropdown === definition.id ? 'open' : ''} 
+                  ${dropdownDirection === 'up' ? 'open-upward' : 'open-downward'}`}
+                data-dropdown-id={definition.id}
+              >
+                {definition.options?.map(option => (
+                  <div
+                    key={option.value}
+                    className={`dropdown-option ${parameterValues[definition.id] === option.value ? 'selected' : ''}`}
+                    onClick={() => handleOptionSelect(option.value, definition)}
+                  >
+                    {option.label}
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
         </div>
       ))}
     </div>
   );
-};
+}
 
 export default ParameterPanelGeometry;

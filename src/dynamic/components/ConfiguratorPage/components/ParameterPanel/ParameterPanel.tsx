@@ -86,44 +86,41 @@ const ParameterPanel: React.FC<ParameterPanelProps> = ({ selectedComponent, sess
   );
 
   return (
-    <div className="frame-screen">
-      <div className="overlap-group">
-        <div className="frame-1000005345">
-          <div className="frame-1000005351">
-            {['Surface', 'Geometry', 'Hardware'].map((tab) => (
-              <div
-                key={tab}
-                className={`frame-1000005271 ${activeTab === tab ? 'active' : ''}`}
-                onClick={() => setActiveTab(tab)}
-              >
-                <span className="parameters">{tab}</span>
-              </div>
-            ))}
-          </div>
-          <div className="frame-1000005353">
-            {activeTab === 'Geometry' && (
-              <GeometryPanel
-                parameters={geometryParams}
-                parameterValues={parameterValues}
-                handleParameterChange={handleParameterChange}
-              />
-            )}
-            {activeTab === 'Surface' && (
-              <SurfacePanel
-                parameters={surfaceParams}
-                parameterValues={parameterValues}
-                handleParameterChange={handleParameterChange}
-              />
-            )}
-            {activeTab === 'Hardware' && (
-              <HardwarePanel
-                parameters={hardwareParams}
-                parameterValues={parameterValues}
-                handleParameterChange={handleParameterChange}
-              />
-            )}
-          </div>
-        </div>
+    <div className="parameter-panel">
+      <div className="tab-navigation">
+        {['Surface', 'Geometry', 'Hardware'].map((tab) => (
+          <button
+            key={tab}
+            className={`tab-button ${activeTab === tab ? 'active' : ''}`}
+            data-tab={tab}
+            onClick={() => setActiveTab(tab)}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+      <div className="panel-content">
+        {activeTab === 'Geometry' && (
+          <GeometryPanel
+            parameters={geometryParams}
+            parameterValues={parameterValues}
+            handleParameterChange={handleParameterChange}
+          />
+        )}
+        {activeTab === 'Surface' && (
+          <SurfacePanel
+            parameters={surfaceParams}
+            parameterValues={parameterValues}
+            handleParameterChange={handleParameterChange}
+          />
+        )}
+        {activeTab === 'Hardware' && (
+          <HardwarePanel
+            parameters={hardwareParams}
+            parameterValues={parameterValues}
+            handleParameterChange={handleParameterChange}
+          />
+        )}
       </div>
     </div>
   );

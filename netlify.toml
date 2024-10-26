@@ -3,10 +3,10 @@
   publish = "dist/static"           
 
 [[redirects]]
-  from = "/configurator/*"
-  to = "https://spinlio-dynamic-e31fcb8098e8.herokuapp.com/configurator/:splat"
-  status = 200
-  force = true
+  from = "/configurator"
+  to = "https://spinlio-dynamic-e31fcb8098e8.herokuapp.com"
+  status = 301  
+  force = true  
 
 [[redirects]]
   from = "/contact/*"

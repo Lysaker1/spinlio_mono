@@ -1,1 +1,1 @@
-web: npm run start:dynamic
+web: node server.js

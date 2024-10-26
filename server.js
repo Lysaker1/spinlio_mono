@@ -27,10 +27,10 @@ app.use(helmet({
   },
 }));
 
-app.use(express.static(path.join(__dirname, 'dist')));
+app.use(express.static(path.join(__dirname, 'dist/dynamic')));
 
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+  res.sendFile(path.join(__dirname, 'dist/dynamic', 'index.html'));
 });
 
 const port = process.env.PORT || 3000;

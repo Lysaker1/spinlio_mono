@@ -82,8 +82,8 @@ module.exports = (env) => {
           // New pattern to copy netlify.toml to dist root
           { 
             from: path.resolve(__dirname, 'netlify.toml'),
-            to: path.resolve(__dirname, 'dist')
-          }
+            to: path.resolve(__dirname, 'dist/static/netlify.toml') // Specify full path
+        }
         ]
       })
     ],

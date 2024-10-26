@@ -78,6 +78,11 @@ module.exports = (env) => {
           { 
             from: path.resolve(__dirname, 'public/_redirects'),
             to: path.resolve(__dirname, 'dist/static')
+          },
+          // New pattern to copy netlify.toml to dist root
+          { 
+            from: path.resolve(__dirname, 'netlify.toml'),
+            to: path.resolve(__dirname, 'dist')
           }
         ]
       })

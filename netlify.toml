@@ -3,11 +3,6 @@
   publish = "dist/static"           
 
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
-  [[redirects]]
   from = "/configurator/*"
   to = "https://spinlio-dynamic-e31fcb8098e8.herokuapp.com/configurator/:splat"
   status = 200
@@ -18,3 +13,8 @@
   to = "https://spinlio-dynamic-e31fcb8098e8.herokuapp.com/contact/:splat"
   status = 200
   force = true
+
+[[redirects]]
+  from = "/*"              # This should be last as a catch-all
+  to = "/index.html"
+  status = 200

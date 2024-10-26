@@ -1,0 +1,6 @@
+# Proxy /configurator and /contact paths to Heroku
+/configurator/*  https://spinlio-dynamic-e31fcb8098e8.herokuapp.com/configurator/:splat  200!
+/contact/*       https://spinlio-dynamic-e31fcb8098e8.herokuapp.com/contact/:splat       200!
+
+# Handle static site routes
+/*              /index.html                                                              200

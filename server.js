@@ -3,13 +3,27 @@ const path = require('path');
 const helmet = require('helmet');
 const app = express();
 
+// CORS configuration for Netlify
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'https://spinlio.com');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+});
+
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://*.hsforms.com", "https://*.hubspot.com"],
       scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://js.hsforms.net", "https://*.hsforms.com", "https://*.hubspot.com"],
-      connectSrc: ["'self'", "https://*.shapediver.com", "https://*.hubspot.com", "https://*.hsforms.com"],
+      connectSrc: [
+        "'self'", 
+        "https://*.shapediver.com", 
+        "https://*.hubspot.com", 
+        "https://*.hsforms.com",
+        "https://spinlio.com"
+      ],
       imgSrc: [
         "'self'", 
         "data:", 
@@ -29,12 +43,12 @@ app.use(helmet({
 
 app.use(express.static(path.join(__dirname, 'dist/dynamic')));
 
-// Add specific routes before the catch-all
-app.get('/configurator/*', (req, res) => {
+// Simplified routes - remove the /* since Netlify handles that
+app.get('/configurator', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist/dynamic', 'index.html'));
 });
 
-app.get('/contact/*', (req, res) => {
+app.get('/contact', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist/dynamic', 'index.html'));
 });
 

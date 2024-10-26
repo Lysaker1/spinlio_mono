@@ -1,0 +1,40 @@
+.parameter-panel-parameters {
+    padding: 16px;
+  }
+  
+  .parameter-item {
+    margin-bottom: 24px;
+  }
+  
+  .parameter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  
+  .param-name {
+    font-weight: 500;
+  }
+  
+  .param-value-container {
+    background-color: #f0f0f0;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+  
+  .param-value {
+    font-weight: 500;
+  }
+  
+  .parameter-slider {
+    margin-top: 8px;
+  }
+  
+  .parameter-range {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 4px;
+    font-size: 12px;
+    color: #666;
+  }

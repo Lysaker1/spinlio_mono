@@ -1,0 +1,116 @@
+.configurator-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw; 
+  /*background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);*/
+  overflow: hidden;
+}
+
+.configurator-content {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+.viewer-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1%;
+  position: relative;
+  width: 90%; /* Increase the width to cover more space */
+  height: 100%;
+  padding-bottom: 0; /* Remove padding at the bottom */
+  flex-grow: 1;
+
+}
+
+/* New styles for the Share button */
+.share-button-container-configurator {
+  position: absolute;
+  top: 80px; /* Position under header */
+  right: 500px; /* Align to right side */
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.share-button-configurator {
+  background: rgba(255, 255, 255, 0.3);
+  border: none;
+  border-radius: 50px;
+  padding: 8px 20px;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.share-button-configurator:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.action-buttons {
+  position: absolute;
+  bottom: 100px; /* Reduce the distance from the bottom */
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 16px;
+  z-index: 20;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 10px 20px;
+  border-radius: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add a soft shadow for depth */
+}
+  
+.parameter-panel-container {
+  width: 420px;
+  border-left: 1px solid rgba(204, 204, 204, 0.2);
+  height: 100%;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.05); /* Lighter transparency */
+  backdrop-filter: blur(25px); /* Stronger blur for a more frosted glass look */
+  padding-top: 2000px; /* Increased padding from the header */
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+  
+.configurator-podium::after {
+  content: '';
+  width: 80%;
+  height: 10px;
+  background: #333333;
+  border-radius: 50%;
+  position: absolute;
+  bottom: 0;
+  z-index: -1; /* Place it behind the bike */
+}
+  
+  
+@media (max-width: 1200px) {
+.configurator-content {
+    flex-direction: column;
+  }
+
+  .parameter-panel-container {
+    width: 100%;
+    height: auto;
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+  }
+}
+
+.export-menu-wrapper {
+  margin-top: 8px;
+  width: 300px;
+}

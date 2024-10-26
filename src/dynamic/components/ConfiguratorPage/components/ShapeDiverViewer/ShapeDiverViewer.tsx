@@ -14,7 +14,7 @@ import { Box, Modal, Overlay } from '@mantine/core';
 import './ShapeDiverViewer.css';
 import { Cloudinary } from '@cloudinary/url-gen';
 import { AdvancedImage } from '@cloudinary/react';
-
+import { parameterDefinitions } from '../ParameterPanel/parameterDefinitions';
 
 interface ShapeDiverViewerProps {
   selectedComponent: string;
@@ -44,80 +44,90 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
   const [showQrModal, setShowQrModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Initialize Cloudinary
-  const cld = new Cloudinary({
-    cloud: {
-      cloudName: 'da8qnqmmh'  // Your cloud name
-    }
-  });
-
-  const loadingGif = cld
-    .image('BIKE_qa0p3v')
-    .format('auto')
-    .quality('auto');
+  // Add this new function at component level
+  const clearViewport = async (viewport: IViewportApi) => {
+    if (!viewport) return;
+    
+    // Force a complete viewport reset
+    viewport.show = false;
+    viewport.pauseRendering();
+    
+    // Wait a frame to ensure cleanup
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    
+    return viewport;
+  };
 
   useEffect(() => {
     const initShapeDiver = async () => {
       if (!canvasRef.current) return;
 
-      // Make RGBELoader available globally
       if (typeof window !== 'undefined' && window.THREE) {
         window.THREE.RGBELoader = RGBELoader;
       }
 
-      // Close existing viewport and session if they exist
-      if (viewportRef.current) {
-        console.log('Closing existing viewport...');
-        viewportRef.current.close();
-        viewportRef.current = null;
-      }
-      if (sessionRef.current) {
-        console.log('Closing existing session...');
-        sessionRef.current.close();
-        sessionRef.current = null;
-        setSession(null);
-      }
-
       try {
-        console.log('Creating viewport...');
+        // Cleanup existing viewport
+        if (viewportRef.current) {
+          viewportRef.current.pauseRendering();
+          viewportRef.current.show = false;
+          viewportRef.current = null;
+        }
+        
+        // Cleanup existing session
+        if (sessionRef.current) {
+          await sessionRef.current.customize({}); // Clear customizations
+          sessionRef.current = null;
+          setSession(null);
+        }
+
+        // Create viewport with initial hidden state
         const newViewport = await createViewport({
           canvas: canvasRef.current,
           visibility: VISIBILITY_MODE.MANUAL,
-            branding: {
-              backgroundColor: 'rgba(245, 240, 235, 0.2)',
-              spinnerPositioning: SPINNER_POSITIONING.TOP_LEFT,
-              busyModeSpinner: LOADING_GIF_URL,
-              busyModeDisplay: BUSY_MODE_DISPLAY.SPINNER,
-            },
+          branding: {
+            backgroundColor: 'rgba(245, 240, 235, 0.2)',
+            spinnerPositioning: SPINNER_POSITIONING.TOP_LEFT,
+            busyModeSpinner: LOADING_GIF_URL,
+            busyModeDisplay: BUSY_MODE_DISPLAY.SPINNER,
+          },
         });
-        viewportRef.current = newViewport;
-        setViewport(newViewport); // Update the parent component's viewport state
-        console.log('Viewport created successfully');
 
-        console.log('Creating session...');
+        await clearViewport(newViewport);
+        
+        viewportRef.current = newViewport;
+        setViewport(newViewport);
+
+        // Create session
         const newSession = await createSession({
           ticket: '59cad840676b0591717e78763e3c0c3b0d33202f56aa63f2d7666bc4eaa188a0bc04e98da43bb3dccf157b51aeafff24fb916f42ae010f86d44abfd0f6032fb999543488136361296d94deae674d430cdc19a77e7e298bccd13f3c6e9987ce893146a78567df2e-22883dee92d748f3620cc5c385dc12fc',
           modelViewUrl: 'https://sdr8euc1.eu-central-1.shapediver.com',
         });
+
+      
+        
         sessionRef.current = newSession;
-        setSession(newSession); // This line is already present
-        console.log('Session created successfully');
+        setSession(newSession);
 
-        // Call customize to load the model
-        await newSession.customize();
-        console.log('Session customized successfully');
+        // Create initial parameters object
+        const defaultParams = parameterDefinitions.reduce((acc, param) => {
+          acc[param.id] = param.value.toString();
+          return acc;
+        }, {} as Record<string, string>);
 
-        // Manually update the viewport with the session's node
+        // Complete sequence of operations
+        await newSession.customize(defaultParams);
+        
         if (newSession.node) {
           await newViewport.updateNode(newSession.node);
-          newViewport.update();
-          newViewport.render();
+          await new Promise(resolve => requestAnimationFrame(resolve)); // Force frame sync
+          await newViewport.update();
+          await newViewport.render();
+          newViewport.continueRendering();
           newViewport.show = true;
-          setIsLoading(false);
-          console.log('Viewport updated and rendering started.');
-        } else {
-          console.error('Session node is missing');
         }
+        
+        setIsLoading(false);
 
       } catch (error) {
         console.error('Error initializing ShapeDiver:', error);
@@ -127,26 +137,33 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
 
     initShapeDiver();
 
+    // Cleanup function
     return () => {
-      console.log('Cleaning up...');
+      if (viewportRef.current) {
+        viewportRef.current.pauseRendering();
+        viewportRef.current.show = false;
+        viewportRef.current = null;
+      }
       if (sessionRef.current) {
-        sessionRef.current.close();
         sessionRef.current = null;
         setSession(null);
-      }
-      if (viewportRef.current) {
-        viewportRef.current.close();
-        viewportRef.current = null;
       }
     };
   }, [setSession, setViewport]);
 
   useEffect(() => {
-    if (session && viewportRef.current) {
-      // Logic to update the 3D model based on selectedComponent
-      console.log(`Updating model for component: ${selectedComponent}`);
-      // Here you would add logic to update the ShapeDiver model
-      // This might involve changing parameters or loading a different model
+    if (session && viewportRef.current && selectedComponent) {  // Add selectedComponent check
+      console.log('Selected Component Update:', {
+        component: selectedComponent,
+        sessionExists: !!session,
+        viewportExists: !!viewportRef.current
+      });
+      
+      // Only proceed if we have a valid component
+      if (selectedComponent.trim() !== '') {
+        // Add your component-specific logic here
+        console.log(`Updating model for component: ${selectedComponent}`);
+      }
     }
   }, [selectedComponent, session]);
 

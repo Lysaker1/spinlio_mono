@@ -69,8 +69,14 @@ module.exports = (env) => {
       new webpack.DefinePlugin(envKeys),
       new CopyWebpackPlugin({
         patterns: [
+          // Copy from src/static/public
           { 
             from: path.resolve(__dirname, 'src/static/public'),
+            to: path.resolve(__dirname, 'dist/static')
+          },
+          // Copy from root public folder
+          { 
+            from: path.resolve(__dirname, 'public/_redirects'),
             to: path.resolve(__dirname, 'dist/static')
           }
         ]

@@ -1,13 +1,28 @@
 const express = require('express');
 const path = require('path');
 const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');  // Add this line
+
 const app = express();
 
-// CORS configuration for Netlify
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // limit each IP to 100 requests per windowMs
+});
+app.use(limiter);
+
+// Block sensitive file access
+app.use((req, res, next) => {
+  const blockedPaths = ['.env', '.git', 'wp', 'wordpress', 'telescope'];
+  if (blockedPaths.some(path => req.path.toLowerCase().includes(path))) {
+    return res.status(404).send('Not found');
+  }
+  next();
+});
+
+// Add CORS for Netlify
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', 'https://spinlio.com');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
   next();
 });
 
@@ -41,14 +56,15 @@ app.use(helmet({
   },
 }));
 
+// Serve static files
 app.use(express.static(path.join(__dirname, 'dist/dynamic')));
 
-// Simplified routes - remove the /* since Netlify handles that
-app.get('/configurator', (req, res) => {
+// Handle configurator and contact routes
+app.get(['/configurator', '/configurator/*'], (req, res) => {
   res.sendFile(path.join(__dirname, 'dist/dynamic', 'index.html'));
 });
 
-app.get('/contact', (req, res) => {
+app.get(['/contact', '/contact/*'], (req, res) => {
   res.sendFile(path.join(__dirname, 'dist/dynamic', 'index.html'));
 });
 

@@ -29,6 +29,16 @@ app.use(helmet({
 
 app.use(express.static(path.join(__dirname, 'dist/dynamic')));
 
+// Add specific routes before the catch-all
+app.get('/configurator/*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist/dynamic', 'index.html'));
+});
+
+app.get('/contact/*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist/dynamic', 'index.html'));
+});
+
+// Catch-all route
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist/dynamic', 'index.html'));
 });

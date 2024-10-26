@@ -1,6 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const webpack = require('webpack');
 const dotenv = require('dotenv');
 const fs = require('fs');
@@ -66,6 +67,14 @@ module.exports = (env) => {
         template: './public/index.html',
       }),
       new webpack.DefinePlugin(envKeys),
+      new CopyWebpackPlugin({
+        patterns: [
+          { 
+            from: path.resolve(__dirname, 'src/static/public'),
+            to: path.resolve(__dirname, 'dist/static')
+          }
+        ]
+      })
     ],
     devServer: {
       static: {

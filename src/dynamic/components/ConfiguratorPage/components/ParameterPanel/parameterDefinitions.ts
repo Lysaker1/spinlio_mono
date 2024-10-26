@@ -9,6 +9,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
       value: '71.5',
       min: 69,
       max: 75,
+      unit: '°'
     },
     {
       id: '28dbd19d-3f39-48a4-b143-9d357b413ce0',
@@ -17,6 +18,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
       value: '11',
       min: 8,
       max: 20,
+      unit: '°'
     },
     {
       id: 'ac5a259d-c2b7-45c0-af16-4a5782b21f1c',
@@ -25,6 +27,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
       value: '74.0',
       min: 69,
       max: 75,
+      unit: '°'
     },
     {
       id: 'e42f397c-eb07-434a-9029-d394179bf2f1',
@@ -33,6 +36,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
       value: '462',
       min: 450,
       max: 700,
+      unit: 'mm'
     },
     {
       id: '398b031c-826b-481e-9cf8-8628f5d01511',
@@ -41,6 +45,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
       value: '401',
       min: 400,
       max: 420,
+      unit: 'mm'
     },
     {
       id: 'e7e25729-2b9e-458a-9bb1-16e0fa675a7c',
@@ -49,6 +54,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
       value: '571',
       min: 500,
       max: 600,
+      unit: 'mm'
     },
     {
       id: 'e81fe405-a176-41aa-b5f9-7d702e2db52a',
@@ -57,6 +63,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
       value: '179',
       min: 160,
       max: 200,
+      unit: 'mm'
     },
     {
       id: '38985f41-4db6-448e-b1a0-6689bd26beae',

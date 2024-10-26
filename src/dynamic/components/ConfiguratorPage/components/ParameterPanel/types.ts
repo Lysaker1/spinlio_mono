@@ -5,13 +5,16 @@ export interface ParameterPanelProps {
   session: ISessionApi | null;
   viewport: IViewportApi | null;
 }
-
 export interface ParameterDefinition {
-  id: string;
-  name: string;
-  type: 'slider' | 'dropdown' | 'boolean' | 'color';
-  value: string | number;
-  min?: number;
-  max?: number;
-  options?: Array<{ label: string; value: string | number }>;
-}
+    id: string;
+    name: string;
+    type: 'slider' | 'dropdown' | 'boolean' | 'color';
+    value: string;
+    min?: number;
+    max?: number;
+    unit?: string;
+    options?: Array<{
+      label: string;
+      value: string;
+    }>;
+  }

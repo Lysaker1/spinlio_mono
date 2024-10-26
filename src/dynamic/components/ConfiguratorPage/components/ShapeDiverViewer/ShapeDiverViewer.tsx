@@ -43,21 +43,23 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    let isActive = true; // Add this flag
+
     const initShapeDiver = async () => {
-      if (!canvasRef.current) return;
+      if (!canvasRef.current || !isActive) return;
 
       // Make RGBELoader available globally
       if (typeof window !== 'undefined' && window.THREE) {
         window.THREE.RGBELoader = RGBELoader;
       }
 
-      // Close existing viewport and session if they exist
-      if (viewportRef.current) {
+      // Only close existing if we're not already in cleanup
+      if (viewportRef.current && isActive) {
         console.log('Closing existing viewport...');
         viewportRef.current.close();
         viewportRef.current = null;
       }
-      if (sessionRef.current) {
+      if (sessionRef.current && isActive) {
         console.log('Closing existing session...');
         sessionRef.current.close();
         sessionRef.current = null;
@@ -65,6 +67,8 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
       }
 
       try {
+        if (!isActive) return; // Check flag before creating new instances
+
         console.log('Creating viewport...');
         const newViewport = await createViewport({
           canvas: canvasRef.current,
@@ -76,45 +80,50 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
             busyModeDisplay: BUSY_MODE_DISPLAY.SPINNER,
           },
         });
+
+        if (!isActive) {
+          newViewport.close();
+          return;
+        }
+
         viewportRef.current = newViewport;
         setViewport(newViewport);
-        console.log('Viewport created successfully');
 
-        console.log('Creating session...');
         const newSession = await createSession({
           ticket: '59cad840676b0591717e78763e3c0c3b0d33202f56aa63f2d7666bc4eaa188a0bc04e98da43bb3dccf157b51aeafff24fb916f42ae010f86d44abfd0f6032fb999543488136361296d94deae674d430cdc19a77e7e298bccd13f3c6e9987ce893146a78567df2e-22883dee92d748f3620cc5c385dc12fc',
           modelViewUrl: 'https://sdr8euc1.eu-central-1.shapediver.com',
         });
+
+        if (!isActive) {
+          newSession.close();
+          return;
+        }
+
         sessionRef.current = newSession;
         setSession(newSession);
-        console.log('Session created successfully');
 
-        // Call customize to load the model
         await newSession.customize();
-        console.log('Session customized successfully');
 
-        // Manually update the viewport with the session's node
-        if (newSession.node) {
+        if (newSession.node && isActive) {
           await newViewport.updateNode(newSession.node);
           newViewport.update();
           newViewport.render();
           newViewport.show = true;
           setIsLoading(false);
-          console.log('Viewport updated and rendering started.');
-        } else {
-          console.error('Session node is missing');
         }
 
       } catch (error) {
         console.error('Error initializing ShapeDiver:', error);
-        setIsLoading(false);
+        if (isActive) {
+          setIsLoading(false);
+        }
       }
     };
 
     initShapeDiver();
 
-    // Cleanup function
     return () => {
+      isActive = false; // Set flag before cleanup
       console.log('Cleaning up...');
       if (sessionRef.current) {
         sessionRef.current.close();

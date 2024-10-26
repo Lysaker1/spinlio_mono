@@ -1,0 +1,85 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 10px;
+  /* Remove any background effects from the header wrapper */
+  background: transparent;
+}
+
+.header-content {
+  display: flex;
+  height: 2rem;
+  padding: 0.75rem 1rem;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 auto;
+  justify-content: space-between;
+  border-radius: 2.125rem;
+  background: rgba(0, 0, 0, 0.40);
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
+  max-width: 900px;
+  width: 85%;
+  /* Contain the backdrop effect */
+  transform: translateZ(0);
+  isolation: isolate;
+  padding: 0.75rem 1.5rem; /* Increased horizontal padding */
+
+}
+
+.logo {
+  color: #FFF;
+  font-family: "Helvetica Neue", sans-serif;
+  font-size: 1.5rem;
+  font-weight: 500;
+  line-height: 1.75rem;
+  text-decoration: none;
+  margin-left: 0.7rem;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-right: 0.7rem;
+}
+
+.nav-links a {
+  display: flex;
+  height: 2rem;
+  padding: 0.75rem 1rem;
+  align-items: center;
+  gap: 0.5rem;
+  color: #FFF;
+  font-family: "Helvetica Neue", sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.375rem;
+  text-decoration: none;
+  border-radius: 2.125rem;
+  transition: background 0.2s ease;
+}
+
+.nav-links a:hover {
+  background: rgba(0, 0, 0, 0.40);
+  background-blend-mode: luminosity;
+  backdrop-filter: blur(50px);
+}
+
+/* Responsive design */
+@media (max-width: 640px) {
+  .header-content {
+    padding: 0.5rem;
+  }
+  
+  .nav-links {
+    gap: 0.25rem;
+  }
+  
+  .nav-links a {
+    padding: 0.5rem 0.75rem;
+  }
+}

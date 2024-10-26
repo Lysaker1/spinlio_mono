@@ -1,0 +1,109 @@
+.landing-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start; /* Changed from center to flex-start */
+  justify-content: center;
+  color: white;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+.landing-content {
+  text-align: center;
+  padding: 2rem;
+  margin: auto;
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  min-height: calc(100vh - 4rem); /* Full height minus padding */
+}
+
+.text-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem; /* Reduced gap between elements */
+  width: 100%;
+  margin-top: 6rem; /* Add space below header */
+}
+
+.main-title {
+  color: #FFFFFF;
+  text-align: center;
+  font-family: "Helvetica Neue", sans-serif;
+  font-size: 5rem; /* Increased from 3.75rem */
+  font-style: normal;
+  font-weight: 400;
+  line-height: 120%;
+  letter-spacing: -0.075rem;
+  margin: 0;
+}
+
+.subtitle-container {
+  display: flex;
+  padding: 0.75rem 2rem; /* Increased padding */
+  justify-content: center;
+  align-items: center;
+  gap: 0.625rem;
+  border-radius: 6.25rem;
+  background: #2B2B2B;
+  margin-top: 0.5rem; /* Reduced space after title */
+}
+
+.subtitle {
+  color: #FFFFFF;
+  text-align: center;
+  font-family: "Helvetica Neue", sans-serif;
+  font-size: 1rem; /* Slightly increased */
+  font-style: normal;
+  font-weight: 400;
+  line-height: 0.875rem;
+  white-space: nowrap; /* Prevent text wrapping */
+}
+
+.version-text {
+  color: #000;
+  text-align: center;
+  font-family: "Helvetica Neue", sans-serif;
+  font-size: 0.875rem; /* Slightly increased */
+  font-style: normal;
+  font-weight: 300;
+  line-height: 1.125rem;
+  margin-top: 0.5rem; /* Reduced space after subtitle */
+}
+
+.image-placeholder {
+  /* Space for future image */
+  flex: 1;
+  min-height: 2rem; /* Minimum space between text and button */
+}
+
+.design-button {
+  display: flex;
+  width: 17.6875rem;
+  padding: 1rem 1.5rem;
+  justify-content: center;
+  align-items: center;
+  gap: 0.625rem;
+  border-radius: 3.125rem;
+  background: #181818;
+  /* Text styles */
+  color: #FFF;
+  font-family: "Helvetica Neue", sans-serif;
+  font-size: 1.125rem;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.5rem;
+  text-decoration: none; /* Remove default link underline */
+  margin-top: 2rem; /* Add some space above the version text */
+  transition: background-color 0.2s ease; /* Smooth hover effect */
+  margin-bottom: 2rem; /* Add some space from bottom */
+}
+
+.design-button:hover {
+  background: #2a2a2a; /* Slightly lighter on hover */
+}

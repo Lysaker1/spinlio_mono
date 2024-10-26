@@ -3,19 +3,20 @@
   publish = "dist/static"           
 
 [[redirects]]
-  from = "/configurator"
-  to = "https://spinlio-dynamic-e31fcb8098e8.herokuapp.com"
-  status = 301  
-  force = true  
-headers = {Access-Control-Allow-Origin = "*"}
+  from = "/configurator/*"
+  to = "https://spinlio-dynamic-e31fcb8098e8.herokuapp.com/configurator/:splat"
+  status = 200
+  force = true
+  headers = {Access-Control-Allow-Origin = "*"}
 
 [[redirects]]
   from = "/contact/*"
   to = "https://spinlio-dynamic-e31fcb8098e8.herokuapp.com/contact/:splat"
   status = 200
   force = true
+  headers = {Access-Control-Allow-Origin = "*"}
 
 [[redirects]]
-  from = "/*"              # This should be last as a catch-all
+  from = "/*"
   to = "/index.html"
   status = 200

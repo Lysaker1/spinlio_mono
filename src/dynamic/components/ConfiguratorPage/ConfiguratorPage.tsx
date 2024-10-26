@@ -42,7 +42,6 @@ const ConfiguratorPage: React.FC = () => {
       <div className="configurator-content">
         <div className="viewer-container">
           <ShapeDiverViewer
-            selectedComponent={selectedComponent}
             session={session}
             setSession={setSession}
             setViewport={setViewport}

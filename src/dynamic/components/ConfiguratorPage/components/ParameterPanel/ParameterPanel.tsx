@@ -30,16 +30,13 @@ const ParameterPanel: React.FC<ParameterPanelProps> = ({ selectedComponent, sess
   const debouncedCustomize = useCallback(
     debounce(async (params: {}) => {
       if (!session || !viewport) return;
-
       try {
         await session.customize(params);
         console.log('Session customized with params:', params);
-
         if (session.node) {
           await viewport.updateNode(session.node);
           viewport.update();
           viewport.render();
-          console.log('Viewport updated with new session node.');
         }
       } catch (error) {
         console.error('Error customizing session:', error);

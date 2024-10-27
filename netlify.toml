@@ -5,16 +5,16 @@
 [[redirects]]
   from = "/configurator/*"
   to = "https://spinlio-dynamic-e31fcb8098e8.herokuapp.com/configurator/:splat"
-  status = 200
+  status = 200!
   force = true
-  headers = {Access-Control-Allow-Origin = "*"}
+  headers = {X-From = "Netlify"}
 
 [[redirects]]
   from = "/contact/*"
   to = "https://spinlio-dynamic-e31fcb8098e8.herokuapp.com/contact/:splat"
-  status = 200
+  status = 200!
   force = true
-  headers = {Access-Control-Allow-Origin = "*"}
+  headers = {X-From = "Netlify"}
 
 [[redirects]]
   from = "/*"

@@ -6,30 +6,9 @@ import './LandingPage.css';
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
 
-  const handleDesignClick = async (e: React.MouseEvent) => {
+  const handleDesignClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    try {
-      // Always use Heroku URL in production
-      const baseUrl = 'https://spinlio-dynamic-e31fcb8098e8.herokuapp.com';
-      
-      console.log('Fetching from:', baseUrl); // Debug log
-      
-      const response = await fetch(`${baseUrl}/configurator`, {
-        credentials: 'include',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        }
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      navigate('/configurator');
-    } catch (error) {
-      console.error('Failed to load configurator:', error);
-    }
+    window.location.href = '/configurator';
   };
 
   return (

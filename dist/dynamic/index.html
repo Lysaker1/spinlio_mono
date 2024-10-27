@@ -4,16 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spinlio</title>
-    <!-- Keep preloading for speed -->
+    <!-- Critical resources -->
     <link rel="preload" as="image" href="/images/background_final_last.png" fetchpriority="high">
     <link rel="preload" as="script" href="/runtime.bundle.js">
-    <link rel="preload" as="script" href="/vendor.shapediver.bundle.js">
+    <link rel="preload" as="script" href="/framework.bundle.js">
+    <link rel="preload" as="script" href="/main.bundle.js">
+    
+    <!-- Prefetch non-critical chunks -->
+    <link rel="prefetch" as="script" href="/shapediver.chunk.js">
+    <link rel="prefetch" as="script" href="/three.chunk.js">
     <style>
       body, html {
         margin: 0;
         padding: 0;
         height: 100vh;
-        background: #3a0f0f url('/images/background_final_last.png') center/cover no-repeat fixed;
+        background: #7e6767 url('/images/background_final_last.png') center/cover no-repeat fixed;
       }
 
 
@@ -22,7 +27,7 @@
         background: transparent; /* Ensure root doesn't block background */
       }
     </style>
-<script defer src="/runtime.bundle.js"></script><script defer src="/vendor.react-8da75791.bundle.js"></script><script defer src="/vendor.react-e5bca7e4.bundle.js"></script><script defer src="/vendor.mantine.bundle.js"></script><script defer src="/vendor.common-cdd60c62.bundle.js"></script><script defer src="/vendor.common-536eaa00.bundle.js"></script><script defer src="/vendor.common-cb2d071c.bundle.js"></script><script defer src="/vendor.common-27545368.bundle.js"></script><script defer src="/vendor.common-3b376589.bundle.js"></script><script defer src="/vendor.common-9f88dc78.bundle.js"></script><script defer src="/vendor.common-99fd765c.bundle.js"></script><script defer src="/vendor.common-c1c880b4.bundle.js"></script><script defer src="/vendor.common-694cdba6.bundle.js"></script><script defer src="/vendor.common-92f104f4.bundle.js"></script><script defer src="/vendor.common-523c457a.bundle.js"></script><script defer src="/vendor.common-6d2c6301.bundle.js"></script><script defer src="/vendor.common-d099c020.bundle.js"></script><script defer src="/vendor.common-cc35aa30.bundle.js"></script><script defer src="/vendor.common-d3e8d9af.bundle.js"></script><script defer src="/vendor.common-53b2ea59.bundle.js"></script><script defer src="/vendor.common-229eafb5.bundle.js"></script><script defer src="/vendor.common-121455fa.bundle.js"></script><script defer src="/vendor.common-08a87103.bundle.js"></script><script defer src="/vendor.common-481a7261.bundle.js"></script><script defer src="/main.bundle.js"></script></head>
+<script defer src="/runtime.bundle.js"></script><script defer src="/framework.bundle.js"></script><script defer src="/vendors-cdd60c62.bundle.js"></script><script defer src="/vendors-536eaa00.bundle.js"></script><script defer src="/vendors-3b376589.bundle.js"></script><script defer src="/vendors-9f88dc78.bundle.js"></script><script defer src="/vendors-99fd765c.bundle.js"></script><script defer src="/vendors-46ae0e6a.bundle.js"></script><script defer src="/vendors-53b2ea59.bundle.js"></script><script defer src="/vendors-dfc84609.bundle.js"></script><script defer src="/vendors-229eafb5.bundle.js"></script><script defer src="/vendors-866ab763.bundle.js"></script><script defer src="/main.bundle.js"></script></head>
 <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>

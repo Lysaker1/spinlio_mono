@@ -133,10 +133,19 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
+// Add dynamic imports
+const loadShapeDiver = () => __awaiter(void 0, void 0, void 0, function* () {
+    const viewer = yield Promise.resolve(/* import() */).then(__webpack_require__.bind(__webpack_require__, 66032));
+    return {
+        createViewport: viewer.createViewport,
+        createSession: viewer.createSession
+    };
+});
+const loadThree = () => __awaiter(void 0, void 0, void 0, function* () {
+    const { RGBELoader } = yield __webpack_require__.e(/* import() */ 233).then(__webpack_require__.bind(__webpack_require__, 17231));
+    return RGBELoader;
+});
 const LOADING_GIF_URL = 'https://res.cloudinary.com/da8qnqmmh/image/upload/e_make_transparent:10/v1729757636/BIKE_qa0p3v.gif';
-const createViewportPromise = Promise.resolve(/* import() */).then(__webpack_require__.bind(__webpack_require__, 66032)).then(m => m.createViewport);
-const createSessionPromise = Promise.resolve(/* import() */).then(__webpack_require__.bind(__webpack_require__, 66032)).then(m => m.createSession);
-const RGBELoaderPromise = __webpack_require__.e(/* import() */ 233).then(__webpack_require__.bind(__webpack_require__, 17231)).then(m => m.RGBELoader);
 const ShapeDiverViewer_ShapeDiverViewer_ShapeDiverViewer = ({ session, setSession, setViewport, }) => {
     const canvasRef = (0,react.useRef)(null);
     const viewportRef = (0,react.useRef)(null);
@@ -150,11 +159,8 @@ const ShapeDiverViewer_ShapeDiverViewer_ShapeDiverViewer = ({ session, setSessio
             if (!canvasRef.current || !isActive)
                 return;
             // Load dependencies dynamically
-            const [createViewport, createSession, RGBELoader] = yield Promise.all([
-                createViewportPromise,
-                createSessionPromise,
-                RGBELoaderPromise
-            ]);
+            const { createViewport, createSession } = yield loadShapeDiver();
+            const RGBELoader = yield loadThree();
             // Make RGBELoader available globally
             if (typeof window !== 'undefined' && window.THREE) {
                 window.THREE.RGBELoader = RGBELoader;

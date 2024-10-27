@@ -4,16 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spinlio</title>
-    <!-- Keep preloading for speed -->
+    <!-- Critical resources -->
     <link rel="preload" as="image" href="/images/background_final_last.png" fetchpriority="high">
     <link rel="preload" as="script" href="/runtime.bundle.js">
-    <link rel="preload" as="script" href="/vendor.shapediver.bundle.js">
+    <link rel="preload" as="script" href="/framework.bundle.js">
+    <link rel="preload" as="script" href="/main.bundle.js">
+    
+    <!-- Prefetch non-critical chunks -->
+    <link rel="prefetch" as="script" href="/shapediver.chunk.js">
+    <link rel="prefetch" as="script" href="/three.chunk.js">
     <style>
       body, html {
         margin: 0;
         padding: 0;
         height: 100vh;
-        background: #3a0f0f url('/images/background_final_last.png') center/cover no-repeat fixed;
+        background: #7e6767 url('/images/background_final_last.png') center/cover no-repeat fixed;
       }
 
 

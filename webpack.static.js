@@ -5,6 +5,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const webpack = require('webpack');
 const dotenv = require('dotenv');
 const fs = require('fs');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = (env) => {
   // Environment handling
@@ -56,9 +57,14 @@ module.exports = (env) => {
         },
         {
           test: /\.(png|jpe?g|gif)$/i,
-          type: 'asset/resource',  // Change from image-webpack-loader
+          type: 'asset',
+          parser: {
+            dataUrlCondition: {
+              maxSize: 8 * 1024 // 8kb
+            }
+          },
           generator: {
-            filename: 'images/[name][ext]'
+            filename: 'images/[name].[contenthash][ext]'
           }
         }
       ],
@@ -109,35 +115,33 @@ module.exports = (env) => {
             to: path.resolve(__dirname, 'dist/static/service-worker.js')  // For static sites
           }
         ]
-      })
-    ],
+      }),
+      process.env.ANALYZE && new BundleAnalyzerPlugin()
+    ].filter(Boolean),
     optimization: {
       runtimeChunk: 'single',
       splitChunks: {
         chunks: 'all',
-        maxInitialRequests: 4,  // Even more aggressive bundling
-        minSize: 100000,       // Bigger bundles
+        maxInitialRequests: 4,
+        minSize: 100000,
         cacheGroups: {
-          // Core React bundle
-          react: {
-            test: /[\\/]node_modules[\\/](react|react-dom|react-router|react-router-dom)[\\/]/,
+          core: {
+            test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
             name: 'vendor.core',
             chunks: 'all',
             priority: 40,
           },
-          // UI components
           ui: {
             test: /[\\/]node_modules[\\/](@mantine|@emotion)[\\/]/,
             name: 'vendor.ui',
             chunks: 'all',
             priority: 30,
           },
-          // All other vendors
-          vendors: {
+          common: {
             test: /[\\/]node_modules[\\/]/,
             name: 'vendor.common',
             chunks: 'all',
-            priority: -10,
+            priority: 20,
             reuseExistingChunk: true,
           },
         },

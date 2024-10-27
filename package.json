@@ -5,12 +5,18 @@
     "src/static",
     "src/dynamic"
   ],
+  "resolutions": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
   "scripts": {
     "start:static": "webpack serve --config webpack.static.js --mode development",
     "start:dynamic": "webpack serve --config webpack.dynamic.js --mode development",
     "build:static": "webpack --config webpack.static.js --mode production",
     "build:dynamic": "webpack --config webpack.dynamic.js --mode production",
-    "heroku-postbuild": "npm run build:dynamic"
+    "heroku-postbuild": "npm run build:dynamic",
+    "analyze": "webpack --config webpack.static.js --mode production --analyze",
+    "check-versions": "npm ls react && npm ls react-dom"
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
@@ -35,6 +41,7 @@
     "@babel/core": "^7.25.8",
     "@babel/preset-env": "^7.25.8",
     "@babel/preset-react": "^7.25.7",
+    "@squoosh/lib": "^0.3.1",
     "@types/node": "^22.8.1",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
@@ -42,7 +49,8 @@
     "compression-webpack-plugin": "^11.1.0",
     "dotenv": "^16.4.5",
     "file-loader": "^6.2.0",
-    "image-webpack-loader": "^8.1.0"
+    "sharp": "^0.33.5",
+    "webpack-bundle-analyzer": "^4.10.2"
   },
   "engines": {
     "node": "18.20.4",

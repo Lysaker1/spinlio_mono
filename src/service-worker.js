@@ -4,7 +4,7 @@ const CACHE_NAME = 'spinlio-cache-v1';
 const urlsToCache = [
   '/',
   '/images/background_final_last.png',
-  '/vendor.core.js',     // New bundle names from webpack
+  '/vendor.core.js',
   '/vendor.ui.js',
   '/vendor.common.js',
   '/main.bundle.js',

@@ -5,6 +5,7 @@ import { theme } from '../../../shared/theme';
 import { Footer, Header } from '../../../shared/components';
 import { AboutPage } from '../../../static/components';
 import { ConfiguratorPage, ContactUsPage } from '../';
+import ErrorBoundary from '../../../shared/components/ErrorBoundary/ErrorBoundary';
 
 const App: React.FC = () => {
   const hostname = window.location.hostname;
@@ -30,9 +31,10 @@ const App: React.FC = () => {
   };
 
   return (
-    <MantineProvider theme={theme}>
-      <Router>
-        <div className="app">
+    <ErrorBoundary>
+      <MantineProvider theme={theme}>
+        <Router>
+          <div className="app">
           <Header />
           <Routes>
             <Route path="/" element={getMainComponent()} />
@@ -43,8 +45,9 @@ const App: React.FC = () => {
           </Routes>
           <Footer />
         </div>
-      </Router>
-    </MantineProvider>
+        </Router>
+      </MantineProvider>
+    </ErrorBoundary>
   );
 };
 

@@ -4,6 +4,7 @@ import { MantineProvider } from '@mantine/core';
 import { theme } from '../shared/theme';
 import { Header, Footer } from '../shared/components';
 import { LandingPage, AboutPage, ConfiguratorTemplate } from './components';
+import ErrorBoundary from '../shared/components/ErrorBoundary/ErrorBoundary';
 
 const AppContent: React.FC = () => {
   useEffect(() => {
@@ -39,11 +40,13 @@ const AppContent: React.FC = () => {
 
 const App: React.FC = () => {
   return (
-    <MantineProvider theme={theme}>
-      <Router>
-        <AppContent />
-      </Router>
-    </MantineProvider>
+    <ErrorBoundary>
+      <MantineProvider theme={theme}>
+        <Router>
+          <AppContent />
+        </Router>
+      </MantineProvider>
+    </ErrorBoundary>
   );
 };
 

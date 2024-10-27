@@ -8,17 +8,19 @@ const app = express();
 
 // Add CORS before other middleware
 app.use(cors({
-  // Keep your flexible origin handling
-  origin: process.env.ALLOWED_ORIGINS?.split(',') || [
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'https://spinlio.com',
-    'https://configurator.spinlio.com',
-    'https://contact.spinlio.com'
-  ],
+  origin: (origin, callback) => {
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'https://spinlio.com',
+      'https://configurator.spinlio.com',
+      'https://contact.spinlio.com',
+      'https://www.herokucdn.com'  // Add this
+    ];
+    callback(null, allowedOrigins.includes(origin));
+  },
   credentials: true,
   methods: ['GET', 'POST', 'OPTIONS'],
-  // Add these new headers
   allowedHeaders: ['Content-Type', 'Authorization'],
   exposedHeaders: ['Cross-Origin-Resource-Policy']
 }));
@@ -59,7 +61,8 @@ app.use(helmet({
         "https://*.hsforms.com",
         "https://spinlio.com",
         "https://configurator.spinlio.com",
-        "https://contact.spinlio.com"
+        "https://contact.spinlio.com",
+        "https://www.herokucdn.com"  // Add this
       ],
       imgSrc: [
         "'self'", 
@@ -72,7 +75,11 @@ app.use(helmet({
       mediaSrc: ["'self'", "blob:"],
       workerSrc: ["'self'", "blob:"],
       fontSrc: ["'self'", "https://fonts.gstatic.com", "https://*.hsforms.com"],
-      frameSrc: ["https://*.hsforms.com", "https://*.hubspot.com"],
+      frameSrc: [
+        "https://*.hsforms.com", 
+        "https://*.hubspot.com",
+        "https://www.herokucdn.com"  // Add this
+      ],
       formAction: ["https://*.hsforms.com", "https://*.hubspot.com"],
     },
   },

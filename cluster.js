@@ -2,7 +2,8 @@ const cluster = require('cluster');
 const numCPUs = 2; // Let's start with 2 workers per dyno
 
 if (cluster.isPrimary) {
-  console.log(`Primary ${process.pid} is running on port ${process.env.PORT}`);
+  const port = process.env.PORT || 3000;
+  console.log(`Primary ${process.pid} is running`);
 
   // Fork workers
   for (let i = 0; i < numCPUs; i++) {
@@ -23,7 +24,7 @@ if (cluster.isPrimary) {
   const app = require('./server.js')();
   const port = process.env.PORT || 3000;
   
-  app.listen(port, () => {
+  app.listen(port, '0.0.0.0', () => {
     console.log(`Worker ${process.pid} listening on port ${port}`);
   });
 }

@@ -10,16 +10,25 @@ module.exports = (env) => {
   // Environment handling
   const currentPath = path.join(__dirname);
   const basePath = currentPath + '/.env';
-  const envPath = basePath + '.' + (env.ENVIRONMENT || 'development');
-  const finalPath = fs.existsSync(envPath) ? envPath : basePath;
+  const envPath = basePath + '.' + (env.ENVIRONMENT || process.env.NODE_ENV || 'development');
   
-  // Load both .env and environment-specific .env
+  // Define isProd
+  const isProd = env.ENVIRONMENT === 'production' || process.env.NODE_ENV === 'production';
+  
+  // Load environment variables
   const baseEnv = dotenv.config({ path: basePath }).parsed || {};
   const environmentEnv = fs.existsSync(envPath) 
     ? dotenv.config({ path: envPath }).parsed 
     : {};
   
-  const finalEnv = { ...baseEnv, ...environmentEnv };
+  const herokuEnv = {
+    NODE_ENV: process.env.NODE_ENV,
+    CORS_ORIGIN: process.env.CORS_ORIGIN,
+    CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
+    CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME
+  };
+  
+  const finalEnv = { ...baseEnv, ...environmentEnv, ...herokuEnv };
   
   const envKeys = Object.keys(finalEnv || {}).reduce((prev, next) => {
     prev[`process.env.${next}`] = JSON.stringify(finalEnv[next]);
@@ -30,7 +39,7 @@ module.exports = (env) => {
     entry: './src/static/index.tsx', // Changed entry point
     output: {
       path: path.resolve(__dirname, 'dist/static'), // Changed output path
-      filename: 'bundle.js',
+      filename: '[name].[contenthash].js',
       publicPath: '/'
     },
     module: {
@@ -87,6 +96,20 @@ module.exports = (env) => {
         ]
       })
     ],
+    optimization: {
+      splitChunks: {
+        chunks: 'all',
+        maxInitialRequests: 5,
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all',
+          },
+        },
+      },
+      runtimeChunk: 'single'
+    },
     devServer: {
       static: {
         directory: path.join(__dirname, 'public'),
@@ -94,15 +117,18 @@ module.exports = (env) => {
       compress: true,
       port: finalEnv.PORT_STATIC || 3000,
       historyApiFallback: true,
-      proxy: [{
-        context: ['/configurator'],
-        target: 'https://configurator.spinlio.com',
-        changeOrigin: true,
-      }, {
-        context: ['/contact'],
-        target: 'https://contact.spinlio.com',
-        changeOrigin: true,
+      webSocketServer: false, // Add this line
+      ...(isProd ? {} : {
+        proxy: [{
+          context: ['/configurator'],
+          target: 'http://localhost:3001',
+          changeOrigin: true,
+        }, {
+          context: ['/contact'],
+          target: 'http://localhost:3001',
+          changeOrigin: true,
         }]
+      })
     }
   };
 };

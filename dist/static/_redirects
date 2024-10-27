@@ -1,0 +1,6 @@
+# Production redirects for spinlio.com
+/configurator/* https://configurator.spinlio.com/:splat 301!
+/contact/*      https://contact.spinlio.com/:splat      301!
+
+# SPA fallback
+/*             /index.html                              200

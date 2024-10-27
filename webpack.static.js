@@ -119,6 +119,8 @@ module.exports = (env) => {
       process.env.ANALYZE && new BundleAnalyzerPlugin()
     ].filter(Boolean),
     optimization: {
+      nodeEnv: 'production',
+      minimize: true,
       runtimeChunk: 'single',
       splitChunks: {
         chunks: 'all',
@@ -130,6 +132,12 @@ module.exports = (env) => {
             name: 'vendor.core',
             chunks: 'all',
             priority: 40,
+          },
+          router: {
+            test: /[\\/]node_modules[\\/](react-router|react-router-dom)[\\/]/,
+            name: 'vendor.router',
+            chunks: 'all',
+            priority: 35,
           },
           ui: {
             test: /[\\/]node_modules[\\/](@mantine|@emotion)[\\/]/,
@@ -143,10 +151,9 @@ module.exports = (env) => {
             chunks: 'all',
             priority: 20,
             reuseExistingChunk: true,
-          },
+          }
         },
       },
-      minimize: isProd,
       moduleIds: 'deterministic'
     },
     devServer: {

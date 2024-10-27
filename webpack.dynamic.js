@@ -168,28 +168,40 @@ module.exports = (env) => {
         minSize: 20000,
         maxSize: 244000,
         cacheGroups: {
+          core: {
+            test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
+            name: 'vendor.core',
+            chunks: 'all',
+            priority: 40,
+            enforce: true
+          },
           shapediver: {
             test: /[\\/]node_modules[\\/](@shapediver)[\\/]/,
             name: 'vendor.shapediver',
             chunks: 'all',
-            priority: 20,
+            priority: 35,
             enforce: true
           },
-          mantine: {
-            test: /[\\/]node_modules[\\/](@mantine)[\\/]/,
-            name: 'vendor.mantine',
+          three: {
+            test: /[\\/]node_modules[\\/](three)[\\/]/,
+            name: 'vendor.three',
             chunks: 'all',
-            priority: 10,
+            priority: 30,
+            enforce: true
+          },
+          ui: {
+            test: /[\\/]node_modules[\\/](@mantine|@emotion)[\\/]/,
+            name: 'vendor.ui',
+            chunks: 'all',
+            priority: 25,
             enforce: true
           },
           defaultVendors: {
             test: /[\\/]node_modules[\\/]/,
-            name(module) {
-              const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
-              return `vendor.${packageName.replace('@', '')}`;
-            },
+            name: 'vendor.common',
             chunks: 'all',
-            priority: -10
+            priority: -10,
+            reuseExistingChunk: true
           }
         }
       },

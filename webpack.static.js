@@ -111,18 +111,46 @@ module.exports = (env) => {
       })
     ],
     optimization: {
+      runtimeChunk: 'single',
       splitChunks: {
         chunks: 'all',
-        maxInitialRequests: 5,
+        maxInitialRequests: 10,
+        minSize: 20000,
         cacheGroups: {
           vendor: {
             test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
-            chunks: 'all',
+            name(module) {
+              // Get the vendor name
+              const packageName = module.context.match(
+                /[\\/]node_modules[\\/](.*?)([\\/]|$)/
+              )[1];
+              
+              // Group common packages together
+              if (packageName.includes('react') || packageName.includes('redux')) {
+                return 'vendor.react';
+              }
+              if (packageName.includes('three')) {
+                return 'vendor.three';
+              }
+              if (packageName.includes('mantine')) {
+                return 'vendor.mantine';
+              }
+              if (packageName.includes('shapediver')) {
+                return 'vendor.shapediver';
+              }
+              
+              // Other vendors go to a common chunk
+              return 'vendor.common';
+            },
+            priority: 20
           },
-        },
-      },
-      runtimeChunk: 'single'
+          default: {
+            minChunks: 2,
+            priority: 10,
+            reuseExistingChunk: true
+          }
+        }
+      }
     },
     devServer: {
       static: {

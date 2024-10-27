@@ -1,34 +1,30 @@
 import React, { useEffect } from 'react';
 import './LandingPage.css';
 
-// Polyfill for requestIdleCallback
-const requestIdleCallbackPolyfill = window.requestIdleCallback || 
-  ((cb) => setTimeout(cb, 1));
-
 const LandingPage: React.FC = () => {
-  // Remove hostname and isDevelopment checks
-  const configuratorUrl = 'https://configurator.spinlio.com';  // Hardcode production URL
+  const configuratorUrl = 'https://configurator.spinlio.com';
 
   useEffect(() => {
-    let linkElement: HTMLLinkElement | null = null;
-
+    // Keep landing page fast by loading configurator stuff AFTER page is ready
     window.addEventListener('load', () => {
-      requestIdleCallbackPolyfill(() => {
-        linkElement = document.createElement('link');
-        linkElement.rel = 'preload';
-        linkElement.as = 'fetch';
-        linkElement.href = configuratorUrl;
-        document.head.appendChild(linkElement);
+      // Start preloading the configurator bundles in background
+      const bundles = [
+        '/main.bundle.js',
+        '/vendor.react.bundle.js', 
+        '/vendor.react-dom.bundle.js'
+      ];
+      
+      bundles.forEach(bundle => {
+        const link = document.createElement('link');
+        link.rel = 'prefetch'; // Use prefetch instead of preload to not block
+        link.as = 'script';
+        link.href = bundle;
+        document.head.appendChild(link);
       });
     });
+  }, []);
 
-    return () => {
-      if (linkElement) {
-        document.head.removeChild(linkElement);
-      }
-    };
-  }, [configuratorUrl]);
-
+  // Landing page renders instantly, preloading happens in background
   return (
     <div className="landing-page">
       <div className="landing-content">

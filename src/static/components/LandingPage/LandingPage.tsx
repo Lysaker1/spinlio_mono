@@ -6,9 +6,16 @@ import './LandingPage.css';
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
 
-  const handleDesignClick = (e: React.MouseEvent) => {
+  const handleDesignClick = async (e: React.MouseEvent) => {
     e.preventDefault();
-    navigate('/configurator', { replace: true });
+    try {
+      // Pre-fetch the configurator page
+      await fetch('https://spinlio-dynamic-e31fcb8098e8.herokuapp.com/configurator');
+      // Then navigate
+      navigate('/configurator');
+    } catch (error) {
+      console.error('Failed to load configurator:', error);
+    }
   };
 
   return (

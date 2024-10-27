@@ -1,10 +1,12 @@
-import React, { useState, Suspense } from 'react';
-import ParameterPanel from './components/ParameterPanel';
-import ExportMenu from './components/ExportMenu';
+import React, { useState, Suspense, lazy } from 'react';
 import { Modal } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import { ISessionApi, IViewportApi, FLAG_TYPE } from '@shapediver/viewer';
 import './ConfiguratorPage.css';
+
+const ParameterPanel = lazy(() => import('./components/ParameterPanel'));
+const ExportMenu = lazy(() => import('./components/ExportMenu'));
+
 
 // Lazy load ShapeDiverViewer
 const ShapeDiverViewer = React.lazy(() => 

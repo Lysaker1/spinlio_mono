@@ -120,13 +120,7 @@ module.exports = (env) => {
         '@static': path.resolve(__dirname, 'src/static'),
         '@dynamic': path.resolve(__dirname, 'src/dynamic'),
         'react': path.resolve(__dirname, 'node_modules/react'),
-        'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
-        '@emotion/react': path.resolve(__dirname, 'node_modules/@emotion/react'),
-        'three': path.resolve('./node_modules/three')
-      },
-      fallback: {
-        'react': require.resolve('react'),
-        'react-dom': require.resolve('react-dom')
+        'react-dom': path.resolve(__dirname, 'node_modules/react-dom')
       }
     },
     plugins: [
@@ -179,32 +173,26 @@ module.exports = (env) => {
           framework: {
             test: /[\\/]node_modules[\\/](react|react-dom|@emotion|@mantine)[\\/]/,
             name: 'framework',
-            chunks: 'initial',
             priority: 40,
             enforce: true
-          },
-          lib: {
-            test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
-            chunks: 'initial',
-            priority: 30
-          },
-          commons: {
-            name: 'commons',
-            minChunks: 2,
-            priority: 20
           },
           shapediver: {
             test: /[\\/]node_modules[\\/]@shapediver[\\/]/,
             name: 'shapediver',
-            chunks: 'async',
-            priority: 90
+            priority: 90,
+            enforce: true
           },
-          viewer: {
-            test: /[\\/]node_modules[\\/](three|@shapediver\/viewer)[\\/]/,
-            name: 'viewer',
-            chunks: 'async',
-            priority: 85
+          three: {
+            test: /[\\/]node_modules[\\/]three[\\/]/,
+            name: 'three',
+            priority: 85,
+            enforce: true
+          },
+          // Separate other large dependencies
+          utils: {
+            test: /[\\/]node_modules[\\/](lodash|axios|other-large-libs)[\\/]/,
+            name: 'utils',
+            priority: 30
           }
         }
       },

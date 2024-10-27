@@ -4,16 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spinlio</title>
+    
     <!-- Critical resources -->
     <link rel="preload" as="image" href="https://res.cloudinary.com/da8qnqmmh/image/upload/v1730055768/background_final_last_dm9bl2.png" fetchpriority="high">
-    <link rel="preload" as="script" href="/framework.bundle.js" fetchpriority="high">
-    <link rel="preload" as="script" href="/runtime.bundle.js" fetchpriority="high">
-    <link rel="preload" as="script" href="/main.bundle.js">
     
-    <!-- Prefetch non-critical chunks -->
-    <link rel="prefetch" as="script" href="/shapediver.chunk.js">
-    <link rel="prefetch" as="script" href="/three.chunk.js">
     <style>
+      /* Background and root styles */
       body, html {
         margin: 0;
         padding: 0;
@@ -21,15 +17,58 @@
         background: #7e6767 url('https://res.cloudinary.com/da8qnqmmh/image/upload/v1730055768/background_final_last_dm9bl2.png') center/cover no-repeat fixed;
       }
 
+      /* Your existing header styles */
+      .header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        padding: 10px;
+        background: transparent;
+      }
 
-      #root {
-        min-height: 100vh;
-        background: transparent; /* Ensure root doesn't block background */
+      .header-content {
+        display: flex;
+        height: 2rem;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0 auto;
+        justify-content: space-between;
+        border-radius: 2.125rem;
+        background: rgba(0, 0, 0, 0.40);
+        backdrop-filter: blur(50px);
+        max-width: 900px;
+        width: 85%;
+        padding: 0.75rem 1.5rem;
+      }
+
+      .logo {
+        color: #FFF;
+        font-family: "Helvetica Neue", sans-serif;
+        font-size: 1.5rem;
+        font-weight: 500;
+        text-decoration: none;
+        margin-left: 0.7rem;
       }
     </style>
 </head>
 <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
+    
+    <!-- Inline critical header -->
+    <header class="header">
+      <div class="header-content">
+        <a href="https://spinlio.com" class="logo">spinlio</a>
+      </div>
+    </header>
+    
     <div id="root"></div>
+
+    <!-- Preload scripts -->
+    <link rel="preload" as="script" href="/vendors.bundle.js" fetchpriority="high">
+    <link rel="preload" as="script" href="/framework.bundle.js" fetchpriority="high">
+    <link rel="preload" as="script" href="/runtime.bundle.js" fetchpriority="high">
+    <link rel="preload" as="script" href="/main.bundle.js" fetchpriority="high">
 </body>
 </html>

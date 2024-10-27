@@ -2,14 +2,28 @@ const express = require('express');
 const path = require('path');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-const cors = require('cors');  // Add this
+const cors = require('cors');
+const compression = require('compression');
 
 const app = express();
 
-// Add trust proxy setting for Heroku
-app.set('trust proxy', 1);
+// Enable trust proxy - MUST BE FIRST
+app.enable('trust proxy');
 
-// Add CORS before other middleware
+// Rate limiter configuration
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  trustProxy: true,
+  skip: (req) => req.path.includes('.js') || req.path.includes('.map')
+});
+
+// Apply rate limiter
+app.use(limiter);
+
+// CORS configuration with your specific origins
 app.use(cors({
   origin: (origin, callback) => {
     const allowedOrigins = [
@@ -30,45 +44,8 @@ app.use(cors({
   exposedHeaders: ['Cross-Origin-Resource-Policy', 'Cross-Origin-Embedder-Policy']
 }));
 
-// Add the CORP headers right after CORS
-app.use((req, res, next) => {
-  res.header('Cross-Origin-Resource-Policy', 'cross-origin');
-  res.header('Cross-Origin-Opener-Policy', 'same-origin');
-  res.header('Cross-Origin-Embedder-Policy', 'require-corp');
-  next();
-});
-
-// Add preload headers
-app.use((req, res, next) => {
-  res.setHeader('Link', [
-    '</vendor.shapediver.bundle.js>; rel=preload; as=script',
-    '</vendor.three.bundle.js>; rel=preload; as=script',
-    '</vendor.bundle.bundle.js>; rel=preload; as=script'
-  ].join(','));
-  next();
-});
-
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
-  standardHeaders: true,
-  trustProxy: true // Required for Heroku
-});
-
-app.use(limiter);
-
-// Block sensitive file access
-app.use((req, res, next) => {
-  const blockedPaths = ['.env', '.git', 'wp', 'wordpress', 'telescope'];
-  if (blockedPaths.some(path => req.path.toLowerCase().includes(path))) {
-    return res.status(404).send('Not found');
-  }
-  next();
-});
-
+// Update the helmet configuration with HubSpot domains
 app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" },
-  crossOriginEmbedderPolicy: false,
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
@@ -82,7 +59,11 @@ app.use(helmet({
         "https://contact.spinlio.com",
         "https://www.herokucdn.com",
         "https://viewer.shapediver.com",
-        "https://res.cloudinary.com"
+        "https://res.cloudinary.com",
+        "https://forms.hubspot.com",
+        "https://*.hs-scripts.com",
+        "https://*.hs-banner.com",
+        "https://*.hscollectedforms.net"
       ],
       frameSrc: [
         "'self'",
@@ -93,28 +74,58 @@ app.use(helmet({
       imgSrc: [
         "'self'",
         "data:",
+        "blob:",
         "https://*.shapediver.com",
         "https://viewer.shapediver.com",
         "https://res.cloudinary.com",
-        "https://*.cloudinary.com"
+        "https://*.cloudinary.com",
+        "https://*.hubspot.com"
       ],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      fontSrc: ["'self'", "data:", "https://fonts.gstatic.com"],
+      scriptSrc: [
+        "'self'", 
+        "'unsafe-inline'", 
+        "'unsafe-eval'",
+        "https://js.hsforms.net",
+        "https://*.hubspot.com",
+        "https://*.hs-scripts.com",
+        "https://*.hs-analytics.net",
+        "https://*.usemessages.com"
+      ],
+      styleSrc: [
+        "'self'", 
+        "'unsafe-inline'",
+        "https://*.hubspot.com"
+      ],
+      fontSrc: [
+        "'self'", 
+        "data:", 
+        "https://fonts.gstatic.com",
+        "https://*.hubspot.com"
+      ],
       objectSrc: ["'none'"],
       mediaSrc: ["'self'", "https://res.cloudinary.com"],
+      workerSrc: ["'self'", "blob:"]
     }
-  }
+  },
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  crossOriginEmbedderPolicy: false
 }));
+
+// Enable compression
+app.use(compression());
+
+// Block sensitive file access
+app.use((req, res, next) => {
+  const blockedPaths = ['.env', '.git', 'wp', 'wordpress', 'telescope'];
+  if (blockedPaths.some(path => req.path.toLowerCase().includes(path))) {
+    return res.status(404).send('Not found');
+  }
+  next();
+});
 
 // Add logging for debugging
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.path} - Origin: ${req.headers.origin}`);
-  next();
-});
-
-// Simplified routing based on hostname
-app.use((req, res, next) => {
   console.log(`${req.method} ${req.path} - Hostname: ${req.hostname}`);
   next();
 });
@@ -124,11 +135,16 @@ app.use(express.static(path.join(__dirname, 'dist/dynamic')));
 
 // Simple catch-all route that serves index.html
 app.get('*', (req, res) => {
-  // Remove any unwanted paths
   if (req.path !== '/' && req.path !== '/about') {
     return res.redirect('/');
   }
   res.sendFile(path.join(__dirname, 'dist/dynamic', 'index.html'));
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
 });
 
 const setupServer = () => {

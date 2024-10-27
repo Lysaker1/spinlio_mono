@@ -65,14 +65,12 @@ var jsx_runtime = __webpack_require__(74848);
 var react = __webpack_require__(96540);
 // EXTERNAL MODULE: ./node_modules/@shapediver/viewer/dist/index.js
 var dist = __webpack_require__(66032);
-// EXTERNAL MODULE: ./node_modules/three/examples/jsm/loaders/RGBELoader.js
-var RGBELoader = __webpack_require__(17231);
 // EXTERNAL MODULE: ./node_modules/@mantine/core/esm/core/Box/Box.mjs + 20 modules
 var Box = __webpack_require__(83144);
 // EXTERNAL MODULE: ./node_modules/@mantine/core/esm/components/Overlay/Overlay.mjs + 1 modules
 var Overlay = __webpack_require__(22662);
-// EXTERNAL MODULE: ./node_modules/@mantine/core/esm/components/Modal/Modal.mjs + 49 modules
-var Modal = __webpack_require__(83716);
+// EXTERNAL MODULE: ./node_modules/@mantine/core/esm/components/Modal/Modal.mjs + 27 modules
+var Modal = __webpack_require__(82455);
 // EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js
 var injectStylesIntoStyleTag = __webpack_require__(85072);
 var injectStylesIntoStyleTag_default = /*#__PURE__*/__webpack_require__.n(injectStylesIntoStyleTag);
@@ -135,8 +133,10 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
-
 const LOADING_GIF_URL = 'https://res.cloudinary.com/da8qnqmmh/image/upload/e_make_transparent:10/v1729757636/BIKE_qa0p3v.gif';
+const createViewportPromise = Promise.resolve(/* import() */).then(__webpack_require__.bind(__webpack_require__, 66032)).then(m => m.createViewport);
+const createSessionPromise = Promise.resolve(/* import() */).then(__webpack_require__.bind(__webpack_require__, 66032)).then(m => m.createSession);
+const RGBELoaderPromise = __webpack_require__.e(/* import() */ 233).then(__webpack_require__.bind(__webpack_require__, 17231)).then(m => m.RGBELoader);
 const ShapeDiverViewer_ShapeDiverViewer_ShapeDiverViewer = ({ session, setSession, setViewport, }) => {
     const canvasRef = (0,react.useRef)(null);
     const viewportRef = (0,react.useRef)(null);
@@ -145,13 +145,19 @@ const ShapeDiverViewer_ShapeDiverViewer_ShapeDiverViewer = ({ session, setSessio
     const [showQrModal, setShowQrModal] = (0,react.useState)(false);
     const [isLoading, setIsLoading] = (0,react.useState)(true);
     (0,react.useEffect)(() => {
-        let isActive = true; // Add this flag
+        let isActive = true;
         const initShapeDiver = () => __awaiter(void 0, void 0, void 0, function* () {
             if (!canvasRef.current || !isActive)
                 return;
+            // Load dependencies dynamically
+            const [createViewport, createSession, RGBELoader] = yield Promise.all([
+                createViewportPromise,
+                createSessionPromise,
+                RGBELoaderPromise
+            ]);
             // Make RGBELoader available globally
             if (typeof window !== 'undefined' && window.THREE) {
-                window.THREE.RGBELoader = RGBELoader/* RGBELoader */.Y;
+                window.THREE.RGBELoader = RGBELoader;
             }
             // Only close existing if we're not already in cleanup
             if (viewportRef.current && isActive) {
@@ -169,14 +175,14 @@ const ShapeDiverViewer_ShapeDiverViewer_ShapeDiverViewer = ({ session, setSessio
                 if (!isActive)
                     return; // Check flag before creating new instances
                 console.log('Creating viewport...');
-                const newViewport = yield (0,dist/* createViewport */.FB)({
+                const newViewport = yield createViewport({
                     canvas: canvasRef.current,
-                    visibility: dist/* VISIBILITY_MODE */.lo.MANUAL,
+                    visibility: dist.VISIBILITY_MODE.MANUAL,
                     branding: {
                         backgroundColor: 'rgba(245, 240, 235, 0.2)',
-                        spinnerPositioning: dist/* SPINNER_POSITIONING */.wV.TOP_LEFT,
+                        spinnerPositioning: dist.SPINNER_POSITIONING.TOP_LEFT,
                         busyModeSpinner: LOADING_GIF_URL,
-                        busyModeDisplay: dist/* BUSY_MODE_DISPLAY */.PY.SPINNER,
+                        busyModeDisplay: dist.BUSY_MODE_DISPLAY.SPINNER,
                     },
                 });
                 if (!isActive) {
@@ -185,7 +191,7 @@ const ShapeDiverViewer_ShapeDiverViewer_ShapeDiverViewer = ({ session, setSessio
                 }
                 viewportRef.current = newViewport;
                 setViewport(newViewport);
-                const newSession = yield (0,dist/* createSession */.jw)({
+                const newSession = yield createSession({
                     ticket: '59cad840676b0591717e78763e3c0c3b0d33202f56aa63f2d7666bc4eaa188a0bc04e98da43bb3dccf157b51aeafff24fb916f42ae010f86d44abfd0f6032fb999543488136361296d94deae674d430cdc19a77e7e298bccd13f3c6e9987ce893146a78567df2e-22883dee92d748f3620cc5c385dc12fc',
                     modelViewUrl: 'https://sdr8euc1.eu-central-1.shapediver.com',
                 });
@@ -228,7 +234,7 @@ const ShapeDiverViewer_ShapeDiverViewer_ShapeDiverViewer = ({ session, setSessio
     }, [setSession, setViewport]);
     const handleARView = () => __awaiter(void 0, void 0, void 0, function* () {
         if (viewportRef.current) {
-            const token = viewportRef.current.addFlag(dist/* FLAG_TYPE */.Y1.BUSY_MODE);
+            const token = viewportRef.current.addFlag(dist.FLAG_TYPE.BUSY_MODE);
             if (viewportRef.current.viewableInAR()) {
                 yield viewportRef.current.viewInAR();
             }

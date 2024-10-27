@@ -1219,21 +1219,25 @@ ___CSS_LOADER_EXPORT___.push([module.id, `body {
   margin: 0;
   font-family: 'Roboto', sans-serif;
   min-height: 100vh;
-  overflow-y: auto;  /* Enable scrolling */
-  /* Add background */
-  background: url(${___CSS_LOADER_URL_REPLACEMENT_0___});
+  overflow-y: auto;
+  /* Use relative path to the image in shared assets */
+  background-image: url(${___CSS_LOADER_URL_REPLACEMENT_0___});
   background-size: cover;
-  background-position: top center;
+  background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
 
+/* Add fade to content instead of body */
 .app {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   position: relative;
+
 }
+
+
 
 .main-content {
   flex: 1;
@@ -1241,7 +1245,73 @@ ___CSS_LOADER_EXPORT___.push([module.id, `body {
   position: relative;
   width: 100%;
 }
-`, "",{"version":3,"sources":["webpack://./src/shared/styles/global.css"],"names":[],"mappings":"AAAA;EACE,SAAS;EACT,iCAAiC;EACjC,iBAAiB;EACjB,gBAAgB,GAAG,qBAAqB;EACxC,mBAAmB;EACnB,mDAA6D;EAC7D,sBAAsB;EACtB,+BAA+B;EAC/B,4BAA4B;EAC5B,4BAA4B;AAC9B;;AAEA;EACE,aAAa;EACb,sBAAsB;EACtB,iBAAiB;EACjB,kBAAkB;AACpB;;AAEA;EACE,OAAO;EACP,aAAa;EACb,kBAAkB;EAClB,WAAW;AACb","sourcesContent":["body {\n  margin: 0;\n  font-family: 'Roboto', sans-serif;\n  min-height: 100vh;\n  overflow-y: auto;  /* Enable scrolling */\n  /* Add background */\n  background: url('../assets/images/background_final_last.png');\n  background-size: cover;\n  background-position: top center;\n  background-repeat: no-repeat;\n  background-attachment: fixed;\n}\n\n.app {\n  display: flex;\n  flex-direction: column;\n  min-height: 100vh;\n  position: relative;\n}\n\n.main-content {\n  flex: 1;\n  display: flex;\n  position: relative;\n  width: 100%;\n}\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./src/shared/styles/global.css"],"names":[],"mappings":"AAAA;EACE,SAAS;EACT,iCAAiC;EACjC,iBAAiB;EACjB,gBAAgB;EAChB,oDAAoD;EACpD,yDAAmE;EACnE,sBAAsB;EACtB,2BAA2B;EAC3B,4BAA4B;EAC5B,4BAA4B;AAC9B;;AAEA,wCAAwC;AACxC;EACE,aAAa;EACb,sBAAsB;EACtB,iBAAiB;EACjB,kBAAkB;;AAEpB;;;;AAIA;EACE,OAAO;EACP,aAAa;EACb,kBAAkB;EAClB,WAAW;AACb","sourcesContent":["body {\n  margin: 0;\n  font-family: 'Roboto', sans-serif;\n  min-height: 100vh;\n  overflow-y: auto;\n  /* Use relative path to the image in shared assets */\n  background-image: url('../assets/images/background_final_last.png');\n  background-size: cover;\n  background-position: center;\n  background-repeat: no-repeat;\n  background-attachment: fixed;\n}\n\n/* Add fade to content instead of body */\n.app {\n  display: flex;\n  flex-direction: column;\n  min-height: 100vh;\n  position: relative;\n\n}\n\n\n\n.main-content {\n  flex: 1;\n  display: flex;\n  position: relative;\n  width: 100%;\n}\n"],"sourceRoot":""}]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ 44654:
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   A: () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(71354);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(76314);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, `.configurator-template {
+    /* Match the exact layout of ConfiguratorPage */
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: inherit; /* Inherit the background from body */
+  }
+  
+  .viewer-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    background: rgba(245, 240, 235, 0.2);
+  }
+  
+  .loading-gif {
+    width: 200px;
+    height: 200px;
+    object-fit: contain;
+  }
+  
+  .parameter-panel-placeholder {
+    width: 300px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+  }
+  
+  .panel-skeleton {
+    /* Add loading skeleton animation */
+    animation: pulse 1.5s infinite;
+    background: linear-gradient(90deg, 
+      rgba(255,255,255,0.1), 
+      rgba(255,255,255,0.2), 
+      rgba(255,255,255,0.1)
+    );
+    height: 100%;
+  }
+  
+  @keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 0.8; }
+    100% { opacity: 0.6; }
+  }`, "",{"version":3,"sources":["webpack://./src/static/components/ConfiguratorTemplate/ConfiguratorTemplate.css"],"names":[],"mappings":"AAAA;IACI,+CAA+C;IAC/C,aAAa;IACb,sBAAsB;IACtB,YAAY;IACZ,mBAAmB,EAAE,qCAAqC;EAC5D;;EAEA;IACE,aAAa;IACb,mBAAmB;IACnB,uBAAuB;IACvB,YAAY;IACZ,oCAAoC;EACtC;;EAEA;IACE,YAAY;IACZ,aAAa;IACb,mBAAmB;EACrB;;EAEA;IACE,YAAY;IACZ,oCAAoC;IACpC,2BAA2B;EAC7B;;EAEA;IACE,mCAAmC;IACnC,8BAA8B;IAC9B;;;;KAIC;IACD,YAAY;EACd;;EAEA;IACE,KAAK,YAAY,EAAE;IACnB,MAAM,YAAY,EAAE;IACpB,OAAO,YAAY,EAAE;EACvB","sourcesContent":[".configurator-template {\n    /* Match the exact layout of ConfiguratorPage */\n    display: flex;\n    flex-direction: column;\n    height: 100%;\n    background: inherit; /* Inherit the background from body */\n  }\n  \n  .viewer-placeholder {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    height: 100%;\n    background: rgba(245, 240, 235, 0.2);\n  }\n  \n  .loading-gif {\n    width: 200px;\n    height: 200px;\n    object-fit: contain;\n  }\n  \n  .parameter-panel-placeholder {\n    width: 300px;\n    background: rgba(255, 255, 255, 0.1);\n    backdrop-filter: blur(10px);\n  }\n  \n  .panel-skeleton {\n    /* Add loading skeleton animation */\n    animation: pulse 1.5s infinite;\n    background: linear-gradient(90deg, \n      rgba(255,255,255,0.1), \n      rgba(255,255,255,0.2), \n      rgba(255,255,255,0.1)\n    );\n    height: 100%;\n  }\n  \n  @keyframes pulse {\n    0% { opacity: 0.6; }\n    50% { opacity: 0.8; }\n    100% { opacity: 0.6; }\n  }"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -1380,7 +1450,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.landing-page {
 
 /***/ }),
 
-/***/ 65197:
+/***/ 18522:
 /***/ ((__unused_webpack_module, __unused_webpack___webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -1446,7 +1516,7 @@ var insertStyleElement_default = /*#__PURE__*/__webpack_require__.n(insertStyleE
 var styleTagTransform = __webpack_require__(41113);
 var styleTagTransform_default = /*#__PURE__*/__webpack_require__.n(styleTagTransform);
 // EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js!./src/shared/components/Header/Header.css
-var Header = __webpack_require__(71949);
+var Header_Header = __webpack_require__(71949);
 ;// ./src/shared/components/Header/Header.css
 
       
@@ -1467,44 +1537,24 @@ options.insert = insertBySelector_default().bind(null, "head");
 options.domAPI = (styleDomAPI_default());
 options.insertStyleElement = (insertStyleElement_default());
 
-var update = injectStylesIntoStyleTag_default()(Header/* default */.A, options);
+var update = injectStylesIntoStyleTag_default()(Header_Header/* default */.A, options);
 
 
 
 
-       /* harmony default export */ const Header_Header = (Header/* default */.A && Header/* default */.A.locals ? Header/* default */.A.locals : undefined);
+       /* harmony default export */ const components_Header_Header = (Header_Header/* default */.A && Header_Header/* default */.A.locals ? Header_Header/* default */.A.locals : undefined);
 
 ;// ./src/shared/components/Header/Header.tsx
 
 
 const Header_Header_Header = () => {
-    const hostname = window.location.hostname;
-    const port = window.location.port;
-    const isDevelopment = "development" === 'development';
-    // Helper function to determine the correct home URL
-    const getHomeUrl = () => {
-        if (isDevelopment) {
-            if (port === '3001') {
-                return 'http://localhost:3000';
-            }
-            return '/';
-        }
-        // Production logic
-        if (hostname.includes('configurator.') || hostname.includes('contact.')) {
-            return 'https://spinlio.com';
-        }
-        return '/';
-    };
-    // Helper function to determine the correct contact URL
-    const getContactUrl = () => {
-        if (isDevelopment) {
-            return 'http://localhost:3001/contact';
-        }
-        return 'https://contact.spinlio.com';
-    };
-    return ((0,jsx_runtime.jsx)("header", { className: "header", children: (0,jsx_runtime.jsxs)("div", { className: "header-content", children: [(0,jsx_runtime.jsx)("a", { href: getHomeUrl(), className: "logo", children: "spinlio" }), (0,jsx_runtime.jsxs)("nav", { className: "nav-links", children: [(0,jsx_runtime.jsx)("a", { href: "/about", children: "About" }), (0,jsx_runtime.jsx)("a", { href: getContactUrl(), children: "Contact us" })] })] }) }));
+    // Remove all environment and hostname checks
+    // Just hardcode all production URLs
+    const getHomeUrl = () => 'https://spinlio.com';
+    const getContactUrl = () => 'https://contact.spinlio.com';
+    return ((0,jsx_runtime.jsx)("header", { className: "header", children: (0,jsx_runtime.jsxs)("div", { className: "header-content", children: [(0,jsx_runtime.jsx)("a", { href: getHomeUrl(), className: "logo", children: "spinlio" }), (0,jsx_runtime.jsxs)("nav", { className: "nav-links", children: [(0,jsx_runtime.jsx)("a", { href: `${getHomeUrl()}/about`, children: "About" }), (0,jsx_runtime.jsx)("a", { href: getContactUrl(), children: "Contact us" })] })] }) }));
 };
-/* harmony default export */ const components_Header_Header = (Header_Header_Header);
+/* harmony default export */ const shared_components_Header_Header = (Header_Header_Header);
 
 ;// ./src/shared/components/Header/index.ts
 
@@ -1518,7 +1568,7 @@ var TextInput = __webpack_require__(57193);
 // EXTERNAL MODULE: ./node_modules/@mantine/core/esm/components/Button/Button.mjs + 7 modules
 var Button = __webpack_require__(49501);
 // EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js!./src/shared/components/Footer/Footer.css
-var Footer = __webpack_require__(38609);
+var Footer_Footer = __webpack_require__(38609);
 ;// ./src/shared/components/Footer/Footer.css
 
       
@@ -1539,12 +1589,12 @@ Footer_options.insert = insertBySelector_default().bind(null, "head");
 Footer_options.domAPI = (styleDomAPI_default());
 Footer_options.insertStyleElement = (insertStyleElement_default());
 
-var Footer_update = injectStylesIntoStyleTag_default()(Footer/* default */.A, Footer_options);
+var Footer_update = injectStylesIntoStyleTag_default()(Footer_Footer/* default */.A, Footer_options);
 
 
 
 
-       /* harmony default export */ const Footer_Footer = (Footer/* default */.A && Footer/* default */.A.locals ? Footer/* default */.A.locals : undefined);
+       /* harmony default export */ const components_Footer_Footer = (Footer_Footer/* default */.A && Footer_Footer/* default */.A.locals ? Footer_Footer/* default */.A.locals : undefined);
 
 ;// ./src/shared/components/Footer/Footer.tsx
 
@@ -1560,7 +1610,7 @@ const Footer_Footer_Footer = () => {
     };
     return ((0,jsx_runtime.jsx)("footer", { className: "footer", children: (0,jsx_runtime.jsxs)(Container/* Container */.m, { size: "xl", className: "footer-content", children: [(0,jsx_runtime.jsx)(Text/* Text */.E, { className: "footer-text", children: "\u00A9 2024 Spinlio. All Rights Reserved." }), (0,jsx_runtime.jsxs)("form", { onSubmit: handleSubmit, className: "newsletter-form", children: [(0,jsx_runtime.jsx)(TextInput/* TextInput */.k, { placeholder: "Sign up for updates", value: email, onChange: (e) => setEmail(e.target.value), className: "newsletter-input", type: "email", required: true }), (0,jsx_runtime.jsx)(Button/* Button */.$, { type: "submit", className: "newsletter-button", children: "Subscribe" })] })] }) }));
 };
-/* harmony default export */ const components_Footer_Footer = (Footer_Footer_Footer);
+/* harmony default export */ const shared_components_Footer_Footer = (Footer_Footer_Footer);
 
 ;// ./src/shared/components/Footer/index.ts
 
@@ -1571,22 +1621,33 @@ const Footer_Footer_Footer = () => {
 class ErrorBoundary extends (react_default()).Component {
     constructor() {
         super(...arguments);
-        this.state = { hasError: false };
+        this.state = {
+            hasError: false,
+            error: null // Initialize as null instead of undefined
+        };
     }
-    static getDerivedStateFromError() {
-        return { hasError: true };
+    static getDerivedStateFromError(error) {
+        return {
+            hasError: true,
+            error
+        };
     }
     componentDidCatch(error, errorInfo) {
-        console.error("Error caught by ErrorBoundary: ", error, errorInfo);
+        console.error("Error caught by ErrorBoundary: ", {
+            error,
+            errorInfo,
+            location: window.location.href
+        });
     }
     render() {
-        if (this.state.hasError) {
-            return (0,jsx_runtime.jsx)("h1", { children: "Something went wrong." });
+        if (this.state.hasError && this.state.error) { // Check for both
+            return this.props.fallback || ((0,jsx_runtime.jsxs)("div", { style: { padding: '20px', textAlign: 'center' }, children: [(0,jsx_runtime.jsx)("h1", { children: "Something went wrong" }), (0,jsx_runtime.jsx)("p", { children: "Please try refreshing the page" }),  true && ((0,jsx_runtime.jsx)("pre", { children: this.state.error.message }) // Now TypeScript knows error is not null
+                    )] }));
         }
         return this.props.children;
     }
 }
-/* harmony default export */ const ErrorBoundary_ErrorBoundary = ((/* unused pure expression or super */ null && (ErrorBoundary)));
+/* harmony default export */ const ErrorBoundary_ErrorBoundary = (ErrorBoundary);
 
 ;// ./src/shared/components/ErrorBoundary/index.ts
 
@@ -1629,31 +1690,27 @@ var LandingPage_update = injectStylesIntoStyleTag_default()(LandingPage/* defaul
 
 
 
-// Polyfill for requestIdleCallback
-const requestIdleCallbackPolyfill = window.requestIdleCallback ||
-    ((cb) => setTimeout(cb, 1));
 const LandingPage_LandingPage_LandingPage = () => {
-    const isDevelopment = "development" === 'development';
-    const configuratorUrl = isDevelopment
-        ? 'http://localhost:3001/configurator'
-        : 'https://configurator.spinlio.com';
+    const configuratorUrl = 'https://configurator.spinlio.com';
     useEffect(() => {
-        let linkElement = null;
+        // Keep landing page fast by loading configurator stuff AFTER page is ready
         window.addEventListener('load', () => {
-            requestIdleCallbackPolyfill(() => {
-                linkElement = document.createElement('link');
-                linkElement.rel = 'preload';
-                linkElement.as = 'fetch';
-                linkElement.href = configuratorUrl;
-                document.head.appendChild(linkElement);
+            // Start preloading the configurator bundles in background
+            const bundles = [
+                '/main.bundle.js',
+                '/vendor.react.bundle.js',
+                '/vendor.react-dom.bundle.js'
+            ];
+            bundles.forEach(bundle => {
+                const link = document.createElement('link');
+                link.rel = 'prefetch'; // Use prefetch instead of preload to not block
+                link.as = 'script';
+                link.href = bundle;
+                document.head.appendChild(link);
             });
         });
-        return () => {
-            if (linkElement) {
-                document.head.removeChild(linkElement);
-            }
-        };
-    }, [configuratorUrl]);
+    }, []);
+    // Landing page renders instantly, preloading happens in background
     return (_jsx("div", { className: "landing-page", children: _jsxs("div", { className: "landing-content", children: [_jsxs("div", { className: "text-container", children: [_jsx("h1", { className: "main-title", children: "3D design, made simple" }), _jsx("div", { className: "subtitle-container", children: _jsx("span", { className: "subtitle", children: "And ready for production - all in one platform" }) }), _jsx("span", { className: "version-text", children: "Beta V0.1" })] }), _jsx("div", { className: "image-placeholder" }), _jsx("a", { href: configuratorUrl, className: "design-button", children: "Design Now" })] }) }));
 };
 /* harmony default export */ const components_LandingPage_LandingPage = ((/* unused pure expression or super */ null && (LandingPage_LandingPage_LandingPage)));
@@ -1706,7 +1763,55 @@ const AboutPage = () => {
 ;// ./src/static/components/AboutPage/index.ts
 
 
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js!./src/static/components/ConfiguratorTemplate/ConfiguratorTemplate.css
+var ConfiguratorTemplate = __webpack_require__(44654);
+;// ./src/static/components/ConfiguratorTemplate/ConfiguratorTemplate.css
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var ConfiguratorTemplate_options = {};
+
+ConfiguratorTemplate_options.styleTagTransform = (styleTagTransform_default());
+ConfiguratorTemplate_options.setAttributes = (setAttributesWithoutAttributes_default());
+ConfiguratorTemplate_options.insert = insertBySelector_default().bind(null, "head");
+ConfiguratorTemplate_options.domAPI = (styleDomAPI_default());
+ConfiguratorTemplate_options.insertStyleElement = (insertStyleElement_default());
+
+var ConfiguratorTemplate_update = injectStylesIntoStyleTag_default()(ConfiguratorTemplate/* default */.A, ConfiguratorTemplate_options);
+
+
+
+
+       /* harmony default export */ const ConfiguratorTemplate_ConfiguratorTemplate = (ConfiguratorTemplate/* default */.A && ConfiguratorTemplate/* default */.A.locals ? ConfiguratorTemplate/* default */.A.locals : undefined);
+
+;// ./src/static/components/ConfiguratorTemplate/ConfiguratorTemplate.tsx
+
+// This lives in the STATIC build (Netlify)
+
+
+
+const ConfiguratorTemplate_ConfiguratorTemplate_ConfiguratorTemplate = () => {
+    useEffect(() => {
+        console.log('ConfiguratorTemplate: Mounted');
+        return () => console.log('ConfiguratorTemplate: Unmounted');
+    }, []);
+    return (_jsxs("div", { className: "app", children: [_jsx(Header, {}), _jsxs("div", { className: "configurator-template", children: [_jsx("div", { className: "share-button-container-configurator", children: _jsx("button", { className: "share-button-configurator", disabled: true, children: "Share" }) }), _jsxs("div", { className: "configurator-content", children: [_jsx("div", { className: "viewer-container", children: _jsx("div", { className: "viewer-placeholder", children: _jsx("img", { src: "https://res.cloudinary.com/da8qnqmmh/image/upload/e_make_transparent:10/v1729757636/BIKE_qa0p3v.gif", alt: "Loading", className: "loading-gif" }) }) }), _jsx("div", { className: "parameter-panel-placeholder", children: _jsx("div", { className: "panel-skeleton" }) })] })] }), _jsx(Footer, {})] }));
+};
+/* harmony default export */ const components_ConfiguratorTemplate_ConfiguratorTemplate = ((/* unused pure expression or super */ null && (ConfiguratorTemplate_ConfiguratorTemplate_ConfiguratorTemplate)));
+
+;// ./src/static/components/ConfiguratorTemplate/index.ts
+
+
 ;// ./src/static/components/index.ts
+
 
 
 
@@ -2202,10 +2307,10 @@ const ParameterPanel_ParameterPanel_ParameterPanel = ({ selectedComponent, sessi
 ;// ./src/dynamic/components/ConfiguratorPage/components/ParameterPanel/index.ts
 
 
-// EXTERNAL MODULE: ./node_modules/@mantine/core/esm/components/Select/Select.mjs + 79 modules
-var Select = __webpack_require__(3548);
-// EXTERNAL MODULE: ./node_modules/@mantine/core/esm/components/Modal/Modal.mjs + 49 modules
-var Modal = __webpack_require__(83716);
+// EXTERNAL MODULE: ./node_modules/@mantine/core/esm/components/Select/Select.mjs + 73 modules
+var Select = __webpack_require__(81387);
+// EXTERNAL MODULE: ./node_modules/@mantine/core/esm/components/Modal/Modal.mjs + 27 modules
+var Modal = __webpack_require__(82455);
 // EXTERNAL MODULE: ./node_modules/@mantine/core/esm/components/Image/Image.mjs + 1 modules
 var Image = __webpack_require__(31074);
 // EXTERNAL MODULE: ./node_modules/@shapediver/viewer/dist/index.js
@@ -2310,7 +2415,7 @@ const ExportMenu_ExportMenu_ExportMenu = ({ session, viewport, onClose }) => {
     const [showQrModal, setShowQrModal] = (0,react.useState)(false);
     const handleARPreview = () => ExportMenu_awaiter(void 0, void 0, void 0, function* () {
         if (viewport) {
-            const token = viewport.addFlag(viewer_dist/* FLAG_TYPE */.Y1.BUSY_MODE);
+            const token = viewport.addFlag(viewer_dist.FLAG_TYPE.BUSY_MODE);
             try {
                 if (viewport.viewableInAR()) {
                     yield viewport.viewInAR();
@@ -2499,7 +2604,7 @@ var ConfiguratorPage_update = injectStylesIntoStyleTag_default()(ConfiguratorPag
 
 
 // Lazy load ShapeDiverViewer
-const ShapeDiverViewer = react_default().lazy(() => Promise.all(/* import() */[__webpack_require__.e(623), __webpack_require__.e(96)]).then(__webpack_require__.bind(__webpack_require__, 40096)).then(module => ({
+const ShapeDiverViewer = react_default().lazy(() => __webpack_require__.e(/* import() */ 96).then(__webpack_require__.bind(__webpack_require__, 40096)).then(module => ({
     default: module.default
 })));
 // Loading spinner component
@@ -2568,6 +2673,7 @@ const ContactUsPage = () => {
 
 
 
+
 const App = () => {
     const hostname = window.location.hostname;
     const isDevelopment = "development" === 'development';
@@ -2591,7 +2697,7 @@ const App = () => {
             return (0,jsx_runtime.jsx)(ContactUsPage_ContactUsPage, {});
         return (0,jsx_runtime.jsx)(dist/* Navigate */.C5, { to: "https://spinlio.com" });
     };
-    return ((0,jsx_runtime.jsx)(MantineProvider/* MantineProvider */.y, { theme: theme, children: (0,jsx_runtime.jsx)(react_router_dom_dist/* BrowserRouter */.Kd, { children: (0,jsx_runtime.jsxs)("div", { className: "app", children: [(0,jsx_runtime.jsx)(components_Header_Header, {}), (0,jsx_runtime.jsxs)(dist/* Routes */.BV, { children: [(0,jsx_runtime.jsx)(dist/* Route */.qh, { path: "/", element: getMainComponent() }), (0,jsx_runtime.jsx)(dist/* Route */.qh, { path: "/configurator", element: getMainComponent() }), (0,jsx_runtime.jsx)(dist/* Route */.qh, { path: "/contact", element: getMainComponent() }), (0,jsx_runtime.jsx)(dist/* Route */.qh, { path: "/about", element: (0,jsx_runtime.jsx)(AboutPage_AboutPage, {}) }), (0,jsx_runtime.jsx)(dist/* Route */.qh, { path: "*", element: (0,jsx_runtime.jsx)(dist/* Navigate */.C5, { to: "/" }) })] }), (0,jsx_runtime.jsx)(components_Footer_Footer, {})] }) }) }));
+    return ((0,jsx_runtime.jsx)(ErrorBoundary_ErrorBoundary, { children: (0,jsx_runtime.jsx)(MantineProvider/* MantineProvider */.y, { theme: theme, children: (0,jsx_runtime.jsx)(react_router_dom_dist/* BrowserRouter */.Kd, { children: (0,jsx_runtime.jsxs)("div", { className: "app", children: [(0,jsx_runtime.jsx)(shared_components_Header_Header, {}), (0,jsx_runtime.jsxs)(dist/* Routes */.BV, { children: [(0,jsx_runtime.jsx)(dist/* Route */.qh, { path: "/", element: getMainComponent() }), (0,jsx_runtime.jsx)(dist/* Route */.qh, { path: "/configurator", element: getMainComponent() }), (0,jsx_runtime.jsx)(dist/* Route */.qh, { path: "/contact", element: getMainComponent() }), (0,jsx_runtime.jsx)(dist/* Route */.qh, { path: "/about", element: (0,jsx_runtime.jsx)(AboutPage_AboutPage, {}) }), (0,jsx_runtime.jsx)(dist/* Route */.qh, { path: "*", element: (0,jsx_runtime.jsx)(dist/* Navigate */.C5, { to: "/" }) })] }), (0,jsx_runtime.jsx)(shared_components_Footer_Footer, {})] }) }) }) }));
 };
 /* harmony default export */ const App_App = (App);
 
@@ -2678,7 +2784,7 @@ module.exports = __webpack_require__.p + "images/background_final_last.png";
 },
 /******/ __webpack_require__ => { // webpackRuntimeModules
 /******/ var __webpack_exec__ = (moduleId) => (__webpack_require__(__webpack_require__.s = moduleId))
-/******/ __webpack_require__.O(0, [623,224,157,70,753], () => (__webpack_exec__(65197)));
+/******/ __webpack_require__.O(0, [701,67,777,279,174,445,551,252,300,40,288,12,167,277,864,482,442,111,163,591,776,975,857], () => (__webpack_exec__(18522)));
 /******/ var __webpack_exports__ = __webpack_require__.O();
 /******/ }
 ]);

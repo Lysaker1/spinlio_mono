@@ -1205,15 +1205,10 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.common-page {
 /* harmony import */ var _node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(76314);
 /* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(4417);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2__);
 // Imports
 
 
-
-var ___CSS_LOADER_URL_IMPORT_0___ = new URL(/* asset import */ __webpack_require__(98108), __webpack_require__.b);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
-var ___CSS_LOADER_URL_REPLACEMENT_0___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_2___default()(___CSS_LOADER_URL_IMPORT_0___);
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, `body {
   margin: 0;
@@ -1221,7 +1216,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `body {
   min-height: 100vh;
   overflow-y: auto;
   /* Use relative path to the image in shared assets */
-  background-image: url(${___CSS_LOADER_URL_REPLACEMENT_0___});
+  background-image: url('https://res.cloudinary.com/da8qnqmmh/image/upload/v1730055768/background_final_last_dm9bl2.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -1245,7 +1240,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `body {
   position: relative;
   width: 100%;
 }
-`, "",{"version":3,"sources":["webpack://./src/shared/styles/global.css"],"names":[],"mappings":"AAAA;EACE,SAAS;EACT,iCAAiC;EACjC,iBAAiB;EACjB,gBAAgB;EAChB,oDAAoD;EACpD,yDAAmE;EACnE,sBAAsB;EACtB,2BAA2B;EAC3B,4BAA4B;EAC5B,4BAA4B;AAC9B;;AAEA,wCAAwC;AACxC;EACE,aAAa;EACb,sBAAsB;EACtB,iBAAiB;EACjB,kBAAkB;;AAEpB;;;;AAIA;EACE,OAAO;EACP,aAAa;EACb,kBAAkB;EAClB,WAAW;AACb","sourcesContent":["body {\n  margin: 0;\n  font-family: 'Roboto', sans-serif;\n  min-height: 100vh;\n  overflow-y: auto;\n  /* Use relative path to the image in shared assets */\n  background-image: url('../assets/images/background_final_last.png');\n  background-size: cover;\n  background-position: center;\n  background-repeat: no-repeat;\n  background-attachment: fixed;\n}\n\n/* Add fade to content instead of body */\n.app {\n  display: flex;\n  flex-direction: column;\n  min-height: 100vh;\n  position: relative;\n\n}\n\n\n\n.main-content {\n  flex: 1;\n  display: flex;\n  position: relative;\n  width: 100%;\n}\n"],"sourceRoot":""}]);
+`, "",{"version":3,"sources":["webpack://./src/shared/styles/global.css"],"names":[],"mappings":"AAAA;EACE,SAAS;EACT,iCAAiC;EACjC,iBAAiB;EACjB,gBAAgB;EAChB,oDAAoD;EACpD,uHAAuH;EACvH,sBAAsB;EACtB,2BAA2B;EAC3B,4BAA4B;EAC5B,4BAA4B;AAC9B;;AAEA,wCAAwC;AACxC;EACE,aAAa;EACb,sBAAsB;EACtB,iBAAiB;EACjB,kBAAkB;;AAEpB;;;;AAIA;EACE,OAAO;EACP,aAAa;EACb,kBAAkB;EAClB,WAAW;AACb","sourcesContent":["body {\n  margin: 0;\n  font-family: 'Roboto', sans-serif;\n  min-height: 100vh;\n  overflow-y: auto;\n  /* Use relative path to the image in shared assets */\n  background-image: url('https://res.cloudinary.com/da8qnqmmh/image/upload/v1730055768/background_final_last_dm9bl2.png');\n  background-size: cover;\n  background-position: center;\n  background-repeat: no-repeat;\n  background-attachment: fixed;\n}\n\n/* Add fade to content instead of body */\n.app {\n  display: flex;\n  flex-direction: column;\n  min-height: 100vh;\n  position: relative;\n\n}\n\n\n\n.main-content {\n  flex: 1;\n  display: flex;\n  position: relative;\n  width: 100%;\n}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -1450,53 +1445,26 @@ ___CSS_LOADER_EXPORT___.push([module.id, `.landing-page {
 
 /***/ }),
 
-/***/ 18522:
-/***/ ((__unused_webpack_module, __unused_webpack___webpack_exports__, __webpack_require__) => {
+/***/ 79843:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
+// ESM COMPAT FLAG
+__webpack_require__.r(__webpack_exports__);
+
+// EXPORTS
+__webpack_require__.d(__webpack_exports__, {
+  "default": () => (/* reexport */ components_ConfiguratorPage_ConfiguratorPage)
+});
 
 // EXTERNAL MODULE: ./node_modules/react/jsx-runtime.js
 var jsx_runtime = __webpack_require__(74848);
 // EXTERNAL MODULE: ./node_modules/react/index.js
 var react = __webpack_require__(96540);
 var react_default = /*#__PURE__*/__webpack_require__.n(react);
-// EXTERNAL MODULE: ./node_modules/react-dom/client.js
-var client = __webpack_require__(5338);
-// EXTERNAL MODULE: ./node_modules/react-router/dist/index.js
-var dist = __webpack_require__(47767);
-// EXTERNAL MODULE: ./node_modules/react-router-dom/dist/index.js
-var react_router_dom_dist = __webpack_require__(84976);
-// EXTERNAL MODULE: ./node_modules/@mantine/core/esm/core/MantineProvider/MantineProvider.mjs + 17 modules
-var MantineProvider = __webpack_require__(1774);
-;// ./src/shared/theme.ts
-const theme = {
-    components: {
-        Button: {
-            styles: {
-                root: {
-                    background: 'rgba(255, 255, 255, 0.3)',
-                    '&:hover': {
-                        background: 'rgba(255, 255, 255, 0.4)',
-                    },
-                },
-            },
-        },
-    },
-};
-// Add the background styles
-const backgroundStyles = {
-    gradient: `linear-gradient(
-    180deg, 
-    rgba(100, 89, 77, 0.00) 4.83%, 
-    rgba(100, 89, 77, 0.30) 34.5%, 
-    rgba(100, 89, 77, 0.40) 65%
-  )`,
-    dimensions: {
-        width: '95.8125rem',
-        height: '70.8125rem'
-    }
-};
-
+// EXTERNAL MODULE: ./node_modules/lodash.debounce/index.js
+var lodash_debounce = __webpack_require__(20181);
+var lodash_debounce_default = /*#__PURE__*/__webpack_require__.n(lodash_debounce);
 // EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js
 var injectStylesIntoStyleTag = __webpack_require__(85072);
 var injectStylesIntoStyleTag_default = /*#__PURE__*/__webpack_require__.n(injectStylesIntoStyleTag);
@@ -1515,9 +1483,9 @@ var insertStyleElement_default = /*#__PURE__*/__webpack_require__.n(insertStyleE
 // EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/styleTagTransform.js
 var styleTagTransform = __webpack_require__(41113);
 var styleTagTransform_default = /*#__PURE__*/__webpack_require__.n(styleTagTransform);
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js!./src/shared/components/Header/Header.css
-var Header_Header = __webpack_require__(71949);
-;// ./src/shared/components/Header/Header.css
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js!./src/dynamic/components/ConfiguratorPage/components/ParameterPanel/ParameterPanel.css
+var ParameterPanel = __webpack_require__(39181);
+;// ./src/dynamic/components/ConfiguratorPage/components/ParameterPanel/ParameterPanel.css
 
       
       
@@ -1537,310 +1505,7 @@ options.insert = insertBySelector_default().bind(null, "head");
 options.domAPI = (styleDomAPI_default());
 options.insertStyleElement = (insertStyleElement_default());
 
-var update = injectStylesIntoStyleTag_default()(Header_Header/* default */.A, options);
-
-
-
-
-       /* harmony default export */ const components_Header_Header = (Header_Header/* default */.A && Header_Header/* default */.A.locals ? Header_Header/* default */.A.locals : undefined);
-
-;// ./src/shared/components/Header/Header.tsx
-
-
-const Header_Header_Header = () => {
-    // Remove all environment and hostname checks
-    // Just hardcode all production URLs
-    const getHomeUrl = () => 'https://spinlio.com';
-    const getContactUrl = () => 'https://contact.spinlio.com';
-    return ((0,jsx_runtime.jsx)("header", { className: "header", children: (0,jsx_runtime.jsxs)("div", { className: "header-content", children: [(0,jsx_runtime.jsx)("a", { href: getHomeUrl(), className: "logo", children: "spinlio" }), (0,jsx_runtime.jsxs)("nav", { className: "nav-links", children: [(0,jsx_runtime.jsx)("a", { href: `${getHomeUrl()}/about`, children: "About" }), (0,jsx_runtime.jsx)("a", { href: getContactUrl(), children: "Contact us" })] })] }) }));
-};
-/* harmony default export */ const shared_components_Header_Header = (Header_Header_Header);
-
-;// ./src/shared/components/Header/index.ts
-
-
-// EXTERNAL MODULE: ./node_modules/@mantine/core/esm/components/Container/Container.mjs + 1 modules
-var Container = __webpack_require__(82659);
-// EXTERNAL MODULE: ./node_modules/@mantine/core/esm/components/Text/Text.mjs + 1 modules
-var Text = __webpack_require__(17826);
-// EXTERNAL MODULE: ./node_modules/@mantine/core/esm/components/TextInput/TextInput.mjs
-var TextInput = __webpack_require__(57193);
-// EXTERNAL MODULE: ./node_modules/@mantine/core/esm/components/Button/Button.mjs + 7 modules
-var Button = __webpack_require__(49501);
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js!./src/shared/components/Footer/Footer.css
-var Footer_Footer = __webpack_require__(38609);
-;// ./src/shared/components/Footer/Footer.css
-
-      
-      
-      
-      
-      
-      
-      
-      
-      
-
-var Footer_options = {};
-
-Footer_options.styleTagTransform = (styleTagTransform_default());
-Footer_options.setAttributes = (setAttributesWithoutAttributes_default());
-Footer_options.insert = insertBySelector_default().bind(null, "head");
-Footer_options.domAPI = (styleDomAPI_default());
-Footer_options.insertStyleElement = (insertStyleElement_default());
-
-var Footer_update = injectStylesIntoStyleTag_default()(Footer_Footer/* default */.A, Footer_options);
-
-
-
-
-       /* harmony default export */ const components_Footer_Footer = (Footer_Footer/* default */.A && Footer_Footer/* default */.A.locals ? Footer_Footer/* default */.A.locals : undefined);
-
-;// ./src/shared/components/Footer/Footer.tsx
-
-
-
-
-const Footer_Footer_Footer = () => {
-    const [email, setEmail] = (0,react.useState)('');
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log('Newsletter signup:', email);
-        setEmail('');
-    };
-    return ((0,jsx_runtime.jsx)("footer", { className: "footer", children: (0,jsx_runtime.jsxs)(Container/* Container */.m, { size: "xl", className: "footer-content", children: [(0,jsx_runtime.jsx)(Text/* Text */.E, { className: "footer-text", children: "\u00A9 2024 Spinlio. All Rights Reserved." }), (0,jsx_runtime.jsxs)("form", { onSubmit: handleSubmit, className: "newsletter-form", children: [(0,jsx_runtime.jsx)(TextInput/* TextInput */.k, { placeholder: "Sign up for updates", value: email, onChange: (e) => setEmail(e.target.value), className: "newsletter-input", type: "email", required: true }), (0,jsx_runtime.jsx)(Button/* Button */.$, { type: "submit", className: "newsletter-button", children: "Subscribe" })] })] }) }));
-};
-/* harmony default export */ const shared_components_Footer_Footer = (Footer_Footer_Footer);
-
-;// ./src/shared/components/Footer/index.ts
-
-
-;// ./src/shared/components/ErrorBoundary/ErrorBoundary.tsx
-
-
-class ErrorBoundary extends (react_default()).Component {
-    constructor() {
-        super(...arguments);
-        this.state = {
-            hasError: false,
-            error: null // Initialize as null instead of undefined
-        };
-    }
-    static getDerivedStateFromError(error) {
-        return {
-            hasError: true,
-            error
-        };
-    }
-    componentDidCatch(error, errorInfo) {
-        console.error("Error caught by ErrorBoundary: ", {
-            error,
-            errorInfo,
-            location: window.location.href
-        });
-    }
-    render() {
-        if (this.state.hasError && this.state.error) { // Check for both
-            return this.props.fallback || ((0,jsx_runtime.jsxs)("div", { style: { padding: '20px', textAlign: 'center' }, children: [(0,jsx_runtime.jsx)("h1", { children: "Something went wrong" }), (0,jsx_runtime.jsx)("p", { children: "Please try refreshing the page" }),  true && ((0,jsx_runtime.jsx)("pre", { children: this.state.error.message }) // Now TypeScript knows error is not null
-                    )] }));
-        }
-        return this.props.children;
-    }
-}
-/* harmony default export */ const ErrorBoundary_ErrorBoundary = (ErrorBoundary);
-
-;// ./src/shared/components/ErrorBoundary/index.ts
-
-
-;// ./src/shared/components/index.ts
-
-
-
-
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js!./src/static/components/LandingPage/LandingPage.css
-var LandingPage = __webpack_require__(4270);
-;// ./src/static/components/LandingPage/LandingPage.css
-
-      
-      
-      
-      
-      
-      
-      
-      
-      
-
-var LandingPage_options = {};
-
-LandingPage_options.styleTagTransform = (styleTagTransform_default());
-LandingPage_options.setAttributes = (setAttributesWithoutAttributes_default());
-LandingPage_options.insert = insertBySelector_default().bind(null, "head");
-LandingPage_options.domAPI = (styleDomAPI_default());
-LandingPage_options.insertStyleElement = (insertStyleElement_default());
-
-var LandingPage_update = injectStylesIntoStyleTag_default()(LandingPage/* default */.A, LandingPage_options);
-
-
-
-
-       /* harmony default export */ const LandingPage_LandingPage = (LandingPage/* default */.A && LandingPage/* default */.A.locals ? LandingPage/* default */.A.locals : undefined);
-
-;// ./src/static/components/LandingPage/LandingPage.tsx
-
-
-
-const LandingPage_LandingPage_LandingPage = () => {
-    const configuratorUrl = 'https://configurator.spinlio.com';
-    useEffect(() => {
-        // Keep landing page fast by loading configurator stuff AFTER page is ready
-        window.addEventListener('load', () => {
-            // Start preloading the configurator bundles in background
-            const bundles = [
-                '/main.bundle.js',
-                '/vendor.react.bundle.js',
-                '/vendor.react-dom.bundle.js'
-            ];
-            bundles.forEach(bundle => {
-                const link = document.createElement('link');
-                link.rel = 'prefetch'; // Use prefetch instead of preload to not block
-                link.as = 'script';
-                link.href = bundle;
-                document.head.appendChild(link);
-            });
-        });
-    }, []);
-    // Landing page renders instantly, preloading happens in background
-    return (_jsx("div", { className: "landing-page", children: _jsxs("div", { className: "landing-content", children: [_jsxs("div", { className: "text-container", children: [_jsx("h1", { className: "main-title", children: "3D design, made simple" }), _jsx("div", { className: "subtitle-container", children: _jsx("span", { className: "subtitle", children: "And ready for production - all in one platform" }) }), _jsx("span", { className: "version-text", children: "Beta V0.1" })] }), _jsx("div", { className: "image-placeholder" }), _jsx("a", { href: configuratorUrl, className: "design-button", children: "Design Now" })] }) }));
-};
-/* harmony default export */ const components_LandingPage_LandingPage = ((/* unused pure expression or super */ null && (LandingPage_LandingPage_LandingPage)));
-
-;// ./src/static/components/LandingPage/index.ts
-
-
-// EXTERNAL MODULE: ./node_modules/@mantine/core/esm/components/Stack/Stack.mjs + 1 modules
-var Stack = __webpack_require__(69019);
-// EXTERNAL MODULE: ./node_modules/@mantine/core/esm/components/Title/Title.mjs + 2 modules
-var Title = __webpack_require__(89652);
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js!./src/shared/styles/CommonPage.css
-var CommonPage = __webpack_require__(79798);
-;// ./src/shared/styles/CommonPage.css
-
-      
-      
-      
-      
-      
-      
-      
-      
-      
-
-var CommonPage_options = {};
-
-CommonPage_options.styleTagTransform = (styleTagTransform_default());
-CommonPage_options.setAttributes = (setAttributesWithoutAttributes_default());
-CommonPage_options.insert = insertBySelector_default().bind(null, "head");
-CommonPage_options.domAPI = (styleDomAPI_default());
-CommonPage_options.insertStyleElement = (insertStyleElement_default());
-
-var CommonPage_update = injectStylesIntoStyleTag_default()(CommonPage/* default */.A, CommonPage_options);
-
-
-
-
-       /* harmony default export */ const styles_CommonPage = (CommonPage/* default */.A && CommonPage/* default */.A.locals ? CommonPage/* default */.A.locals : undefined);
-
-;// ./src/static/components/AboutPage/AboutPage.tsx
-
-
-
-const AboutPage = () => {
-    return ((0,jsx_runtime.jsx)("div", { className: "common-page", children: (0,jsx_runtime.jsx)(Container/* Container */.m, { className: "common-content", children: (0,jsx_runtime.jsxs)(Stack/* Stack */.B, { gap: "xl", children: [(0,jsx_runtime.jsx)(Title/* Title */.h, { order: 1, children: "Manifesto" }), (0,jsx_runtime.jsx)(Text/* Text */.E, { ta: "center", children: "Spinlio is a 3D design tool that makes it easy to create physical products." }), (0,jsx_runtime.jsx)(Text/* Text */.E, { ta: "center", children: "Our platform bridges the gap between designers and producers, by providing the tools and environment that makes your ideas not only unique but also ready for production." }), (0,jsx_runtime.jsx)(Text/* Text */.E, { ta: "center", children: "We are an early-stage startup, currently focused on the bicycle industry, with ambitions to expand into all industries. While we're in Beta, we'll be continuously rolling out updates daily to improve your experience so sign up for updates if you want to be part of the ride." })] }) }) }));
-};
-/* harmony default export */ const AboutPage_AboutPage = (AboutPage);
-
-;// ./src/static/components/AboutPage/index.ts
-
-
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js!./src/static/components/ConfiguratorTemplate/ConfiguratorTemplate.css
-var ConfiguratorTemplate = __webpack_require__(44654);
-;// ./src/static/components/ConfiguratorTemplate/ConfiguratorTemplate.css
-
-      
-      
-      
-      
-      
-      
-      
-      
-      
-
-var ConfiguratorTemplate_options = {};
-
-ConfiguratorTemplate_options.styleTagTransform = (styleTagTransform_default());
-ConfiguratorTemplate_options.setAttributes = (setAttributesWithoutAttributes_default());
-ConfiguratorTemplate_options.insert = insertBySelector_default().bind(null, "head");
-ConfiguratorTemplate_options.domAPI = (styleDomAPI_default());
-ConfiguratorTemplate_options.insertStyleElement = (insertStyleElement_default());
-
-var ConfiguratorTemplate_update = injectStylesIntoStyleTag_default()(ConfiguratorTemplate/* default */.A, ConfiguratorTemplate_options);
-
-
-
-
-       /* harmony default export */ const ConfiguratorTemplate_ConfiguratorTemplate = (ConfiguratorTemplate/* default */.A && ConfiguratorTemplate/* default */.A.locals ? ConfiguratorTemplate/* default */.A.locals : undefined);
-
-;// ./src/static/components/ConfiguratorTemplate/ConfiguratorTemplate.tsx
-
-// This lives in the STATIC build (Netlify)
-
-
-
-const ConfiguratorTemplate_ConfiguratorTemplate_ConfiguratorTemplate = () => {
-    useEffect(() => {
-        console.log('ConfiguratorTemplate: Mounted');
-        return () => console.log('ConfiguratorTemplate: Unmounted');
-    }, []);
-    return (_jsxs("div", { className: "app", children: [_jsx(Header, {}), _jsxs("div", { className: "configurator-template", children: [_jsx("div", { className: "share-button-container-configurator", children: _jsx("button", { className: "share-button-configurator", disabled: true, children: "Share" }) }), _jsxs("div", { className: "configurator-content", children: [_jsx("div", { className: "viewer-container", children: _jsx("div", { className: "viewer-placeholder", children: _jsx("img", { src: "https://res.cloudinary.com/da8qnqmmh/image/upload/e_make_transparent:10/v1729757636/BIKE_qa0p3v.gif", alt: "Loading", className: "loading-gif" }) }) }), _jsx("div", { className: "parameter-panel-placeholder", children: _jsx("div", { className: "panel-skeleton" }) })] })] }), _jsx(Footer, {})] }));
-};
-/* harmony default export */ const components_ConfiguratorTemplate_ConfiguratorTemplate = ((/* unused pure expression or super */ null && (ConfiguratorTemplate_ConfiguratorTemplate_ConfiguratorTemplate)));
-
-;// ./src/static/components/ConfiguratorTemplate/index.ts
-
-
-;// ./src/static/components/index.ts
-
-
-
-
-// EXTERNAL MODULE: ./node_modules/lodash.debounce/index.js
-var lodash_debounce = __webpack_require__(20181);
-var lodash_debounce_default = /*#__PURE__*/__webpack_require__.n(lodash_debounce);
-// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js!./src/dynamic/components/ConfiguratorPage/components/ParameterPanel/ParameterPanel.css
-var ParameterPanel = __webpack_require__(39181);
-;// ./src/dynamic/components/ConfiguratorPage/components/ParameterPanel/ParameterPanel.css
-
-      
-      
-      
-      
-      
-      
-      
-      
-      
-
-var ParameterPanel_options = {};
-
-ParameterPanel_options.styleTagTransform = (styleTagTransform_default());
-ParameterPanel_options.setAttributes = (setAttributesWithoutAttributes_default());
-ParameterPanel_options.insert = insertBySelector_default().bind(null, "head");
-ParameterPanel_options.domAPI = (styleDomAPI_default());
-ParameterPanel_options.insertStyleElement = (insertStyleElement_default());
-
-var ParameterPanel_update = injectStylesIntoStyleTag_default()(ParameterPanel/* default */.A, ParameterPanel_options);
+var update = injectStylesIntoStyleTag_default()(ParameterPanel/* default */.A, options);
 
 
 
@@ -2307,6 +1972,8 @@ const ParameterPanel_ParameterPanel_ParameterPanel = ({ selectedComponent, sessi
 ;// ./src/dynamic/components/ConfiguratorPage/components/ParameterPanel/index.ts
 
 
+// EXTERNAL MODULE: ./node_modules/@mantine/core/esm/components/Button/Button.mjs + 7 modules
+var Button = __webpack_require__(49501);
 // EXTERNAL MODULE: ./node_modules/@mantine/core/esm/components/Select/Select.mjs + 73 modules
 var Select = __webpack_require__(81387);
 // EXTERNAL MODULE: ./node_modules/@mantine/core/esm/components/Modal/Modal.mjs + 27 modules
@@ -2314,7 +1981,7 @@ var Modal = __webpack_require__(82455);
 // EXTERNAL MODULE: ./node_modules/@mantine/core/esm/components/Image/Image.mjs + 1 modules
 var Image = __webpack_require__(31074);
 // EXTERNAL MODULE: ./node_modules/@shapediver/viewer/dist/index.js
-var viewer_dist = __webpack_require__(66032);
+var dist = __webpack_require__(66032);
 ;// ./src/utils/exportUtils.ts
 var exportUtils_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -2415,7 +2082,7 @@ const ExportMenu_ExportMenu_ExportMenu = ({ session, viewport, onClose }) => {
     const [showQrModal, setShowQrModal] = (0,react.useState)(false);
     const handleARPreview = () => ExportMenu_awaiter(void 0, void 0, void 0, function* () {
         if (viewport) {
-            const token = viewport.addFlag(viewer_dist.FLAG_TYPE.BUSY_MODE);
+            const token = viewport.addFlag(dist.FLAG_TYPE.BUSY_MODE);
             try {
                 if (viewport.viewableInAR()) {
                     yield viewport.viewInAR();
@@ -2566,6 +2233,8 @@ const ExportMenu_ExportMenu_ExportMenu = ({ session, viewport, onClose }) => {
 ;// ./src/dynamic/components/ConfiguratorPage/components/ExportMenu/index.ts
 
 
+// EXTERNAL MODULE: ./node_modules/react-router/dist/index.js
+var react_router_dist = __webpack_require__(47767);
 // EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js!./src/dynamic/components/ConfiguratorPage/ConfiguratorPage.css
 var ConfiguratorPage = __webpack_require__(29771);
 ;// ./src/dynamic/components/ConfiguratorPage/ConfiguratorPage.css
@@ -2604,13 +2273,13 @@ var ConfiguratorPage_update = injectStylesIntoStyleTag_default()(ConfiguratorPag
 
 
 // Lazy load ShapeDiverViewer
-const ShapeDiverViewer = react_default().lazy(() => __webpack_require__.e(/* import() */ 96).then(__webpack_require__.bind(__webpack_require__, 40096)).then(module => ({
+const ShapeDiverViewer = react_default().lazy(() => __webpack_require__.e(/* import() */ 715).then(__webpack_require__.bind(__webpack_require__, 40096)).then(module => ({
     default: module.default
 })));
 // Loading spinner component
 const LoadingSpinner = () => ((0,jsx_runtime.jsxs)("div", { className: "loading-spinner", children: [(0,jsx_runtime.jsx)("div", { className: "spinner" }), (0,jsx_runtime.jsx)("p", { children: "Loading 3D Viewer..." })] }));
 const ConfiguratorPage_ConfiguratorPage_ConfiguratorPage = () => {
-    const navigate = (0,dist/* useNavigate */.Zp)();
+    const navigate = (0,react_router_dist/* useNavigate */.Zp)();
     const [selectedComponent, setSelectedComponent] = (0,react.useState)('');
     const [session, setSession] = (0,react.useState)(null);
     const [viewport, setViewport] = (0,react.useState)(null);
@@ -2627,6 +2296,376 @@ const ConfiguratorPage_ConfiguratorPage_ConfiguratorPage = () => {
 ;// ./src/dynamic/components/ConfiguratorPage/index.ts
 
 
+
+/***/ }),
+
+/***/ 32042:
+/***/ ((__unused_webpack_module, __unused_webpack___webpack_exports__, __webpack_require__) => {
+
+"use strict";
+
+// EXTERNAL MODULE: ./node_modules/react/jsx-runtime.js
+var jsx_runtime = __webpack_require__(74848);
+// EXTERNAL MODULE: ./node_modules/react/index.js
+var react = __webpack_require__(96540);
+var react_default = /*#__PURE__*/__webpack_require__.n(react);
+// EXTERNAL MODULE: ./node_modules/react-dom/client.js
+var client = __webpack_require__(5338);
+// EXTERNAL MODULE: ./node_modules/react-router/dist/index.js
+var dist = __webpack_require__(47767);
+// EXTERNAL MODULE: ./node_modules/react-router-dom/dist/index.js
+var react_router_dom_dist = __webpack_require__(84976);
+// EXTERNAL MODULE: ./node_modules/@mantine/core/esm/core/MantineProvider/MantineProvider.mjs + 17 modules
+var MantineProvider = __webpack_require__(1774);
+;// ./src/shared/theme.ts
+const theme = {
+    components: {
+        Button: {
+            styles: {
+                root: {
+                    background: 'rgba(255, 255, 255, 0.3)',
+                    '&:hover': {
+                        background: 'rgba(255, 255, 255, 0.4)',
+                    },
+                },
+            },
+        },
+    },
+};
+// Add the background styles
+const backgroundStyles = {
+    gradient: `linear-gradient(
+    180deg, 
+    rgba(100, 89, 77, 0.00) 4.83%, 
+    rgba(100, 89, 77, 0.30) 34.5%, 
+    rgba(100, 89, 77, 0.40) 65%
+  )`,
+    dimensions: {
+        width: '95.8125rem',
+        height: '70.8125rem'
+    }
+};
+
+// EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js
+var injectStylesIntoStyleTag = __webpack_require__(85072);
+var injectStylesIntoStyleTag_default = /*#__PURE__*/__webpack_require__.n(injectStylesIntoStyleTag);
+// EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/styleDomAPI.js
+var styleDomAPI = __webpack_require__(97825);
+var styleDomAPI_default = /*#__PURE__*/__webpack_require__.n(styleDomAPI);
+// EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/insertBySelector.js
+var insertBySelector = __webpack_require__(77659);
+var insertBySelector_default = /*#__PURE__*/__webpack_require__.n(insertBySelector);
+// EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js
+var setAttributesWithoutAttributes = __webpack_require__(55056);
+var setAttributesWithoutAttributes_default = /*#__PURE__*/__webpack_require__.n(setAttributesWithoutAttributes);
+// EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/insertStyleElement.js
+var insertStyleElement = __webpack_require__(10540);
+var insertStyleElement_default = /*#__PURE__*/__webpack_require__.n(insertStyleElement);
+// EXTERNAL MODULE: ./node_modules/style-loader/dist/runtime/styleTagTransform.js
+var styleTagTransform = __webpack_require__(41113);
+var styleTagTransform_default = /*#__PURE__*/__webpack_require__.n(styleTagTransform);
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js!./src/shared/components/Header/Header.css
+var Header_Header = __webpack_require__(71949);
+;// ./src/shared/components/Header/Header.css
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var options = {};
+
+options.styleTagTransform = (styleTagTransform_default());
+options.setAttributes = (setAttributesWithoutAttributes_default());
+options.insert = insertBySelector_default().bind(null, "head");
+options.domAPI = (styleDomAPI_default());
+options.insertStyleElement = (insertStyleElement_default());
+
+var update = injectStylesIntoStyleTag_default()(Header_Header/* default */.A, options);
+
+
+
+
+       /* harmony default export */ const components_Header_Header = (Header_Header/* default */.A && Header_Header/* default */.A.locals ? Header_Header/* default */.A.locals : undefined);
+
+;// ./src/shared/components/Header/Header.tsx
+
+
+const Header_Header_Header = () => {
+    // Remove all environment and hostname checks
+    // Just hardcode all production URLs
+    const getHomeUrl = () => 'https://spinlio.com';
+    const getContactUrl = () => 'https://contact.spinlio.com';
+    return ((0,jsx_runtime.jsx)("header", { className: "header", children: (0,jsx_runtime.jsxs)("div", { className: "header-content", children: [(0,jsx_runtime.jsx)("a", { href: getHomeUrl(), className: "logo", children: "spinlio" }), (0,jsx_runtime.jsxs)("nav", { className: "nav-links", children: [(0,jsx_runtime.jsx)("a", { href: `${getHomeUrl()}/about`, children: "About" }), (0,jsx_runtime.jsx)("a", { href: getContactUrl(), children: "Contact us" })] })] }) }));
+};
+/* harmony default export */ const shared_components_Header_Header = (Header_Header_Header);
+
+;// ./src/shared/components/Header/index.ts
+
+
+// EXTERNAL MODULE: ./node_modules/@mantine/core/esm/components/Container/Container.mjs + 1 modules
+var Container = __webpack_require__(82659);
+// EXTERNAL MODULE: ./node_modules/@mantine/core/esm/components/Text/Text.mjs + 1 modules
+var Text = __webpack_require__(17826);
+// EXTERNAL MODULE: ./node_modules/@mantine/core/esm/components/TextInput/TextInput.mjs
+var TextInput = __webpack_require__(57193);
+// EXTERNAL MODULE: ./node_modules/@mantine/core/esm/components/Button/Button.mjs + 7 modules
+var Button = __webpack_require__(49501);
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js!./src/shared/components/Footer/Footer.css
+var Footer_Footer = __webpack_require__(38609);
+;// ./src/shared/components/Footer/Footer.css
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var Footer_options = {};
+
+Footer_options.styleTagTransform = (styleTagTransform_default());
+Footer_options.setAttributes = (setAttributesWithoutAttributes_default());
+Footer_options.insert = insertBySelector_default().bind(null, "head");
+Footer_options.domAPI = (styleDomAPI_default());
+Footer_options.insertStyleElement = (insertStyleElement_default());
+
+var Footer_update = injectStylesIntoStyleTag_default()(Footer_Footer/* default */.A, Footer_options);
+
+
+
+
+       /* harmony default export */ const components_Footer_Footer = (Footer_Footer/* default */.A && Footer_Footer/* default */.A.locals ? Footer_Footer/* default */.A.locals : undefined);
+
+;// ./src/shared/components/Footer/Footer.tsx
+
+
+
+
+const Footer_Footer_Footer = () => {
+    const [email, setEmail] = (0,react.useState)('');
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        console.log('Newsletter signup:', email);
+        setEmail('');
+    };
+    return ((0,jsx_runtime.jsx)("footer", { className: "footer", children: (0,jsx_runtime.jsxs)(Container/* Container */.m, { size: "xl", className: "footer-content", children: [(0,jsx_runtime.jsx)(Text/* Text */.E, { className: "footer-text", children: "\u00A9 2024 Spinlio. All Rights Reserved." }), (0,jsx_runtime.jsxs)("form", { onSubmit: handleSubmit, className: "newsletter-form", children: [(0,jsx_runtime.jsx)(TextInput/* TextInput */.k, { placeholder: "Sign up for updates", value: email, onChange: (e) => setEmail(e.target.value), className: "newsletter-input", type: "email", required: true }), (0,jsx_runtime.jsx)(Button/* Button */.$, { type: "submit", className: "newsletter-button", children: "Subscribe" })] })] }) }));
+};
+/* harmony default export */ const shared_components_Footer_Footer = (Footer_Footer_Footer);
+
+;// ./src/shared/components/Footer/index.ts
+
+
+;// ./src/shared/components/ErrorBoundary/ErrorBoundary.tsx
+
+
+class ErrorBoundary extends (react_default()).Component {
+    constructor() {
+        super(...arguments);
+        this.state = {
+            hasError: false,
+            error: null // Initialize as null instead of undefined
+        };
+    }
+    static getDerivedStateFromError(error) {
+        return {
+            hasError: true,
+            error
+        };
+    }
+    componentDidCatch(error, errorInfo) {
+        console.error("Error caught by ErrorBoundary: ", {
+            error,
+            errorInfo,
+            location: window.location.href
+        });
+    }
+    render() {
+        if (this.state.hasError && this.state.error) { // Check for both
+            return this.props.fallback || ((0,jsx_runtime.jsxs)("div", { style: { padding: '20px', textAlign: 'center' }, children: [(0,jsx_runtime.jsx)("h1", { children: "Something went wrong" }), (0,jsx_runtime.jsx)("p", { children: "Please try refreshing the page" }),  true && ((0,jsx_runtime.jsx)("pre", { children: this.state.error.message }) // Now TypeScript knows error is not null
+                    )] }));
+        }
+        return this.props.children;
+    }
+}
+/* harmony default export */ const ErrorBoundary_ErrorBoundary = (ErrorBoundary);
+
+;// ./src/shared/components/ErrorBoundary/index.ts
+
+
+;// ./src/shared/components/index.ts
+
+
+
+
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js!./src/static/components/LandingPage/LandingPage.css
+var LandingPage = __webpack_require__(4270);
+;// ./src/static/components/LandingPage/LandingPage.css
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var LandingPage_options = {};
+
+LandingPage_options.styleTagTransform = (styleTagTransform_default());
+LandingPage_options.setAttributes = (setAttributesWithoutAttributes_default());
+LandingPage_options.insert = insertBySelector_default().bind(null, "head");
+LandingPage_options.domAPI = (styleDomAPI_default());
+LandingPage_options.insertStyleElement = (insertStyleElement_default());
+
+var LandingPage_update = injectStylesIntoStyleTag_default()(LandingPage/* default */.A, LandingPage_options);
+
+
+
+
+       /* harmony default export */ const LandingPage_LandingPage = (LandingPage/* default */.A && LandingPage/* default */.A.locals ? LandingPage/* default */.A.locals : undefined);
+
+;// ./src/static/components/LandingPage/LandingPage.tsx
+
+
+
+const LandingPage_LandingPage_LandingPage = () => {
+    const configuratorUrl = 'https://configurator.spinlio.com';
+    useEffect(() => {
+        // Keep landing page fast by loading configurator stuff AFTER page is ready
+        window.addEventListener('load', () => {
+            // Start preloading the configurator bundles in background
+            const bundles = [
+                '/main.bundle.js',
+                '/vendor.react.bundle.js',
+                '/vendor.react-dom.bundle.js'
+            ];
+            bundles.forEach(bundle => {
+                const link = document.createElement('link');
+                link.rel = 'prefetch'; // Use prefetch instead of preload to not block
+                link.as = 'script';
+                link.href = bundle;
+                document.head.appendChild(link);
+            });
+        });
+    }, []);
+    // Landing page renders instantly, preloading happens in background
+    return (_jsx("div", { className: "landing-page", children: _jsxs("div", { className: "landing-content", children: [_jsxs("div", { className: "text-container", children: [_jsx("h1", { className: "main-title", children: "3D design, made simple" }), _jsx("div", { className: "subtitle-container", children: _jsx("span", { className: "subtitle", children: "And ready for production - all in one platform" }) }), _jsx("span", { className: "version-text", children: "Beta V0.1" })] }), _jsx("div", { className: "image-placeholder" }), _jsx("a", { href: configuratorUrl, className: "design-button", children: "Design Now" })] }) }));
+};
+/* harmony default export */ const components_LandingPage_LandingPage = ((/* unused pure expression or super */ null && (LandingPage_LandingPage_LandingPage)));
+
+;// ./src/static/components/LandingPage/index.ts
+
+
+// EXTERNAL MODULE: ./node_modules/@mantine/core/esm/components/Stack/Stack.mjs + 1 modules
+var Stack = __webpack_require__(69019);
+// EXTERNAL MODULE: ./node_modules/@mantine/core/esm/components/Title/Title.mjs + 2 modules
+var Title = __webpack_require__(89652);
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js!./src/shared/styles/CommonPage.css
+var CommonPage = __webpack_require__(79798);
+;// ./src/shared/styles/CommonPage.css
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var CommonPage_options = {};
+
+CommonPage_options.styleTagTransform = (styleTagTransform_default());
+CommonPage_options.setAttributes = (setAttributesWithoutAttributes_default());
+CommonPage_options.insert = insertBySelector_default().bind(null, "head");
+CommonPage_options.domAPI = (styleDomAPI_default());
+CommonPage_options.insertStyleElement = (insertStyleElement_default());
+
+var CommonPage_update = injectStylesIntoStyleTag_default()(CommonPage/* default */.A, CommonPage_options);
+
+
+
+
+       /* harmony default export */ const styles_CommonPage = (CommonPage/* default */.A && CommonPage/* default */.A.locals ? CommonPage/* default */.A.locals : undefined);
+
+;// ./src/static/components/AboutPage/AboutPage.tsx
+
+
+
+const AboutPage = () => {
+    return ((0,jsx_runtime.jsx)("div", { className: "common-page", children: (0,jsx_runtime.jsx)(Container/* Container */.m, { className: "common-content", children: (0,jsx_runtime.jsxs)(Stack/* Stack */.B, { gap: "xl", children: [(0,jsx_runtime.jsx)(Title/* Title */.h, { order: 1, children: "Manifesto" }), (0,jsx_runtime.jsx)(Text/* Text */.E, { ta: "center", children: "Spinlio is a 3D design tool that makes it easy to create physical products." }), (0,jsx_runtime.jsx)(Text/* Text */.E, { ta: "center", children: "Our platform bridges the gap between designers and producers, by providing the tools and environment that makes your ideas not only unique but also ready for production." }), (0,jsx_runtime.jsx)(Text/* Text */.E, { ta: "center", children: "We are an early-stage startup, currently focused on the bicycle industry, with ambitions to expand into all industries. While we're in Beta, we'll be continuously rolling out updates daily to improve your experience so sign up for updates if you want to be part of the ride." })] }) }) }));
+};
+/* harmony default export */ const AboutPage_AboutPage = (AboutPage);
+
+;// ./src/static/components/AboutPage/index.ts
+
+
+// EXTERNAL MODULE: ./node_modules/css-loader/dist/cjs.js!./src/static/components/ConfiguratorTemplate/ConfiguratorTemplate.css
+var ConfiguratorTemplate = __webpack_require__(44654);
+;// ./src/static/components/ConfiguratorTemplate/ConfiguratorTemplate.css
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+var ConfiguratorTemplate_options = {};
+
+ConfiguratorTemplate_options.styleTagTransform = (styleTagTransform_default());
+ConfiguratorTemplate_options.setAttributes = (setAttributesWithoutAttributes_default());
+ConfiguratorTemplate_options.insert = insertBySelector_default().bind(null, "head");
+ConfiguratorTemplate_options.domAPI = (styleDomAPI_default());
+ConfiguratorTemplate_options.insertStyleElement = (insertStyleElement_default());
+
+var ConfiguratorTemplate_update = injectStylesIntoStyleTag_default()(ConfiguratorTemplate/* default */.A, ConfiguratorTemplate_options);
+
+
+
+
+       /* harmony default export */ const ConfiguratorTemplate_ConfiguratorTemplate = (ConfiguratorTemplate/* default */.A && ConfiguratorTemplate/* default */.A.locals ? ConfiguratorTemplate/* default */.A.locals : undefined);
+
+;// ./src/static/components/ConfiguratorTemplate/ConfiguratorTemplate.tsx
+
+// This lives in the STATIC build (Netlify)
+
+
+
+const ConfiguratorTemplate_ConfiguratorTemplate_ConfiguratorTemplate = () => {
+    useEffect(() => {
+        console.log('ConfiguratorTemplate: Mounted');
+        return () => console.log('ConfiguratorTemplate: Unmounted');
+    }, []);
+    return (_jsxs("div", { className: "app", children: [_jsx(Header, {}), _jsxs("div", { className: "configurator-template", children: [_jsx("div", { className: "share-button-container-configurator", children: _jsx("button", { className: "share-button-configurator", disabled: true, children: "Share" }) }), _jsxs("div", { className: "configurator-content", children: [_jsx("div", { className: "viewer-container", children: _jsx("div", { className: "viewer-placeholder", children: _jsx("img", { src: "https://res.cloudinary.com/da8qnqmmh/image/upload/e_make_transparent:10/v1729757636/BIKE_qa0p3v.gif", alt: "Loading", className: "loading-gif" }) }) }), _jsx("div", { className: "parameter-panel-placeholder", children: _jsx("div", { className: "panel-skeleton" }) })] })] }), _jsx(Footer, {})] }));
+};
+/* harmony default export */ const components_ConfiguratorTemplate_ConfiguratorTemplate = ((/* unused pure expression or super */ null && (ConfiguratorTemplate_ConfiguratorTemplate_ConfiguratorTemplate)));
+
+;// ./src/static/components/ConfiguratorTemplate/index.ts
+
+
+;// ./src/static/components/index.ts
+
+
+
+
+// EXTERNAL MODULE: ./src/dynamic/components/ConfiguratorPage/index.ts + 19 modules
+var ConfiguratorPage = __webpack_require__(79843);
 ;// ./src/dynamic/components/ContactUsPage/ContactUsPage.tsx
 
 
@@ -2674,6 +2713,11 @@ const ContactUsPage = () => {
 
 
 
+
+// Lazy load the main pages
+const App_ConfiguratorPage = (0,react.lazy)(() => Promise.resolve(/* import() */).then(__webpack_require__.bind(__webpack_require__, 79843)).then(module => ({
+    default: module.default
+})));
 const App = () => {
     const hostname = window.location.hostname;
     const isDevelopment = "development" === 'development';
@@ -2686,18 +2730,31 @@ const App = () => {
                 const path = window.location.pathname;
                 if (path.includes('/contact'))
                     return (0,jsx_runtime.jsx)(ContactUsPage_ContactUsPage, {});
-                return (0,jsx_runtime.jsx)(components_ConfiguratorPage_ConfiguratorPage, {});
+                return (0,jsx_runtime.jsx)(App_ConfiguratorPage, {});
             }
             return (0,jsx_runtime.jsx)(dist/* Navigate */.C5, { to: "http://localhost:3000" });
         }
         // Production logic
         if (hostname === 'configurator.spinlio.com')
-            return (0,jsx_runtime.jsx)(components_ConfiguratorPage_ConfiguratorPage, {});
+            return (0,jsx_runtime.jsx)(App_ConfiguratorPage, {});
         if (hostname === 'contact.spinlio.com')
             return (0,jsx_runtime.jsx)(ContactUsPage_ContactUsPage, {});
         return (0,jsx_runtime.jsx)(dist/* Navigate */.C5, { to: "https://spinlio.com" });
     };
-    return ((0,jsx_runtime.jsx)(ErrorBoundary_ErrorBoundary, { children: (0,jsx_runtime.jsx)(MantineProvider/* MantineProvider */.y, { theme: theme, children: (0,jsx_runtime.jsx)(react_router_dom_dist/* BrowserRouter */.Kd, { children: (0,jsx_runtime.jsxs)("div", { className: "app", children: [(0,jsx_runtime.jsx)(shared_components_Header_Header, {}), (0,jsx_runtime.jsxs)(dist/* Routes */.BV, { children: [(0,jsx_runtime.jsx)(dist/* Route */.qh, { path: "/", element: getMainComponent() }), (0,jsx_runtime.jsx)(dist/* Route */.qh, { path: "/configurator", element: getMainComponent() }), (0,jsx_runtime.jsx)(dist/* Route */.qh, { path: "/contact", element: getMainComponent() }), (0,jsx_runtime.jsx)(dist/* Route */.qh, { path: "/about", element: (0,jsx_runtime.jsx)(AboutPage_AboutPage, {}) }), (0,jsx_runtime.jsx)(dist/* Route */.qh, { path: "*", element: (0,jsx_runtime.jsx)(dist/* Navigate */.C5, { to: "/" }) })] }), (0,jsx_runtime.jsx)(shared_components_Footer_Footer, {})] }) }) }) }));
+    // Prefetch critical ShapeDiver dependencies
+    const prefetchShapeDiver = () => {
+        // Prefetch ShapeDiver and Three.js dependencies
+        Promise.resolve(/* import() */).then(__webpack_require__.bind(__webpack_require__, 66032)).catch(() => { });
+        __webpack_require__.e(/* import() */ 350).then(__webpack_require__.bind(__webpack_require__, 5832)).catch(() => { });
+        Promise.resolve(/* import() */).then(__webpack_require__.bind(__webpack_require__, 39437)).catch(() => { });
+    };
+    (0,react.useEffect)(() => {
+        if (window.location.hostname === 'configurator.spinlio.com' ||
+            ( true && window.location.port === '3001')) {
+            prefetchShapeDiver();
+        }
+    }, []);
+    return ((0,jsx_runtime.jsx)(ErrorBoundary_ErrorBoundary, { children: (0,jsx_runtime.jsx)(MantineProvider/* MantineProvider */.y, { theme: theme, children: (0,jsx_runtime.jsx)(react_router_dom_dist/* BrowserRouter */.Kd, { children: (0,jsx_runtime.jsxs)("div", { className: "app", children: [(0,jsx_runtime.jsx)(shared_components_Header_Header, {}), (0,jsx_runtime.jsx)("main", { className: "main-content", children: (0,jsx_runtime.jsxs)(dist/* Routes */.BV, { children: [(0,jsx_runtime.jsx)(dist/* Route */.qh, { path: "/", element: (0,jsx_runtime.jsxs)((react_default()).Suspense, { fallback: null, children: ["  ", getMainComponent()] }) }), (0,jsx_runtime.jsx)(dist/* Route */.qh, { path: "/configurator", element: getMainComponent() }), (0,jsx_runtime.jsx)(dist/* Route */.qh, { path: "/contact", element: getMainComponent() }), (0,jsx_runtime.jsx)(dist/* Route */.qh, { path: "/about", element: (0,jsx_runtime.jsx)(AboutPage_AboutPage, {}) }), (0,jsx_runtime.jsx)(dist/* Route */.qh, { path: "*", element: (0,jsx_runtime.jsx)(dist/* Navigate */.C5, { to: "/" }) })] }) }), (0,jsx_runtime.jsx)(shared_components_Footer_Footer, {})] }) }) }) }));
 };
 /* harmony default export */ const App_App = (App);
 
@@ -2745,14 +2802,6 @@ root.render((0,jsx_runtime.jsx)((react_default()).StrictMode, { children: (0,jsx
 
 /***/ }),
 
-/***/ 98108:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-module.exports = __webpack_require__.p + "images/background_final_last.png";
-
-/***/ }),
-
 /***/ 89104:
 /***/ (() => {
 
@@ -2784,7 +2833,7 @@ module.exports = __webpack_require__.p + "images/background_final_last.png";
 },
 /******/ __webpack_require__ => { // webpackRuntimeModules
 /******/ var __webpack_exec__ = (moduleId) => (__webpack_require__(__webpack_require__.s = moduleId))
-/******/ __webpack_require__.O(0, [593,997,184,922,514,362,631,329,49,689,936], () => (__webpack_exec__(18522)));
+/******/ __webpack_require__.O(0, [593,96], () => (__webpack_exec__(32042)));
 /******/ var __webpack_exports__ = __webpack_require__.O();
 /******/ }
 ]);

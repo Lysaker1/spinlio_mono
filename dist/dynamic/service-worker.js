@@ -3,7 +3,7 @@ const CACHE_NAME = 'spinlio-cache-v1';
 // Dynamic list of assets to cache based on runtime
 const urlsToCache = [
   '/',
-  '/images/background_final_last.png',
+  'https://res.cloudinary.com/da8qnqmmh/image/upload/v1730055768/background_final_last_dm9bl2.png',
   '/vendor.core.js',
   '/vendor.ui.js',
   '/vendor.common.js',
@@ -18,6 +18,16 @@ self.addEventListener('install', event => {
         console.log('Opened cache');
         return cache.addAll(urlsToCache);
       })
+  );
+});
+
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open('v1').then((cache) => {
+      return cache.addAll([
+        'https://res.cloudinary.com/da8qnqmmh/image/upload/v1730055768/background_final_last_dm9bl2.png'
+      ]);
+    })
   );
 });
 

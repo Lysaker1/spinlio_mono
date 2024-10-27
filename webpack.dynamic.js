@@ -119,9 +119,14 @@ module.exports = (env) => {
         '@shared': path.resolve(__dirname, 'src/shared'),
         '@static': path.resolve(__dirname, 'src/static'),
         '@dynamic': path.resolve(__dirname, 'src/dynamic'),
-        'react': path.resolve('./node_modules/react'),
-        'react-dom': path.resolve('./node_modules/react-dom'),
+        'react': path.resolve(__dirname, 'node_modules/react'),
+        'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
+        '@emotion/react': path.resolve(__dirname, 'node_modules/@emotion/react'),
         'three': path.resolve('./node_modules/three')
+      },
+      fallback: {
+        'react': require.resolve('react'),
+        'react-dom': require.resolve('react-dom')
       }
     },
     plugins: [
@@ -170,36 +175,36 @@ module.exports = (env) => {
     optimization: {
       splitChunks: {
         chunks: 'all',
-        maxInitialRequests: 10,
-        minSize: 100000,
-        maxSize: 2000000,
         cacheGroups: {
           framework: {
             test: /[\\/]node_modules[\\/](react|react-dom|@emotion|@mantine)[\\/]/,
             name: 'framework',
-            chunks: 'all',
-            priority: 100,
+            chunks: 'initial',
+            priority: 40,
             enforce: true
+          },
+          lib: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'initial',
+            priority: 30
+          },
+          commons: {
+            name: 'commons',
+            minChunks: 2,
+            priority: 20
           },
           shapediver: {
             test: /[\\/]node_modules[\\/]@shapediver[\\/]/,
             name: 'shapediver',
             chunks: 'async',
-            priority: 90,
-            enforce: true
+            priority: 90
           },
-          three: {
-            test: /[\\/]node_modules[\\/]three[\\/]/,
-            name: 'three',
+          viewer: {
+            test: /[\\/]node_modules[\\/](three|@shapediver\/viewer)[\\/]/,
+            name: 'viewer',
             chunks: 'async',
-            priority: 80,
-            enforce: true
-          },
-          vendors: {
-            test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
-            chunks: 'all',
-            priority: -10
+            priority: 85
           }
         }
       },

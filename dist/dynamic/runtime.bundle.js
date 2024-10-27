@@ -142,7 +142,7 @@
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.u = (chunkId) => {
 /******/ 			// return url for filenames based on template
-/******/ 			return "" + (chunkId === 233 ? "three" : chunkId) + ".chunk.js";
+/******/ 			return "" + (chunkId === 350 ? "shapediver" : chunkId) + ".chunk.js";
 /******/ 		};
 /******/ 	})();
 /******/ 	
@@ -236,7 +236,7 @@
 /******/ 	
 /******/ 	/* webpack/runtime/jsonp chunk loading */
 /******/ 	(() => {
-/******/ 		__webpack_require__.b = document.baseURI || self.location.href;
+/******/ 		// no baseURI
 /******/ 		
 /******/ 		// object to store loaded and loading chunks
 /******/ 		// undefined = chunk not loaded, null = chunk preloaded/prefetched

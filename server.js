@@ -153,7 +153,16 @@ app.use((req, res, next) => {
 });
 
 // Serve static files
-app.use(express.static(path.join(__dirname, 'dist/dynamic')));
+app.use(express.static(path.join(__dirname, 'dist/dynamic'), {
+  maxAge: '1y',
+  etag: true,
+  lastModified: true,
+  setHeaders: (res, path) => {
+    if (path.endsWith('.js') || path.endsWith('.css') || path.includes('images/')) {
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    }
+  }
+}));
 
 // Simple catch-all route that serves index.html
 app.get('*', (req, res) => {

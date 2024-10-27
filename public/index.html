@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spinlio</title>
-    <meta http-equiv="Cache-Control" content="public, max-age=31536000, immutable">
-    <meta name="description" content="Spinlio - From idea to productions">
+    <!-- Keep preloading for speed -->
     <link rel="preload" as="image" href="/images/background_final_last.png" fetchpriority="high">
     <link rel="preload" as="script" href="/runtime.bundle.js">
     <link rel="preload" as="script" href="/vendor.shapediver.bundle.js">
@@ -14,16 +13,9 @@
         margin: 0;
         padding: 0;
         height: 100vh;
-        background: #fff;
       }
 
       body {
-        opacity: 1;
-        transition: background-image 0.3s ease-in;
-        background-color: #fff;
-      }
-
-      body.background-loaded {
         background-image: url('/images/background_final_last.png');
         background-size: cover;
         background-position: center;
@@ -33,40 +25,11 @@
 
       #root {
         min-height: 100vh;
-        opacity: 0;
-        transition: opacity 0.3s ease-in;
-      }
-
-      #root.content-loaded {
-        opacity: 1;
       }
     </style>
 </head>
 <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    
-    <script>
-      window.addEventListener('DOMContentLoaded', function() {
-        const img = new Image();
-        img.src = '/images/background_final_last.png';
-        
-        img.onload = function() {
-          document.body.classList.add('background-loaded');
-          // Small delay to ensure background is visible before content
-          setTimeout(() => {
-            document.getElementById('root').classList.add('content-loaded');
-          }, 50);
-        };
-      });
-
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/service-worker.js')
-            .then(registration => console.log('ServiceWorker registration successful'))
-            .catch(err => console.log('ServiceWorker registration failed: ', err));
-        });
-      }
-    </script>
 </body>
 </html>

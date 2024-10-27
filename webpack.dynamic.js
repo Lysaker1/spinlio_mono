@@ -141,7 +141,15 @@ module.exports = (env) => {
           minifyURLs: true,
         } : false
       }),
-      new CopyWebpackPlugin({ patterns: copyPluginPatterns }),
+      new CopyWebpackPlugin({
+        patterns: [
+          // ... your existing patterns
+          {
+            from: path.resolve(__dirname, 'src/service-worker.js'),
+            to: path.resolve(__dirname, 'dist/dynamic/service-worker.js')
+          }
+        ]
+      }),
       new webpack.DefinePlugin({
         'process.env': Object.keys(finalEnv).reduce((env, key) => {
           env[key] = JSON.stringify(finalEnv[key]);
@@ -157,7 +165,31 @@ module.exports = (env) => {
       splitChunks: {
         chunks: 'all',
         maxInitialRequests: 25,
-        minSize: 20000
+        minSize: 20000,
+        maxSize: 244000,
+        cacheGroups: {
+          shapediver: {
+            test: /[\\/]node_modules[\\/](@shapediver)[\\/]/,
+            name: 'vendor.shapediver',
+            chunks: 'all',
+            priority: 20
+          },
+          mantine: {
+            test: /[\\/]node_modules[\\/](@mantine)[\\/]/,
+            name: 'vendor.mantine',
+            chunks: 'all',
+            priority: 10
+          },
+          defaultVendors: {
+            test: /[\\/]node_modules[\\/]/,
+            name(module) {
+              const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
+              return `vendor.${packageName.replace('@', '')}`;
+            },
+            chunks: 'all',
+            priority: -10
+          }
+        }
       },
       runtimeChunk: 'single',
       minimize: isProd,

@@ -3,6 +3,18 @@
   publish = "dist/static"           
 
 [[redirects]]
+  from = "/configurator/*"
+  to = "https://configurator.spinlio.com/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/contact/*"
+  to = "https://contact.spinlio.com/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200

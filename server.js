@@ -8,20 +8,13 @@ const app = express();
 
 // Add CORS before other middleware
 app.use(cors({
-  origin: function(origin, callback) {
-    const allowedOrigins = [
-      'http://localhost:3000',
-      'http://localhost:3001',
-      'https://spinlio.com',
-      'https://configurator.spinlio.com',
-      'https://contact.spinlio.com'
-    ];
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      return callback(new Error('CORS not allowed'), false);
-    }
-    return callback(null, true);
-  },
+  origin: process.env.ALLOWED_ORIGINS?.split(',') || [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'https://spinlio.com',
+    'https://configurator.spinlio.com',
+    'https://contact.spinlio.com'
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'OPTIONS']
 }));
@@ -79,28 +72,21 @@ app.use((req, res, next) => {
   next();
 });
 
+// Simplified routing based on hostname
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path} - Hostname: ${req.hostname}`);
+  next();
+});
+
 // Serve static files
 app.use(express.static(path.join(__dirname, 'dist/dynamic')));
 
-// Handle configurator and contact routes
-app.get(['/configurator', '/configurator/*'], (req, res) => {
-  console.log('Configurator route hit:', req.path);
-  res.sendFile(path.join(__dirname, 'dist/dynamic', 'index.html'));
-});
-
-app.get(['/contact', '/contact/*'], (req, res) => {
-  console.log('Contact route hit:', req.path);
-  res.sendFile(path.join(__dirname, 'dist/dynamic', 'index.html'));
-});
-
-// Update routes to handle both domains
-app.get(['/about', '/about/*'], (req, res) => {
-  res.redirect('https://spinlio.com/about');
-});
-
-// Catch-all route
+// Simple catch-all route that serves index.html
 app.get('*', (req, res) => {
-  console.log('Catch-all route hit:', req.path);
+  // Remove any unwanted paths
+  if (req.path !== '/' && req.path !== '/about') {
+    return res.redirect('/');
+  }
   res.sendFile(path.join(__dirname, 'dist/dynamic', 'index.html'));
 });
 

@@ -1,7 +1,36 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './LandingPage.css';
 
+// Polyfill for requestIdleCallback
+const requestIdleCallbackPolyfill = window.requestIdleCallback || 
+  ((cb) => setTimeout(cb, 1));
+
 const LandingPage: React.FC = () => {
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  const configuratorUrl = isDevelopment 
+    ? 'http://localhost:3001/configurator'
+    : 'https://configurator.spinlio.com';
+
+  useEffect(() => {
+    let linkElement: HTMLLinkElement | null = null;
+
+    window.addEventListener('load', () => {
+      requestIdleCallbackPolyfill(() => {
+        linkElement = document.createElement('link');
+        linkElement.rel = 'preload';
+        linkElement.as = 'fetch';
+        linkElement.href = configuratorUrl;
+        document.head.appendChild(linkElement);
+      });
+    });
+
+    return () => {
+      if (linkElement) {
+        document.head.removeChild(linkElement);
+      }
+    };
+  }, [configuratorUrl]);
+
   return (
     <div className="landing-page">
       <div className="landing-content">
@@ -14,7 +43,7 @@ const LandingPage: React.FC = () => {
         </div>
         {/* Space for future image */}
         <div className="image-placeholder"></div>
-        <a href="https://configurator.spinlio.com" className="design-button">
+        <a href={configuratorUrl} className="design-button">
           Design Now
         </a>
       </div>

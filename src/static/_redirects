@@ -1,6 +1,6 @@
-# Proxy to Heroku (not redirect)
-/configurator/*  https://spinlio-dynamic-e31fcb8098e8.herokuapp.com/configurator/:splat  200!
-/contact/*       https://spinlio-dynamic-e31fcb8098e8.herokuapp.com/contact/:splat       200!
+# Production redirects for spinlio.com
+/configurator/* https://configurator.spinlio.com/:splat 301!
+/contact/*      https://contact.spinlio.com/:splat      301!
 
-# Handle static routes
-/*              /index.html                                                              200
+# SPA fallback
+/*             /index.html                              200

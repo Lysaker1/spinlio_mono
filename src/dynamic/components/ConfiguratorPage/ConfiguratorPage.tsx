@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import ShapeDiverViewer from './components/ShapeDiverViewer';
+import React, { useState, Suspense } from 'react';
 import ParameterPanel from './components/ParameterPanel';
 import ExportMenu from './components/ExportMenu';
 import { Modal } from '@mantine/core';
@@ -7,6 +6,20 @@ import { useNavigate } from 'react-router-dom';
 import { ISessionApi, IViewportApi, FLAG_TYPE } from '@shapediver/viewer';
 import './ConfiguratorPage.css';
 
+// Lazy load ShapeDiverViewer
+const ShapeDiverViewer = React.lazy(() => 
+  import('./components/ShapeDiverViewer').then(module => ({
+    default: module.default
+  }))
+);
+
+// Loading spinner component
+const LoadingSpinner: React.FC = () => (
+  <div className="loading-spinner">
+    <div className="spinner"></div>
+    <p>Loading 3D Viewer...</p>
+  </div>
+);
 
 const ConfiguratorPage: React.FC = () => {
   const navigate = useNavigate();
@@ -23,7 +36,6 @@ const ConfiguratorPage: React.FC = () => {
 
   return (
     <div className="configurator-page">
-      {/* Share Button */}
       <div className="share-button-container-configurator">
         <button className="share-button-configurator" onClick={handleExportClick}>
           Share
@@ -41,11 +53,13 @@ const ConfiguratorPage: React.FC = () => {
 
       <div className="configurator-content">
         <div className="viewer-container">
-          <ShapeDiverViewer
-            session={session}
-            setSession={setSession}
-            setViewport={setViewport}
-          />
+          <Suspense fallback={<LoadingSpinner />}>
+            <ShapeDiverViewer
+              session={session}
+              setSession={setSession}
+              setViewport={setViewport}
+            />
+          </Suspense>
         </div>
         <div className="parameter-panel-container">
           <ParameterPanel

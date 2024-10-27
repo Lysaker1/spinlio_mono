@@ -1,9 +1,13 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const webpack = require('webpack');
 const dotenv = require('dotenv');
 const fs = require('fs');
+const CompressionPlugin = require('compression-webpack-plugin');
+
+const isDevelopment = process.env.NODE_ENV !== 'production';
 
 module.exports = (env) => {
   // Environment handling
@@ -17,7 +21,6 @@ module.exports = (env) => {
     ? dotenv.config({ path: envPath }).parsed 
     : {};
   
-  // Add Heroku config vars
   const herokuEnv = {
     NODE_ENV: process.env.NODE_ENV,
     CORS_ORIGIN: process.env.CORS_ORIGIN,
@@ -27,7 +30,9 @@ module.exports = (env) => {
   
   const finalEnv = { ...baseEnv, ...environmentEnv, ...herokuEnv };
   
-  // Update CSP headers based on environment
+  const isProd = env.ENVIRONMENT === 'production';
+
+  // CSP headers
   const cspHeaders = {
     'Content-Security-Policy': `
       default-src 'self'; 
@@ -43,12 +48,42 @@ module.exports = (env) => {
     `.replace(/\s+/g, ' ')
   };
 
+  const copyPluginPatterns = isDevelopment ? [
+    {
+      from: 'src/shared/assets',
+      to: 'static/assets'
+    },
+    {
+      from: 'public/_redirects',
+      to: 'static/_redirects'
+    },
+    {
+      from: 'netlify.toml',
+      to: 'static/netlify.toml'
+    }
+  ] : [
+    {
+      from: path.resolve(__dirname, 'dist/static'),
+      to: path.resolve(__dirname, 'dist/dynamic/static'),
+      filter: (resourcePath) => {
+        return (
+          resourcePath.includes('/images/') ||
+          resourcePath.includes('/_redirects') ||
+          resourcePath.includes('/netlify.toml')
+        );
+      }
+    }
+  ];
+
   return {
-    entry: './src/dynamic/index.tsx', // Changed entry point
+    mode: isProd ? 'production' : 'development',
+    entry: './src/dynamic/index.tsx',
     output: {
-      path: path.resolve(__dirname, 'dist/dynamic'), // Changed output path
-      filename: '[name].[contenthash].js',  // Update this line
-      publicPath: '/'
+      path: path.resolve(__dirname, 'dist/dynamic'),
+      filename: isProd ? '[name].[contenthash].js' : '[name].bundle.js',
+      chunkFilename: isProd ? '[name].[contenthash].chunk.js' : '[name].chunk.js',
+      publicPath: '/',
+      clean: true
     },
     module: {
       rules: [
@@ -81,48 +116,80 @@ module.exports = (env) => {
         '@shared': path.resolve(__dirname, 'src/shared'),
         '@static': path.resolve(__dirname, 'src/static'),
         '@dynamic': path.resolve(__dirname, 'src/dynamic'),
-        'three': path.resolve('./node_modules/three')  // Keep the three.js alias
+        'three': path.resolve('./node_modules/three')
       }
     },
     plugins: [
       new CleanWebpackPlugin(),
       new HtmlWebpackPlugin({
         template: './public/index.html',
+        templateParameters: {
+          BASE_URL: isProd 
+            ? 'https://configurator.spinlio.com' 
+            : 'http://localhost:3001'
+        },
+        minify: isProd ? {
+          removeComments: true,
+          collapseWhitespace: true,
+          removeRedundantAttributes: true,
+          useShortDoctype: true,
+          removeEmptyAttributes: true,
+          removeStyleLinkTypeAttributes: true,
+          keepClosingSlash: true,
+          minifyJS: true,
+          minifyCSS: true,
+          minifyURLs: true,
+        } : false
       }),
+      new CopyWebpackPlugin({ patterns: copyPluginPatterns }),
       new webpack.DefinePlugin({
-        'process.env.NODE_ENV': JSON.stringify(finalEnv.NODE_ENV),
-        'process.env.CORS_ORIGIN': JSON.stringify(finalEnv.CORS_ORIGIN),
-        'process.env.CLOUDINARY_API_KEY': JSON.stringify(finalEnv.CLOUDINARY_API_KEY),
-        'process.env.CLOUDINARY_CLOUD_NAME': JSON.stringify(finalEnv.CLOUDINARY_CLOUD_NAME)
+        'process.env': Object.keys(finalEnv).reduce((env, key) => {
+          env[key] = JSON.stringify(finalEnv[key]);
+          return env;
+        }, {})
       }),
+      new CompressionPlugin({
+        test: /\.(js|css|html|svg)$/,
+        algorithm: 'gzip'
+      })
     ],
+    optimization: {
+      splitChunks: {
+        chunks: 'all',
+        maxInitialRequests: Infinity,
+        minSize: 20000,
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name(module) {
+              const packageName = module.context.match(
+                /[\\/]node_modules[\\/](.*?)([\\/]|$)/
+              )[1];
+              
+              if (['three', '@shapediver', 'react', 'react-dom'].includes(packageName)) {
+                return `vendor.${packageName.replace('@', '')}`;
+              }
+              return 'vendor.bundle';
+            },
+            priority: -10,
+            reuseExistingChunk: true
+          }
+        }
+      },
+      runtimeChunk: 'single',
+      minimize: isProd,
+      moduleIds: 'deterministic'
+    },
     devServer: {
       static: {
         directory: path.join(__dirname, 'public'),
       },
       compress: true,
-      port: finalEnv.PORT_DYNAMIC || 3001,  // Use environment variable
+      port: finalEnv.PORT_DYNAMIC || 3001,
       historyApiFallback: true,
-      headers: cspHeaders
+      headers: cspHeaders,
+      hot: true
     },
-    optimization: {
-      splitChunks: {
-        chunks: 'all',
-        maxInitialRequests: Infinity,
-        minSize: 0,
-        cacheGroups: {
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name(module) {
-              // Get the package name
-              const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
-              // Return a unique name for each vendor chunk
-              return `vendor.${packageName.replace('@', '').replace('/', '.')}`;
-            },
-            filename: '[name].bundle.js'  // Add this line
-          },
-        },
-      },
-    },
+    ...(isProd ? {} : { devtool: 'source-map' })
   };
 };

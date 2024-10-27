@@ -1,0 +1,44 @@
+.configurator-template {
+    /* Match the exact layout of ConfiguratorPage */
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: inherit; /* Inherit the background from body */
+  }
+  
+  .viewer-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    background: rgba(245, 240, 235, 0.2);
+  }
+  
+  .loading-gif {
+    width: 200px;
+    height: 200px;
+    object-fit: contain;
+  }
+  
+  .parameter-panel-placeholder {
+    width: 300px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+  }
+  
+  .panel-skeleton {
+    /* Add loading skeleton animation */
+    animation: pulse 1.5s infinite;
+    background: linear-gradient(90deg, 
+      rgba(255,255,255,0.1), 
+      rgba(255,255,255,0.2), 
+      rgba(255,255,255,0.1)
+    );
+    height: 100%;
+  }
+  
+  @keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 0.8; }
+    100% { opacity: 0.6; }
+  }

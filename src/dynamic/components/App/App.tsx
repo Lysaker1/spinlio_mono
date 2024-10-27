@@ -1,11 +1,18 @@
-import React from 'react';
+import React, { lazy, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { MantineProvider } from '@mantine/core';
 import { theme } from '../../../shared/theme';
 import { Footer, Header } from '../../../shared/components';
 import { AboutPage } from '../../../static/components';
-import { ConfiguratorPage, ContactUsPage } from '../';
+import { ContactUsPage } from '../';
 import ErrorBoundary from '../../../shared/components/ErrorBoundary/ErrorBoundary';
+
+// Lazy load the main pages
+const ConfiguratorPage = lazy(() => 
+  import('../ConfiguratorPage').then(module => ({
+    default: module.default
+  }))
+);
 
 const App: React.FC = () => {
   const hostname = window.location.hostname;
@@ -30,21 +37,43 @@ const App: React.FC = () => {
     return <Navigate to="https://spinlio.com" />;
   };
 
+  // Prefetch critical ShapeDiver dependencies
+  const prefetchShapeDiver = () => {
+    // Prefetch ShapeDiver and Three.js dependencies
+    import('@shapediver/viewer').catch(() => {});
+    import('@shapediver/viewer.features.attribute-visualization').catch(() => {});
+    import('three').catch(() => {});
+  };
+
+  useEffect(() => {
+    if (window.location.hostname === 'configurator.spinlio.com' || 
+        (process.env.NODE_ENV === 'development' && window.location.port === '3001')) {
+      prefetchShapeDiver();
+    }
+  }, []);
+
   return (
     <ErrorBoundary>
       <MantineProvider theme={theme}>
         <Router>
           <div className="app">
-          <Header />
-          <Routes>
-            <Route path="/" element={getMainComponent()} />
-            <Route path="/configurator" element={getMainComponent()} />
-            <Route path="/contact" element={getMainComponent()} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="*" element={<Navigate to="/" />} />
-          </Routes>
-          <Footer />
-        </div>
+            <Header />
+            <main className="main-content">
+              {/* Only the CONTENT area gets the Suspense, not the whole app! */}
+              <Routes>
+                <Route path="/" element={
+                  <React.Suspense fallback={null}>  {/* No loading spinner! */}
+                    {getMainComponent()}
+                  </React.Suspense>
+                } />
+                <Route path="/configurator" element={getMainComponent()} />
+                <Route path="/contact" element={getMainComponent()} />
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="*" element={<Navigate to="/" />} />
+              </Routes>
+            </main>
+            <Footer />
+          </div>
         </Router>
       </MantineProvider>
     </ErrorBoundary>

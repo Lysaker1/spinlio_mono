@@ -10,7 +10,7 @@ const AppContent: React.FC = () => {
   useEffect(() => {
     // Debug image loading
     const img = new Image();
-    img.src = '/images/background_final_last.png';
+    img.src = 'https://res.cloudinary.com/da8qnqmmh/image/upload/v1730055768/background_final_last_dm9bl2.pn';
     img.onload = () => console.log('Background loaded');
     img.onerror = (e) => console.error('Background failed to load:', e);
   }, []);
@@ -18,7 +18,7 @@ const AppContent: React.FC = () => {
   useEffect(() => {
     console.log('Static App: Background should be loaded from cache');
     const img = new Image();
-    img.src = '/images/background_final_last.png';
+    img.src = 'https://res.cloudinary.com/da8qnqmmh/image/upload/v1730055768/background_final_last_dm9bl2.png';
     img.onload = () => console.log('Static App: Background loaded');
     img.onerror = (e) => console.error('Static App: Background failed:', e);
   }, []);

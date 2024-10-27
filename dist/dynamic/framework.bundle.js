@@ -36821,8 +36821,8 @@ ModalOverlay.displayName = "@mantine/core/ModalOverlay";
 
 //# sourceMappingURL=ModalOverlay.mjs.map
 
-// EXTERNAL MODULE: ./node_modules/react-remove-scroll/dist/es2015/Combination.js + 15 modules
-var Combination = __webpack_require__(98909);
+// EXTERNAL MODULE: ./node_modules/react-remove-scroll/dist/es2015/Combination.js + 21 modules
+var Combination = __webpack_require__(74099);
 // EXTERNAL MODULE: ./node_modules/@mantine/core/esm/components/Portal/OptionalPortal.mjs + 1 modules
 var OptionalPortal = __webpack_require__(39268);
 // EXTERNAL MODULE: ./node_modules/@mantine/hooks/esm/use-id/use-id.mjs + 1 modules

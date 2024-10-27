@@ -6,6 +6,9 @@ const cors = require('cors');  // Add this
 
 const app = express();
 
+// Add trust proxy setting for Heroku
+app.set('trust proxy', 1);
+
 // Add CORS before other middleware
 app.use(cors({
   origin: (origin, callback) => {
@@ -15,14 +18,16 @@ app.use(cors({
       'https://spinlio.com',
       'https://configurator.spinlio.com',
       'https://contact.spinlio.com',
-      'https://www.herokucdn.com'  // Add this
+      'https://www.herokucdn.com',
+      'https://viewer.shapediver.com',
+      'https://res.cloudinary.com'
     ];
     callback(null, allowedOrigins.includes(origin));
   },
   credentials: true,
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  exposedHeaders: ['Cross-Origin-Resource-Policy']
+  exposedHeaders: ['Cross-Origin-Resource-Policy', 'Cross-Origin-Embedder-Policy']
 }));
 
 // Add the CORP headers right after CORS
@@ -33,10 +38,23 @@ app.use((req, res, next) => {
   next();
 });
 
+// Add preload headers
+app.use((req, res, next) => {
+  res.setHeader('Link', [
+    '</vendor.shapediver.bundle.js>; rel=preload; as=script',
+    '</vendor.three.bundle.js>; rel=preload; as=script',
+    '</vendor.bundle.bundle.js>; rel=preload; as=script'
+  ].join(','));
+  next();
+});
+
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
+  max: 100, // Limit each IP to 100 requests per windowMs
+  standardHeaders: true,
+  trustProxy: true // Required for Heroku
 });
+
 app.use(limiter);
 
 // Block sensitive file access
@@ -49,11 +67,11 @@ app.use((req, res, next) => {
 });
 
 app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  crossOriginEmbedderPolicy: false,
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://*.hsforms.com", "https://*.hubspot.com"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://js.hsforms.net", "https://*.hsforms.com", "https://*.hubspot.com"],
       connectSrc: [
         "'self'", 
         "https://*.shapediver.com", 
@@ -62,27 +80,31 @@ app.use(helmet({
         "https://spinlio.com",
         "https://configurator.spinlio.com",
         "https://contact.spinlio.com",
-        "https://www.herokucdn.com"  // Add this
-      ],
-      imgSrc: [
-        "'self'", 
-        "data:", 
-        "blob:", 
-        "https://*.hsforms.com", 
-        "https://*.hubspot.com",
+        "https://www.herokucdn.com",
+        "https://viewer.shapediver.com",
         "https://res.cloudinary.com"
       ],
-      mediaSrc: ["'self'", "blob:"],
-      workerSrc: ["'self'", "blob:"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com", "https://*.hsforms.com"],
       frameSrc: [
+        "'self'",
         "https://*.hsforms.com", 
         "https://*.hubspot.com",
-        "https://www.herokucdn.com"  // Add this
+        "https://www.herokucdn.com"
       ],
-      formAction: ["https://*.hsforms.com", "https://*.hubspot.com"],
-    },
-  },
+      imgSrc: [
+        "'self'",
+        "data:",
+        "https://*.shapediver.com",
+        "https://viewer.shapediver.com",
+        "https://res.cloudinary.com",
+        "https://*.cloudinary.com"
+      ],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      fontSrc: ["'self'", "data:", "https://fonts.gstatic.com"],
+      objectSrc: ["'none'"],
+      mediaSrc: ["'self'", "https://res.cloudinary.com"],
+    }
+  }
 }));
 
 // Add logging for debugging

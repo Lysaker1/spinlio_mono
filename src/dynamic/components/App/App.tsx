@@ -46,6 +46,16 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
+    // Remove initial loader once app is mounted
+    const loader = document.getElementById('initial-loader');
+    if (loader) {
+      // Fade out loader
+      loader.style.transition = 'opacity 0.5s';
+      loader.style.opacity = '0';
+      setTimeout(() => loader.remove(), 500);
+    }
+
+    // Prefetch if we're on configurator
     if (window.location.hostname === 'configurator.spinlio.com' || 
         (process.env.NODE_ENV === 'development' && window.location.port === '3001')) {
       prefetchShapeDiver();
@@ -59,10 +69,13 @@ const App: React.FC = () => {
           <div className="app">
             <Header />
             <main className="main-content">
-              {/* Only the CONTENT area gets the Suspense, not the whole app! */}
               <Routes>
                 <Route path="/" element={
-                  <React.Suspense fallback={null}>  {/* No loading spinner! */}
+                  <React.Suspense fallback={
+                    <div className="loading-placeholder">
+                      {/* Your custom loading GIF is already showing from index.html */}
+                    </div>
+                  }>
                     {getMainComponent()}
                   </React.Suspense>
                 } />

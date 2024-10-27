@@ -102,7 +102,18 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist/dynamic', 'index.html'));
 });
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`Server is up on port ${port}`);
-});
+const setupServer = () => {
+  return app;
+};
+
+// Only create one server instance per worker
+if (!module.parent) {
+  const server = setupServer();
+  const port = process.env.PORT || 3000;
+  
+  server.listen(port, () => {
+    console.log(`Worker ${process.pid} listening on port ${port}`);
+  });
+}
+
+module.exports = setupServer;

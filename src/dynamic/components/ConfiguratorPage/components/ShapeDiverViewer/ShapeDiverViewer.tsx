@@ -30,6 +30,11 @@ declare global {
 
 const LOADING_GIF_URL = 'https://res.cloudinary.com/da8qnqmmh/image/upload/e_make_transparent:10/v1729757636/BIKE_qa0p3v.gif';
 
+// Split imports
+const createViewportPromise = import('@shapediver/viewer').then(m => m.createViewport);
+const createSessionPromise = import('@shapediver/viewer').then(m => m.createSession);
+const RGBELoaderPromise = import('three/examples/jsm/loaders/RGBELoader.js').then(m => m.RGBELoader);
+
 const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
   session,
   setSession,
@@ -43,10 +48,17 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    let isActive = true; // Add this flag
+    let isActive = true;
 
     const initShapeDiver = async () => {
       if (!canvasRef.current || !isActive) return;
+
+      // Load dependencies dynamically
+      const [createViewport, createSession, RGBELoader] = await Promise.all([
+        createViewportPromise,
+        createSessionPromise,
+        RGBELoaderPromise
+      ]);
 
       // Make RGBELoader available globally
       if (typeof window !== 'undefined' && window.THREE) {

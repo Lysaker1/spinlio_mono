@@ -6,6 +6,7 @@ const webpack = require('webpack');
 const dotenv = require('dotenv');
 const fs = require('fs');
 const CompressionPlugin = require('compression-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -77,7 +78,9 @@ module.exports = (env) => {
 
   return {
     mode: isProd ? 'production' : 'development',
-    entry: './src/dynamic/index.tsx',
+    entry: {
+      main: './src/dynamic/index.tsx'
+    },
     output: {
       path: path.resolve(__dirname, 'dist/dynamic'),
       filename: isProd ? '[name].[contenthash].js' : '[name].bundle.js',
@@ -159,49 +162,45 @@ module.exports = (env) => {
       new CompressionPlugin({
         test: /\.(js|css|html|svg)$/,
         algorithm: 'gzip'
-      })
-    ],
+      }),
+      process.env.ANALYZE && new BundleAnalyzerPlugin()
+    ].filter(Boolean),
     optimization: {
       splitChunks: {
         chunks: 'all',
-        maxInitialRequests: 25,
-        minSize: 20000,
-        maxSize: 244000,
+        maxInitialRequests: 10,
+        minSize: 100000,
+        maxSize: 2000000,
         cacheGroups: {
-          core: {
-            test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
-            name: 'vendor.core',
-            chunks: 'all',
-            priority: 40,
+          shapediverDraco: {
+            test: (module) => {
+              const isMatch = module.resource && 
+                             module.resource.includes('draco_decoder.js');
+              if (isMatch) console.log('Found Draco:', module.resource);
+              return isMatch;
+            },
+            name: 'draco',
+            chunks: 'async',
+            priority: 100,
             enforce: true
           },
-          shapediver: {
-            test: /[\\/]node_modules[\\/](@shapediver)[\\/]/,
-            name: 'vendor.shapediver',
-            chunks: 'all',
-            priority: 35,
-            enforce: true
-          },
-          three: {
-            test: /[\\/]node_modules[\\/](three)[\\/]/,
-            name: 'vendor.three',
-            chunks: 'all',
-            priority: 30,
-            enforce: true
-          },
-          ui: {
-            test: /[\\/]node_modules[\\/](@mantine|@emotion)[\\/]/,
-            name: 'vendor.ui',
-            chunks: 'all',
-            priority: 25,
+          shapediverThree: {
+            test: (module) => {
+              const isMatch = module.resource && 
+                             module.resource.includes('three.module.js');
+              if (isMatch) console.log('Found Three:', module.resource);
+              return isMatch;
+            },
+            name: 'three',
+            chunks: 'async',
+            priority: 90,
             enforce: true
           },
           defaultVendors: {
             test: /[\\/]node_modules[\\/]/,
-            name: 'vendor.common',
+            name: 'vendor',
             chunks: 'all',
-            priority: -10,
-            reuseExistingChunk: true
+            priority: -10
           }
         }
       },

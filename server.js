@@ -1,9 +1,22 @@
 const express = require('express');
 const path = require('path');
 const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');  // Add this line
+const rateLimit = require('express-rate-limit');
+const cors = require('cors');  // Add this
 
 const app = express();
+
+// Add CORS before other middleware
+app.use(cors({
+  origin: [
+    'https://spinlio.com', 
+    'http://localhost:3000',  // Add this
+    'http://localhost:3001',  // Add this
+    'https://spinlio-dynamic-e31fcb8098e8.herokuapp.com'
+  ],
+  methods: ['GET', 'POST', 'OPTIONS'],
+  credentials: true
+}));
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -20,16 +33,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Update CORS to handle both domains
-app.use((req, res, next) => {
-  const allowedOrigins = ['https://spinlio.com', 'https://spinlio-dynamic-e31fcb8098e8.herokuapp.com'];
-  const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-  }
-  next();
-});
-
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
@@ -41,7 +44,8 @@ app.use(helmet({
         "https://*.shapediver.com", 
         "https://*.hubspot.com", 
         "https://*.hsforms.com",
-        "https://spinlio.com"
+        "https://spinlio.com",
+        "https://spinlio-dynamic-e31fcb8098e8.herokuapp.com"  // Add this
       ],
       imgSrc: [
         "'self'", 
@@ -60,15 +64,23 @@ app.use(helmet({
   },
 }));
 
+// Add logging for debugging
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path} - Origin: ${req.headers.origin}`);
+  next();
+});
+
 // Serve static files
 app.use(express.static(path.join(__dirname, 'dist/dynamic')));
 
 // Handle configurator and contact routes
 app.get(['/configurator', '/configurator/*'], (req, res) => {
+  console.log('Configurator route hit:', req.path);
   res.sendFile(path.join(__dirname, 'dist/dynamic', 'index.html'));
 });
 
 app.get(['/contact', '/contact/*'], (req, res) => {
+  console.log('Contact route hit:', req.path);
   res.sendFile(path.join(__dirname, 'dist/dynamic', 'index.html'));
 });
 
@@ -79,6 +91,7 @@ app.get(['/about', '/about/*'], (req, res) => {
 
 // Catch-all route
 app.get('*', (req, res) => {
+  console.log('Catch-all route hit:', req.path);
   res.sendFile(path.join(__dirname, 'dist/dynamic', 'index.html'));
 });
 

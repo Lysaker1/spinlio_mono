@@ -37,6 +37,7 @@
     "node": ">=18"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "express-rate-limit": "^7.4.1"
   }
 }

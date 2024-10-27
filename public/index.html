@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spinlio</title>
+    <link rel="preload" as="image" href="/images/background_final_last.png">
     <style>
       body, html {
         margin: 0;
@@ -12,9 +13,35 @@
         overflow: hidden;
       }
     </style>
+    <script>
+      // Preload background image
+      window.addEventListener('load', function() {
+        const img = new Image();
+        img.src = '/images/background_final_last.png';
+        img.onload = function() {
+          document.body.classList.add('background-loaded');
+        };
+        document.body.classList.add('background-loading');
+      });
+    </script>
 </head>
 <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+    
+    <!-- Add this service worker registration script -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/service-worker.js')
+            .then(registration => {
+              console.log('ServiceWorker registration successful');
+            })
+            .catch(err => {
+              console.log('ServiceWorker registration failed: ', err);
+            });
+        });
+      }
+    </script>
 </body>
 </html>

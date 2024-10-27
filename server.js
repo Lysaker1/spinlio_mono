@@ -130,6 +130,18 @@ app.use((req, res, next) => {
   next();
 });
 
+// Add preload headers for critical resources
+app.use((req, res, next) => {
+  if (req.path === '/') {
+    res.setHeader('Link', [
+      '</images/background_final_last.png>; rel=preload; as=image',
+      '</main.bundle.js>; rel=preload; as=script',
+      '</189.bundle.js>; rel=preload; as=script'
+    ].join(','));
+  }
+  next();
+});
+
 // Serve static files
 app.use(express.static(path.join(__dirname, 'dist/dynamic')));
 

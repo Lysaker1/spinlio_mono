@@ -1,5 +1,6 @@
 const cluster = require('cluster');
-const numCPUs = 2; // Let's start with 2 workers per dyno
+const numCPUs = process.env.WEB_CONCURRENCY || 2; // Let Heroku decide worker count
+
 
 if (cluster.isPrimary) {
   const port = process.env.PORT || 3000;

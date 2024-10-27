@@ -13,9 +13,9 @@ app.use(cors({
       'http://localhost:3000',
       'http://localhost:3001',
       'https://spinlio.com',
-      'https://spinlio-dynamic-e31fcb8098e8.herokuapp.com'
+      'https://configurator.spinlio.com',
+      'https://contact.spinlio.com'
     ];
-    // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     if (allowedOrigins.indexOf(origin) === -1) {
       return callback(new Error('CORS not allowed'), false);
@@ -53,7 +53,8 @@ app.use(helmet({
         "https://*.hubspot.com", 
         "https://*.hsforms.com",
         "https://spinlio.com",
-        "https://spinlio-dynamic-e31fcb8098e8.herokuapp.com"  // Add this
+        "https://configurator.spinlio.com",
+        "https://contact.spinlio.com"
       ],
       imgSrc: [
         "'self'", 

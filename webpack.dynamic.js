@@ -35,7 +35,7 @@ module.exports = (env) => {
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.hsforms.com https://*.hubspot.com; 
       img-src 'self' data: blob: https://*.hsforms.com https://*.hubspot.com https://res.cloudinary.com; 
       media-src 'self' blob:; 
-      connect-src 'self' ws: wss: https: ${finalEnv.CORS_ORIGIN} https://*.hubspot.com https://*.hsforms.com; 
+      connect-src 'self' ws: wss: https: https://*.spinlio.com https://*.shapediver.com https://*.hubspot.com https://*.hsforms.com; 
       worker-src 'self' blob:; 
       font-src 'self' https://fonts.gstatic.com https://*.hsforms.com; 
       frame-src https://*.hsforms.com https://*.hubspot.com; 
@@ -47,7 +47,7 @@ module.exports = (env) => {
     entry: './src/dynamic/index.tsx', // Changed entry point
     output: {
       path: path.resolve(__dirname, 'dist/dynamic'), // Changed output path
-      filename: 'bundle.js',
+      filename: '[name].[contenthash].js',  // Update this line
       publicPath: '/'
     },
     module: {
@@ -114,15 +114,15 @@ module.exports = (env) => {
           vendor: {
             test: /[\\/]node_modules[\\/]/,
             name(module) {
+              // Get the package name
               const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
-              return `vendor.${packageName.replace('@', '')}`;
+              // Return a unique name for each vendor chunk
+              return `vendor.${packageName.replace('@', '').replace('/', '.')}`;
             },
+            filename: '[name].bundle.js'  // Add this line
           },
         },
       },
     },
-    performance: {
-      hints: false, // Disable size warnings for now
-    }
   };
 };

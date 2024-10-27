@@ -1,16 +1,7 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Title, Text, Button, Stack } from '@mantine/core';
 import './LandingPage.css';
 
 const LandingPage: React.FC = () => {
-  const navigate = useNavigate();
-
-  const handleDesignClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    window.location.href = '/configurator';
-  };
-
   return (
     <div className="landing-page">
       <div className="landing-content">
@@ -23,7 +14,7 @@ const LandingPage: React.FC = () => {
         </div>
         {/* Space for future image */}
         <div className="image-placeholder"></div>
-        <a href="/configurator" onClick={handleDesignClick} className="design-button">
+        <a href="https://configurator.spinlio.com" className="design-button">
           Design Now
         </a>
       </div>

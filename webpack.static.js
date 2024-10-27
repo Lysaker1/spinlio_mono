@@ -92,9 +92,17 @@ module.exports = (env) => {
         directory: path.join(__dirname, 'public'),
       },
       compress: true,
-      port: finalEnv.PORT_STATIC || 3000,  // Use environment variable
-      historyApiFallback: true
-      // Removed CSP headers as they're not needed for static content
-    },
+      port: finalEnv.PORT_STATIC || 3000,
+      historyApiFallback: true,
+      proxy: [{
+        context: ['/configurator'],
+        target: 'https://configurator.spinlio.com',
+        changeOrigin: true,
+      }, {
+        context: ['/contact'],
+        target: 'https://contact.spinlio.com',
+        changeOrigin: true,
+        }]
+    }
   };
 };

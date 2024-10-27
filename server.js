@@ -8,14 +8,22 @@ const app = express();
 
 // Add CORS before other middleware
 app.use(cors({
-  origin: [
-    'https://spinlio.com', 
-    'http://localhost:3000',  // Add this
-    'http://localhost:3001',  // Add this
-    'https://spinlio-dynamic-e31fcb8098e8.herokuapp.com'
-  ],
-  methods: ['GET', 'POST', 'OPTIONS'],
-  credentials: true
+  origin: function(origin, callback) {
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'https://spinlio.com',
+      'https://spinlio-dynamic-e31fcb8098e8.herokuapp.com'
+    ];
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      return callback(new Error('CORS not allowed'), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'OPTIONS']
 }));
 
 const limiter = rateLimit({

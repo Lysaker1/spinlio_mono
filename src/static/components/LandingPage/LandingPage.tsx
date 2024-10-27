@@ -9,11 +9,23 @@ const LandingPage: React.FC = () => {
   const handleDesignClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     try {
-      const baseUrl = process.env.NODE_ENV === 'development' 
-        ? 'http://localhost:3001'  // Development server
-        : 'https://spinlio-dynamic-e31fcb8098e8.herokuapp.com';  // Production server
+      // Always use Heroku URL in production
+      const baseUrl = 'https://spinlio-dynamic-e31fcb8098e8.herokuapp.com';
       
-      await fetch(`${baseUrl}/configurator`);
+      console.log('Fetching from:', baseUrl); // Debug log
+      
+      const response = await fetch(`${baseUrl}/configurator`, {
+        credentials: 'include',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
       navigate('/configurator');
     } catch (error) {
       console.error('Failed to load configurator:', error);

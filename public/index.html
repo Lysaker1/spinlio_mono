@@ -4,7 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spinlio</title>
-    <link rel="preload" as="image" href="/images/background_final_last.png">
+    <!-- Add these meta tags -->
+    <meta http-equiv="Cache-Control" content="public, max-age=31536000, immutable">
+    <meta name="description" content="Spinlio - From idea to productions">
+    <link rel="preload" as="image" href="/images/background_final_last.png" fetchpriority="high">
+    <link rel="preload" as="script" href="/runtime.bundle.js">
+    <link rel="preload" as="script" href="/vendor.shapediver.bundle.js">
     <style>
       body, html {
         margin: 0;
@@ -12,25 +17,41 @@
         height: 100%;
         overflow: hidden;
       }
+
+      /* Add loading state styles */
+      .background-loading {
+        opacity: 0;
+        transition: opacity 0.3s ease-in;
+      }
+
+      .background-loaded {
+        opacity: 1;
+        background-image: url('/images/background_final_last.png');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+      }
     </style>
-    <script>
-      // Preload background image
-      window.addEventListener('load', function() {
-        const img = new Image();
-        img.src = '/images/background_final_last.png';
-        img.onload = function() {
-          document.body.classList.add('background-loaded');
-        };
-        document.body.classList.add('background-loading');
-      });
-    </script>
 </head>
 <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     
-    <!-- Add this service worker registration script -->
+    <!-- Combine both scripts at the end of body -->
     <script>
+      // Background loading
+      window.addEventListener('DOMContentLoaded', function() {
+        const img = new Image();
+        img.src = '/images/background_final_last.png';
+        img.onload = function() {
+          document.body.classList.add('background-loaded');
+          document.body.classList.remove('background-loading');
+        };
+        document.body.classList.add('background-loading');
+      });
+
+      // Service worker registration
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('/service-worker.js')

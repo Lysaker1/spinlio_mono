@@ -146,7 +146,7 @@ module.exports = (env) => {
           // ... your existing patterns
           {
             from: path.resolve(__dirname, 'src/service-worker.js'),
-            to: path.resolve(__dirname, 'dist/dynamic/service-worker.js')
+            to: path.resolve(__dirname, 'dist/dynamic/service-worker.js')  // For dynamic sites
           }
         ]
       }),
@@ -172,13 +172,15 @@ module.exports = (env) => {
             test: /[\\/]node_modules[\\/](@shapediver)[\\/]/,
             name: 'vendor.shapediver',
             chunks: 'all',
-            priority: 20
+            priority: 20,
+            enforce: true
           },
           mantine: {
             test: /[\\/]node_modules[\\/](@mantine)[\\/]/,
             name: 'vendor.mantine',
             chunks: 'all',
-            priority: 10
+            priority: 10,
+            enforce: true
           },
           defaultVendors: {
             test: /[\\/]node_modules[\\/]/,

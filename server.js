@@ -144,9 +144,9 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
   if (req.path === '/') {
     res.setHeader('Link', [
-      '</images/background_final_last.png>; rel=preload; as=image',
+      '<https://res.cloudinary.com/da8qnqmmh/image/upload/v1730055768/background_final_last_dm9bl2.png>; rel=preload; as=image',
       '</main.bundle.js>; rel=preload; as=script',
-      '</189.bundle.js>; rel=preload; as=script'
+      // Remove 189.bundle.js if it's not needed anymore
     ].join(','));
   }
   next();

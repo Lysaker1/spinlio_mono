@@ -13,19 +13,13 @@
         margin: 0;
         padding: 0;
         height: 100vh;
-        background: #3a0f0f; /* Fallback color */
+        background: #3a0f0f url('/images/background_final_last.png') center/cover no-repeat fixed;
       }
 
-      body {
-        background-image: url('/images/background_final_last.png');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-      }
 
       #root {
         min-height: 100vh;
+        background: transparent; /* Ensure root doesn't block background */
       }
     </style>
 </head>

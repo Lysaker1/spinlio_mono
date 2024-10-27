@@ -42,6 +42,7 @@ module.exports = (env) => {
       filename: '[name].[contenthash].js',
       publicPath: '/'
     },
+    devtool: isProd ? false : 'source-map',  
     module: {
       rules: [
         {
@@ -114,43 +115,35 @@ module.exports = (env) => {
       runtimeChunk: 'single',
       splitChunks: {
         chunks: 'all',
-        maxInitialRequests: 10,
-        minSize: 20000,
+        maxInitialRequests: 4,  // Even more aggressive bundling
+        minSize: 100000,       // Bigger bundles
         cacheGroups: {
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name(module) {
-              // Get the vendor name
-              const packageName = module.context.match(
-                /[\\/]node_modules[\\/](.*?)([\\/]|$)/
-              )[1];
-              
-              // Group common packages together
-              if (packageName.includes('react') || packageName.includes('redux')) {
-                return 'vendor.react';
-              }
-              if (packageName.includes('three')) {
-                return 'vendor.three';
-              }
-              if (packageName.includes('mantine')) {
-                return 'vendor.mantine';
-              }
-              if (packageName.includes('shapediver')) {
-                return 'vendor.shapediver';
-              }
-              
-              // Other vendors go to a common chunk
-              return 'vendor.common';
-            },
-            priority: 20
+          // Core React bundle
+          react: {
+            test: /[\\/]node_modules[\\/](react|react-dom|react-router|react-router-dom)[\\/]/,
+            name: 'vendor.core',
+            chunks: 'all',
+            priority: 40,
           },
-          default: {
-            minChunks: 2,
-            priority: 10,
-            reuseExistingChunk: true
-          }
-        }
-      }
+          // UI components
+          ui: {
+            test: /[\\/]node_modules[\\/](@mantine|@emotion)[\\/]/,
+            name: 'vendor.ui',
+            chunks: 'all',
+            priority: 30,
+          },
+          // All other vendors
+          vendors: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendor.common',
+            chunks: 'all',
+            priority: -10,
+            reuseExistingChunk: true,
+          },
+        },
+      },
+      minimize: isProd,
+      moduleIds: 'deterministic'
     },
     devServer: {
       static: {
@@ -170,7 +163,13 @@ module.exports = (env) => {
           target: 'http://localhost:3001',
           changeOrigin: true,
         }]
-      })
+      }),
+      // Add these headers
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+        "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization"
+      }
     }
   };
 };

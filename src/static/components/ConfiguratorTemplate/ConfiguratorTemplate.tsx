@@ -1,10 +1,15 @@
 // This lives in the STATIC build (Netlify)
-import React from 'react';
+import React, { useEffect } from 'react';
 import './ConfiguratorTemplate.css';
 import { Header, Footer } from '../../../shared/components';
 
 
 const ConfiguratorTemplate: React.FC = () => {
+  useEffect(() => {
+    console.log('ConfiguratorTemplate: Mounted');
+    return () => console.log('ConfiguratorTemplate: Unmounted');
+  }, []);
+
   return (
     <div className="app">
       <Header />

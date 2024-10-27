@@ -111,7 +111,11 @@ module.exports = (env) => {
           { 
             from: path.resolve(__dirname, 'netlify.toml'),
             to: path.resolve(__dirname, 'dist/static/netlify.toml') // Specify full path
-        }
+          },
+          { 
+            from: path.resolve(__dirname, 'src/service-worker.js'),
+            to: path.resolve(__dirname, 'dist/static/service-worker.js')  // For static sites
+          }
         ]
       })
     ],

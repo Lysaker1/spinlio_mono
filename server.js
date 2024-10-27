@@ -104,7 +104,17 @@ app.use(helmet({
       ],
       objectSrc: ["'none'"],
       mediaSrc: ["'self'", "https://res.cloudinary.com"],
-      workerSrc: ["'self'", "blob:"]
+      workerSrc: [
+        "'self'",
+        "blob:",
+        "https://*.spinlio.com"  // Add this
+      ],
+      // Add cache-control headers
+      'Cache-Control': [
+        'public',
+        'max-age=31536000',
+        'immutable'
+      ]
     }
   },
   crossOriginResourcePolicy: { policy: "cross-origin" },

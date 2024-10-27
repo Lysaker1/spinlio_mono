@@ -8,6 +8,7 @@ const app = express();
 
 // Add CORS before other middleware
 app.use(cors({
+  // Keep your flexible origin handling
   origin: process.env.ALLOWED_ORIGINS?.split(',') || [
     'http://localhost:3000',
     'http://localhost:3001',
@@ -16,8 +17,19 @@ app.use(cors({
     'https://contact.spinlio.com'
   ],
   credentials: true,
-  methods: ['GET', 'POST', 'OPTIONS']
+  methods: ['GET', 'POST', 'OPTIONS'],
+  // Add these new headers
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Cross-Origin-Resource-Policy']
 }));
+
+// Add the CORP headers right after CORS
+app.use((req, res, next) => {
+  res.header('Cross-Origin-Resource-Policy', 'cross-origin');
+  res.header('Cross-Origin-Opener-Policy', 'same-origin');
+  res.header('Cross-Origin-Embedder-Policy', 'require-corp');
+  next();
+});
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes

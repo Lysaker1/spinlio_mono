@@ -156,29 +156,17 @@ module.exports = (env) => {
     optimization: {
       splitChunks: {
         chunks: 'all',
-        maxInitialRequests: Infinity,
-        minSize: 20000,
-        cacheGroups: {
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name(module) {
-              const packageName = module.context.match(
-                /[\\/]node_modules[\\/](.*?)([\\/]|$)/
-              )[1];
-              
-              if (['three', '@shapediver', 'react', 'react-dom'].includes(packageName)) {
-                return `vendor.${packageName.replace('@', '')}`;
-              }
-              return 'vendor.bundle';
-            },
-            priority: -10,
-            reuseExistingChunk: true
-          }
-        }
+        maxInitialRequests: 25,
+        minSize: 20000
       },
       runtimeChunk: 'single',
       minimize: isProd,
       moduleIds: 'deterministic'
+    },
+    performance: {
+      hints: false, // Disable size warnings
+      maxEntrypointSize: 10000000,
+      maxAssetSize: 10000000
     },
     devServer: {
       static: {

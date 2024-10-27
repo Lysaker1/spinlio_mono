@@ -63,6 +63,20 @@
       </div>
     </header>
     
+    <!-- Add immediate loading state -->
+    <div id="initial-loader" style="
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 999;
+      transition: opacity 0.5s;
+    ">
+      <img src="https://res.cloudinary.com/da8qnqmmh/image/upload/e_make_transparent:10/v1729757636/BIKE_qa0p3v.gif'" 
+           alt="Loading"
+           style="width: 200px; height: 200px;" />
+    </div>
+
     <div id="root"></div>
 
     <!-- Preload scripts -->

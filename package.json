@@ -41,7 +41,8 @@
     "@types/three": "^0.169.0",
     "compression-webpack-plugin": "^11.1.0",
     "dotenv": "^16.4.5",
-    "file-loader": "^6.2.0"
+    "file-loader": "^6.2.0",
+    "image-webpack-loader": "^8.1.0"
   },
   "engines": {
     "node": ">=18"

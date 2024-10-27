@@ -35,7 +35,17 @@
     "ts-loader": "^9.5.1",
     "webpack": "^5.95.0",
     "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^5.1.0"
+    "webpack-dev-server": "^5.1.0",
+    "@cloudinary/react": "^1.13.0",
+    "@cloudinary/url-gen": "^1.21.0",
+    "@shapediver/viewer": "^3.3.10",
+    "@shapediver/viewer.features.attribute-visualization": "^3.3.9",
+    "three": "^0.169.0",
+    "lodash": "^4.17.21",
+    "lodash.debounce": "^4.0.8",
+    "axios": "^1.7.7",
+    "express": "^4.21.1",
+    "helmet": "^8.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.8",

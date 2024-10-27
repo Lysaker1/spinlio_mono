@@ -119,6 +119,8 @@ module.exports = (env) => {
         '@shared': path.resolve(__dirname, 'src/shared'),
         '@static': path.resolve(__dirname, 'src/static'),
         '@dynamic': path.resolve(__dirname, 'src/dynamic'),
+        'react': path.resolve('./node_modules/react'),
+        'react-dom': path.resolve('./node_modules/react-dom'),
         'three': path.resolve('./node_modules/three')
       }
     },
@@ -172,33 +174,30 @@ module.exports = (env) => {
         minSize: 100000,
         maxSize: 2000000,
         cacheGroups: {
-          shapediverDraco: {
-            test: (module) => {
-              const isMatch = module.resource && 
-                             module.resource.includes('draco_decoder.js');
-              if (isMatch) console.log('Found Draco:', module.resource);
-              return isMatch;
-            },
-            name: 'draco',
-            chunks: 'async',
+          framework: {
+            test: /[\\/]node_modules[\\/](react|react-dom|@emotion|@mantine)[\\/]/,
+            name: 'framework',
+            chunks: 'all',
             priority: 100,
             enforce: true
           },
-          shapediverThree: {
-            test: (module) => {
-              const isMatch = module.resource && 
-                             module.resource.includes('three.module.js');
-              if (isMatch) console.log('Found Three:', module.resource);
-              return isMatch;
-            },
-            name: 'three',
+          shapediver: {
+            test: /[\\/]node_modules[\\/]@shapediver[\\/]/,
+            name: 'shapediver',
             chunks: 'async',
             priority: 90,
             enforce: true
           },
-          defaultVendors: {
+          three: {
+            test: /[\\/]node_modules[\\/]three[\\/]/,
+            name: 'three',
+            chunks: 'async',
+            priority: 80,
+            enforce: true
+          },
+          vendors: {
             test: /[\\/]node_modules[\\/]/,
-            name: 'vendor',
+            name: 'vendors',
             chunks: 'all',
             priority: -10
           }

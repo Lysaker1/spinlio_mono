@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  createViewport,
-  createSession,
   IViewportApi,
   ISessionApi,
   SPINNER_POSITIONING,
@@ -9,12 +7,25 @@ import {
   BUSY_MODE_DISPLAY,
   FLAG_TYPE,
 } from '@shapediver/viewer';
-import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 import { Box, Modal, Overlay } from '@mantine/core';
 import './ShapeDiverViewer.css';
 import { Cloudinary } from '@cloudinary/url-gen';
 import { AdvancedImage } from '@cloudinary/react';
 import { parameterDefinitions } from '../ParameterPanel/parameterDefinitions';
+
+// Add dynamic imports
+const loadShapeDiver = async () => {
+  const viewer = await import('@shapediver/viewer');
+  return {
+    createViewport: viewer.createViewport,
+    createSession: viewer.createSession
+  };
+};
+
+const loadThree = async () => {
+  const { RGBELoader } = await import('three/examples/jsm/loaders/RGBELoader.js');
+  return RGBELoader;
+};
 
 interface ShapeDiverViewerProps {
   session: ISessionApi | null;
@@ -29,11 +40,6 @@ declare global {
 }
 
 const LOADING_GIF_URL = 'https://res.cloudinary.com/da8qnqmmh/image/upload/e_make_transparent:10/v1729757636/BIKE_qa0p3v.gif';
-
-// Split imports
-const createViewportPromise = import('@shapediver/viewer').then(m => m.createViewport);
-const createSessionPromise = import('@shapediver/viewer').then(m => m.createSession);
-const RGBELoaderPromise = import('three/examples/jsm/loaders/RGBELoader.js').then(m => m.RGBELoader);
 
 const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
   session,
@@ -54,11 +60,8 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
       if (!canvasRef.current || !isActive) return;
 
       // Load dependencies dynamically
-      const [createViewport, createSession, RGBELoader] = await Promise.all([
-        createViewportPromise,
-        createSessionPromise,
-        RGBELoaderPromise
-      ]);
+      const { createViewport, createSession } = await loadShapeDiver();
+      const RGBELoader = await loadThree();
 
       // Make RGBELoader available globally
       if (typeof window !== 'undefined' && window.THREE) {

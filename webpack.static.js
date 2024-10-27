@@ -54,11 +54,25 @@ module.exports = (env) => {
           use: ['style-loader', 'css-loader'],
         },
         {
-          test: /\.(png|jpe?g|gif|svg)$/i,
-          type: 'asset/resource',
-          generator: {
-            filename: 'images/[name][ext]'
-          }
+          test: /\.(png|jpe?g|gif)$/i,
+          use: [
+            {
+              loader: 'image-webpack-loader',
+              options: {
+                mozjpeg: {
+                  progressive: true,
+                  quality: 65
+                },
+                optipng: {
+                  enabled: false,
+                },
+                pngquant: {
+                  quality: [0.65, 0.90],
+                  speed: 4
+                }
+              }
+            }
+          ]
         }
       ],
     },
@@ -75,7 +89,12 @@ module.exports = (env) => {
       new HtmlWebpackPlugin({
         template: './public/index.html',
       }),
-      new webpack.DefinePlugin(envKeys),
+      new webpack.DefinePlugin({
+        'process.env': {
+          ...envKeys,
+          NODE_ENV: JSON.stringify(isProd ? 'production' : 'development')
+        }
+      }),
       new CopyWebpackPlugin({
         patterns: [
           // Copy from src/static/public

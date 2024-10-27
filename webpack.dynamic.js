@@ -9,21 +9,39 @@ module.exports = (env) => {
   // Environment handling
   const currentPath = path.join(__dirname);
   const basePath = currentPath + '/.env';
-  const envPath = basePath + '.' + (env.ENVIRONMENT || 'development');
-  const finalPath = fs.existsSync(envPath) ? envPath : basePath;
+  const envPath = basePath + '.' + (env.ENVIRONMENT || process.env.NODE_ENV || 'development');
   
-  // Load both .env and environment-specific .env
+  // Load environment variables
   const baseEnv = dotenv.config({ path: basePath }).parsed || {};
   const environmentEnv = fs.existsSync(envPath) 
     ? dotenv.config({ path: envPath }).parsed 
     : {};
   
-  const finalEnv = { ...baseEnv, ...environmentEnv };
+  // Add Heroku config vars
+  const herokuEnv = {
+    NODE_ENV: process.env.NODE_ENV,
+    CORS_ORIGIN: process.env.CORS_ORIGIN,
+    CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
+    CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME
+  };
   
-  const envKeys = Object.keys(finalEnv || {}).reduce((prev, next) => {
-    prev[`process.env.${next}`] = JSON.stringify(finalEnv[next]);
-    return prev;
-  }, {});
+  const finalEnv = { ...baseEnv, ...environmentEnv, ...herokuEnv };
+  
+  // Update CSP headers based on environment
+  const cspHeaders = {
+    'Content-Security-Policy': `
+      default-src 'self'; 
+      script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.hsforms.net https://*.hsforms.com https://*.hubspot.com; 
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.hsforms.com https://*.hubspot.com; 
+      img-src 'self' data: blob: https://*.hsforms.com https://*.hubspot.com https://res.cloudinary.com; 
+      media-src 'self' blob:; 
+      connect-src 'self' ws: wss: https: ${finalEnv.CORS_ORIGIN} https://*.hubspot.com https://*.hsforms.com; 
+      worker-src 'self' blob:; 
+      font-src 'self' https://fonts.gstatic.com https://*.hsforms.com; 
+      frame-src https://*.hsforms.com https://*.hubspot.com; 
+      form-action https://*.hsforms.com https://*.hubspot.com;
+    `.replace(/\s+/g, ' ')
+  };
 
   return {
     entry: './src/dynamic/index.tsx', // Changed entry point
@@ -71,7 +89,12 @@ module.exports = (env) => {
       new HtmlWebpackPlugin({
         template: './public/index.html',
       }),
-      new webpack.DefinePlugin(envKeys),
+      new webpack.DefinePlugin({
+        'process.env.NODE_ENV': JSON.stringify(finalEnv.NODE_ENV),
+        'process.env.CORS_ORIGIN': JSON.stringify(finalEnv.CORS_ORIGIN),
+        'process.env.CLOUDINARY_API_KEY': JSON.stringify(finalEnv.CLOUDINARY_API_KEY),
+        'process.env.CLOUDINARY_CLOUD_NAME': JSON.stringify(finalEnv.CLOUDINARY_CLOUD_NAME)
+      }),
     ],
     devServer: {
       static: {
@@ -80,20 +103,7 @@ module.exports = (env) => {
       compress: true,
       port: finalEnv.PORT_DYNAMIC || 3001,  // Use environment variable
       historyApiFallback: true,
-      headers: {
-        'Content-Security-Policy': `
-          default-src 'self'; 
-          script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.hsforms.net https://*.hsforms.com https://*.hubspot.com; 
-          style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.hsforms.com https://*.hubspot.com; 
-          img-src 'self' data: blob: https://*.hsforms.com https://*.hubspot.com https://res.cloudinary.com; 
-          media-src 'self' blob:; 
-          connect-src 'self' ws: wss: https: https://*.hubspot.com https://*.hsforms.com; 
-          worker-src 'self' blob:; 
-          font-src 'self' https://fonts.gstatic.com https://*.hsforms.com; 
-          frame-src https://*.hsforms.com https://*.hubspot.com; 
-          form-action https://*.hsforms.com https://*.hubspot.com;
-        `.replace(/\s+/g, ' ')
-      }
+      headers: cspHeaders
     },
   };
 };

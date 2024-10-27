@@ -20,9 +20,13 @@ app.use((req, res, next) => {
   next();
 });
 
-// Add CORS for Netlify
+// Update CORS to handle both domains
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'https://spinlio.com');
+  const allowedOrigins = ['https://spinlio.com', 'https://spinlio-dynamic-e31fcb8098e8.herokuapp.com'];
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
   next();
 });
 
@@ -66,6 +70,11 @@ app.get(['/configurator', '/configurator/*'], (req, res) => {
 
 app.get(['/contact', '/contact/*'], (req, res) => {
   res.sendFile(path.join(__dirname, 'dist/dynamic', 'index.html'));
+});
+
+// Update routes to handle both domains
+app.get(['/about', '/about/*'], (req, res) => {
+  res.redirect('https://spinlio.com/about');
 });
 
 // Catch-all route

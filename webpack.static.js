@@ -97,6 +97,11 @@ module.exports = (env) => {
       }),
       new CopyWebpackPlugin({
         patterns: [
+          // Copy background image from shared assets
+          { 
+            from: path.resolve(__dirname, 'src/shared/assets/images'),
+            to: path.resolve(__dirname, 'dist/static/images')
+          },
           // Copy from src/static/public
           { 
             from: path.resolve(__dirname, 'src/static/public'),

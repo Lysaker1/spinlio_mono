@@ -16,24 +16,31 @@ body {
   font-family: 'Roboto', sans-serif;
   min-height: 100vh;
   overflow-y: auto;
-  opacity: 0;
-  transition: opacity 0.3s ease-in;
+  opacity: 1;
+  background: #fff;
 }
 
+/* Remove opacity transition from body */
 body.background-loaded {
-  opacity: 1;
-  background: url('../assets/images/background_final_last.png');
+  background-image: url('../assets/images/background_final_last.png');
   background-size: cover;
   background-position: top center;
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
 
+/* Add fade to content instead of body */
 .app {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   position: relative;
+  opacity: 0;
+  transition: opacity 0.3s ease-in;
+}
+
+.app.content-loaded {
+  opacity: 1;
 }
 
 .main-content {

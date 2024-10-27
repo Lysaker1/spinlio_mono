@@ -6,13 +6,8 @@ const requestIdleCallbackPolyfill = window.requestIdleCallback ||
   ((cb) => setTimeout(cb, 1));
 
 const LandingPage: React.FC = () => {
-  const hostname = window.location.hostname;
-  const isDevelopment = process.env.NODE_ENV === 'development';
-  
-  // Fix the configurator URL logic
-  const configuratorUrl = isDevelopment 
-    ? 'http://localhost:3001/configurator'
-    : 'https://configurator.spinlio.com';  // This is correct but not being used in production!
+  // Remove hostname and isDevelopment checks
+  const configuratorUrl = 'https://configurator.spinlio.com';  // Hardcode production URL
 
   useEffect(() => {
     let linkElement: HTMLLinkElement | null = null;
@@ -44,7 +39,6 @@ const LandingPage: React.FC = () => {
           </div>
           <span className="version-text">Beta V0.1</span>
         </div>
-        {/* Space for future image */}
         <div className="image-placeholder"></div>
         <a href={configuratorUrl} className="design-button">
           Design Now

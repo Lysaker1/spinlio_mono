@@ -14,6 +14,14 @@ const AppContent: React.FC = () => {
     img.onerror = (e) => console.error('Background failed to load:', e);
   }, []);
 
+  useEffect(() => {
+    console.log('Static App: Background should be loaded from cache');
+    const img = new Image();
+    img.src = '/images/background_final_last.png';
+    img.onload = () => console.log('Static App: Background loaded');
+    img.onerror = (e) => console.error('Static App: Background failed:', e);
+  }, []);
+
   return (
     <div className="app">
       <Header />

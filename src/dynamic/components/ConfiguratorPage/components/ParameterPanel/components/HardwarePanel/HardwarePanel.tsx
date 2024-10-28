@@ -7,12 +7,15 @@ interface ParameterPanelHardwareProps {
   parameters: ParameterDefinition[];
   parameterValues: { [id: string]: string };
   handleParameterChange: (value: any, definition: ParameterDefinition) => void;
+  isMobile?: boolean;
+
 }
 
 const ParameterPanelHardware: React.FC<ParameterPanelHardwareProps> = ({
   parameters,
   parameterValues,
   handleParameterChange,
+  
 }) => {
   // Find specific parameters
   const frontWaterBottle = parameters.find(p => p.id === 'e55e2d6f-e34a-4a13-bed3-3ab433635dcc');

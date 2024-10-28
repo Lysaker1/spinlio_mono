@@ -89,7 +89,7 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
           canvas: canvasRef.current,
           visibility: VISIBILITY_MODE.MANUAL,
           branding: {
-            backgroundColor: 'rgba(245, 240, 235, 0.2)',
+            backgroundColor: 'transparent',
             spinnerPositioning: SPINNER_POSITIONING.TOP_LEFT,
             busyModeSpinner: LOADING_GIF_URL,
             busyModeDisplay: BUSY_MODE_DISPLAY.SPINNER,

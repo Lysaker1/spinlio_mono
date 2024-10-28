@@ -74,7 +74,9 @@ module.exports = (env) => {
       alias: {
         '@shared': path.resolve(__dirname, 'src/shared'),
         '@static': path.resolve(__dirname, 'src/static'),
-        '@dynamic': path.resolve(__dirname, 'src/dynamic')
+        '@dynamic': path.resolve(__dirname, 'src/dynamic'),
+        react: path.resolve('./node_modules/react'),
+        'react-dom': path.resolve('./node_modules/react-dom'),
       }
     },
     plugins: [

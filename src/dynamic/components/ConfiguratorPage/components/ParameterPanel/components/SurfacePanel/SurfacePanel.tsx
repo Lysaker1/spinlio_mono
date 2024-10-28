@@ -21,18 +21,63 @@ interface ParameterPanelSurfaceProps {
   parameters: ParameterDefinition[];
   parameterValues: { [id: string]: string };
   handleParameterChange: (value: any, definition: ParameterDefinition) => void;
+  isMobile?: boolean;
+  activeControl?: string | null;
 }
 
 const ParameterPanelSurface: React.FC<ParameterPanelSurfaceProps> = ({
   parameters,
   parameterValues,
   handleParameterChange,
+  isMobile = false,
+  activeControl = null,
 }) => {
   const colorParameter = parameters.find(p => p.id === '3631ea0d-6d4c-49c2-b998-2c01a7797a01');
   const shapeParameter = parameters.find(p => p.id === '45e7e66b-7c42-4ac2-bef7-596dd49d4bd5');
 
+  if (isMobile) {
+    return (
+      <div className="parameter-panel-surface mobile">
+        {/* Show only active control content */}
+        {activeControl === 'shapes' && shapeParameter && (
+          <div className="surface-item shapes">
+            <div className="shape-options">
+              {shapeParameter.options?.map((option) => (
+                <div
+                  key={option.value}
+                  className={`shape-option ${parameterValues[shapeParameter.id] === option.value ? 'selected' : ''}`}
+                  onClick={() => handleParameterChange(option.value, shapeParameter)}
+                >
+                  <span>{option.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {activeControl === 'colors' && colorParameter && (
+          <div className="surface-item colors">
+            <div className="color-grid">
+              {Object.entries(colorMapping).map(([value, { hex, label }]) => (
+                <div
+                  key={value}
+                  className={`color-circle ${parameterValues[colorParameter.id] === value ? 'selected' : ''}`}
+                  onClick={() => handleParameterChange(value, colorParameter)}
+                >
+                  <div className="color-dot" style={{ backgroundColor: hex }} />
+                  <span className="color-label">{label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Desktop layout (your existing return)
   return (
-    <div className="parameter-panel-surface">
+    <div className="parameter-panel-surface desktop">
       {/* Color Selection */}
       {colorParameter && (
         <div className="surface-item">

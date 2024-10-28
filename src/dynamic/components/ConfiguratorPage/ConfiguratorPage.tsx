@@ -1,4 +1,4 @@
-import React, { useState, Suspense, lazy } from 'react';
+import React, { useState, Suspense, lazy, useRef, useEffect, useCallback } from 'react';
 import { Modal } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import { ISessionApi, IViewportApi, FLAG_TYPE } from '@shapediver/viewer';
@@ -25,16 +25,33 @@ const LoadingSpinner: React.FC = () => (
 
 const ConfiguratorPage: React.FC = () => {
   const navigate = useNavigate();
-  const [selectedComponent, setSelectedComponent] = useState<string>('');
-  const [session, setSession] = useState<ISessionApi | null>(null);
-  const [viewport, setViewport] = useState<IViewportApi | null>(null);
-  const [showExportMenu, setShowExportMenu] = useState(false);
-  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
-  const [showQrModal, setShowQrModal] = useState(false);
+const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
 
-  const handleExportClick = () => {
-    setShowExportMenu(!showExportMenu);
-  };
+  // These are like memory boxes that can hold and change values:
+  const [selectedComponent, setSelectedComponent] = useState<string>('');
+  const [session, setSession] = useState<ISessionApi | null>(null);     // Added proper typing
+  const [viewport, setViewport] = useState<IViewportApi | null>(null);  // Added proper typing
+  const [showExportMenu, setShowExportMenu] = useState(false);
+  const [showQrModal, setShowQrModal] = useState(false);
+  
+  // This is like a sticky note that remembers if our page is still showing
+  const isMounted = useRef(true);
+
+  // This is like a cleanup crew that runs when we leave the page
+  useEffect(() => {
+    // When leaving the page:
+    return () => {
+      isMounted.current = false;           // Mark that we're leaving
+      if (session) {
+        session.close();                   // Clean up the 3D viewer session
+      }
+    };
+  }, [session]);
+
+  // This is a function that handles clicking the export button
+  const handleExportClick = useCallback(() => {
+    setShowExportMenu(prev => !prev);
+  }, []);
 
   return (
     <div className="configurator-page">

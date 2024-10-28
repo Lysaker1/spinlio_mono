@@ -7,12 +7,15 @@ interface ParameterPanelGeometryProps {
   parameters: ParameterDefinition[];
   parameterValues: { [id: string]: string };
   handleParameterChange: (value: any, definition: ParameterDefinition) => void;
+  isMobile?: boolean;
+
 }
 
 const ParameterPanelGeometry: React.FC<ParameterPanelGeometryProps> = ({
   parameters,
   parameterValues,
   handleParameterChange,
+  isMobile = false,
 }) => {
   const [isDragging, setIsDragging] = useState<string | null>(null);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -49,12 +52,11 @@ const ParameterPanelGeometry: React.FC<ParameterPanelGeometryProps> = ({
   };
 
   const handleDropdownClick = (definitionId: string) => {
-    // Check if dropdown should open upward or downward
     const dropdownElement = document.querySelector(`[data-dropdown-id="${definitionId}"]`);
     if (dropdownElement) {
       const rect = dropdownElement.getBoundingClientRect();
       const spaceBelow = window.innerHeight - rect.bottom;
-      const shouldOpenUpward = spaceBelow < 200; // Adjust this value as needed
+      const shouldOpenUpward = spaceBelow < 200;
 
       setDropdownDirection(shouldOpenUpward ? 'up' : 'down');
     }
@@ -92,9 +94,9 @@ const ParameterPanelGeometry: React.FC<ParameterPanelGeometryProps> = ({
   }, [openDropdown]);
 
   return (
-    <div className="parameter-panel-parameters">
+    <div className={`parameter-panel-parameters ${isMobile ? 'mobile' : ''}`}>
       {parameters.map((definition) => (
-        <div key={definition.id} className="parameter-item">
+        <div key={definition.id} className={`parameter-item ${isMobile ? 'mobile' : ''}`}>
           <div className="parameter-header">
             <span className="param-name">{definition.name}</span>
             {definition.type === 'slider' && (

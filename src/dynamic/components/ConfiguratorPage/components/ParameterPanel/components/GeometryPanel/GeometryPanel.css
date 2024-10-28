@@ -195,3 +195,81 @@
 .mantine-Select-rightSection {
   display: none;
 }
+
+
+/* Keep all existing styles and add mobile-specific styles */
+
+/* Mobile Layout */
+@media screen and (max-width: 768px) {
+  .parameter-panel-parameters.mobile {
+    padding: 1.25rem;
+    height: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-right: 4rem;
+    background: rgba(25, 25, 25, 0.95);
+    backdrop-filter: blur(10px);
+    
+    mask-image: linear-gradient(
+      to right,
+      black calc(100% - 4rem),
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      to right,
+      black calc(100% - 4rem),
+      transparent 100%
+    );
+  }
+
+  .parameter-panel-parameters.mobile::-webkit-scrollbar {
+    display: none;
+  }
+
+  .parameter-item.mobile {
+    display: inline-block;
+    vertical-align: top;
+    margin-right: 1.5rem;
+    margin-bottom: 0;
+    width: 280px;
+    white-space: normal;
+  }
+
+  /* Container for horizontal scroll */
+  .parameter-item {
+    display: inline-block;
+    vertical-align: top;
+    margin-right: 1.5rem;
+    margin-bottom: 0;
+    width: 280px; /* Fixed width for each parameter card */
+    white-space: normal;
+  }
+
+  /* Adjust slider container for mobile */
+  .slider-container {
+    width: 280px;
+    margin: 1rem 0;
+  }
+
+  /* Ensure dropdowns open upward on mobile */
+  .dropdown-options {
+    bottom: calc(100% + 8px);
+    top: auto;
+  }
+
+  /* Adjust parameter header for mobile */
+  .parameter-header {
+    margin-bottom: 0.5rem;
+  }
+
+  /* Make value more prominent on mobile */
+  .param-value {
+    font-size: 1.125rem;
+    font-weight: 500;
+    padding: 0.5rem 0.75rem;
+  }
+}

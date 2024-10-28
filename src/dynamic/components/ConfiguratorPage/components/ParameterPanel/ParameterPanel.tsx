@@ -16,9 +16,20 @@ import { ParameterDefinition, ParameterPanelProps } from './types';
 const ParameterPanel: React.FC<ParameterPanelProps> = ({ selectedComponent, session, viewport }) => {
   const [activeTab, setActiveTab] = useState('Surface');
   const [parameterValues, setParameterValues] = useState<{ [id: string]: string }>({});
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [activeControl, setActiveControl] = useState<string | null>(null);
 
+  // Mobile detection
   useEffect(() => {
-    // Initialize parameter values
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Initialize parameter values
+  useEffect(() => {
     const initialValues: { [id: string]: string } = {};
     parameterDefinitions.forEach((param) => {
       // Convert value to string explicitly
@@ -27,12 +38,12 @@ const ParameterPanel: React.FC<ParameterPanelProps> = ({ selectedComponent, sess
     setParameterValues(initialValues);
   }, []);
 
+  // Your existing debounced customize function
   const debouncedCustomize = useCallback(
     debounce(async (params: {}) => {
       if (!session || !viewport) return;
       try {
         await session.customize(params);
-        console.log('Session customized with params:', params);
         if (session.node) {
           await viewport.updateNode(session.node);
           viewport.update();
@@ -49,6 +60,10 @@ const ParameterPanel: React.FC<ParameterPanelProps> = ({ selectedComponent, sess
     const stringValue = value.toString();
     setParameterValues((prevValues) => ({ ...prevValues, [definition.id]: stringValue }));
     debouncedCustomize({ [definition.id]: stringValue });
+  };
+
+  const handleControlClick = (control: string) => {
+    setActiveControl(activeControl === control ? null : control);
   };
 
   if (!session) return null;
@@ -83,39 +98,47 @@ const ParameterPanel: React.FC<ParameterPanelProps> = ({ selectedComponent, sess
   );
 
   return (
-    <div className="parameter-panel">
+    <div className={`parameter-panel ${isMobile ? 'mobile' : ''}`}>
+      {/* Main navigation - same structure for both mobile and desktop */}
       <div className="tab-navigation">
         {['Surface', 'Geometry', 'Hardware'].map((tab) => (
           <button
             key={tab}
             className={`tab-button ${activeTab === tab ? 'active' : ''}`}
-            data-tab={tab}
             onClick={() => setActiveTab(tab)}
           >
             {tab}
           </button>
         ))}
       </div>
+
+      {/* Panel Content */}
       <div className="panel-content">
-        {activeTab === 'Geometry' && (
-          <GeometryPanel
-            parameters={geometryParams}
-            parameterValues={parameterValues}
-            handleParameterChange={handleParameterChange}
-          />
-        )}
         {activeTab === 'Surface' && (
           <SurfacePanel
             parameters={surfaceParams}
             parameterValues={parameterValues}
             handleParameterChange={handleParameterChange}
+            isMobile={isMobile}
+            activeControl={activeControl}
           />
         )}
+
+        {activeTab === 'Geometry' && (
+          <GeometryPanel
+            parameters={geometryParams}
+            parameterValues={parameterValues}
+            handleParameterChange={handleParameterChange}
+            isMobile={isMobile}
+          />
+        )}
+
         {activeTab === 'Hardware' && (
           <HardwarePanel
             parameters={hardwareParams}
             parameterValues={parameterValues}
             handleParameterChange={handleParameterChange}
+            isMobile={isMobile}
           />
         )}
       </div>

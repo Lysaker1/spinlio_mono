@@ -1,36 +1,60 @@
 .viewerContainer {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    min-height: 300px;
-  }
-  
+  width: 100%;
+  height: 100%;
+  position: relative;
+  min-height: 300px;
+}
 
-  /* Mobile-first approach */
+.viewerCanvas {
+  width: 100% !important;
+  height: 100% !important;
+  position: absolute;
+  top: 0;
+  left: 0;
+  min-height: inherit;
+  touch-action: none; /* Prevent default touch behaviors */
+}
+
+/* Mobile-first approach */
 @media screen and (max-width: 768px) {
   .viewerContainer {
-    height: 50vh; /* Use viewport height on mobile */
+    height: calc(100vh - 200px); /* Account for parameter panel */
+    min-height: 60vh; /* Ensure minimum height on mobile */
+    margin: 0;
+    padding: 0;
   }
-}
+
   .viewerCanvas {
-    width: 100%;
-    height: 100%;
-    position: absolute;
+    height: 100% !important;
+    width: 100% !important;
+    position: fixed; /* Fix the canvas position */
     top: 0;
     left: 0;
-    min-height: inherit; /* Inherit minimum height */
+    z-index: 1;
+  }
 
-  }
-  
   .loadingOverlay {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: transparent; /* Semi-transparent background */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 200px; /* Match parameter panel height */
+    z-index: 2;
   }
-  
-  .loadingGif {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
+}
+
+.loadingOverlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(245, 240, 235, 0.2);
+  backdrop-filter: blur(5px);
+}
+
+.loadingGif {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}

@@ -21,6 +21,7 @@ const loadShapeDiver = async () => {
     createSession: viewer.createSession
   };
 };
+const isMobile = window.innerWidth <= 768;
 
 const loadThree = async () => {
   const { RGBELoader } = await import('three/examples/jsm/loaders/RGBELoader.js');
@@ -90,11 +91,45 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
           visibility: VISIBILITY_MODE.MANUAL,
           branding: {
             backgroundColor: 'transparent',
-            spinnerPositioning: SPINNER_POSITIONING.TOP_LEFT,
+            spinnerPositioning: SPINNER_POSITIONING.CENTER,
             busyModeSpinner: LOADING_GIF_URL,
             busyModeDisplay: BUSY_MODE_DISPLAY.SPINNER,
-          },
+          }
         });
+
+        // Set viewport properties after creation
+        newViewport.automaticResizing = true;
+        newViewport.maximumRenderingSize = isMobile ? {
+          width: 1280,
+          height: 720
+        } : {
+          width: 1920,
+          height: 1080
+        };
+
+        // Configure camera
+        if (newViewport.camera) {
+          // Set camera properties for mobile
+          newViewport.camera.enableZoom = true;
+          newViewport.camera.zoomSpeed = isMobile ? 0.8 : 1;
+          newViewport.camera.enablePan = !isMobile;
+          newViewport.camera.enableRotation = true;
+          newViewport.camera.rotationSpeed = isMobile ? 0.5 : 1;
+          newViewport.camera.damping = 0.1;
+          
+          // Set zoom restrictions
+          newViewport.camera.zoomRestriction = {
+            minDistance: 2,
+            maxDistance: isMobile ? 8 : 6
+          };
+
+          // Set initial position
+          await newViewport.camera.set(
+            [0, 0, isMobile ? 5 : 3], // position
+            [0, 0, 0],  // target
+            { duration: 0 } // instant change
+          );
+        }
 
         if (!isActive) {
           newViewport.close();

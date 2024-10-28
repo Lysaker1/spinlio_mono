@@ -16,7 +16,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: rgba(197, 9, 9, 0.2); /* Semi-transparent background */
+    background-color: rgba(245, 240, 235, 0.2); /* Semi-transparent background */
   }
   
   .loadingGif {

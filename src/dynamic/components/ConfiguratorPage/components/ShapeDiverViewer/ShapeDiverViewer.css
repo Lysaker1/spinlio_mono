@@ -2,21 +2,31 @@
     width: 100%;
     height: 100%;
     position: relative;
+    min-height: 300px;
   }
   
+
+  /* Mobile-first approach */
+@media screen and (max-width: 768px) {
+  .viewerContainer {
+    height: 50vh; /* Use viewport height on mobile */
+  }
+}
   .viewerCanvas {
     width: 100%;
     height: 100%;
     position: absolute;
     top: 0;
     left: 0;
+    min-height: inherit; /* Inherit minimum height */
+
   }
   
   .loadingOverlay {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: rgba(245, 240, 235, 0.2); /* Semi-transparent background */
+    background-color: transparent; /* Semi-transparent background */
   }
   
   .loadingGif {

@@ -169,30 +169,26 @@ module.exports = (env) => {
     optimization: {
       splitChunks: {
         chunks: 'all',
+        maxInitialRequests: 4, // Reduce initial requests
         cacheGroups: {
           framework: {
             test: /[\\/]node_modules[\\/](react|react-dom|@emotion|@mantine)[\\/]/,
             name: 'framework',
             priority: 40,
-            enforce: true
+            chunks: 'all'
           },
           shapediver: {
-            test: /[\\/]node_modules[\\/]@shapediver[\\/]/,
+            test: /[\\/]node_modules[\\/](@shapediver|three)[\\/]/,  // Combine ShapeDiver and Three.js
             name: 'shapediver',
             priority: 90,
-            enforce: true
+            chunks: 'all'
           },
-          three: {
-            test: /[\\/]node_modules[\\/]three[\\/]/,
-            name: 'three',
-            priority: 85,
-            enforce: true
-          },
-          // Separate other large dependencies
-          utils: {
-            test: /[\\/]node_modules[\\/](lodash|axios|other-large-libs)[\\/]/,
-            name: 'utils',
-            priority: 30
+          vendors: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            priority: 20,
+            chunks: 'all',
+            minSize: 100000  // Increase minimum size
           }
         }
       },

@@ -16,8 +16,13 @@ const limiter = rateLimit({
   max: 100,
   standardHeaders: true,
   legacyHeaders: false,
-  trustProxy: true,
-  skip: (req) => req.path.includes('.js') || req.path.includes('.map')
+  trustProxy: false,  // Change this to false
+  skip: (req) => {
+    // Expand skip conditions for static assets
+    return req.path.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|map)$/) ||
+           req.path.includes('static/') ||
+           req.path.includes('assets/');
+  }
 });
 
 // Apply rate limiter
@@ -144,9 +149,10 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
   if (req.path === '/') {
     res.setHeader('Link', [
+      // Only preload critical resources
       '<https://res.cloudinary.com/da8qnqmmh/image/upload/v1730055768/background_final_last_dm9bl2.png>; rel=preload; as=image',
-      '</main.bundle.js>; rel=preload; as=script',
-      // Remove 189.bundle.js if it's not needed anymore
+      '</framework.bundle.js>; rel=preload; as=script',
+      '</shapediver.bundle.js>; rel=prefetch; as=script'  // Use prefetch for non-critical
     ].join(','));
   }
   next();

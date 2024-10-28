@@ -50,7 +50,6 @@ const LandingPage: React.FC = () => {
           </div>
           <span className="version-text">Beta V0.1</span>
         </div>
-        <div className="image-placeholder"></div>
         <a href={configuratorUrl} 
            onClick={handleDesignClick} 
            className="design-button">

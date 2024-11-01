@@ -188,11 +188,19 @@ module.exports = (env) => {
             chunks: 'all',
             enforce: true
           },
-          shapediver: {
-            test: /[\\/]node_modules[\\/](@shapediver|three)[\\/]/,  // Combine ShapeDiver and Three.js
-            name: 'shapediver',
-            priority: 90,
+          three: {
+            test: /[\\/]node_modules[\\/](three|@react-three)[\\/]/,
+            name: 'vendor.three',
             chunks: 'all',
+            priority: 40,
+            enforce: true,
+            reuseExistingChunk: true
+          },
+          shapediver: {
+            test: /[\\/]node_modules[\\/](@shapediver)[\\/]/,
+            name: 'shapediver',
+            chunks: 'all',
+            priority: 35,
             enforce: true,
             reuseExistingChunk: true
           },
@@ -210,7 +218,9 @@ module.exports = (env) => {
         name: 'runtime'
       },
       moduleIds: 'deterministic',
-      chunkIds: 'deterministic'
+      chunkIds: 'deterministic',
+      usedExports: true,
+      sideEffects: true
     },
     performance: {
       hints: false, // Disable size warnings

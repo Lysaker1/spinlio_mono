@@ -13,6 +13,8 @@ import {
 import { Box, Modal, Overlay } from '@mantine/core';
 // Import component styles
 import './ShapeDiverViewer.css';
+// Import TypeScript import for WebGLRenderer
+import { WebGLRenderer } from 'three';
 
 // Dynamic import function for ShapeDiver viewer
 const loadShapeDiver = async () => {
@@ -48,6 +50,19 @@ declare global {
   }
 }
 
+
+// Utility function to log camera details for debugging
+const logCameraDetails = (camera: any, label: string = 'Camera Details') => {
+  console.log(`=== ${label} ===`);
+  console.log('Position:', camera.position);
+  console.log('Target:', camera.target);
+  console.log('Field of View:', camera.fieldOfView);
+  console.log('Zoom Level:', camera.zoom);
+  console.log('Distance:', camera.distance);
+  console.log('==================');
+};
+
+
 // URL for loading animation GIF
 const LOADING_GIF_URL = 'https://res.cloudinary.com/da8qnqmmh/image/upload/e_make_transparent:10/v1729757636/BIKE_qa0p3v.gif';
 
@@ -58,7 +73,6 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
   setViewport,
 }) => {
   // Refs for canvas and ShapeDiver APIs
-  //What is a Ref? A ref is a reference to a DOM element. It is used to access the DOM element directly.
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const viewportRef = useRef<IViewportApi | null>(null);
   const sessionRef = useRef<ISessionApi | null>(null);
@@ -68,40 +82,23 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
   const [showQrModal, setShowQrModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Utility function to log camera details for debugging
-  const logCameraDetails = (camera: any, label: string = 'Camera Details') => {
-    console.log(`=== ${label} ===`);
-    console.log('Position:', camera.position);
-    console.log('Target:', camera.target);
-    console.log('Field of View:', camera.fieldOfView);
-    console.log('Zoom Level:', camera.zoom);
-    console.log('Distance:', camera.distance);
-    console.log('==================');
-  };
-
-  // Main initialization effect
   useEffect(() => {
-    // Flag to prevent async operations after unmount
     let isActive = true;
 
-    // Main initialization function
     const initShapeDiver = async () => {
       console.log('ShapeDiverViewer: Initializing...');
 
-      // Check if canvas is ready and component is still mounted
       if (!canvasRef.current || !isActive) {
         console.log('ShapeDiverViewer: Initialization aborted - canvas not ready or component inactive');
         return;
       }
 
       try {
-        // Load required dependencies
         console.log('ShapeDiverViewer: Loading dependencies...');
         const { createViewport, createSession } = await loadShapeDiver();
         const RGBELoader = await loadThree();
         console.log('ShapeDiverViewer: Dependencies loaded successfully');
 
-        // Make RGBELoader available globally for Three.js
         if (typeof window !== 'undefined' && window.THREE) {
           window.THREE.RGBELoader = RGBELoader;
         }
@@ -120,13 +117,11 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
         }
 
         try {
-          if (!isActive) return;
-
-          // Create new viewport
           console.log('Creating viewport...');
           const newViewport = await createViewport({
             canvas: canvasRef.current,
             visibility: VISIBILITY_MODE.MANUAL,
+            // Only include valid creation properties
             branding: {
               backgroundColor: 'transparent',
               spinnerPositioning: SPINNER_POSITIONING.CENTER,
@@ -135,42 +130,70 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
             }
           });
 
-          // Configure viewport rendering settings
-          newViewport.automaticResizing = true;
+          // Set maximum rendering size after creation
           newViewport.maximumRenderingSize = isMobile ? {
-            width: 1280,
-            height: 720
+            width: 1024,  // Reduced from 1280
+            height: 576   // Reduced from 720
           } : {
             width: 1920,
             height: 1080
           };
 
-          // Configure camera settings
-          if (newViewport.camera) {
-            // Set camera interaction properties
-            newViewport.camera.enableZoom = true;
-            newViewport.camera.zoomSpeed = isMobile ? 0.8 : 1;
-            newViewport.camera.enablePan = !isMobile;
-            newViewport.camera.enableRotation = true;
-            newViewport.camera.rotationSpeed = isMobile ? 0.5 : 1;
-            newViewport.camera.damping = 0.1;
-            
-            // Set camera zoom limits
-            newViewport.camera.zoomRestriction = {
-              minDistance: 2,
-              maxDistance: isMobile ? 8 : 6
-            };
+          // Add rendering callback for memory management
+          newViewport.preRenderingCallback = (renderer: WebGLRenderer) => {
+            if (renderer.info && isMobile) {
+              console.log('Memory:', renderer.info.memory);
+              if (renderer.info.memory.geometries > 1000 || 
+                  renderer.info.memory.textures > 100) {
+                renderer.dispose();
+              }
+            }
+          };
 
-            // Set initial camera position
+          // Configure camera for mobile
+          if (newViewport.camera) {
+            if (isMobile) {
+              newViewport.camera.enablePan = false;
+              newViewport.camera.zoomSpeed = 0.8;
+              newViewport.camera.rotationSpeed = 0.5;
+              newViewport.camera.damping = 0.2;
+              newViewport.camera.zoomRestriction = {
+                minDistance: 2,
+                maxDistance: 8
+              };
+            }
+
             await newViewport.camera.set(
-              [0, 0, isMobile ? 10 : 3], // position
-              [0, 0, 0], // target
-              { duration: 0 } // instant change
+              [0, 0, isMobile ? 10 : 3],
+              [0, 0, 0],
+              { duration: 0 }
             );
-            logCameraDetails(newViewport.camera, 'Initial Camera Setup');
+            
+            // Use your existing logCameraDetails function
+            if (typeof logCameraDetails === 'function') {
+              logCameraDetails(newViewport.camera, 'Initial Camera Setup');
+            }
           }
 
-          // Check if component is still mounted
+          // Add context loss handling using canvas events
+          const handleContextLoss = () => {
+            console.log('WebGL context lost');
+            setIsLoading(true);
+            // Pause rendering and show loading state
+            newViewport.pauseRendering();
+          };
+
+          const handleContextRestore = () => {
+            console.log('WebGL context restored');
+            // Resume rendering and hide loading state
+            newViewport.continueRendering();
+            newViewport.render();
+            setIsLoading(false);
+          };
+
+          canvasRef.current?.addEventListener('webglcontextlost', handleContextLoss);
+          canvasRef.current?.addEventListener('webglcontextrestored', handleContextRestore);
+
           if (!isActive) {
             newViewport.close();
             return;
@@ -211,6 +234,22 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
             setIsLoading(false);
             console.log('ShapeDiverViewer: Initialization completed successfully');
           }
+
+          return () => {
+            isActive = false;
+            canvasRef.current?.removeEventListener('webglcontextlost', handleContextLoss);
+            canvasRef.current?.removeEventListener('webglcontextrestored', handleContextRestore);
+            if (viewportRef.current) {
+              viewportRef.current.close();
+              viewportRef.current = null;
+            }
+            if (sessionRef.current) {
+              sessionRef.current.close();
+              sessionRef.current = null;
+              setSession(null);
+            }
+          };
+
         } catch (error) {
           console.error('Error initializing ShapeDiver:', error);
           if (isActive) {

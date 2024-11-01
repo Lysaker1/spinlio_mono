@@ -178,7 +178,22 @@ app.use((req, res, next) => {
   next();
 });
 
-// Update static file serving
+// Add iOS-specific optimizations
+app.use((req, res, next) => {
+  // Add memory management headers
+  res.setHeader('Device-Memory', '4'); // Suggest device memory
+  res.setHeader('Viewport-Width', '375'); // Default iOS viewport
+  
+  // Add performance hints
+  res.setHeader('Early-Hints', 
+    '</shapediver.bundle.js>; rel=preload; as=script, ' +
+    '</vendor.three.js>; rel=preload; as=script'
+  );
+  
+  next();
+});
+
+// Update static file serving for better iOS caching
 app.use(express.static(path.join(__dirname, 'dist/dynamic'), {
   maxAge: '1y',
   etag: true,
@@ -186,7 +201,10 @@ app.use(express.static(path.join(__dirname, 'dist/dynamic'), {
   setHeaders: (res, path) => {
     // Add correct MIME types
     if (path.endsWith('.js')) {
+      // Add specific headers for JS files
       res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');
+      // Add memory management hint
+      res.setHeader('Transfer-Size', '1000000'); // Suggest transfer size
     }
     if (path.endsWith('.css')) {
       res.setHeader('Content-Type', 'text/css; charset=UTF-8');

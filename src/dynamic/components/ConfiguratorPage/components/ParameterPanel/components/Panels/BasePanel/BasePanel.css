@@ -1,0 +1,68 @@
+/* Main panel container with full height and semi-transparent green background */
+.panel {
+    height: 100%;
+    background: transparent
+    backdrop-filter blur(10px); /* Blurs content behind the panel */
+  }
+  
+  /* Container for parameter items with vertical scrolling */
+  .parameter-list {
+    height: 90%;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+    gap: 1rem; /* Space between parameter items */
+    overflow-y: auto; /* Enable vertical scrolling */
+  
+    /* Custom scrollbar styling - width */
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+  
+    /* Custom scrollbar styling - track */
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+  
+    /* Custom scrollbar styling - handle */
+    &::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+    }
+  }
+  
+  /* Mobile-specific styles for screens under 768px */
+  @media screen and (max-width: 768px) {
+    /* Remove background for mobile panel */
+    .panel.mobile {
+      background: transparent;
+    }
+  
+    /* Horizontal scrolling container for mobile */
+    .parameter-scroll {
+      display: flex;
+      overflow-x: auto; /* Enable horizontal scrolling */
+      gap: 0.5rem; /* Space between cards */
+      padding: 0 1rem; /* Even padding on both sides */
+      padding-top: 0; /* Remove top padding */
+      padding-bottom: 1rem; /* Extra space for better scrolling */
+      scroll-snap-type: x mandatory; /* Snap to cards when scrolling */
+      -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  
+      /* Hide scrollbar on webkit browsers */
+      &::-webkit-scrollbar {
+        display: none;
+      }
+      scrollbar-width: none; /* Hide scrollbar on Firefox */
+    }
+  
+    /* Individual parameter card styling for mobile */
+    .parameter-card {
+      flex: 0 0 auto; /* Prevent card shrinking/growing */
+      width: calc(90% -1rem); /* Card width with padding consideration */
+      scroll-snap-align: center; /* Snap cards to center when scrolling */
+      border-radius: 1rem; /* Rounded corners */
+      padding: 0.5rem 1rem; /* Reduced top/bottom padding */
+      margin: 0 auto; /* Center the card */
+    }
+  }

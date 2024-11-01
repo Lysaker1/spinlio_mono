@@ -1,182 +1,107 @@
+/* Desktop Panel Structure */
 .parameter-panel {
-  width: 380px;
-  height: auto;
-  display: flex;
-  flex-direction: column;
-  border-radius: 1.5rem;
-  overflow: hidden;
-  padding: 1rem;
-  background: rgba(248, 223, 223, 0.3);
-  backdrop-filter: blur(10px);
+  width: 380px;                          /* Fixed width on desktop */
+  height: 100vh;                         /* Full viewport height */
+  display: flex;                         /* Use flexbox layout */
+  flex-direction: column;                /* Stack children vertically */
+  backdrop-filter: blur(10px);           /* Blur effect behind panel */
+  overflow: hidden;                      /* Hide content outside panel */
+  border-radius: 1.5rem;                 /* Rounded corners */
+  background: transparent;    /* Semi-transparent dark background */
 }
 
-/* Tab Navigation */
-.tab-navigation {
-  display: flex;
-  padding: 0.5rem;
-  align-items: center;
-  gap: 0.5rem;
-  border-radius: 2rem;
-  margin-bottom: 1.5rem;
-  background: rgba(40, 40, 40, 0.5);
+/* Container for category navigation tabs on desktop */
+.category-navigation {
+  padding: 1rem;                         /* Space around navigation */
 }
 
-.tab-button {
-  flex: 1;
-  padding: 0.5rem 1rem;
-  border-radius: 1.5rem;
-  color: rgba(255, 255, 255, 0.7);
-  font-family: "Helvetica Neue";
-  font-size: 14px; /* Fixed the huge font size */
-  font-weight: 500;
-  border: none;
-  background: transparent;
-  transition: all 0.2s ease;
-  cursor: pointer;
-  text-transform: capitalize;
-  letter-spacing: 0.02em;
-  text-align: center;
+/* Container for parameter controls on desktop */
+.panel-content {
+  flex: 1;                              /* Take remaining vertical space */
+  overflow-y: auto;                     /* Vertical scroll when needed */
+  overflow-x: hidden;                   /* Hide horizontal overflow */
+  padding: 0 1rem;                      /* Space on sides */
+  
+  /* Custom scrollbar styling */
+  &::-webkit-scrollbar {
+    width: 6px;                         /* Thin scrollbar */
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;            /* Invisible scrollbar track */
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2); /* Semi-transparent scrollbar */
+    border-radius: 3px;                   /* Rounded scrollbar */
+  }
 }
 
-.tab-button:hover {
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.tab-button.active {
-  background: #000;
-  color: #FFF;
-  font-weight: 600;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-/* Shape Grid */
-.shapes-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-  gap: 0.75rem;
-  margin: 1rem 0;
-}
-
-.shape-item {
-  aspect-ratio: 1;
-  border-radius: 0.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.05);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.shape-item:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.shape-item.selected {
-  background: #000;
-  border-color: rgba(255, 255, 255, 0.2);
-}
-
-/* Color Grid */
-.color-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr); /* Changed from 6 to 4 to match mockup */
-  gap: 12px;
-  margin: 1rem 0;
-}
-
-.color-circle {
-  aspect-ratio: 1;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 2px solid transparent;
-  transition: transform 0.2s ease;
-}
-
-.color-circle:hover {
-  transform: scale(1.05);
-}
-
-.color-circle.selected {
-  border: 2px solid #fff;
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2);
-}
-
-/* Section Labels */
-.section-label {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 14px;
-  font-weight: 500;
-  margin: 1rem 0 0.5rem 0;
-}
-
-/* Material Options */
-.material-options {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-  margin: 1rem 0;
-}
-
-.material-option {
-  padding: 1rem;
-  border-radius: 0.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.05);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.material-option:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-/* ... existing styles ... */
-
-/* Keep your existing desktop styles (everything before @media) unchanged */
-
+/* Mobile-specific styles */
 @media screen and (max-width: 768px) {
   .parameter-panel {
+    width: 100%;                        /* Full width on mobile */
+    height: 26vh;                       /* 30% of viewport height */
+    position: fixed;                    /* Stick to bottom */
+    bottom: 0;                          /* Align to bottom */
+    left: 0;                           /* Align to left */
+    background: transparent;           /* Clear background */
+    justify-content: flex-end;         /* Push content to bottom */
+  }
+
+  /* Mobile navigation tabs */
+  .category-navigation {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
     width: 100%;
-    height: auto;
+    height: 6vh;
     padding: 0;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    background: transparent;
+    z-index: 103;
   }
 
-  .tab-navigation {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    margin: 0;
-    padding: 1rem;
-    background: rgba(25, 25, 25, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 20px 20px 0 0;
-    z-index: 1000;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
-  }
-
+  /* Mobile parameter content area */
   .panel-content {
-    position: fixed;
-    bottom: 80px;
-    left: 0;
-    width: 100%;
-    background: rgba(25, 25, 25, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 20px 20px 0 0;
-    z-index: 999;
+    position: fixed;                  /* Stick to viewport */
+    bottom: 7vh;                    /* Above navigation */
+    left: 50%;                       /* Center horizontally */
+    transform: translateX(-50%);      /* Perfect centering */
+    width: 100%;                     /* Full width */
+    height: 20vh;                    /* 15% of viewport height */
+    padding: 0;                      /* No padding */
+    z-index: 102;                    /* Stack above panel */
+    overflow-x: hidden;                /* Horizontal scroll */
+    overflow-y: auto;              /* No vertical scroll */
+    transition: all 0.3s ease;       /* Smooth animations */
+    
+    /* Fade edges when scrolling */
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 5%,
+      black 95%,
+      transparent
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 5%,
+      black 95%,
+      transparent
+    );
+    
+    /* Hide scrollbar on mobile */
+    &::-webkit-scrollbar {
+      display: none;                 /* Hide webkit scrollbar */
+    }
+    scrollbar-width: none;           /* Hide Firefox scrollbar */
   }
 
-  /* Add spacing for the fixed navigation */
-  .viewer-container {
-    padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  /* Support for iOS safe areas */
+  @supports (padding: max(0px)) {
+    .parameter-panel {
+      padding-bottom: max(env(safe-area-inset-bottom), 20px); /* Add padding for notches */
+    }
   }
 }

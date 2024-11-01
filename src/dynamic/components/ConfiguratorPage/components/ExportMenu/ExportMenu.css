@@ -1,14 +1,13 @@
 .export-menu {
   position: absolute;
-  top: 120px; /* Adjusted to appear under the share button */
-  left: 100px; /* Aligned with the share button */
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  backdrop-filter: blur(10px);
-  padding: 16px;
-  width: 100%;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  top: calc(100% + 0.5rem);
+  right: 0;
+  background: rgba(55, 53, 53, 0.90);
+  border: 1.4px solid rgba(255, 255, 255, 0.40);
+  border-radius: 1rem;
+  backdrop-filter: blur(50px);
+  padding: 1.5rem;
+  width: 280px;
   z-index: 1000;
 }
 
@@ -65,7 +64,8 @@
 .export-actions {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 1rem;
+  margin-top: 1rem;
 }
 
 .close-button {
@@ -79,33 +79,54 @@
 
 /* Style the Mantine components to match the theme */
 .export-menu :global(.mantine-Button-root) {
-  background: rgba(255, 255, 255, 0.3) !important;
-  border: none !important;
-  border-radius: 50px !important;
-  padding: 8px 20px !important;
-  color: #ffffff !important;
-  font-family: 'Inter', sans-serif !important;
-  font-size: 16px !important;
-  font-weight: 400 !important;
-  cursor: pointer !important;
-  transition: background-color 0.3s ease !important;
+  background: rgba(55, 53, 53, 0.90) !important;
+  border: 1.4px solid rgba(255, 255, 255, 0.40) !important;
+  border-radius: 2.125rem !important;
+  padding: 0.75rem !important;
+  color: white !important;
+  font-family: "Helvetica Neue" !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
   height: auto !important;
+  transition: all 0.3s ease !important;
 }
 
 .export-menu :global(.mantine-Button-root:hover) {
-  background: rgba(255, 255, 255, 0.4) !important;
+  background: rgba(75, 73, 73, 0.90) !important;
+}
+
+.export-menu :global(.mantine-Select-root) {
+  margin: 1rem 0;
 }
 
 .export-menu :global(.mantine-Select-input) {
-  background: rgba(255, 255, 255, 0.2) !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
-  border-radius: 6px !important;
+  background: rgba(55, 53, 53, 0.90) !important;
+  border: 1.4px solid rgba(255, 255, 255, 0.40) !important;
+  border-radius: 0.5rem !important;
   color: white !important;
-  font-family: 'Inter', sans-serif !important;
+  font-family: "Helvetica Neue" !important;
+  font-size: 0.875rem !important;
+  padding: 0.75rem !important;
+  height: auto !important;
 }
 
 .export-menu :global(.mantine-Select-label) {
-  color: white !important;
-  font-family: 'Inter', sans-serif !important;
-  margin-bottom: 8px !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+  font-family: "Helvetica Neue" !important;
+  font-size: 0.875rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+@media screen and (max-width: 768px) {
+  .export-menu {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: auto;
+    width: 100%;
+    border-radius: 1rem 1rem 0 0;
+    padding: 2rem 1.5rem;
+    padding-bottom: calc(2rem + env(safe-area-inset-bottom));
+  }
 }

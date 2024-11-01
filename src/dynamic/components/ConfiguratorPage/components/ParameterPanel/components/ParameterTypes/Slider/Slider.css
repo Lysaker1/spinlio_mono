@@ -1,0 +1,99 @@
+/* Container for the entire slider component */
+.slider-container {
+  width: 100%;
+  padding: 0.75rem;
+}
+
+/* Header with label and value */
+.slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+/* Label text style */
+.slider-label {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+/* Current value display */
+.slider-value {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+  padding: 4px 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+/* Slider track and controls */
+.slider-control {
+  position: relative;
+  height: 2rem;
+  cursor: pointer;
+}
+
+/* Base track for slider */
+.slider-track {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  transform: translateY(-50%);
+}
+
+/* Filled portion of track */
+.slider-fill {
+  position: absolute;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 2rem;
+  transition: width 0.1s ease;
+}
+
+/* Active state for filled track */
+.slider-fill.active {
+  background: #fff;
+}
+
+/* Draggable thumb */
+.slider-thumb {
+  position: absolute;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 0.1s ease;
+}
+
+/* Active state for thumb */
+.slider-thumb.active {
+  width: 20px;
+  height: 20px;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.15);
+}
+
+/* Min/Max range display */
+.slider-range {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+}
+
+/* Mobile-specific styles */
+@media screen and (max-width: 768px) {
+  .slider-container.mobile {
+    background: transparent;
+    backdrop-filter: blur(0.625rem);
+    padding: 0.1rem 0.2rem 0.1rem 0.2rem; /* top right bottom left */
+    position: relative;
+  }
+}

@@ -1,0 +1,52 @@
+/* Panel-specific styling */
+.geometry-panel {
+  background: transparent;
+  backdrop-filter: blur(10px);
+}
+
+/* Mobile-specific styles */
+@media screen and (max-width: 768px) {
+  .geometry-panel.mobile {
+    background: transparent;
+  }
+
+  .parameter-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    max-height: 20vh; /* Add this to match panel-content height */
+  }
+
+  .parameter-navigation {
+    display: flex;
+    position: sticky;
+    bottom: 0;
+    justify-content: center;
+    z-index: 1;
+    gap: 1rem;
+    padding: 1rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    color: pink;
+    
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    scrollbar-width: none;
+  }
+
+  .parameter-name {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 14px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    white-space: nowrap;
+    padding: 0.5rem 1rem;
+    
+    &.active {
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 500;
+    }
+  }
+}

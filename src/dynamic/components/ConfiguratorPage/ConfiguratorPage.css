@@ -1,128 +1,90 @@
+/* Base Layout Structure - Main container for the configurator page */
+/* -------------------------------------------------- */
 .configurator-page {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  width: 100vw;
-  overflow: hidden;
-  background: transparent;
+  display: flex; /* Uses flexbox for layout */
+  flex-direction: column; /* Stacks children vertically */
+  height: 100vh; /* Takes up full viewport height */
+  width: 100vw; /* Takes up full viewport width */
+  overflow: hidden; /* Prevents scrolling */
+  background: transparent; /* Transparent background */
 }
 
+/* Main Content Container - Holds the viewer and parameter panel */
+/* -------------------------------------------------- */
 .configurator-content {
-  display: flex;
-  height: 100%;
-  width: 100%;
-  position: relative;
+  display: flex; /* Uses flexbox for layout */
+  height: 100%; /* Takes up full height of parent */
+  width: 100%; /* Takes up full width of parent */
+  position: relative; /* Enables absolute positioning of children */
+  animation: fadeIn 0.3s ease-out forwards; /* Fade in animation on load */
 }
 
+/* 3D Viewer Container - Desktop - Contains the 3D model viewer */
+/* -------------------------------------------------- */
 .viewer-container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  width: 80%;
-  height: 100%;
-  padding: 1rem;
+  flex: 1; /* Takes up remaining space */
+  display: flex; /* Uses flexbox for layout */
+  flex-direction: column; /* Stacks children vertically */
+  justify-content: center; /* Centers content vertically */
+  align-items: center; /* Centers content horizontally */
+  position: relative; /* Enables absolute positioning of children */
+  width: 80%; /* Takes up 80% of parent width */
+  height: 100%; /* Takes up full height of parent */
+  padding: 1rem; /* Adds spacing around content */
 }
 
+/* Parameter Panel Container - Desktop - Contains configuration controls */
+/* -------------------------------------------------- */
 .parameter-panel-container {
-  width: 400px;
-  height: calc(100vh - 8rem);
-  margin: 4rem 5rem 4rem 0;
-  border-radius: 1.5rem;
-  background: transparent;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+  width: 400px; /* Fixed width */
+  height: calc(100vh - 25vh); /* Full viewport height minus top and bottom spacing */
+  margin: 15vh 5vh 10vh 0; /* Top, right, bottom, left spacing using vh units */
+  border-radius: 1.5rem; /* Rounded corners */
+  background: rgba(117, 117, 117, 0.3); /* Semi-transparent dark background */
+  backdrop-filter: blur(10px); /* Blur effect behind panel */
+  overflow: hidden; /* Clips content to rounded corners */
+  display: flex; /* Uses flexbox for layout */
+  flex-direction: column; /* Stacks children vertically */
+  transition: all 0.3s ease-out; /* Smooth transitions for all properties */
+  overflow: hidden; /* Clips content to rounded corners */
 }
 
-/* Mobile Styles */
+/* Mobile Layout - Adjustments for smaller screens */
+/* -------------------------------------------------- */
 @media screen and (max-width: 768px) {
-  .configurator-content {
-    flex-direction: column;
-  }
-
+  /* Viewer Container - Mobile */
   .viewer-container {
-    height: 100vh !important;  /* Full height */
-    padding-bottom: 200px;  /* Space for panel */
+    width: 90%; /* Takes up 90% of parent container (.configurator-content) */
+    height: 70vh; /* Takes up 70% of viewport height from the top */
+    padding: 0; /* Removes padding */
+    position: fixed; /* Fixed position relative to viewport */
+    top: 5vh; /* Aligned to top */
+    left: 0; /* Aligned to left */
+    z-index: 1; /* Controls stacking order - Z-index controls the stacking order of elements in the third dimension (along the Z-axis, coming out of the screen) higher values appear on top of lower values. Set to 1 to ensure viewer appears above panel (z-index: 100) */
   }
 
-
+  /* Parameter Panel Container - Mobile */
   .parameter-panel-container {
-    position: fixed;  /* Lock to bottom */
-    bottom: 0;
-    left: 0;
-    width: 100% !important;
-    height: auto;
-    max-height: 70vh;  /* Take up to 70% of screen height */
-    margin: 0;
-    background: rgba(25, 25, 25, 0.85);  /* Lighter background */
-    backdrop-filter: blur(10px);
-    border-radius: 20px 20px 0 0;
-    z-index: 1000;
-    overflow-y: auto;  /* Allow scrolling if content is too tall */
+    position: fixed; /* Fixed position relative to viewport */
+    bottom: 0; /* Aligned to bottom */
+    left: 0; /* Aligned to left */
+    width: 100%; /* Takes up full width */
+    height: 25vh; /* Takes up 30% of viewport height */
+    margin: 0; /* Removes margin */
+    background-color: transparent; /* Transparent background */
+    display: flex; /* Uses flexbox for layout */
+    flex-direction: column; /* Stacks children vertically */
+    justify-content: flex-end; /* Aligns content to bottom */
+    z-index: 100; /* Controls stacking order - higher values appear on top of lower values. Set to 100 to ensure panel appears above viewer (z-index: 1) but below navigation (z-index: 101) and options (z-index: 102) */
   }
 
-  /* Mobile Parameter Panel Styles */
-  .parameter-panel {
-    border-radius: 20px 20px 0 0;
-    padding: 16px;
-    background: rgba(25, 25, 25, 0.95);
-    backdrop-filter: blur(10px);
-  }
+ 
 
-  /* Mobile Tab Navigation */
-  .tab-navigation {
-    margin-bottom: 16px;
-    padding: 4px;
-  }
-
-  .tab-button {
-    padding: 8px 16px;
-    font-size: 13px;
-  }
-
-  /* Hide desktop-specific elements */
-  .share-button-container-configurator {
-    display: none;
-  }
-
-  /* Adjust action buttons for mobile */
-  .action-buttons {
-    bottom: 220px; /* Position above the parameter panel */
-  }
-}
-
-/* Your existing desktop-specific styles remain unchanged */
-.share-button-container-configurator {
-  position: absolute;
-  top: 80px;
-  right: 500px;
-  z-index: 1000;
-}
-
-.action-buttons {
-  position: absolute;
-  bottom: 100px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 16px;
-  z-index: 20;
-  background-color: rgba(0, 0, 0, 0.5);
-  padding: 10px 20px;
-  border-radius: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* Add smooth transitions */
-.parameter-panel-container {
-  transition: transform 0.3s ease-out;
-}
-
-@media screen and (max-width: 768px) {
-  .parameter-panel-container.hidden {
-    transform: translateY(100%);
+  /* Safe area adjustments for notched devices */
+  @supports (padding: max(0px)) {
+    .category-navigation {
+      padding-bottom: max(env(safe-area-inset-bottom), 0px); /* Adds padding for safe area */
+      height: calc(10vh + env(safe-area-inset-bottom)); /* Adjusts height for safe area */
+    }
   }
 }

@@ -1,0 +1,2 @@
+export { HardwarePanel } from './HardwarePanel';
+

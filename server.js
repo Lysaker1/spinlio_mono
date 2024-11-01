@@ -57,6 +57,8 @@ app.use(helmet({
       connectSrc: [
         "'self'", 
         "https://*.shapediver.com", 
+        "wss://*.shapediver.com",  // Add WebSocket support
+        "blob:",
         "https://*.hubspot.com", 
         "https://*.hsforms.com",
         "https://spinlio.com",

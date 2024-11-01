@@ -1,0 +1,26 @@
+:root {
+    /* Layout */
+    --panel-width: 380px;
+    --panel-height: 100vh;
+    --panel-position: relative;
+    
+    /* Colors */
+    --panel-bg: rgba(25, 25, 25, 0.95);
+    --tab-bg: rgba(40, 40, 40, 0.5);
+    
+    /* Spacing */
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    
+    /* Transitions */
+    --transition-speed: 0.3s;
+  }
+  
+  @media (max-width: 768px) {
+    :root {
+      --panel-width: 100%;
+      --panel-height: auto;
+      --panel-position: fixed;
+    }
+  }

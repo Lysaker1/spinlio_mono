@@ -1,1 +1,1 @@
-export { default } from './ParameterPanel';
+export { ParameterPanel } from './ParameterPanel';

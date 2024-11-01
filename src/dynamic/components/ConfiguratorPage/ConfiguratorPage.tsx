@@ -1,103 +1,131 @@
+// Import required React hooks and components
 import React, { useState, Suspense, lazy, useRef, useEffect, useCallback } from 'react';
+// Import Modal component from Mantine UI library
 import { Modal } from '@mantine/core';
-import { useNavigate } from 'react-router-dom';
-import { ISessionApi, IViewportApi, FLAG_TYPE } from '@shapediver/viewer';
+// Import ShapeDiver viewer interfaces
+import { ISessionApi, IViewportApi } from '@shapediver/viewer';
+// Import component styles
 import './ConfiguratorPage.css';
+// Import error boundary component for error handling
+import ErrorBoundary from '../../../shared/components/ErrorBoundary/ErrorBoundary';
 
-const ParameterPanel = lazy(() => import('./components/ParameterPanel'));
-const ExportMenu = lazy(() => import('./components/ExportMenu'));
+// Import main component dependencies
+import { ParameterPanel } from './components/ParameterPanel';
+import ExportMenu from './components/ExportMenu';
+import ShapeDiverViewer from './components/ShapeDiverViewer';
+import ShareButton from './components/ShareButton/ShareButton';
 
-
-// Lazy load ShapeDiverViewer
-const ShapeDiverViewer = React.lazy(() => 
-  import('./components/ShapeDiverViewer').then(module => ({
-    default: module.default
-  }))
-);
-
-// Loading spinner component
-const LoadingSpinner: React.FC = () => (
-  <div className="loading-spinner">
-    <div className="spinner"></div>
-    <p>Loading 3D Viewer...</p>
-  </div>
-);
-
+// Main configurator component definition
 const ConfiguratorPage: React.FC = () => {
-  const navigate = useNavigate();
-const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
-
-  // These are like memory boxes that can hold and change values:
+  // State for tracking selected component in the configurator
   const [selectedComponent, setSelectedComponent] = useState<string>('');
-  const [session, setSession] = useState<ISessionApi | null>(null);     // Added proper typing
-  const [viewport, setViewport] = useState<IViewportApi | null>(null);  // Added proper typing
+  // State for managing ShapeDiver session
+  const [session, setSession] = useState<ISessionApi | null>(null);
+  // State for managing ShapeDiver viewport
+  const [viewport, setViewport] = useState<IViewportApi | null>(null);
+  // State for controlling export menu visibility
   const [showExportMenu, setShowExportMenu] = useState(false);
+  // State for storing QR code URL for AR view
+  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
+  // State for controlling QR modal visibility
   const [showQrModal, setShowQrModal] = useState(false);
   
-  // This is like a sticky note that remembers if our page is still showing
+  // Reference to track component mount state
   const isMounted = useRef(true);
 
-  // This is like a cleanup crew that runs when we leave the page
+  // Effect hook for debugging component lifecycle and state changes
   useEffect(() => {
-    // When leaving the page:
-    return () => {
-      isMounted.current = false;           // Mark that we're leaving
-      if (session) {
-        session.close();                   // Clean up the 3D viewer session
-      }
+    // Log when component mounts
+    console.log('ConfiguratorPage: Mounting');
+    
+    // Create debug state object with current state values
+    const debugState = {
+      session: !!session,
+      viewport: !!viewport,
+      selectedComponent,
+      isMobile: window.innerWidth <= 768
     };
-  }, [session]);
+    
+    // Log current state for debugging
+    console.log('ConfiguratorPage: Current State:', debugState);
 
-  // This is a function that handles clicking the export button
+    // Cleanup function when component unmounts
+    return () => {
+      console.log('ConfiguratorPage: Unmounting');
+    };
+  }, [session, viewport, selectedComponent]);
+
+  // Handler for export button click
   const handleExportClick = useCallback(() => {
     setShowExportMenu(prev => !prev);
   }, []);
 
+  // Component render
   return (
-    <div className="configurator-page">
-      <div className="share-button-container-configurator">
-        <button className="share-button-configurator" onClick={handleExportClick}>
-          Share
-        </button>
-        {showExportMenu && (
-          <div className="export-menu-wrapper">
-            <ExportMenu
-              session={session}
-              viewport={viewport}
-              onClose={() => setShowExportMenu(false)}
-            />
+    // Wrap entire component in error boundary
+    <ErrorBoundary>
+      <div className="configurator-page">
+        {/* Share button container */}
+        <div className="share-button-container-configurator">
+          <ShareButton session={session} viewport={viewport} />
+          {/* Conditionally render export menu when showExportMenu is true */}
+          {showExportMenu && (
+            <div className="export-menu-wrapper">
+              <Suspense fallback={null}>
+                <ExportMenu
+                  session={session}
+                  viewport={viewport}
+                  onClose={() => setShowExportMenu(false)}
+                />
+              </Suspense>
+            </div>
+          )}
+        </div>
+
+        {/* Main content container */}
+        <div className="configurator-content">
+          {/* 3D viewer container */}
+          <div className="viewer-container">
+            <Suspense fallback={null}>
+              <ShapeDiverViewer
+                session={session}
+                setSession={setSession}
+                setViewport={setViewport}
+              />
+            </Suspense>
           </div>
-        )}
-      </div>
+          
+          {/* Parameter panel container */}
+          <div className="parameter-panel-container">
+            <Suspense fallback={null}>
+              <ParameterPanel
+                selectedComponent={selectedComponent}
+                session={session}
+                viewport={viewport}
+              />
+            </Suspense>
+          </div>
+        </div>
 
-      <div className="configurator-content">
-        <div className="viewer-container">
-          <Suspense fallback={<LoadingSpinner />}>
-            <ShapeDiverViewer
-              session={session}
-              setSession={setSession}
-              setViewport={setViewport}
+        {/* QR Code Modal */}
+        <Modal
+          opened={showQrModal}
+          onClose={() => setShowQrModal(false)}
+          title="AR QR Code"
+        >
+          {/* Conditionally render QR code image when URL exists */}
+          {qrCodeUrl && (
+            <img 
+              src={qrCodeUrl} 
+              alt="AR QR Code" 
+              style={{ width: '100%' }} 
             />
-          </Suspense>
-        </div>
-        <div className="parameter-panel-container">
-          <ParameterPanel
-            selectedComponent={selectedComponent}
-            session={session}
-            viewport={viewport}
-          />
-        </div>
+          )}
+        </Modal>
       </div>
-
-      <Modal
-        opened={showQrModal}
-        onClose={() => setShowQrModal(false)}
-        title="AR QR Code"
-      >
-        {qrCodeUrl && <img src={qrCodeUrl} alt="AR QR Code" style={{ width: '100%' }} />}
-      </Modal>
-    </div>
+    </ErrorBoundary>
   );
 };
 
+// Export component as default
 export default ConfiguratorPage;

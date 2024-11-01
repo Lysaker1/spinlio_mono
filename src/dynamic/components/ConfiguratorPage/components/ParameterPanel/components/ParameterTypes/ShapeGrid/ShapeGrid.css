@@ -1,0 +1,164 @@
+/* Base card layout styling shared across parameter type components */
+.parameter-card {
+  /* Semi-transparent dark background for card */
+  background: rgba(40, 40, 40, 0.5);
+  /* Rounded corners for modern look */
+  border-radius: 12px;
+  /* Internal spacing around content */
+  padding: 1.25rem;
+  /* Glass-like blur effect on background */
+  backdrop-filter: blur(10px);
+  /* Card takes full width of container */
+  width: 100%;
+  /* Space between stacked cards */
+  margin-bottom: 1rem;
+}
+
+/* Header section containing parameter name and selected value */
+.parameter-header {
+  /* Use flexbox for layout */
+  display: flex;
+  /* Space items to opposite ends */
+  justify-content: space-between;
+  /* Center items vertically */
+  align-items: center;
+  /* Space between header and grid */
+  margin-bottom: 1rem;
+}
+
+/* Parameter name/label styling */
+.parameter-label {
+  /* Nearly white text with slight transparency */
+  color: rgba(255, 255, 255, 0.9);
+  /* Compact text size */
+  font-size: 14px;
+  /* Medium font weight for readability */
+  font-weight: 500;
+}
+
+/* Currently selected shape label styling */
+.selected-shape {
+  /* Semi-transparent white text */
+  color: rgba(255, 255, 255, 0.6);
+  /* Match label size */
+  font-size: 14px;
+  /* Light background for contrast */
+  background: rgba(255, 255, 255, 0.1);
+  /* Padding for pill shape */
+  padding: 4px 8px;
+  /* Rounded corners */
+  border-radius: 6px;
+}
+
+/* Grid container for shape options */
+.shape-grid {
+  /* CSS Grid layout */
+  display: grid;
+  /* Three equal columns */
+  grid-template-columns: repeat(3, 1fr);
+  /* Space between grid items */
+  gap: 8px;
+}
+
+/* Individual shape option button styling */
+.shape-option {
+  /* Semi-transparent background */
+  background: rgba(255, 255, 255, 0.1);
+  /* Remove default button border */
+  border: none;
+  /* Rounded corners */
+  border-radius: 8px;
+  /* Internal spacing */
+  padding: 12px;
+  /* Vertical flex layout */
+  display: flex;
+  flex-direction: column;
+  /* Center contents */
+  align-items: center;
+  /* Space between icon and label */
+  gap: 8px;
+  /* Show pointer on hover */
+  cursor: pointer;
+  /* Smooth transitions */
+  transition: all 0.2s ease;
+}
+
+/* Hover state for shape options */
+.shape-option:hover {
+  /* Slightly lighter background on hover */
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Selected state for shape options */
+.shape-option.selected {
+  /* Lighter background for selected state */
+  background: rgba(255, 255, 255, 0.2);
+  /* Highlight border */
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4);
+}
+
+/* Container for shape icons */
+.shape-icon {
+  /* Fixed size for icons */
+  width: 32px;
+  height: 32px;
+  /* Center icon */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* White icon color */
+  color: white;
+}
+
+/* SVG icon styling */
+.shape-icon svg {
+  /* Fill container */
+  width: 100%;
+  height: 100%;
+}
+
+/* Shape label text styling */
+.shape-label {
+  /* Nearly white text */
+  color: rgba(255, 255, 255, 0.9);
+  /* Small text size */
+  font-size: 12px;
+  /* Center text */
+  text-align: center;
+}
+
+/* Mobile-specific styles */
+@media screen and (max-width: 768px) {
+  /* Mobile card layout */
+  .parameter-card.mobile {
+    /* Fixed width for mobile */
+    width: 280px;
+    /* Prevent shrinking */
+    flex-shrink: 0;
+    /* For smooth scrolling */
+    scroll-snap-align: start;
+    /* Space between cards */
+    margin-right: 1rem;
+    /* Remove bottom margin */
+    margin-bottom: 0;
+  }
+
+  /* Mobile grid layout */
+  .shape-grid {
+    /* Two columns instead of three */
+    grid-template-columns: repeat(2, 1fr);
+    /* Larger gaps between items */
+    gap: 12px;
+  }
+
+  /* Larger icons for mobile */
+  .shape-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  /* Larger text for mobile */
+  .shape-label {
+    font-size: 14px;
+  }
+}

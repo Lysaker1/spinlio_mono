@@ -15,6 +15,7 @@ import { Box, Modal, Overlay } from '@mantine/core';
 import './ShapeDiverViewer.css';
 // Import TypeScript import for WebGLRenderer
 import { WebGLRenderer } from 'three';
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader';
 
 // Dynamic import function for ShapeDiver viewer
 const loadShapeDiver = async () => {
@@ -29,12 +30,6 @@ const loadShapeDiver = async () => {
 
 // Check if device is mobile based on window width
 const isMobile = window.innerWidth <= 768;
-
-// Dynamic import function for Three.js RGBELoader
-const loadThree = async () => {
-  const { RGBELoader } = await import('three/examples/jsm/loaders/RGBELoader.js');
-  return RGBELoader;
-};
 
 // Define component props interface
 interface ShapeDiverViewerProps {
@@ -96,12 +91,7 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
       try {
         console.log('ShapeDiverViewer: Loading dependencies...');
         const { createViewport, createSession } = await loadShapeDiver();
-        const RGBELoader = await loadThree();
         console.log('ShapeDiverViewer: Dependencies loaded successfully');
-
-        if (typeof window !== 'undefined' && window.THREE) {
-          window.THREE.RGBELoader = RGBELoader;
-        }
 
         // Cleanup existing viewport and session
         if (viewportRef.current && isActive) {

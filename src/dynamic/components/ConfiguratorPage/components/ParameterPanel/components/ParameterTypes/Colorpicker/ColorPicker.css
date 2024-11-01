@@ -1,9 +1,8 @@
 /* Card Layout Component - Shared styling for all parameter type cards */
 .parameter-card {
-  /* Semi-transparent dark background for card */
   background: transparent;
   /* Rounded corners for modern look */
-  border-radius: 12px;
+  border-radius: 0.75rem;
   /* Internal spacing around content */
   padding: 1rem;
   /* Frosted glass effect */

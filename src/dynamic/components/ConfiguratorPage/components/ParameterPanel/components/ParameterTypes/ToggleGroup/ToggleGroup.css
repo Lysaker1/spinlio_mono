@@ -2,9 +2,9 @@
 /* This style is shared across different parameter types for consistency */
 .parameter-card {
   /* Semi-transparent dark background for card */
-  background: rgba(40, 40, 40, 0.5);
+  background: transparent;
   /* Rounded corners for modern look */
-  border-radius: 12px;
+  border-radius: 0.75rem;
   /* Internal spacing around content */
   padding: 1.25rem;
   /* Blur effect for glass-like appearance */

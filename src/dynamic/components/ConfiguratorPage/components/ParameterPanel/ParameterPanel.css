@@ -1,6 +1,6 @@
 /* Desktop Panel Structure */
 .parameter-panel {
-  width: 380px;                          /* Fixed width on desktop */
+  width: 100%;                          /* Fixed width on desktop */
   height: 100vh;                         /* Full viewport height */
   display: flex;                         /* Use flexbox layout */
   flex-direction: column;                /* Stack children vertically */
@@ -8,11 +8,15 @@
   overflow: hidden;                      /* Hide content outside panel */
   border-radius: 1.5rem;                 /* Rounded corners */
   background: transparent;    /* Semi-transparent dark background */
+  max-width: 100%;                        /* Never exceed panel width */
 }
 
 /* Container for category navigation tabs on desktop */
 .category-navigation {
   padding: 1rem;                         /* Space around navigation */
+  width: 100%;                           /* Full width of parent */
+  max-width: 100%;                       /* Never exceed parent width */
+  box-sizing: border-box;
 }
 
 /* Container for parameter controls on desktop */
@@ -20,7 +24,16 @@
   flex: 1;                              /* Take remaining vertical space */
   overflow-y: auto;                     /* Vertical scroll when needed */
   overflow-x: hidden;                   /* Hide horizontal overflow */
-  padding: 0 1rem;                      /* Space on sides */
+  padding: 0 0.25rem;                    /* Small equal padding on sides */
+  width: 100%;                          /* Full width of parent */
+  max-width: 100%;                      /* Never exceed parent width */
+  
+  /* Force all children to stay within bounds */
+  & > * {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
   
   /* Custom scrollbar styling */
   &::-webkit-scrollbar {

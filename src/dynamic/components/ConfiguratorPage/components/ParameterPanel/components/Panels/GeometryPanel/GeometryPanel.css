@@ -2,6 +2,9 @@
 .geometry-panel {
   background: transparent;
   backdrop-filter: blur(10px);
+  max-width: 100%;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 /* Mobile-specific styles */

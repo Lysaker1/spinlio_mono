@@ -1,9 +1,9 @@
 /* Card Layout - Creates a semi-transparent dark background container for parameters */
 .parameter-card {
     /* Sets a dark semi-transparent background */
-    background: rgba(40, 40, 40, 0.5);
+    background: transparent;
     /* Rounds the corners of the card */
-    border-radius: 12px;
+    border-radius: 0.75rem;
     /* Adds internal spacing */
     padding: 1.25rem;
     /* Applies a blur effect to content behind the card */

@@ -1,36 +1,51 @@
 /* Main panel container with full height and semi-transparent green background */
 .panel {
     height: 100%;
-    background: transparent
-    backdrop-filter blur(10px); /* Blurs content behind the panel */
-  }
+    width: 100%;
+    max-width: 100%;
+    background: transparent;
+    backdrop-filter: blur(10px); /* Blurs content behind the panel */
+    overflow: hidden; /* Prevent any overflow */
+}
   
-  /* Container for parameter items with vertical scrolling */
-  .parameter-list {
+/* Container for parameter items with vertical scrolling */
+.parameter-list {
     height: 90%;
-    padding: 1.25rem;
+    width: 100%; /* Single width declaration */
     display: flex;
+    padding: 1rem;
     flex-direction: column; /* Stack items vertically */
     gap: 1rem; /* Space between parameter items */
     overflow-y: auto; /* Enable vertical scrolling */
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    box-sizing: border-box;
+    background: transparent;
+    border: 2px solid rgba(224, 123, 123, 0.7);
+
+    /* Force all children to stay within bounds */
+    & > * {
+        width: 100%;
+        min-width: 0;
+        background: transparent;
+        box-sizing: border-box;
+    }
   
     /* Custom scrollbar styling - width */
     &::-webkit-scrollbar {
-      width: 6px;
+        width: 6px;
     }
   
     /* Custom scrollbar styling - track */
     &::-webkit-scrollbar-track {
-      background: transparent;
+        background: transparent;
     }
   
     /* Custom scrollbar styling - handle */
     &::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 3px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 3px;
     }
-  }
-  
+}
   /* Mobile-specific styles for screens under 768px */
   @media screen and (max-width: 768px) {
     /* Remove background for mobile panel */

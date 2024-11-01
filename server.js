@@ -87,7 +87,8 @@ app.use(helmet({
         "https://viewer.shapediver.com",
         "https://res.cloudinary.com",
         "https://*.cloudinary.com",
-        "https://*.hubspot.com"
+        "https://*.hubspot.com",
+        "https://forms-na1.hsforms.com"
       ],
       scriptSrc: [
         "'self'", 
@@ -131,6 +132,15 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },
   crossOriginEmbedderPolicy: false
 }));
+
+// Instead, add these as regular headers
+app.use((req, res, next) => {
+  // Add iOS-specific meta tags as headers
+  res.setHeader('X-Apple-Mobile-Web-App-Capable', 'yes');
+  res.setHeader('X-Apple-Mobile-Web-App-Status-Bar-Style', 'black-translucent');
+  res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+  next();
+});
 
 // Enable compression
 app.use(compression());

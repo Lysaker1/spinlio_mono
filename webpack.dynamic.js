@@ -102,8 +102,15 @@ module.exports = (env) => {
       rules: [
         {
           test: /\.(ts|tsx)$/,
-          use: 'ts-loader',
-          include: path.resolve(__dirname, 'src'),
+          use: [
+            {
+              loader: 'ts-loader',
+              options: {
+                transpileOnly: true
+              }
+            }
+          ],
+          exclude: /node_modules/
         },
         {
           test: /\.(js|jsx)$/,
@@ -124,13 +131,20 @@ module.exports = (env) => {
       ],
     },
     resolve: {
-      extensions: ['.tsx', '.ts', '.js', '.jsx'],
+      extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs'],
       alias: {
+        three$: path.resolve(__dirname, 'node_modules/three/build/three.module.js'),
+        'three/examples/jsm': path.resolve(__dirname, 'node_modules/three/examples/jsm'),
         '@shared': path.resolve(__dirname, 'src/shared'),
         '@static': path.resolve(__dirname, 'src/static'),
         '@dynamic': path.resolve(__dirname, 'src/dynamic'),
         'react': path.resolve(__dirname, 'node_modules/react'),
-        'react-dom': path.resolve(__dirname, 'node_modules/react-dom')
+        'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
+        '@shapediver/viewer': path.resolve('./node_modules/@shapediver/viewer'),
+      },
+      fallback: {
+        "fs": false,
+        "path": false
       }
     },
     plugins: [
@@ -174,7 +188,14 @@ module.exports = (env) => {
         test: /\.(js|css|html|svg)$/,
         algorithm: 'gzip'
       }),
-      process.env.ANALYZE && new BundleAnalyzerPlugin()
+      process.env.ANALYZE && new BundleAnalyzerPlugin(),
+      new webpack.ProvidePlugin({
+        THREE: 'three'
+      }),
+      new webpack.NormalModuleReplacementPlugin(
+        /three$/, 
+        path.resolve('./node_modules/three')
+      )
     ].filter(Boolean),
     optimization: {
       splitChunks: {
@@ -198,7 +219,7 @@ module.exports = (env) => {
           },
           shapediver: {
             test: /[\\/]node_modules[\\/](@shapediver)[\\/]/,
-            name: 'shapediver',
+            name: 'vendor.shapediver',
             chunks: 'all',
             priority: 35,
             enforce: true,

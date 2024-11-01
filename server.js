@@ -111,11 +111,14 @@ app.use(helmet({
       ],
       objectSrc: ["'none'"],
       mediaSrc: ["'self'", "https://res.cloudinary.com"],
+      manifestSrc: ["'self'"],
       workerSrc: [
         "'self'",
         "blob:",
         "https://*.spinlio.com"  // Add this
       ],
+      "apple-mobile-web-app-capable": ["'self'"],
+      "apple-mobile-web-app-status-bar-style": ["'self'"],
       // Add cache-control headers
       'Cache-Control': [
         'public',
@@ -160,17 +163,46 @@ app.use((req, res, next) => {
   next();
 });
 
-// Serve static files
+// Add iOS-specific headers
+app.use((req, res, next) => {
+  // Add iOS-specific headers
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  
+  // Handle iOS PWA capable
+  res.setHeader('apple-mobile-web-app-capable', 'yes');
+  res.setHeader('apple-mobile-web-app-status-bar-style', 'black-translucent');
+  
+  next();
+});
+
+// Update static file serving
 app.use(express.static(path.join(__dirname, 'dist/dynamic'), {
   maxAge: '1y',
   etag: true,
   lastModified: true,
   setHeaders: (res, path) => {
-    if (path.endsWith('.js') || path.endsWith('.css') || path.includes('images/')) {
-      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    // Add correct MIME types
+    if (path.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');
     }
+    if (path.endsWith('.css')) {
+      res.setHeader('Content-Type', 'text/css; charset=UTF-8');
+    }
+    
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
   }
 }));
+
+// Add proper handling for apple-touch-icon requests
+app.get(['/apple-touch-icon.png', '/apple-touch-icon-precomposed.png'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist/dynamic/assets/icons/apple-touch-icon.png'));
+});
+
+// Add proper handling for favicon
+app.get('/favicon.ico', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist/dynamic/assets/icons/favicon.ico'));
+});
 
 // Simple catch-all route that serves index.html
 app.get('*', (req, res) => {

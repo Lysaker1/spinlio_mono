@@ -7,8 +7,8 @@ const compression = require('compression');
 
 const app = express();
 
-// Enable trust proxy - MUST BE FIRST
-app.enable('trust proxy');
+// Configure trust proxy properly for Heroku
+app.set('trust proxy', 1); // trust first proxy
 
 // Rate limiter configuration
 const limiter = rateLimit({
@@ -16,17 +16,17 @@ const limiter = rateLimit({
   max: 100,
   standardHeaders: true,
   legacyHeaders: false,
-  trustProxy: false,  // Change this to false
+  trustProxy: true,  // Change this to true since we're behind Heroku's proxy
   skip: (req) => {
-    // Expand skip conditions for static assets
+    // Skip rate limiting for static assets and health checks
     return req.path.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|map)$/) ||
            req.path.includes('static/') ||
-           req.path.includes('assets/');
+           req.path.includes('assets/') ||
+           req.path === '/health';
   }
 });
 
-// Apply rate limiter
-app.use(limiter);
+
 
 // CORS configuration with your specific origins
 app.use(cors({
@@ -41,6 +41,7 @@ app.use(cors({
       'https://viewer.shapediver.com',
       'https://res.cloudinary.com'
     ];
+    if (!origin) return callback(null, true);
     callback(null, allowedOrigins.includes(origin));
   },
   credentials: true,
@@ -133,7 +134,8 @@ app.use(helmet({
 
 // Enable compression
 app.use(compression());
-
+// Apply rate limiter
+app.use(limiter);
 // Block sensitive file access
 app.use((req, res, next) => {
   const blockedPaths = ['.env', '.git', 'wp', 'wordpress', 'telescope'];

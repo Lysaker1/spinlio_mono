@@ -1,29 +1,48 @@
 const CACHE_NAME = 'spinlio-cache-v1';
+const MODEL_CACHE_NAME = 'spinlio-models-v1';
 
-const urlsToCache = [
+// Separate caches for different types of resources
+const staticUrlsToCache = [
   '/',
   '/index.html',
-  'https://res.cloudinary.com/da8qnqmmh/image/upload/v1730055768/background_final_last_dm9bl2.png',
   '/runtime.bundle.js',
   '/framework.bundle.js',
   '/vendors.bundle.js',
   '/main.bundle.js',
-  '/shapediver.bundle.js'
+  'https://res.cloudinary.com/da8qnqmmh/image/upload/v1730055768/background_final_last_dm9bl2.png'
 ];
 
-// Remove duplicate install listener
+const modelUrlsToCache = [
+  '/shapediver.bundle.js'  // Cache separately with different strategy
+];
+
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Opened cache');
-        return cache.addAll(urlsToCache);
-      })
+    Promise.all([
+      // Cache static assets
+      caches.open(CACHE_NAME)
+        .then(cache => cache.addAll(staticUrlsToCache)),
+      // Cache model assets separately
+      caches.open(MODEL_CACHE_NAME)
+        .then(cache => cache.addAll(modelUrlsToCache))
+    ])
   );
 });
 
-// Add better error handling for fetch events
 self.addEventListener('fetch', event => {
+  // Special handling for ShapeDiver model requests
+  if (event.request.url.includes('shapediver.com')) {
+    event.respondWith(
+      fetch(event.request)
+        .catch(error => {
+          console.error('ShapeDiver fetch failed:', error);
+          return caches.match(event.request);
+        })
+    );
+    return;
+  }
+
+  // Handle all other requests
   event.respondWith(
     caches.match(event.request)
       .then(response => {
@@ -41,7 +60,12 @@ self.addEventListener('fetch', event => {
             // Clone the response
             const responseToCache = response.clone();
 
-            caches.open(CACHE_NAME)
+            // Determine which cache to use
+            const cacheName = event.request.url.includes('shapediver.bundle.js') 
+              ? MODEL_CACHE_NAME 
+              : CACHE_NAME;
+
+            caches.open(cacheName)
               .then(cache => {
                 const shouldCache = !event.request.url.includes('/api/');
                 if (shouldCache) {
@@ -58,4 +82,47 @@ self.addEventListener('fetch', event => {
           });
       })
   );
+});
+
+// Add cache cleanup for memory management
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    Promise.all([
+      // Clean up old caches
+      caches.keys().then(cacheNames => {
+        return Promise.all(
+          cacheNames.map(cacheName => {
+            if (cacheName !== CACHE_NAME && cacheName !== MODEL_CACHE_NAME) {
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      }),
+      // Clean up old model cache entries
+      caches.open(MODEL_CACHE_NAME).then(cache => {
+        return cache.keys().then(requests => {
+          return Promise.all(
+            requests.map(request => {
+              // Remove cached models older than 1 hour
+              return cache.match(request).then(response => {
+                if (response && response.headers.get('date')) {
+                  const cacheDate = new Date(response.headers.get('date'));
+                  if (Date.now() - cacheDate.getTime() > 3600000) {
+                    return cache.delete(request);
+                  }
+                }
+              });
+            })
+          );
+        });
+      })
+    ])
+  );
+});
+
+// Handle service worker updates
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });

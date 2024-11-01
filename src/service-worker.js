@@ -1,16 +1,17 @@
 const CACHE_NAME = 'spinlio-cache-v1';
 
-// Dynamic list of assets to cache based on runtime
 const urlsToCache = [
   '/',
+  '/index.html',
   'https://res.cloudinary.com/da8qnqmmh/image/upload/v1730055768/background_final_last_dm9bl2.png',
-  '/vendor.core.js',
-  '/vendor.ui.js',
-  '/vendor.common.js',
+  '/runtime.bundle.js',
+  '/framework.bundle.js',
+  '/vendors.bundle.js',
   '/main.bundle.js',
-  '/runtime.bundle.js'
+  '/shapediver.bundle.js'
 ];
 
+// Remove duplicate install listener
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -21,64 +22,40 @@ self.addEventListener('install', event => {
   );
 });
 
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open('v1').then((cache) => {
-      return cache.addAll([
-        'https://res.cloudinary.com/da8qnqmmh/image/upload/v1730055768/background_final_last_dm9bl2.png'
-      ]);
-    })
-  );
-});
-
-// Add cache cleanup on activate
-self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-  );
-});
-
+// Add better error handling for fetch events
 self.addEventListener('fetch', event => {
-  // Don't cache API calls
-  if (event.request.url.includes('/api/')) {
-    return fetch(event.request);
-  }
-
   event.respondWith(
     caches.match(event.request)
       .then(response => {
-        // Return cached response if found
         if (response) {
           return response;
         }
 
-        // Clone the request because it can only be used once
-        const fetchRequest = event.request.clone();
+        return fetch(event.request)
+          .then(response => {
+            // Don't cache if not a success response
+            if (!response || response.status !== 200) {
+              return response;
+            }
 
-        return fetch(fetchRequest).then(response => {
-          // Check if valid response
-          if (!response || response.status !== 200 || response.type !== 'basic') {
+            // Clone the response
+            const responseToCache = response.clone();
+
+            caches.open(CACHE_NAME)
+              .then(cache => {
+                const shouldCache = !event.request.url.includes('/api/');
+                if (shouldCache) {
+                  cache.put(event.request, responseToCache);
+                }
+              });
+
             return response;
-          }
-
-          // Clone the response because it can only be used once
-          const responseToCache = response.clone();
-
-          caches.open(CACHE_NAME)
-            .then(cache => {
-              cache.put(event.request, responseToCache);
-            });
-
-          return response;
-        });
+          })
+          .catch(error => {
+            console.error('Fetch failed:', error);
+            // Return a custom offline page or fallback content
+            return new Response('Offline content here');
+          });
       })
   );
 });

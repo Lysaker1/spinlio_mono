@@ -1,0 +1,58 @@
+/* Panel-specific styling */
+.surface-panel {
+  background: transparent;
+  backdrop-filter: blur(10px);
+}
+
+/* Desktop-specific styles */
+@media screen and (min-width: 769px) {
+  .desktop-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .parameter-section {
+    width: 100%;
+  }
+
+  .section-title {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 1rem;
+  }
+
+  .color-section,
+  .shape-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .parameter-item {
+    width: 100%;
+  }
+}
+
+/* Mobile-specific styles */
+@media screen and (max-width: 768px) {
+  .surface-panel.mobile {
+    background: transparent;
+  }
+
+  /* Ensure ColorPicker fits within mobile viewport */
+  .color-picker {
+    max-height: 15vh;
+    overflow: hidden;
+  }
+
+  /* Ensure ShapeGrid fits within mobile viewport */
+  .shape-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    max-height: 15vh;
+  }
+}

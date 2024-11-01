@@ -1,0 +1,137 @@
+/* Card Layout Component */
+.parameter-card {
+  background: transparent;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  backdrop-filter: blur(0.625rem);
+  width: 100%;
+  position: relative;
+}
+
+/* Header Section Styling */
+.parameter-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.parameter-label {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Dropdown Container */
+.dropdown-container {
+  position: relative;
+  width: 100%;
+}
+
+/* Dropdown trigger button */
+.dropdown-trigger {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dropdown-trigger:hover,
+.dropdown-trigger.open {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.dropdown-value {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.875rem;
+}
+
+.dropdown-arrow {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.75rem;
+  transition: transform 0.2s ease;
+}
+
+.dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+/* Options menu */
+.dropdown-options {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  right: 0;
+  background: rgba(40, 40, 40, 0.95);
+  backdrop-filter: blur(0.625rem);
+  border-radius: 0.5rem;
+  border: 0.0625rem solid rgba(255, 255, 255, 0.1);
+  padding: 0.5rem;
+  z-index: 1000;
+  display: none;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
+  max-height: 15rem;
+  overflow-y: auto;
+}
+
+.dropdown-options.open {
+  display: block;
+}
+
+.dropdown-option {
+  padding: 0.75rem 1rem;
+  color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  font-size: 0.875rem;
+  border-radius: 0.375rem;
+  transition: all 0.2s ease;
+}
+
+.dropdown-option:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Mobile-specific styles */
+@media screen and (max-width: 48rem) {
+  .parameter-card.mobile {
+    width: 100%;
+    flex-shrink: 0;
+    scroll-snap-align: start;
+    margin-right: 0;
+    margin-bottom: 0;
+    background: transparent;
+    padding: 0.1rem 0.2rem 0.1rem 0.2rem; /* top right bottom left */
+
+  }
+
+  .dropdown-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-height: 15vh;
+    background: rgba(40, 40, 40, 0.95);
+    backdrop-filter: blur(0.625rem);
+    border: 0.0625rem solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+    z-index: 102;
+    
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    scrollbar-width: none;
+  }
+
+  .dropdown-option {
+    padding: 0.75rem;
+    min-height: 3rem;
+    display: flex;
+    align-items: center;
+  }
+}

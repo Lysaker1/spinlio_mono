@@ -1,149 +1,137 @@
+// Import required React hooks for state management, side effects and memoization
 import React, { useState, useEffect, useCallback } from 'react';
-import { ISessionApi, IViewportApi } from '@shapediver/viewer';
-import { Box, Title } from '@mantine/core';
-import debounce from 'lodash.debounce';
-import './ParameterPanel.css';
-
-// Import subcomponents from their correct locations
-import { GeometryPanel } from './components/GeometryPanel';
-import { SurfacePanel } from './components/SurfacePanel';
-import { HardwarePanel } from './components/HardwarePanel';
-
-// Import types
-import { parameterDefinitions } from './parameterDefinitions';
+// Import debounce utility to limit frequency of function calls
+import { debounce } from 'lodash';
+// Import panel components for different parameter categories
+import { GeometryPanel } from './components/Panels/GeometryPanel';
+import { SurfacePanel } from './components/Panels/SurfacePanel';
+import { HardwarePanel } from './components/Panels/HardwarePanel';
+// Import TypeScript interfaces and types
 import { ParameterDefinition, ParameterPanelProps } from './types';
+// Import component styles
+import './ParameterPanel.css';
+// Import parameter configuration data
+import { parameterDefinitions } from './parameterDefinitions';
+// Import hook to detect mobile screen size
+import { useMediaQuery } from '@mantine/hooks';
+// Import navigation tabs component
+import { CategoryTabs, TabType } from './components/CategoryTabs/CategoryTabs';
+// Main component documentation block explaining core responsibilities
+// This is the main controller component that:
+// 1. Manages the overall parameter state
+// 2. Handles ShapeDiver communication
+// 3. Controls which category is active 
+// 4. Passes down the appropriate props to the BasePanel
 
-const ParameterPanel: React.FC<ParameterPanelProps> = ({ selectedComponent, session, viewport }) => {
-  const [activeTab, setActiveTab] = useState('Surface');
-  const [parameterValues, setParameterValues] = useState<{ [id: string]: string }>({});
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const [activeControl, setActiveControl] = useState<string | null>(null);
+// Component definition with TypeScript props interface
+export const ParameterPanel: React.FC<ParameterPanelProps> = ({ 
+  session, // ShapeDiver session instance
+  viewport // ShapeDiver viewport instance
+}) => {
 
-  // Mobile detection
+  // State hooks for managing component data
+  const [activeTab, setActiveTab] = useState<TabType>('surface'); // Currently selected parameter category
+  const [parameterValues, setParameterValues] = useState<{ [id: string]: string }>({}); // All parameter values stored by ID
+  const isMobile = useMediaQuery('(max-width: 768px)'); // Boolean flag for mobile viewport
+  const [lastUpdate, setLastUpdate] = useState<number>(0); // Timestamp of last model update
+  const updateThreshold = 500; // Minimum time between updates in milliseconds
+
+  // Reset subcategory selection when main category tab changes
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  // Initialize parameter values
-  useEffect(() => {
-    const initialValues: { [id: string]: string } = {};
-    parameterDefinitions.forEach((param) => {
-      // Convert value to string explicitly
-      initialValues[param.id] = param.value.toString();
-    });
+    if (!session) return;
+    const initialValues = parameterDefinitions.reduce((acc, param) => ({
+      ...acc,
+      [param.id]: param.value.toString()
+    }), {});
     setParameterValues(initialValues);
-  }, []);
+  }, [session]);
 
-  // Your existing debounced customize function
-  const debouncedCustomize = useCallback(
+  // Debounced ShapeDiver update
+  const updateModel = useCallback(
     debounce(async (params: {}) => {
+      // Skip if session or viewport not available
       if (!session || !viewport) return;
+      
+      // Check if enough time has passed since last update
+      const now = Date.now();
+      if (now - lastUpdate < 500) return;
+
       try {
+        // Send parameter updates to ShapeDiver
         await session.customize(params);
+        
+        // Update viewport if session node exists
         if (session.node) {
           await viewport.updateNode(session.node);
           viewport.update();
           viewport.render();
+          setLastUpdate(now);
         }
       } catch (error) {
         console.error('Error customizing session:', error);
       }
-    }, 500),
-    [session, viewport]
+    }, 500), // Debounce delay of 500ms
+    [session, viewport, lastUpdate] // Dependencies for useCallback
   );
 
+  // Handler for parameter value changes
   const handleParameterChange = (value: any, definition: ParameterDefinition) => {
     const stringValue = value.toString();
-    setParameterValues((prevValues) => ({ ...prevValues, [definition.id]: stringValue }));
-    debouncedCustomize({ [definition.id]: stringValue });
+    setParameterValues(prev => ({ ...prev, [definition.id]: stringValue }));
+    updateModel({ [definition.id]: stringValue });
   };
 
-  const handleControlClick = (control: string) => {
-    setActiveControl(activeControl === control ? null : control);
-  };
+  // Get filtered parameters for current tab
+  const getCurrentParameters = () => 
+    parameterDefinitions.filter(p => p.category === activeTab);
 
+  // Return null if no session exists
   if (!session) return null;
 
-  const geometryParams = parameterDefinitions.filter(param => 
-    [
-      'f108eb45-6305-4ee7-8840-328004938ac6', // Seat tube angle
-      '28dbd19d-3f39-48a4-b143-9d357b413ce0', // Angle
-      'ac5a259d-c2b7-45c0-af16-4a5782b21f1c', // Head tube angle
-      'e42f397c-eb07-434a-9029-d394179bf2f1', // Seat tube length
-      '398b031c-826b-481e-9cf8-8628f5d01511', // Chain stay length
-      'e7e25729-2b9e-458a-9bb1-16e0fa675a7c', // Top tube length
-      'e81fe405-a176-41aa-b5f9-7d702e2db52a', // Head tube length
-      '38985f41-4db6-448e-b1a0-6689bd26beae', // Front bracket width
-      '33a9c8f9-8ef4-410e-a2c1-36abb60e4e49', // Back bracket width
-    ].includes(param.id)
-  );
-
-  const surfaceParams = parameterDefinitions.filter(param => 
-    [
-      '3631ea0d-6d4c-49c2-b998-2c01a7797a01', // Tube color
-      '45e7e66b-7c42-4ac2-bef7-596dd49d4bd5', // Top tube shape
-    ].includes(param.id)
-  );
-
-  const hardwareParams = parameterDefinitions.filter(param => 
-    [
-      'e55e2d6f-e34a-4a13-bed3-3ab433635dcc', // Front water bottle
-      'b26cf10f-9e0f-4dd0-a2eb-387eb3fc7f51', // Rear water bottle
-      'f63729ec-72df-423c-adbc-7b2a82051f34', // Rear dropouts
-    ].includes(param.id)
-  );
-
+  // Render component UI
   return (
     <div className={`parameter-panel ${isMobile ? 'mobile' : ''}`}>
-      {/* Main navigation - same structure for both mobile and desktop */}
-      <div className="tab-navigation">
-        {['Surface', 'Geometry', 'Hardware'].map((tab) => (
-          <button
-            key={tab}
-            className={`tab-button ${activeTab === tab ? 'active' : ''}`}
-            onClick={() => setActiveTab(tab)}
-          >
-            {tab}
-          </button>
-        ))}
+      {/* Navigation tabs for parameter categories */}
+      <div className="category-navigation">
+        <CategoryTabs 
+          activeTab={activeTab} 
+          onTabChange={setActiveTab}
+        />
       </div>
-
-      {/* Panel Content */}
+  
+      {/* Container for active parameter panel */}
       <div className="panel-content">
-        {activeTab === 'Surface' && (
-          <SurfacePanel
-            parameters={surfaceParams}
-            parameterValues={parameterValues}
-            handleParameterChange={handleParameterChange}
-            isMobile={isMobile}
-            activeControl={activeControl}
-          />
-        )}
-
-        {activeTab === 'Geometry' && (
-          <GeometryPanel
-            parameters={geometryParams}
-            parameterValues={parameterValues}
-            handleParameterChange={handleParameterChange}
-            isMobile={isMobile}
-          />
-        )}
-
-        {activeTab === 'Hardware' && (
-          <HardwarePanel
-            parameters={hardwareParams}
-            parameterValues={parameterValues}
-            handleParameterChange={handleParameterChange}
-            isMobile={isMobile}
-          />
-        )}
+        {/* Using object literal instead of multiple conditionals */}
+        {{
+          'surface': (
+            <SurfacePanel
+              parameters={getCurrentParameters()}
+              parameterValues={parameterValues}
+              onParameterChange={handleParameterChange}
+              isActive={true}
+            />
+          ),
+          'geometry': (
+            <GeometryPanel
+              parameters={getCurrentParameters()}
+              parameterValues={parameterValues}
+              onParameterChange={handleParameterChange}
+              isActive={true}
+            />
+          ),
+          'hardware': (
+            <HardwarePanel
+              parameters={getCurrentParameters()}
+              parameterValues={parameterValues}
+              onParameterChange={handleParameterChange}
+              isActive={true}
+            />
+          )
+        }[activeTab]}
       </div>
     </div>
   );
 };
 
+// Export component as default
 export default ParameterPanel;

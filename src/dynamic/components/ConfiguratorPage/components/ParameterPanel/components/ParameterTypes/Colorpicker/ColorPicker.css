@@ -1,0 +1,146 @@
+/* Card Layout Component - Shared styling for all parameter type cards */
+.parameter-card {
+  /* Semi-transparent dark background for card */
+  background: transparent;
+  /* Rounded corners for modern look */
+  border-radius: 12px;
+  /* Internal spacing around content */
+  padding: 1rem;
+  /* Frosted glass effect */
+  backdrop-filter: blur(10px);
+  /* Card takes full width of container */
+  width: 100%;
+}
+
+/* Header Section Styling */
+.parameter-header {
+  /* Flex container for header elements */
+  display: flex;
+  align-items: center;
+  /* Space between header and content */
+  margin-bottom: 0.75rem;
+}
+
+/* Main parameter label styling */
+.parameter-label {
+  /* Nearly white text with slight transparency */
+  color: rgba(255, 255, 255, 0.9);
+  /* Compact text size */
+  font-size: 14px;
+  /* Medium font weight for readability */
+  font-weight: 500;
+}
+
+/* Currently selected color display label */
+.selected-color-label {
+  /* Semi-transparent white text */
+  color: rgba(255, 255, 255, 0.6);
+  /* Matches parameter label size */
+  font-size: 14px;
+  /* Subtle background highlight */
+  background: rgba(255, 255, 255, 0.1);
+  /* Comfortable padding around text */
+  padding: 4px 8px;
+  /* Rounded corners for pill effect */
+  border-radius: 6px;
+}
+
+/* Color Options Grid Layout */
+.color-options-row {
+  /* Grid container for color options */
+  display: flex;
+  /* Space between grid items */
+  gap: 8px;
+  /* Center items horizontally */
+  align-items: center;
+  /* Space between color dot and label */
+  justify-content: flex-start;
+  /* Horizontal scrolling */
+  overflow-x: auto;
+  /* Remove scrollbar */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  scrollbar-width: none;
+}
+
+/* Individual color option button */
+.color-option {
+  /* Vertical stack layout */
+  display: flex;
+  flex-direction: column;
+  /* Center items horizontally */
+  align-items: center;
+  /* Space between color dot and label */
+  gap: 8px;
+  /* Remove button styling */
+  background: none;
+  border: none;
+  /* Clickable pointer */
+  cursor: pointer;
+  /* Light padding around entire option */
+  padding: 2px;
+}
+
+/* Color preview circle */
+.color-dot {
+  /* Fixed size circle */
+  width: 28px;
+  height: 28px;
+  /* Perfect circle shape */
+  border-radius: 50%;
+  /* Light border for definition */
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  /* Smooth animation for interactions */
+  transition: all 0.2s ease;
+}
+
+/* Hover effect for color options */
+.color-option:hover .color-dot {
+  /* Slight size increase on hover */
+  transform: scale(1.1);
+  /* More visible border on hover */
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Selected color option styling */
+.color-option.selected .color-dot {
+  /* Solid white border for selected state */
+  border-color: #FFF;
+  /* Larger size for selected state */
+  transform: scale(1.1);
+  /* Outer glow effect */
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+}
+
+/* Color name label */
+.color-label {
+  /* Semi-transparent white text */
+  color: rgba(255, 255, 255, 0.8);
+  /* Small text size for labels */
+  font-size: 12px;
+  /* Center text below dot */
+  text-align: center;
+}
+
+/* Mobile-specific adjustments */
+@media screen and (max-width: 768px) {
+  /* Mobile card styling */
+  .parameter-card.mobile {
+    /* Fixed width for mobile scroll */
+    width: 100%;
+    /* Prevent shrinking in scroll view */
+    flex-shrink: 0;
+    /* Snap points for smooth scrolling */
+    scroll-snap-align: start;
+    /* Space between cards in horizontal scroll */
+    margin-right: 0;
+    /* Remove bottom margin for horizontal layout */
+    margin-bottom: 0;
+    /* Remove all vertical scrolling possibilities */
+    overflow: hidden;
+    background: transparent;
+    padding: 0.1rem 0.2rem 0.1rem 0.2rem; /* top right bottom left */
+
+  }
+}

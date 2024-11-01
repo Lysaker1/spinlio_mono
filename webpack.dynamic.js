@@ -41,13 +41,19 @@ module.exports = (env) => {
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.hsforms.com https://*.hubspot.com; 
       img-src 'self' data: blob: https://*.hsforms.com https://*.hubspot.com https://res.cloudinary.com; 
       media-src 'self' blob:; 
-      connect-src 'self' ws: wss: https: https://*.spinlio.com https://*.shapediver.com https://*.hubspot.com https://*.hsforms.com; 
+      connect-src 'self' ws: wss: http: https: localhost:* 
+        https://*.spinlio.com 
+        https://*.shapediver.com 
+        wss://*.shapediver.com
+        https://*.hubspot.com 
+        https://*.hsforms.com
+        blob:; 
       worker-src 'self' blob:; 
       font-src 'self' https://fonts.gstatic.com https://*.hsforms.com; 
       frame-src https://*.hsforms.com https://*.hubspot.com; 
       form-action https://*.hsforms.com https://*.hubspot.com;
     `.replace(/\s+/g, ' ')
-  };
+  }
 
   const copyPluginPatterns = isDevelopment ? [
     {
@@ -79,7 +85,11 @@ module.exports = (env) => {
   return {
     mode: isProd ? 'production' : 'development',
     entry: {
-      main: './src/dynamic/index.tsx'
+      main: [
+        // Add this only in development
+        isDevelopment && 'webpack-dev-server/client?hot=true',
+        './src/dynamic/index.tsx'
+      ].filter(Boolean)
     },
     output: {
       path: path.resolve(__dirname, 'dist/dynamic'),
@@ -169,38 +179,45 @@ module.exports = (env) => {
     optimization: {
       splitChunks: {
         chunks: 'all',
-        maxInitialRequests: 4, // Reduce initial requests
+        maxInitialRequests: 4,
         cacheGroups: {
           framework: {
             test: /[\\/]node_modules[\\/](react|react-dom|@emotion|@mantine)[\\/]/,
             name: 'framework',
             priority: 40,
-            chunks: 'all'
+            chunks: 'all',
+            enforce: true
           },
           shapediver: {
             test: /[\\/]node_modules[\\/](@shapediver|three)[\\/]/,  // Combine ShapeDiver and Three.js
             name: 'shapediver',
             priority: 90,
-            chunks: 'all'
+            chunks: 'all',
+            enforce: true,
+            reuseExistingChunk: true
           },
           vendors: {
             test: /[\\/]node_modules[\\/]/,
             name: 'vendors',
             priority: 20,
             chunks: 'all',
-            minSize: 100000  // Increase minimum size
+            minSize: 100000,
+            enforce: true
           }
         }
       },
-      runtimeChunk: 'single',
-      minimize: isProd,
-      moduleIds: 'deterministic'
+      runtimeChunk: {
+        name: 'runtime'
+      },
+      moduleIds: 'deterministic',
+      chunkIds: 'deterministic'
     },
     performance: {
       hints: false, // Disable size warnings
       maxEntrypointSize: 10000000,
       maxAssetSize: 10000000
     },
+    // ... rest of the config stays the same ...
     devServer: {
       static: {
         directory: path.join(__dirname, 'public'),
@@ -208,9 +225,37 @@ module.exports = (env) => {
       compress: true,
       port: finalEnv.PORT_DYNAMIC || 3001,
       historyApiFallback: true,
-      headers: cspHeaders,
-      hot: true
-    },
-    ...(isProd ? {} : { devtool: 'source-map' })
+      hot: false,
+      liveReload: false,
+      client: {
+        overlay: {
+          errors: true,
+          warnings: false,
+        },
+        progress: true,
+        reconnect: false
+      },
+      headers: {
+        ...cspHeaders,
+        "Access-Control-Allow-Origin": "*",
+      },
+      proxy: [
+        {
+          context: ['/shapediver'],
+          target: 'https://sdr8euc1.eu-central-1.shapediver.com',
+          changeOrigin: true,
+          secure: false,
+        }
+      ],
+      devMiddleware: {
+        writeToDisk: false, // Change to false
+      },
+      watchFiles: {
+        paths: ['src/**/*'],
+        options: {
+          usePolling: false,
+        }
+      }
+    }
   };
 };

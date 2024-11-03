@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ISessionApi, IViewportApi } from '@shapediver/viewer';
-import { fetchFileWithToken } from '../../../../../../utils/exportUtils';
+import { fetchFileWithToken, sendNotification } from '../../../../../../utils/exportUtils';
 import FileTypeSelect from './FileTypeSelect';
 import './ExportOptions.css';
 
@@ -13,38 +13,32 @@ interface ExportOptionsProps {
 }
 
 const ExportOptions: React.FC<ExportOptionsProps> = ({ onBack, session, viewport }) => {
-  const [selectedFormat, setSelectedFormat] = useState<FileFormat>('OBJ');
+  const [selectedFormat, setSelectedFormat] = useState<FileFormat>('STL');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleExport = async (action: 'download' | 'email') => {
-    if (!session) return;
+  const handleExport = async () => {
+    if (!session) {
+      sendNotification('Export Error', 'No active session');
+      return;
+    }
 
+    setIsLoading(true);
     try {
-      const exportName = `Export${selectedFormat}Model`;
-      const exportObject = session.getExportByName(exportName)[0];
-
-      if (!exportObject) {
-        console.error(`No export found for ${selectedFormat}`);
-        return;
-      }
-
+      const exportObject = session.getExportByName(`Export${selectedFormat}`)[0];
       const result = await exportObject.request();
 
-      if (result.content?.[0]) {
-        const filename = `${result.filename}.${result.content[0].format}`;
-        
-        if (action === 'download') {
-          await fetchFileWithToken(
-            result.content[0].href, 
-            filename, 
-            session.jwtToken
-          );
-        } else {
-          // Implement email logic here
-          console.log('Email export:', filename);
-        }
+      if (result.content && result.content[0]) {
+        const filename = `${result.filename || 'export'}.${result.content[0].format.toLowerCase()}`;
+        await fetchFileWithToken(result.content[0].href, filename, session.jwtToken);
+        sendNotification('Export Success', `${selectedFormat} file downloaded successfully`);
+      } else {
+        sendNotification('Export Failed', result.msg || 'Unknown error');
       }
     } catch (error) {
-      console.error('Export error:', error);
+      sendNotification('Export Error', 'Failed to export model');
+      console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -55,24 +49,14 @@ const ExportOptions: React.FC<ExportOptionsProps> = ({ onBack, session, viewport
       </button>
       <div className="export-content">
         <h3>Export Model</h3>
-        <FileTypeSelect
-          value={selectedFormat}
-          onChange={setSelectedFormat}
-        />
-        <div className="export-actions">
-          <button 
-            className="export-button"
-            onClick={() => handleExport('download')}
-          >
-            Download
-          </button>
-          <button 
-            className="export-button"
-            onClick={() => handleExport('email')}
-          >
-            Send via Email
-          </button>
-        </div>
+        <FileTypeSelect value={selectedFormat} onChange={setSelectedFormat} />
+        <button 
+          className="export-button" 
+          onClick={handleExport}
+          disabled={isLoading}
+        >
+          {isLoading ? 'Exporting...' : 'Download'}
+        </button>
       </div>
     </div>
   );

@@ -1,58 +1,70 @@
-// Import React library for JSX and component functionality
-import React from 'react';
-// Import ParameterDefinition type from parent directory
+import React, { ReactElement } from 'react';
 import { ParameterDefinition } from '../../../types';
-// Import useMediaQuery hook from Mantine for responsive design
 import { useMediaQuery } from '@mantine/hooks';
-// Import ShapeIcons component containing shape icon definitions
 import { ShapeIcons } from './ShapeIcons';
-// Import component-specific styles
 import './ShapeGrid.css';
 
-// Define props interface for ShapeGrid component
 interface ShapeGridProps {
-  definition: ParameterDefinition; // Parameter configuration object
-  value: string; // Currently selected value
-  onChange: (value: any, definition: ParameterDefinition) => void; // Callback for value changes
+  definition: ParameterDefinition;
+  value: string;
+  onChange: (value: any, definition: ParameterDefinition) => void;
 }
 
-// Define ShapeGrid component with TypeScript typing
-export const ShapeGrid: React.FC<ShapeGridProps> = ({
+interface IconType {
+  type?: string;
+  src?: string;
+}
+
+export const ShapeGrid = ({
   definition,
   value,
   onChange,
-}) => {
-  // Check if viewport is mobile-sized using media query
+}: ShapeGridProps): ReactElement => {
   const isMobile = useMediaQuery('(max-width: 768px)');
 
+  const renderIcon = (option: { label: string; value: string }): ReactElement | null => {
+    const icon = ShapeIcons[option.label.replace(' mount', ' Mount') as keyof typeof ShapeIcons] as IconType | ReactElement;
+    
+    if (!icon) return null;
+  
+    // Check if icon is an image type
+    if (typeof icon === 'object' && 'type' in icon && icon.type === 'image' && 'src' in icon) {
+      return (
+        <div className="shape-icon">
+          <img 
+            src={icon.src}
+            alt={option.label}
+            className="shape-icon-image"
+          />
+        </div>
+      );
+    }
+  
+    // Handle SVG icons (original behavior)
+    return (
+      <div className="shape-icon">
+        {icon as ReactElement}
+      </div>
+    );
+  };
+
   return (
-    // Main container with conditional mobile class
     <div className={`parameter-card ${isMobile ? 'mobile' : ''}`}>
-      {/* Header section containing parameter name and selected value */}
       <div className="parameter-header">
-        {/* Display parameter name */}
         <span className="parameter-label">{definition.name}</span>
-        {/* Display currently selected shape label */}
         <span className="selected-shape">
           {definition.options?.find(opt => opt.value === value)?.label}
         </span>
       </div>
 
-      {/* Grid container for shape options */}
-      <div className="shape-grid">
-        {/* Map through available options to create selection buttons */}
+      <div className={`shape-grid ${definition.name.toLowerCase().includes('mount') ? 'two-columns' : ''}`}>
         {definition.options?.map((option) => (
           <button
-            key={option.value} // Unique key for React rendering
-            className={`shape-option ${value === option.value ? 'selected' : ''}`} // Dynamic classes based on selection
-            onClick={() => onChange(option.value, definition)} // Handle selection change
+            key={option.value}
+            className={`shape-option ${value === option.value ? 'selected' : ''}`}
+            onClick={() => onChange(option.value, definition)}
           >
-            {/* Container for shape icon */}
-            <div className="shape-icon">
-              {/* Render corresponding icon from ShapeIcons object */}
-              {ShapeIcons[option.label as keyof typeof ShapeIcons]}
-            </div>
-            {/* Display shape label */}
+            {renderIcon(option)}
             <span className="shape-label">{option.label}</span>
           </button>
         ))}

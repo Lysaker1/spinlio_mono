@@ -18,7 +18,7 @@ export interface ParameterDefinition {
     // Display name of the parameter
     name: string;
     // Type of input control to display for this parameter
-    type: 'slider' | 'dropdown' | 'boolean' | 'color' | 'text' | 'checkbox';
+    type: 'slider' | 'dropdown' | 'boolean' | 'color' | 'text' | 'checkbox' | 'grid';
     // Category the parameter belongs to for organizational purposes
     category: 'geometry' | 'surface' | 'hardware' | 'tubing' |'accessories' | 'client information' | 'other'| 'visual';
     // Current value of the parameter as a string
@@ -28,6 +28,8 @@ export interface ParameterDefinition {
     // Optional maximum value for numeric parameters
     max?: number;
     // Optional unit of measurement for the parameter
+    tag?: string;
+    // Optional tag for include/exclude in basi
     unit?: string;
     // Optional array of choices for dropdown parameters
     options?: Array<{

@@ -67,7 +67,7 @@
   height: calc(100vh - 25vh); /* Full viewport height minus top and bottom spacing */
   margin: 15vh 2vh 10vh 2vh; /* Top, right, bottom, left spacing using vh units */
   border-radius: 1.5rem; /* Rounded corners */
-  background: rgba(117, 117, 117, 0.8); /* Semi-transparent dark background */
+  background: rgba(68, 68, 68, 0.9); /* Semi-transparent dark background */
   backdrop-filter: blur(10px); /* Blur effect behind panel */
   overflow: hidden; /* Clips content to rounded corners */
   display: flex; /* Uses flexbox for layout */
@@ -114,4 +114,11 @@
       height: calc(10vh + env(safe-area-inset-bottom)); /* Adjusts height for safe area */
     }
   }
+}
+
+.share-button-container-configurator {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 1000;
 }

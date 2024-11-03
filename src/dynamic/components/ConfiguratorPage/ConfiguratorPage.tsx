@@ -13,9 +13,8 @@ import { useNavigate } from 'react-router-dom';
 
 // Import main component dependencies
 import { ParameterPanel } from './components/ParameterPanel';
-import ExportMenu from './components/ExportMenu';
 import ShapeDiverViewer from './components/ShapeDiverViewer';
-import ShareButton from './components/ShareButton/ShareButton';
+import ShareButton from './components/Share/ShareButton';
 import SupplierButton from './components/SupplierButton/SupplierButton';
 import Sidebar from './components/Sidebar/Sidebar';
 
@@ -27,8 +26,6 @@ const ConfiguratorPage: React.FC = () => {
   const [session, setSession] = useState<ISessionApi | null>(null);
   // State for managing ShapeDiver viewport
   const [viewport, setViewport] = useState<IViewportApi | null>(null);
-  // State for controlling export menu visibility
-  const [showExportMenu, setShowExportMenu] = useState(false);
   // State for storing QR code URL for AR view
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
   // State for controlling QR modal visibility
@@ -62,10 +59,6 @@ const ConfiguratorPage: React.FC = () => {
     };
   }, [session, viewport, selectedComponent]);
 
-  // Handler for export button click
-  const handleExportClick = useCallback(() => {
-    setShowExportMenu(prev => !prev);
-  }, []);
 
   // Add handler for template selection
   const handleTemplateSelect = useCallback((templateId: string) => {
@@ -91,18 +84,6 @@ const ConfiguratorPage: React.FC = () => {
         {/* Share button container */}
         <div className="share-button-container-configurator">
           <ShareButton session={session} viewport={viewport} />
-          {/* Conditionally render export menu when showExportMenu is true */}
-          {showExportMenu && (
-            <div className="export-menu-wrapper">
-              <Suspense fallback={null}>
-                <ExportMenu
-                  session={session}
-                  viewport={viewport}
-                  onClose={() => setShowExportMenu(false)}
-                />
-              </Suspense>
-            </div>
-          )}
         </div>
 
         {/* Main content container */}

@@ -41,6 +41,16 @@
   overflow-x: hidden;
   box-sizing: border-box;
   
+  /* Add subtle divider lines between parameters */
+  & > * {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 1rem;
+  }
+
+  & > *:last-child {
+    border-bottom: none;
+  }
+  
   &::-webkit-scrollbar {
       width: 10px;
   }

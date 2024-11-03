@@ -5,7 +5,7 @@ import { MantineProvider } from '@mantine/core';
 import { theme } from '../../../shared/theme';
 import { Footer, Header } from '../../../shared/components';
 import { AboutPage } from '../../../static/components';
-import { ContactUsPage } from '../';
+import { ContactUsPage } from '..';
 import ErrorBoundary from '../../../shared/components/ErrorBoundary/ErrorBoundary';
 
 // Don't load the big 3D page right away - wait until we need it

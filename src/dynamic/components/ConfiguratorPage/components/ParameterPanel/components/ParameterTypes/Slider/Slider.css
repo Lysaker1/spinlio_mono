@@ -21,7 +21,7 @@
 
 /* Current value display */
 .slider-value {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.819);
   font-size: 14px;
   padding: 4px 8px;
   background: rgba(255, 255, 255, 0.1);
@@ -76,7 +76,7 @@
 .slider-thumb.active {
   width: 20px;
   height: 20px;
-  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.349);
 }
 
 /* Min/Max range display */
@@ -84,7 +84,7 @@
   display: flex;
   justify-content: space-between;
   margin-top: 0.5rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.966);
   font-size: 12px;
 }
 

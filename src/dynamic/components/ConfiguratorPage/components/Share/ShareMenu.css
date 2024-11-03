@@ -1,0 +1,116 @@
+.share-container {
+    position: relative;
+  }
+  
+  .share-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(55, 53, 53, 0.90);
+    border: 1.4px solid rgba(255, 255, 255, 0.40);
+    border-radius: 2.125rem;
+    padding: 0.75rem 1.25rem;
+    color: white;
+    font-family: "Helvetica Neue";
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .share-button:hover {
+    background: rgba(75, 73, 73, 0.90);
+  }
+  
+  .share-menu {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    background: rgba(40, 40, 40, 0.95);
+    border-radius: 1rem;
+    backdrop-filter: blur(10px);
+    width: 280px;
+    overflow: hidden;
+    z-index: 1000;
+  }
+  
+  .share-title {
+    color: white;
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin: 1.5rem;
+    text-align: center;
+  }
+  
+  .share-options {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0 1rem 1rem;
+  }
+  
+  .share-option-button {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: rgba(60, 60, 60, 0.95);
+    border: none;
+    border-radius: 0.75rem;
+    padding: 0.75rem;
+    color: white;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  
+  .share-option-button:hover {
+    background: rgba(80, 80, 80, 0.95);
+  }
+  
+  /* Export options specific styles */
+  .export-section {
+    padding: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .export-section h4 {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.875rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .file-format-select {
+    background: rgba(60, 60, 60, 0.95);
+    border: none;
+    border-radius: 0.5rem;
+    color: white;
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    appearance: none;
+    background-image: url("data:image/svg+xml,...");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+  }
+  
+  .export-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .export-action-button {
+    flex: 1;
+    background: rgba(60, 60, 60, 0.95);
+    border: none;
+    border-radius: 0.75rem;
+    padding: 0.75rem;
+    color: white;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  
+  .export-action-button:hover {
+    background: rgba(80, 80, 80, 0.95);
+  }

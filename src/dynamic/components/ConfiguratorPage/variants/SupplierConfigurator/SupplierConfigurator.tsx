@@ -6,7 +6,7 @@ import ErrorBoundary from '../../../../../shared/components/ErrorBoundary/ErrorB
 import { ParameterPanel } from '../../components/ParameterPanel';
 import ExportMenu from '../../components/ExportMenu';
 import ShapeDiverViewer from '../../components/ShapeDiverViewer';
-import ShareButton from '../../components/ShareButton/ShareButton';
+import ShareButton from '../../components/Share/ShareButton';
 
 const SupplierConfigurator: React.FC = () => {
   // Copy the same state management from ConfiguratorPage

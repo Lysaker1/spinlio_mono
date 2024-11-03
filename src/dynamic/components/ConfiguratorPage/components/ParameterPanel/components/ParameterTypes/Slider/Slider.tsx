@@ -7,17 +7,18 @@ interface SliderProps {
   definition: ParameterDefinition;
   value: string;
   onChange: (value: any, definition: ParameterDefinition) => void;
-  useFloatValue?: boolean;
 }
 
 export const Slider: React.FC<SliderProps> = ({
   definition,
   value,
   onChange,
-  useFloatValue = false,
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const isMobile = useMediaQuery('(max-width: 768px)');
+
+  // Check if initial value is a float
+  const isFloat = Number(definition.value).toString().includes('.');
 
   const calculatePosition = (val: number) => {
     return ((val - definition.min!) / (definition.max! - definition.min!)) * 100;
@@ -37,8 +38,9 @@ export const Slider: React.FC<SliderProps> = ({
     
     const range = definition.max! - definition.min!;
     const rawValue = definition.min! + (range * percentage);
-    const newValue = useFloatValue ? Number(rawValue.toFixed(1)) : Math.round(rawValue);
-
+    
+    // Use float values only if the initial value was a float
+    const newValue = isFloat ? Number(rawValue.toFixed(1)) : Math.round(rawValue);
     onChange(newValue, definition);
   };
 
@@ -62,7 +64,7 @@ export const Slider: React.FC<SliderProps> = ({
       <div className="slider-header">
         <span className="slider-label">{definition.name}</span>
         <span className="slider-value">
-          {useFloatValue ? Number(value).toFixed(1) : Math.round(Number(value))}
+          {isFloat ? Number(value).toFixed(1) : Math.round(Number(value))}
           {definition.unit || ''}
         </span>
       </div>

@@ -16,17 +16,19 @@
     "noEmit": false,
     "jsx": "react-jsx",
     "outDir": "./dist",
+    "baseUrl": ".",
     "types": [
       "node",
       "react",
-      "react-dom",
+      "react-dom"
     ],
     "paths": {
       "three": ["./node_modules/@types/three"],
       "three/*": ["./node_modules/@types/three/*"],
       "@shared/*": ["./src/shared/*"],
       "@static/*": ["./src/static/*"],
-      "@dynamic/*": ["./src/dynamic/*"]
+      "@dynamic/*": ["./src/dynamic/*"],
+      "@/*": ["./src/*"]
     },
     "typeRoots": ["./node_modules/@types", "./src/types"]
   },
@@ -36,6 +38,8 @@
     "src/**/*.css"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "src/dynamic/constants",
+    "dist"
   ]
 }

@@ -1,2 +1,0 @@
-export { HardwarePanel } from './HardwarePanel';
-

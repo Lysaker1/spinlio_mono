@@ -4,13 +4,13 @@ import React from 'react';
 import './CategoryTabs.css';
 
 // Define the possible tab types as a union type for type safety
-export type TabType = 'geometry' | 'surface' | 'hardware';
+export type TabType = 'tubing' | 'geometry' | 'accessories';
 
 // Define the default tabs configuration with labels
 const DEFAULT_TABS: Tab[] = [
-  { id: 'surface', label: 'Surface' },
+  { id: 'tubing', label: 'Tubing' },
   { id: 'geometry', label: 'Geometry' },
-  { id: 'hardware', label: 'Hardware' },
+  { id: 'accessories', label: 'Accessories' },
 ] as const;
 
 // Define the shape of a single tab object

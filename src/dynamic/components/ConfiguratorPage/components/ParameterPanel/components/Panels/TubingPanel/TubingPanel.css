@@ -1,10 +1,8 @@
-/* Panel-specific styling */
-.hardware-panel {
-  background: transparent;
-  backdrop-filter: blur(10px);
-  max-width: 100%;
-  overflow-x: hidden;
-  width: 100%;
+.desktop-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-right: 0.5rem;
 }
 
 /* Desktop-specific styles */
@@ -50,7 +48,7 @@
 
 /* Mobile-specific styles */
 @media screen and (max-width: 768px) {
-  .surface-panel.mobile {
+  .tubing-panel.mobile {
     background: transparent;
   }
 

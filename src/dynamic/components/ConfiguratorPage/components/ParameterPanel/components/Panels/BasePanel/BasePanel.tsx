@@ -8,6 +8,11 @@ import { ParameterDefinition } from '../../../types';
 import './BasePanel.css';
 
 // Define props interface for BasePanel component
+interface ParameterCategory {
+  title: string;
+  filter: (param: ParameterDefinition) => boolean;
+}
+
 interface BasePanelProps {
   // Array of parameter objects to display
   parameters: ParameterDefinition[];
@@ -19,6 +24,7 @@ interface BasePanelProps {
   renderDesktopContent?: () => React.ReactNode;
   // Required function to render individual parameter UI
   renderParameter: (param: ParameterDefinition) => React.ReactNode;
+  categories: ParameterCategory[];
 }
 
 // Main panel component that handles both mobile and desktop layouts
@@ -26,8 +32,8 @@ export const BasePanel: React.FC<BasePanelProps> = ({
   parameters,
   isActive = false,
   className = '',
-  renderDesktopContent,
-  renderParameter
+  renderParameter,
+  categories
 }) => {
   const [activeParamIndex, setActiveParamIndex] = useState(0);
   // Check if viewport is mobile sized
@@ -77,6 +83,32 @@ export const BasePanel: React.FC<BasePanelProps> = ({
       </div>
     </div>
   );
+
+  // New function to render desktop categories
+  const renderDesktopContent = () => {
+    return (
+      <div className="parameter-list">
+        {categories.map((category, index) => {
+          const categoryParams = parameters.filter(category.filter);
+          
+          if (categoryParams.length === 0) return null;
+          
+          return (
+            <div key={index} className="parameter-section">
+              <h3 className="section-title">{category.title}</h3>
+              <div className="category-items">
+                {categoryParams.map(param => (
+                  <div key={param.id} className="parameter-item">
+                    {renderParameter(param)}
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
 
   return (
     // Main container with dynamic classes for mobile/active states

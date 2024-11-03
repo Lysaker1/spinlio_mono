@@ -15,7 +15,7 @@ const Footer: React.FC = () => {
     <footer className="footer">
       <Container size="xl" className="footer-content">
         <Text className="footer-text">
-          © 2024 Spinlio. All Rights Reserved.
+          © NeuralHub Limited
         </Text>
         
         <form onSubmit={handleSubmit} className="newsletter-form">

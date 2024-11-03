@@ -1,0 +1,77 @@
+/* Inherit base styles from ConfiguratorPage.css */
+.configurator-page.supplier {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    background: transparent;
+  }
+  
+  .supplier .configurator-content {
+    display: flex; /* Uses flexbox for layout */
+    height: 100%; /* Takes up full height of parent */
+    width: 85%; /* Takes up full width of parent */
+    position: relative; /* Enables absolute positioning of children */
+    padding-left: 15%; /* Match left sidebar width */
+    animation: fadeIn 0.3s ease-out forwards; /* Fade in animation on load */
+  }
+  
+  .supplier .viewer-container {
+    flex: 1; /* Takes up remaining space */
+    display: flex; /* Uses flexbox for layout */
+    flex-direction: column; /* Stacks children vertically */
+    justify-content: center; /* Centers content vertically */
+    align-items: center; /* Centers content horizontally */
+    position: relative; /* Enables absolute positioning of children */
+    width: 73%; /* Takes up 60% of parent width */
+    height: 100%; /* Takes up full height of parent */
+  }
+  
+  .supplier .parameter-panel-container {
+    width: 27%; /* Fixed width */
+    height: calc(100vh - 25vh); /* Full viewport height minus top and bottom spacing */
+    margin: 15vh 2vh 10vh 2vh; /* Top, right, bottom, left spacing using vh units */
+    border-radius: 1.5rem; /* Rounded corners */
+    background: rgba(117, 117, 117, 0.8); /* Semi-transparent dark background */
+    backdrop-filter: blur(10px); /* Blur effect behind panel */
+    overflow: hidden; /* Clips content to rounded corners */
+    display: flex; /* Uses flexbox for layout */
+    flex-direction: column; /* Stacks children vertically */
+    transition: all 0.3s ease-out; /* Smooth transitions for all properties */
+    overflow: hidden; /* Clips content to rounded corners */
+  }
+  
+  /* Mobile Layout */
+  @media screen and (max-width: 768px) {
+    .supplier .viewer-container {
+      width: 90%;
+      height: 70vh;
+      padding: 0;
+      position: fixed;
+      top: 5vh;
+      left: 0;
+      z-index: 1;
+    }
+  
+    .supplier .parameter-panel-container {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 25vh;
+      margin: 0;
+      background-color: transparent;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      z-index: 100;
+    }
+  
+    @supports (padding: max(0px)) {
+      .supplier .category-navigation {
+        padding-bottom: max(env(safe-area-inset-bottom), 0px);
+        height: calc(10vh + env(safe-area-inset-bottom));
+      }
+    }
+  }

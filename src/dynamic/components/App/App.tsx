@@ -15,6 +15,12 @@ const ConfiguratorPage = lazy(() =>
   }))
 );
 
+const SupplierConfigurator = lazy(() => 
+  import('../ConfiguratorPage/variants/SupplierConfigurator/SupplierConfigurator').then(module => ({
+    default: module.default
+  }))
+);
+
 const App: React.FC = () => {
   // Figure out where we are on the internet
   const hostname = window.location.hostname;  // Like checking which building we're in
@@ -25,19 +31,30 @@ const App: React.FC = () => {
   const getMainComponent = useCallback(() => {
     // If we're in testing mode (development)
     if (isDevelopment) {
-      if (port === '3001') {  // If we're at the special testing door
-        // Either show contact page or bike configurator
-        return window.location.pathname.includes('/contact') 
-          ? <ContactUsPage /> 
-          : <ConfiguratorPage key="configurator" />;
+      if (port === '3001') {
+        // Check for supplier route first
+        if (window.location.pathname.includes('/supplier')) {
+          return <SupplierConfigurator />;
+        }
+        // Then check for contact route
+        if (window.location.pathname.includes('/contact')) {
+          return <ContactUsPage />;
+        }
+        // Default to configurator
+        return <ConfiguratorPage key="configurator" />;
       }
-      return <Navigate to="http://localhost:3000" replace />;  // Go to the main testing room
+      return <Navigate to="http://localhost:3000" replace />;
     }
     
     // If we're live on the internet:
-    if (hostname === 'configurator.spinlio.com') return <ConfiguratorPage key="configurator" />;
+    if (hostname === 'configurator.spinlio.com') {
+      if (window.location.pathname.includes('/supplier')) {
+        return <SupplierConfigurator />;
+      }
+      return <ConfiguratorPage key="configurator" />;
+    }
     if (hostname === 'contact.spinlio.com') return <ContactUsPage />;
-    return <Navigate to="https://spinlio.com" replace />;  // When lost, go home
+    return <Navigate to="https://spinlio.com" replace />;
   }, [isDevelopment, hostname, port]);
 
   // This is like pre-downloading stuff we know we'll need later
@@ -79,6 +96,14 @@ const App: React.FC = () => {
                   element={
                     <React.Suspense fallback={<div className="loading-placeholder" />}>
                       {getMainComponent()}  {/* Show the right page */}
+                    </React.Suspense>
+                  } 
+                />
+                <Route 
+                  path="/supplier" 
+                  element={
+                    <React.Suspense fallback={<div className="loading-placeholder" />}>
+                      <SupplierConfigurator />
                     </React.Suspense>
                   } 
                 />

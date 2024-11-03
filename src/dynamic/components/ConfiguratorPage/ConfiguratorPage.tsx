@@ -8,12 +8,16 @@ import { ISessionApi, IViewportApi } from '@shapediver/viewer';
 import './ConfiguratorPage.css';
 // Import error boundary component for error handling
 import ErrorBoundary from '../../../shared/components/ErrorBoundary/ErrorBoundary';
+// Import navigate function from react-router-dom
+import { useNavigate } from 'react-router-dom';
 
 // Import main component dependencies
 import { ParameterPanel } from './components/ParameterPanel';
 import ExportMenu from './components/ExportMenu';
 import ShapeDiverViewer from './components/ShapeDiverViewer';
 import ShareButton from './components/ShareButton/ShareButton';
+import SupplierButton from './components/SupplierButton/SupplierButton';
+import Sidebar from './components/Sidebar/Sidebar';
 
 // Main configurator component definition
 const ConfiguratorPage: React.FC = () => {
@@ -32,6 +36,9 @@ const ConfiguratorPage: React.FC = () => {
   
   // Reference to track component mount state
   const isMounted = useRef(true);
+
+  // Add navigate function
+  const navigate = useNavigate();
 
   // Effect hook for debugging component lifecycle and state changes
   useEffect(() => {
@@ -60,11 +67,27 @@ const ConfiguratorPage: React.FC = () => {
     setShowExportMenu(prev => !prev);
   }, []);
 
+  // Add handler for template selection
+  const handleTemplateSelect = useCallback((templateId: string) => {
+    // This will be implemented later to load specific parameters
+    console.log(`Loading template: ${templateId}`);
+    // Example of what we might do:
+    // if (session) {
+    //   session.parameters.updateMany({
+    //     'template1_param': templateId === 'bike1' ? 'value1' : 'default',
+    //     'template2_param': templateId === 'bike2' ? 'value2' : 'default',
+    //     // ... more parameters
+    //   });
+    // }
+  }, [/* session */]);
+
   // Component render
   return (
     // Wrap entire component in error boundary
     <ErrorBoundary>
       <div className="configurator-page">
+        <Sidebar onTemplateSelect={handleTemplateSelect} />
+        
         {/* Share button container */}
         <div className="share-button-container-configurator">
           <ShareButton session={session} viewport={viewport} />

@@ -20,7 +20,7 @@ export interface ParameterDefinition {
     // Type of input control to display for this parameter
     type: 'slider' | 'dropdown' | 'boolean' | 'color' | 'text' | 'checkbox';
     // Category the parameter belongs to for organizational purposes
-    category: 'geometry' | 'surface' | 'hardware' | 'other';
+    category: 'geometry' | 'surface' | 'hardware' | 'tubing' |'accessories' | 'client information' | 'other'| 'visual';
     // Current value of the parameter as a string
     value: string;
     // Optional minimum value for numeric parameters

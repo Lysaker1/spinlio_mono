@@ -9,15 +9,43 @@
   background: transparent; /* Transparent background */
 }
 
+
+/* Add new left sidebar container */
+.left-sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 10%; /* Space for templates and buttons */
+  height: 100vh;
+  padding: 6.25rem 1.25rem 1.25rem 1.25rem; /* Top padding for header */
+  background: rgba(117, 117, 117, 0.4);
+  backdrop-filter: blur(10px);
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Adjust supplier button for new layout */
+.supplier-button-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  padding: 0.5rem;
+}
+
 /* Main Content Container - Holds the viewer and parameter panel */
 /* -------------------------------------------------- */
 .configurator-content {
   display: flex; /* Uses flexbox for layout */
   height: 100%; /* Takes up full height of parent */
-  width: 100%; /* Takes up full width of parent */
+  width: 85%; /* Takes up full width of parent */
   position: relative; /* Enables absolute positioning of children */
+  padding-left: 15%; /* Match left sidebar width */
   animation: fadeIn 0.3s ease-out forwards; /* Fade in animation on load */
-}
+  }
 
 /* 3D Viewer Container - Desktop - Contains the 3D model viewer */
 /* -------------------------------------------------- */
@@ -28,15 +56,14 @@
   justify-content: center; /* Centers content vertically */
   align-items: center; /* Centers content horizontally */
   position: relative; /* Enables absolute positioning of children */
-  width: 75%; /* Takes up 80% of parent width */
+  width: 73%; /* Takes up 60% of parent width */
   height: 100%; /* Takes up full height of parent */
-  padding: 1rem; /* Adds spacing around content */
 }
 
 /* Parameter Panel Container - Desktop - Contains configuration controls */
 /* -------------------------------------------------- */
 .parameter-panel-container {
-  width: 25%; /* Fixed width */
+  width: 27%; /* Fixed width */
   height: calc(100vh - 25vh); /* Full viewport height minus top and bottom spacing */
   margin: 15vh 2vh 10vh 2vh; /* Top, right, bottom, left spacing using vh units */
   border-radius: 1.5rem; /* Rounded corners */

@@ -4,14 +4,14 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { debounce } from 'lodash';
 // Import panel components for different parameter categories
 import { GeometryPanel } from './components/Panels/GeometryPanel';
-import { SurfacePanel } from './components/Panels/SurfacePanel';
-import { HardwarePanel } from './components/Panels/HardwarePanel';
+import { TubingPanel } from './components/Panels/TubingPanel';
+import { AccessoriesPanel } from './components/Panels/AccessoriesPanel';
 // Import TypeScript interfaces and types
 import { ParameterDefinition, ParameterPanelProps } from './types';
 // Import component styles
 import './ParameterPanel.css';
 // Import parameter configuration data
-import { parameterDefinitions } from './parameterDefinitions';
+import { parameterDefinitions } from './parameterDefinitions4';
 // Import hook to detect mobile screen size
 import { useMediaQuery } from '@mantine/hooks';
 // Import navigation tabs component
@@ -30,7 +30,7 @@ export const ParameterPanel: React.FC<ParameterPanelProps> = ({
 }) => {
 
   // State hooks for managing component data
-  const [activeTab, setActiveTab] = useState<TabType>('surface'); // Currently selected parameter category
+  const [activeTab, setActiveTab] = useState<TabType>('tubing'); // Currently selected parameter category
   const [parameterValues, setParameterValues] = useState<{ [id: string]: string }>({}); // All parameter values stored by ID
   const isMobile = useMediaQuery('(max-width: 768px)'); // Boolean flag for mobile viewport
   const [lastUpdate, setLastUpdate] = useState<number>(0); // Timestamp of last model update
@@ -103,8 +103,8 @@ export const ParameterPanel: React.FC<ParameterPanelProps> = ({
       <div className="panel-content">
         {/* Using object literal instead of multiple conditionals */}
         {{
-          'surface': (
-            <SurfacePanel
+          'tubing': (
+            <TubingPanel
               parameters={getCurrentParameters()}
               parameterValues={parameterValues}
               onParameterChange={handleParameterChange}
@@ -119,8 +119,8 @@ export const ParameterPanel: React.FC<ParameterPanelProps> = ({
               isActive={true}
             />
           ),
-          'hardware': (
-            <HardwarePanel
+          'accessories': (
+            <AccessoriesPanel
               parameters={getCurrentParameters()}
               parameterValues={parameterValues}
               onParameterChange={handleParameterChange}

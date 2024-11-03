@@ -15,7 +15,7 @@ import { Box, Modal, Overlay } from '@mantine/core';
 import './ShapeDiverViewer.css';
 // Import TypeScript import for WebGLRenderer
 import { WebGLRenderer } from 'three';
-import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader';
+
 
 // Dynamic import function for ShapeDiver viewer
 const loadShapeDiver = async () => {
@@ -31,6 +31,7 @@ const loadShapeDiver = async () => {
 // Check if device is mobile based on window width
 const isMobile = window.innerWidth <= 768;
 
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader';
 // Define component props interface
 interface ShapeDiverViewerProps {
   session: ISessionApi | null;
@@ -195,7 +196,7 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
 
           // Create new ShapeDiver session
           const newSession = await createSession({
-            ticket: '4317c6cc440b2b4d17142b76504388ab583c15c380ada9a89e349dfd40f0181c93f282f7ddd226a2db3bfcbfb6483be7f2b98951598e133a6170a4d17afb47dcddce47721d8acf4b69fd6f6c851be1ecfbb47782ecbdcec201fdd1ab087627688d2077ee9fda5b-05de21814ced1070f220a9f07e440df9',
+            ticket: 'ea43238a81435b9752d32b9a700313da48dd146809faa76381f44bf13715e3003c126431b2f53918e77dae2f349cc56586111838f00b8a1664fea5b7497c79167f528f9b5f4e4e8042862096e0e56e0deee6a85d6dc7a79b916614ebfb8602b5dcfaf272d4f262-c8b9f82b782e40abfdbe64118b8f3367',
             modelViewUrl: 'https://sdr8euc1.eu-central-1.shapediver.com',
           });
 

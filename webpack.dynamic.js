@@ -127,14 +127,17 @@ module.exports = (env) => {
           generator: {
             filename: 'images/[name][ext]'
           }
+        },
+        {
+          test: /three\/examples\/jsm/,
+          type: 'javascript/auto'
         }
       ],
     },
     resolve: {
       extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs'],
       alias: {
-        three$: path.resolve(__dirname, 'node_modules/three/build/three.module.js'),
-        'three/examples/jsm': path.resolve(__dirname, 'node_modules/three/examples/jsm'),
+        'three': path.resolve(__dirname, 'node_modules/three'),
         '@shared': path.resolve(__dirname, 'src/shared'),
         '@static': path.resolve(__dirname, 'src/static'),
         '@dynamic': path.resolve(__dirname, 'src/dynamic'),

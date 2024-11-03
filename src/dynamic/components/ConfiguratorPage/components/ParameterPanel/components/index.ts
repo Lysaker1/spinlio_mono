@@ -1,4 +1,4 @@
 export * from './Panels/GeometryPanel';
-export * from './Panels/SurfacePanel';
-export * from './Panels/HardwarePanel';
+export * from './Panels/TubingPanel';
+export * from './Panels/AccessoriesPanel';
 export * from './ParameterTypes';

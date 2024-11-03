@@ -34,20 +34,7 @@
     max-width: 100%;
     min-width: 0;
   }
-  
-  /* Custom scrollbar styling */
-  &::-webkit-scrollbar {
-    width: 6px;                         /* Thin scrollbar */
-  }
-  
-  &::-webkit-scrollbar-track {
-    background: transparent;            /* Invisible scrollbar track */
-  }
-  
-  &::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2); /* Semi-transparent scrollbar */
-    border-radius: 3px;                   /* Rounded scrollbar */
-  }
+
 }
 
 /* Mobile-specific styles */

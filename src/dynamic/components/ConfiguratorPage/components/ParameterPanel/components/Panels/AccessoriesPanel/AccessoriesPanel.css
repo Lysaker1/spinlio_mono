@@ -1,8 +1,7 @@
 
-
-/* Mobile-specific styles */
+/* Mobile overrides */
 @media screen and (max-width: 768px) {
-  .geometry-panel.mobile {
+  .accessories-panel.mobile {
     background: transparent;
   }
 
@@ -11,7 +10,7 @@
     display: flex;
     flex-direction: column;
     overflow-y: auto;
-    max-height: 20vh; /* Add this to match panel-content height */
+    max-height: 20vh;
   }
 
   .parameter-navigation {
@@ -24,25 +23,10 @@
     padding: 1rem;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    color: pink;
     
     &::-webkit-scrollbar {
       display: none;
     }
     scrollbar-width: none;
-  }
-
-  .parameter-name {
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 14px;
-    cursor: pointer;
-    transition: color 0.2s ease;
-    white-space: nowrap;
-    padding: 0.5rem 1rem;
-    
-    &.active {
-      color: rgba(255, 255, 255, 0.9);
-      font-weight: 500;
-    }
   }
 }

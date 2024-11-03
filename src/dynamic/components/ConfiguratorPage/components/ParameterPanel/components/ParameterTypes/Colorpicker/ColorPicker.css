@@ -4,7 +4,7 @@
   /* Rounded corners for modern look */
   border-radius: 0.75rem;
   /* Internal spacing around content */
-  padding: 1rem;
+  padding: 0.75rem;
   /* Frosted glass effect */
   backdrop-filter: blur(10px);
   /* Card takes full width of container */

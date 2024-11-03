@@ -2,6 +2,7 @@ import React from 'react';
 import { ParameterDefinition } from '../../../types';
 import { Dropdown } from '../../ParameterTypes/Dropdown/Dropdown';
 import { BasePanel } from '../BasePanel/BasePanel';
+import { ShapeGrid } from '../../ParameterTypes/ShapeGrid/ShapeGrid';
 import './AccessoriesPanel.css';
 
 interface AccessoriesPanelProps {
@@ -14,6 +15,10 @@ interface AccessoriesPanelProps {
 export const AccessoriesPanel: React.FC<AccessoriesPanelProps> = (props) => {
   const renderParameter = (param: ParameterDefinition) => {
     const value = props.parameterValues[param.id];
+    
+    if (param.type === 'grid') {
+      return <ShapeGrid definition={param} value={value} onChange={(newValue) => props.onParameterChange(newValue, param)} />;
+    }
     
     return (
       <Dropdown
@@ -51,7 +56,7 @@ export const AccessoriesPanel: React.FC<AccessoriesPanelProps> = (props) => {
   return (
     <BasePanel
       {...props}
-      className="hardware-panel"
+      className="accessories-panel"
       renderParameter={renderParameter}
       categories={categories}
     />

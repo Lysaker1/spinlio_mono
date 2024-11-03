@@ -28,5 +28,21 @@ export const ShapeIcons = {
       <svg viewBox="0 0 24 24">
         <rect x="6" y="6" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2"/>
       </svg>
-    )
+    ),
+    'Flat mount': {
+      type: 'image',
+      src: 'https://res.cloudinary.com/da8qnqmmh/image/upload/v1730626307/Flatmount.png'
+    },
+    'Post mount': {
+      type: 'image',
+      src: 'https://res.cloudinary.com/da8qnqmmh/image/upload/v1730626307/Postmount.png'
+    },
+    'Quick Release': {
+      type: 'image',
+      src: 'https://res.cloudinary.com/da8qnqmmh/image/upload/v1730626307/quickRelease.png'
+    },
+    'Bolt Through': {
+      type: 'image',
+      src: 'https://res.cloudinary.com/da8qnqmmh/image/upload/v1730626306/BoltTrhu.png'
+    }
   };

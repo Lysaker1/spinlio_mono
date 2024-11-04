@@ -28,6 +28,8 @@ const loadShapeDiver = async () => {
   };
 };
 
+
+
 // Check if device is mobile based on window width
 const isMobile = window.innerWidth <= 768;
 

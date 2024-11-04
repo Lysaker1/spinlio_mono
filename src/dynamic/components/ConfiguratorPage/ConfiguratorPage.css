@@ -43,7 +43,7 @@
   height: 100%; /* Takes up full height of parent */
   width: 85%; /* Takes up full width of parent */
   position: relative; /* Enables absolute positioning of children */
-  padding-left: 15%; /* Match left sidebar width */
+  padding-left: 12%; /* Match left sidebar width */
   animation: fadeIn 0.3s ease-out forwards; /* Fade in animation on load */
   }
 

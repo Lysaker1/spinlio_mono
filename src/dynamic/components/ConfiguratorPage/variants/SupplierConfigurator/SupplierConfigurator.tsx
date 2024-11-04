@@ -1,22 +1,43 @@
-import React, { useState, Suspense, useRef, useEffect, useCallback } from 'react';
-import { Modal } from '@mantine/core';
+import React, { useState, Suspense } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ISessionApi, IViewportApi } from '@shapediver/viewer';
 import './SupplierConfigurator.css';
 import ErrorBoundary from '../../../../../shared/components/ErrorBoundary/ErrorBoundary';
 import { ParameterPanel } from '../../components/ParameterPanel';
-import ExportMenu from '../../components/ExportMenu';
 import ShapeDiverViewer from '../../components/ShapeDiverViewer';
-import ShareButton from '../../components/Share/ShareButton';
 
 const SupplierConfigurator: React.FC = () => {
-  // Copy the same state management from ConfiguratorPage
+  const navigate = useNavigate();
   const [selectedComponent, setSelectedComponent] = useState<string>('');
   const [session, setSession] = useState<ISessionApi | null>(null);
   const [viewport, setViewport] = useState<IViewportApi | null>(null);
   
+  const handleBackToUser = () => {
+    navigate('/');
+  };
+
   return (
     <ErrorBoundary>
       <div className="configurator-page supplier">
+        <div className="supplier-sidebar">
+          <button 
+            className="back-to-user-button"
+            onClick={handleBackToUser}
+          >
+            Back to User View
+          </button>
+          
+          <div className="upload-section">
+            <h3>Product Management</h3>
+            <button className="upload-button">
+              Upload New Products
+            </button>
+            <div className="info-text">
+              Create new configurations to be displayed as templates in the user view
+            </div>
+          </div>
+        </div>
+
         <div className="configurator-content">
           <div className="viewer-container">
             <Suspense fallback={null}>

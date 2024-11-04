@@ -3,9 +3,8 @@
     backdrop-filter: blur(10px);
     padding: 20px 0;
     position: relative;
-    z-index: 100;
+    z-index: 1000;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
-    margin-top: auto;
 }
 
 .footer-content {
@@ -29,23 +28,25 @@
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 50px;
-    padding: 4px;
+    padding: 4px 4px 4px 20px;
     gap: 8px;
+    min-width: 300px;
   }
   
   .newsletter-input {
-    width: 250px;
+    flex: 1;
   }
   
   .newsletter-input input {
-    background: transparent;
-    border: none;
-    color: white;
-    height: 40px;
-    padding: 0 20px;
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    transition: all 0.3s ease;
+    background: transparent !important;
+    border: none !important;
+    color: white !important;
+    height: 36px !important;
+    padding: 0 !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 14px !important;
+    width: 100% !important;
+    min-width: 200px !important;
   }
   
   .newsletter-input input:focus {
@@ -79,13 +80,15 @@
     .footer-content {
       flex-direction: column;
       gap: 20px;
+      padding: 0 20px;
     }
   
     .newsletter-form {
+      min-width: unset;
       width: 100%;
     }
   
-    .newsletter-input {
-      width: 100%;
+    .newsletter-input input {
+      min-width: unset;
     }
   }

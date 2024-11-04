@@ -29,7 +29,8 @@ export const GeometryPanel: React.FC<GeometryPanelProps> = (props) => {
       title: "Other Settings",
       filter: (param: ParameterDefinition) => 
         param.category === 'geometry' && 
-        param.type === 'dropdown'
+        !param.name.toLowerCase().includes('angle') &&
+        param.type !== 'slider'
     }
   ];
 

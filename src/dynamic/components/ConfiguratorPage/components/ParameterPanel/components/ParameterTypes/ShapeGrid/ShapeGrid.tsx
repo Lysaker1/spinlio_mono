@@ -29,8 +29,12 @@ export const ShapeGrid = ({
   
     // Check if icon is an image type
     if (typeof icon === 'object' && 'type' in icon && icon.type === 'image' && 'src' in icon) {
+      const isMount = definition.name.toLowerCase().includes('mount');
+      const isDropout = definition.name.toLowerCase().includes('drop out');
+      const specialClass = isMount ? 'mount-image' : isDropout ? 'dropout-image' : '';
+
       return (
-        <div className="shape-icon">
+        <div className={`shape-icon ${specialClass}`}>
           <img 
             src={icon.src}
             alt={option.label}
@@ -57,7 +61,10 @@ export const ShapeGrid = ({
         </span>
       </div>
 
-      <div className={`shape-grid ${definition.name.toLowerCase().includes('mount') ? 'two-columns' : ''}`}>
+      <div className={`shape-grid ${
+        definition.name.toLowerCase().includes('mount') || 
+        definition.name.toLowerCase().includes('drop') ? 'two-columns' : ''
+      }`}>
         {definition.options?.map((option) => (
           <button
             key={option.value}

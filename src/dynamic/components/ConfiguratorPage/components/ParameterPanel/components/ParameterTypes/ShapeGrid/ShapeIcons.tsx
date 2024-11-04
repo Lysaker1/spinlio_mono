@@ -29,11 +29,11 @@ export const ShapeIcons = {
         <rect x="6" y="6" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2"/>
       </svg>
     ),
-    'Flat mount': {
+    'Flat Mount': {
       type: 'image',
       src: 'https://res.cloudinary.com/da8qnqmmh/image/upload/v1730626307/Flatmount.png'
     },
-    'Post mount': {
+    'Post Mount': {
       type: 'image',
       src: 'https://res.cloudinary.com/da8qnqmmh/image/upload/v1730626307/Postmount.png'
     },

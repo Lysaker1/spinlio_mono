@@ -33,15 +33,58 @@
     font-size: 0.875rem;
   }
   
-  .export-actions {
+  .export-buttons {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
   }
   
-  .export-button {
+  .email-input-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    width: 100%;
+  }
+  
+  input[type="email"] {
+    flex: 1;
     padding: 0.75rem;
+    background: rgba(137, 137, 137, 0.575);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.5rem;
+    color: white;
+    font-size: 0.875rem;
+    width: 100%;
+  }
+  
+  input[type="email"]::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+  
+  .export-button {
+    padding: 0.75rem 1.25rem;
     background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.5rem;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 80px;
+  }
+  
+  .export-button:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.2);
+  }
+  
+  .export-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .secondary-button {
+    padding: 0.75rem;
+    background: transparent;
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 0.5rem;
     color: white;
@@ -49,8 +92,8 @@
     transition: all 0.3s ease;
   }
   
-  .export-button:hover {
-    background: rgba(255, 255, 255, 0.2);
+  .secondary-button:hover {
+    background: rgba(255, 255, 255, 0.1);
   }
   
   .back-button {
@@ -65,4 +108,34 @@
   
   .back-button:hover {
     opacity: 1;
+  }
+  
+  .export-method-select {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    padding: 0.25rem;
+    background: rgba(34, 34, 34, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.5rem;
+  }
+  
+  .method-button {
+    flex: 1;
+    padding: 0.75rem;
+    background: transparent;
+    border: none;
+    border-radius: 0.375rem;
+    color: white;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .method-button.active {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  .method-button:hover:not(.active) {
+    background: rgba(255, 255, 255, 0.05);
   }

@@ -1,15 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Text, TextInput, Button } from '@mantine/core';
 import './Footer.css';
 
 const Footer: React.FC = () => {
   const [email, setEmail] = useState('');
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      
+      // Show footer when close to bottom (within 20px)
+      const isBottom = windowHeight + scrollTop >= documentHeight - 20;
+      setIsVisible(isBottom);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Check initial position
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Newsletter signup:', email);
     setEmail('');
   };
+
+  if (!isVisible) return null;
 
   return (
     <footer className="footer">

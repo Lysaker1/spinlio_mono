@@ -1,10 +1,11 @@
-// Import React for JSX support
 import React, { useState, useRef } from 'react';
-// Import hook to detect mobile screen sizes
 import { useMediaQuery } from '@mantine/hooks';
-// Import type definition for parameter objects
 import { ParameterDefinition } from '../../../types';
-// Import component-specific styles
+import { Slider } from '../../ParameterTypes/Slider/Slider';
+import { Dropdown } from '../../ParameterTypes/Dropdown/Dropdown';
+import { ColorPicker } from '../../ParameterTypes/Colorpicker/ColorPicker';
+import { ShapeGrid } from '../../ParameterTypes/ShapeGrid/ShapeGrid';
+import { Checkbox } from '../../ParameterTypes/Checkbox/Checkbox';
 import './BasePanel.css';
 
 // Define props interface for BasePanel component
@@ -14,25 +15,21 @@ interface ParameterCategory {
 }
 
 interface BasePanelProps {
-  // Array of parameter objects to display
   parameters: ParameterDefinition[];
-  // Whether panel is currently selected/active
+  parameterValues: { [id: string]: string };
+  onParameterChange: (value: any, definition: ParameterDefinition) => void;
   isActive?: boolean;
-  // Optional CSS class name
   className?: string;
-  // Optional function to render custom desktop layout (used by SurfacePanel)
-  renderDesktopContent?: () => React.ReactNode;
-  // Required function to render individual parameter UI
-  renderParameter: (param: ParameterDefinition) => React.ReactNode;
   categories: ParameterCategory[];
 }
 
 // Main panel component that handles both mobile and desktop layouts
 export const BasePanel: React.FC<BasePanelProps> = ({
   parameters,
+  parameterValues,
+  onParameterChange,
   isActive = false,
   className = '',
-  renderParameter,
   categories
 }) => {
   const [activeParamIndex, setActiveParamIndex] = useState(0);
@@ -83,6 +80,57 @@ export const BasePanel: React.FC<BasePanelProps> = ({
       </div>
     </div>
   );
+
+  // Centralized parameter rendering logic
+  const renderParameter = (param: ParameterDefinition) => {
+    const value = parameterValues[param.id];
+    
+    switch(param.type) {
+      case 'slider':
+        return (
+          <Slider
+            definition={param}
+            value={value}
+            onChange={(newValue) => onParameterChange(newValue, param)}
+          />
+        );
+      case 'dropdown':
+        return (
+          <Dropdown
+            definition={param}
+            value={value}
+            onChange={(newValue) => onParameterChange(newValue, param)}
+          />
+        );
+      case 'color':
+        return (
+          <ColorPicker
+            definition={param}
+            value={value}
+            onChange={(newValue) => onParameterChange(newValue, param)}
+          />
+        );
+      case 'grid':
+        return (
+          <ShapeGrid
+            definition={param}
+            value={value}
+            onChange={(newValue) => onParameterChange(newValue, param)}
+          />
+        );
+      case 'checkbox':
+        return (
+          <Checkbox
+            definition={param}
+            value={value}
+            onChange={(newValue) => onParameterChange(newValue, param)}
+          />
+        );
+      default:
+        console.warn(`Unknown parameter type: ${param.type} for parameter ${param.name}`);
+        return null;
+    }
+  };
 
   // New function to render desktop categories
   const renderDesktopContent = () => {

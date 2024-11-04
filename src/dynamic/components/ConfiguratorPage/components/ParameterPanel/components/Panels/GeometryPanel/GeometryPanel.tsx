@@ -1,7 +1,5 @@
 import React from 'react';
 import { ParameterDefinition } from '../../../types';
-import { Slider } from '../../ParameterTypes/Slider/Slider';
-import { Dropdown } from '../../ParameterTypes/Dropdown/Dropdown';
 import { BasePanel } from '../BasePanel/BasePanel';
 import './GeometryPanel.css';
 
@@ -13,32 +11,6 @@ interface GeometryPanelProps {
 }
 
 export const GeometryPanel: React.FC<GeometryPanelProps> = (props) => {
-  const renderParameter = (param: ParameterDefinition) => {
-    const value = props.parameterValues[param.id];
-    
-    switch (param.type) {
-      case 'slider':
-        return (
-          <Slider
-            definition={param}
-            value={value}
-            onChange={(newValue) => props.onParameterChange(newValue, param)}
-          />
-        );
-      case 'dropdown':
-        return (
-          <Dropdown
-            definition={param}
-            value={value}
-            onChange={(newValue) => props.onParameterChange(newValue, param)}
-          />
-        );
-      default:
-        console.warn(`Unknown parameter type: ${param.type}`);
-        return null;
-    }
-  };
-
   const categories = [
     {
       title: "Frame Measurements",
@@ -65,7 +37,6 @@ export const GeometryPanel: React.FC<GeometryPanelProps> = (props) => {
     <BasePanel
       {...props}
       className="geometry-panel"
-      renderParameter={renderParameter}
       categories={categories}
     />
   );

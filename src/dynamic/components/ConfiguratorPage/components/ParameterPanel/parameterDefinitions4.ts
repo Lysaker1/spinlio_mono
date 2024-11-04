@@ -119,17 +119,6 @@ export const parameterDefinitions: ParameterDefinition[] = [{
     unit: 'mm',
   },
   {
-    id: '84702365-8cf8-4a43-afea-ab8e973d0f31',
-    name: 'Tube Diameter',
-    category: 'tubing',
-    type: 'slider',
-    value: '53',
-    min: 30,
-    max: 60,
-    unit: 'mm',
-  },
-  // Surface Panel Parameters
-  {
     id: '39881cea-9d0d-4879-99ee-6ed1d4c0574d',
     name: 'HandleBar color',
     category: 'tubing',
@@ -149,7 +138,8 @@ export const parameterDefinitions: ParameterDefinition[] = [{
     category: 'tubing',
     type: 'color',
     value: '0x2b2b2bff',
-  },{
+  },
+  {
     id: '56fa370a-8b83-4bd6-9797-f1e0897faac3',
     name: 'Frame color',
     category: 'tubing',
@@ -157,10 +147,17 @@ export const parameterDefinitions: ParameterDefinition[] = [{
     value: '0x000000ff',
   },
   {
+    id: '748ef0ef-9e2c-493e-ad09-d908404f289c',
+    name: 'Bottle color',
+    category: 'tubing',
+    type: 'color',
+    value: '0x0006900ff',
+  },
+  {
     id: '62738150-ac17-418d-81ab-2876c45a413e',
     name: 'Down tube shape',
     category: 'tubing',
-    type: 'dropdown',
+    type: 'grid',
     value: '5',
     options: [
       { label: 'Oval', value: '0' },
@@ -172,10 +169,10 @@ export const parameterDefinitions: ParameterDefinition[] = [{
     ],
   },
   {
-    id: '9e898618-6cce-4a45-bc4d-ea7bbd9af54f ',
+    id: '9e898618-6cce-4a45-bc4d-ea7bbd9af54f',
     name: 'Top tube shape',
     category: 'tubing',
-    type: 'dropdown',
+    type: 'grid',
     value: '5',
     options: [
       { label: 'Oval', value: '0' },
@@ -200,11 +197,14 @@ export const parameterDefinitions: ParameterDefinition[] = [{
   {
     id: '9e546ccd-7767-458c-80f9-9d17be0fc957',
     name: 'Frame Metallic Factor',
-    category: 'surface',
-    type: 'slider',
+    category: 'accessories',
+    type: 'dropdown',
     value: '0.5',
-    min: 0,
-    max: 1,
+    options: [
+      { label: 'matte', value: '0' }, 
+      { label: 'mid', value: '0.5' },
+      { label: 'glossy', value: '1' },
+    ],
   },
   {
     id: 'b5bf6f12-a078-4417-a4ae-d2049807178c',
@@ -216,11 +216,14 @@ export const parameterDefinitions: ParameterDefinition[] = [{
   {
     id: '0442b7b5-8dac-4cce-95e4-dddf8b934171',
     name: 'Frame Roughness Factor',
-    category: 'surface',
-    type: 'slider',
+    category: 'accessories',
+    type: 'grid',
     value: '0.5',
-    min: 0,
-    max: 1,
+    options: [
+      { label: 'matte', value: '0' },
+      { label: 'mid', value: '0.5' },
+      { label: 'glossy', value: '1' },
+    ],
   },
   // Hardware Panel Parameters
   {
@@ -235,6 +238,65 @@ export const parameterDefinitions: ParameterDefinition[] = [{
     ],
   },
   {
+    id: '74a9482f-e1bb-4b5e-9dff-a182a2b738b4',
+    name: 'HandleBar Metallic Factor',
+    category: 'accessories',
+    type: 'dropdown',
+    value: '0.5',
+    options: [
+      { label: 'matte', value: '0' },
+      { label: 'mid', value: '0.5' },
+      { label: 'glossy', value: '1' },
+    ],
+  },
+
+  {
+    id: '94f3a489-2284-42b9-875d-554a28bfd7c2',
+    name: 'Rim Surface',
+    category: 'accessories',
+    type: 'dropdown',
+    value: '0',
+    options: [
+      { label: 'matte', value: '0' },
+      { label: 'glossy', value: '1' },
+    ],
+  },
+  {
+    id: '677efb6e-49ff-4e40-9619-01cece75a222',
+    name: 'Human Height',
+    category: 'accessories',
+    type: 'slider',
+    value: '1800',
+    min: 0,
+    max: 2500,
+    unit: 'mm'
+  },
+  {
+    id: '93bc5629-83b5-406c-a808-e33522171489',
+    name: 'silhouette_color',
+    category: 'accessories', 
+    type: 'color',
+    value: '0xc6c6c6ff'
+  },
+  {
+    id: '251d59ff-4c5d-4a33-94bb-31fafb7df894',
+    name: 'Crank Metallic Factor',
+    category: 'accessories',
+    type: 'slider',
+    value: '0.7',
+    min: 0,
+    max: 1,
+  },
+  {
+    id: 'c0a88d51-ae73-40f8-bc5d-97ccb3e605d0',
+    name: 'Crank Roughness Factor',
+    category: 'accessories',
+    type: 'grid',
+    value: '0.5',
+    min: 0,
+    max: 1,
+  },
+  {
     id: '972de871-83ed-4243-9510-f4c2ab3228a3',
     name: 'Front Wheel Spacing',
     category: 'accessories',
@@ -243,29 +305,6 @@ export const parameterDefinitions: ParameterDefinition[] = [{
     options: [
       { label: '100mm', value: '0' },
       { label: '110mm', value: '1' },
-    ],
-  },
-
-  {
-    id: '972de871-83ed-4243-9510-f4c2ab3228a3',
-    name: 'Front bracket width',
-    category: 'geometry',
-    type: 'dropdown',
-    value: '1',
-    options: [
-      { label: '100mm', value: '0' },
-      { label: '110mm', value: '1' },
-    ],
-  },
-  {
-    id: '33ab6af5-42db-494e-834e-0f652a911a85',
-    name: 'Rear bracket width',
-    category: 'geometry',
-    type: 'dropdown',
-    value: '0',
-    options: [
-      { label: '130mm', value: '0' },
-      { label: '142mm', value: '1' },
     ],
   },
   {
@@ -289,13 +328,6 @@ export const parameterDefinitions: ParameterDefinition[] = [{
       { label: 'Yes', value: '0' },
       { label: 'No', value: '1' },
     ],
-  },
-  {
-    id: 'b5bf6f12-a078-4417-a4ae-d2049807178c',
-    name: 'Show Components',
-    category: 'accessories',
-    type: 'checkbox',
-    value: 'false',
   },
   {
     id: '9c43fdf1-d21d-4c8f-b8a3-b7d9602bfe1d',
@@ -366,4 +398,12 @@ export const parameterDefinitions: ParameterDefinition[] = [{
     ],
     tag: 'man',
   },
+  {
+    id: 'cb15151e-0bb2-4895-b40d-3184fe772fe1',
+    name: 'Rim Color',
+    category: 'accessories',
+    type: 'color',
+    value: '0x878787ff',
+  },
+
 ];

@@ -63,10 +63,26 @@
 /* Two columns layout for mount options */
 .shape-grid.two-columns {
   grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
 }
+
 .shape-grid.two-columns .shape-icon {
-  width: 5rem;  /* Larger size for two-column layout */
-  height: 5rem;
+  width: 100%;    /* Take full width of container */
+  height: auto;   /* Height follows naturally */
+  aspect-ratio: 16/9; /* Maintain aspect ratio */
+}
+
+.shape-grid.two-columns .shape-icon-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 1rem;  /* Add some padding inside the container */
+}
+
+/* Make the buttons larger in two-column layout */
+.shape-grid.two-columns .shape-option {
+  width: 100%;
+  padding: 1rem;
 }
 
 /* Individual shape option button styling */
@@ -100,14 +116,22 @@
 
 /* Container for shape icons */
 .shape-icon {
-  /* Use relative width based on container */
-  width: 2.5rem;
-  height: 2.5rem;
+  /* Increased size */
+  width: 5rem;  /* Doubled from 2.5rem */
+  height: 5rem; /* Doubled from 2.5rem */
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   position: relative;
+}
+
+/* Special sizing for mount and dropout images */
+.shape-icon.mount-image,
+.shape-icon.dropout-image {
+  width: 100%;    /* Take full width of container */
+  height: auto;   /* Height follows naturally */
+  aspect-ratio: 16/9; /* Maintain aspect ratio */
 }
 
 /* SVG icon styling */
@@ -129,7 +153,6 @@
 
 /* Image styling within shape container */
 .shape-icon-image {
-  /* Fill container while maintaining aspect ratio */
   width: 100%;
   height: 100%;
   object-fit: contain;
@@ -175,12 +198,20 @@
 
   /* Even larger icons for mobile */
   .shape-icon {
-    width: 3rem;
-    height: 3rem;
+    width: 6rem;  /* Increased from 3rem */
+    height: 6rem; /* Increased from 3rem */
   }
 
   /* Larger text for mobile */
   .shape-label {
     font-size: 14px;
+  }
+
+  .shape-grid.two-columns .shape-icon {
+    aspect-ratio: 16/9;
+  }
+  
+  .shape-grid.two-columns .shape-option {
+    padding: 0.75rem;
   }
 }

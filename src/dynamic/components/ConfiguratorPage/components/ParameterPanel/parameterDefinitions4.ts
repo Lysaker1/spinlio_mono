@@ -291,7 +291,7 @@ export const parameterDefinitions: ParameterDefinition[] = [{
     id: 'c0a88d51-ae73-40f8-bc5d-97ccb3e605d0',
     name: 'Crank Roughness Factor',
     category: 'accessories',
-    type: 'grid',
+    type: 'slider',
     value: '0.5',
     min: 0,
     max: 1,

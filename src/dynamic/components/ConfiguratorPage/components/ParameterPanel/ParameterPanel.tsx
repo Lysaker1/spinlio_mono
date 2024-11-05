@@ -11,7 +11,7 @@ import { ParameterDefinition, ParameterPanelProps } from './types';
 // Import component styles
 import './ParameterPanel.css';
 // Import parameter configuration data
-import { parameterDefinitions } from './parameterDefinitions4';
+import { parameterDefinitions } from './parameterDefinitions5';
 // Import hook to detect mobile screen size
 import { useMediaQuery } from '@mantine/hooks';
 // Import navigation tabs component

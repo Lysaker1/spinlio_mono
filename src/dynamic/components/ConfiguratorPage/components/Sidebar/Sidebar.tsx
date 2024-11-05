@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import SupplierButton from '../SupplierButton/SupplierButton';
-import { bikeTemplates, BikeTemplate } from './bikeTemplates';
+import React, { useState, useEffect, useCallback } from 'react';
+import { bikeTemplates } from './bikeTemplates';
 import './Sidebar.css';
 
 interface SidebarProps {
@@ -8,53 +7,82 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ onTemplateSelect }) => {
-  const [showCatalog, setShowCatalog] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [showTemplates, setShowTemplates] = useState(false);
 
-  const handleCatalogClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent event bubbling
-    setShowCatalog(!showCatalog);
+  const handleClickOutside = useCallback((e: MouseEvent) => {
+    const sidebar = document.querySelector('.left-sidebar');
+    if (sidebar && !sidebar.contains(e.target as Node)) {
+      setIsExpanded(false);
+      setShowTemplates(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [handleClickOutside]);
+
+  const handleMenuClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsExpanded(!isExpanded);
+    if (!isExpanded) {
+      setShowTemplates(false);
+    }
   };
 
-  const handleTemplateClick = (templateId: string) => {
-    console.log('Template clicked:', templateId);
+  const handleTemplatesClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowTemplates(!showTemplates);
+  };
+
+  const handleTemplateSelect = (templateId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
     onTemplateSelect(templateId);
-  };
-
-  const handleClickOutside = (e: React.MouseEvent) => {
-    if ((e.target as HTMLElement).closest('.catalog-button')) return;
-    if ((e.target as HTMLElement).closest('.template-container')) return;
-    setShowCatalog(false);
+    // Optionally close the sidebar after selection
+    setIsExpanded(false);
+    setShowTemplates(false);
   };
 
   return (
-    <div className="left-sidebar" onClick={handleClickOutside}>
-      <div className="supplier-button-container">
-        <SupplierButton />
-      </div>
-      
-      <button 
-        className="catalog-button"
-        onClick={handleCatalogClick}
-      >
-        Catalog
-      </button>
-
-      {showCatalog && (
-        <div className="template-container">
-          {bikeTemplates.map((template) => (
-            <button
-              key={template.id}
-              className="template-button"
-              onClick={() => handleTemplateClick(template.id)}
-            >
-              <img 
-                alt={template.name}
-                className="template-image"
-              />
-              <span className="template-name">{template.name}</span>
-            </button>
-          ))}
-        </div>
+    <div className={`left-sidebar ${isExpanded ? 'expanded' : ''}`}>
+      {!isExpanded ? (
+        <button 
+          className="menu-button" 
+          onClick={handleMenuClick}
+          aria-label="Open menu"
+        >
+          <span className="menu-line"></span>
+          <span className="menu-line"></span>
+          <span className="menu-line"></span>
+        </button>
+      ) : (
+        <>
+          <button 
+            className="templates-button" 
+            onClick={handleTemplatesClick}
+          >
+            Templates
+          </button>
+          {showTemplates && (
+            <div className={`template-container ${showTemplates ? 'visible' : ''}`}>
+              {bikeTemplates.map((template) => (
+                <button
+                  key={template.id}
+                  className="template-button"
+                  onClick={(e) => handleTemplateSelect(template.id, e)}
+                >
+                  <img 
+                    src={template.image}
+                    alt={template.name}
+                    className="template-image"
+                  />
+                  <span className="template-name">{template.name}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </>
       )}
     </div>
   );

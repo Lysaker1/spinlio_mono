@@ -10,6 +10,8 @@ import './ConfiguratorPage.css';
 import ErrorBoundary from '../../../shared/components/ErrorBoundary/ErrorBoundary';
 // Import navigate function from react-router-dom
 import { useNavigate } from 'react-router-dom';
+// Import panel settings component
+import { PanelSettings } from './components/ParameterPanel/components/PanelSettings/PanelSettings';
 
 // Import main component dependencies
 import { ParameterPanel } from './components/ParameterPanel';
@@ -37,6 +39,10 @@ const ConfiguratorPage: React.FC = () => {
   const [showQrModal, setShowQrModal] = useState(false);
   // State for controlling loading state
   const [isLoading, setIsLoading] = useState(false);
+  // State for controlling frame visibility
+  const [showOnlyFrame, setShowOnlyFrame] = useState(false);
+  // State for controlling dimensions visibility
+  const [showDimensions, setShowDimensions] = useState(false);
   
   // Reference to track component mount state
   const isMounted = useRef(true);
@@ -121,7 +127,13 @@ const ConfiguratorPage: React.FC = () => {
         <Sidebar onTemplateSelect={handleTemplateSelect} />
         
         {/* Share button container */}
-        <div className="share-button-container-configurator">
+        <div className="top-right-buttons">
+          <PanelSettings
+            showOnlyFrame={showOnlyFrame}
+            showDimensions={showDimensions}
+            onShowOnlyFrameChange={setShowOnlyFrame}
+            onShowDimensionsChange={setShowDimensions}
+          />
           <ShareButton session={session} viewport={viewport} />
         </div>
 

@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useMediaQuery } from '@mantine/hooks';
+import { getColorFromValue, colorPalette } from '../../../constants/colors'; // Import colorPalette
 import { ParameterDefinition } from '../../../types';
 import { Slider } from '../../ParameterTypes/Slider/Slider';
 import { Dropdown } from '../../ParameterTypes/Dropdown/Dropdown';
@@ -84,51 +85,67 @@ export const BasePanel: React.FC<BasePanelProps> = ({
   // Centralized parameter rendering logic
   const renderParameter = (param: ParameterDefinition) => {
     const value = parameterValues[param.id];
-    
+
+    // Special case for "Tube Color"
+    if (param.id === '56fa370a-8b83-4bd6-979f-1e0897faac3') { // Use the correct ID for the Tube Color parameter
+        const colorValue = getColorFromValue(value); // Get the hex color based on the value
+        return (
+            <ColorPicker
+                definition={param}
+                value={colorValue} // Use the hex color
+                onChange={(newValue) => {
+                    // Map the new color back to the corresponding value
+                    const newColorValue = Object.keys(colorPalette).find(key => colorPalette[key].hex === newValue) || '5'; // Default to '5' if not found
+                    onParameterChange(newColorValue, param);
+                }}
+            />
+        );
+    }
+
     switch(param.type) {
-      case 'slider':
-        return (
-          <Slider
-            definition={param}
-            value={value}
-            onChange={(newValue) => onParameterChange(newValue, param)}
-          />
-        );
-      case 'dropdown':
-        return (
-          <Dropdown
-            definition={param}
-            value={value}
-            onChange={(newValue) => onParameterChange(newValue, param)}
-          />
-        );
-      case 'color':
-        return (
-          <ColorPicker
-            definition={param}
-            value={value}
-            onChange={(newValue) => onParameterChange(newValue, param)}
-          />
-        );
-      case 'grid':
-        return (
-          <ShapeGrid
-            definition={param}
-            value={value}
-            onChange={(newValue) => onParameterChange(newValue, param)}
-          />
-        );
-      case 'checkbox':
-        return (
-          <Checkbox
-            definition={param}
-            value={value}
-            onChange={(newValue) => onParameterChange(newValue, param)}
-          />
-        );
-      default:
-        console.warn(`Unknown parameter type: ${param.type} for parameter ${param.name}`);
-        return null;
+        case 'slider':
+            return (
+                <Slider
+                    definition={param}
+                    value={value}
+                    onChange={(newValue) => onParameterChange(newValue, param)}
+                />
+            );
+        case 'dropdown':
+            return (
+                <Dropdown
+                    definition={param}
+                    value={value}
+                    onChange={(newValue) => onParameterChange(newValue, param)}
+                />
+            );
+        case 'color':
+            return (
+                <ColorPicker
+                    definition={param}
+                    value={value}
+                    onChange={(newValue) => onParameterChange(newValue, param)}
+                />
+            );
+        case 'grid':
+            return (
+                <ShapeGrid
+                    definition={param}
+                    value={value}
+                    onChange={(newValue) => onParameterChange(newValue, param)}
+                />
+            );
+        case 'checkbox':
+            return (
+                <Checkbox
+                    definition={param}
+                    value={value}
+                    onChange={(newValue) => onParameterChange(newValue, param)}
+                />
+            );
+        default:
+            console.warn(`Unknown parameter type: ${param.type} for parameter ${param.name}`);
+            return null;
     }
   };
 

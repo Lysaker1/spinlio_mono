@@ -13,34 +13,30 @@ interface TubingPanelProps {
 export const TubingPanel: React.FC<TubingPanelProps> = (props) => {
   const categories = [
     {
-      title: "Tubing Shapes",
+      title: "Top Tube",
       filter: (param: ParameterDefinition) => 
         param.category === 'tubing' && 
-        param.name.toLowerCase().includes('shape')
+        param.name.toLowerCase().includes('top tube')
     },
     {
-      title: "Colors",
+      title: "Down Tube",
       filter: (param: ParameterDefinition) => 
         param.category === 'tubing' && 
-        (param.name.toLowerCase().includes('color') || 
-         param.name.toLowerCase().includes('colour'))
+        param.name.toLowerCase().includes('down tube')
     },
     {
-      title: "Finish",
+      title: "Head Tube",
       filter: (param: ParameterDefinition) => 
         param.category === 'tubing' && 
-        (param.name.toLowerCase().includes('metallic') || 
-         param.name.toLowerCase().includes('roughness'))
+        param.name.toLowerCase().includes('head tube')
     },
     {
-      title: "Other",
+      title: "Other Tubing",
       filter: (param: ParameterDefinition) => 
         param.category === 'tubing' && 
-        !param.name.toLowerCase().includes('shape') &&
-        !param.name.toLowerCase().includes('color') &&
-        !param.name.toLowerCase().includes('colour') &&
-        !param.name.toLowerCase().includes('metallic') &&
-        !param.name.toLowerCase().includes('roughness')
+        !param.name.toLowerCase().includes('top tube') &&
+        !param.name.toLowerCase().includes('down tube') &&
+        !param.name.toLowerCase().includes('head tube')
     }
   ];
 

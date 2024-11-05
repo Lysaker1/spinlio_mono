@@ -7,7 +7,7 @@ const AboutPage: React.FC = () => {
     <div className="common-page">
       <Container className="common-content">
         <Stack gap="xl">
-          <Title order={1}>Manifesto</Title>
+          <Title order={1}>About us</Title>
           <Text ta="center">
             Spinlio is a 3D design tool that makes it easy to create physical products.
           </Text>

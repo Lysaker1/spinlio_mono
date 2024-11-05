@@ -116,9 +116,13 @@
   }
 }
 
-.share-button-container-configurator {
+.top-right-buttons {
   position: fixed;
-  top: 1.5rem;
-  right: 1.5rem;
-  z-index: 1000;
+  top: 1.5rem; /* Adjust as needed */
+  right: 1.25rem; /* Adjust as needed */
+  z-index: 1000; /* Ensure it appears above other elements */
+  display: flex; /* Use flexbox for layout */
+  gap: 3 rem; /* Space between buttons */
+  align-items: center; /* Center items vertically */
+  justify-content: flex-end; /* Align buttons to the right */
 }

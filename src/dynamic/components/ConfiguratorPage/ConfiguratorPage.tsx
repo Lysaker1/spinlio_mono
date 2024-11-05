@@ -3,7 +3,7 @@ import React, { useState, Suspense, lazy, useRef, useEffect, useCallback } from 
 // Import Modal component from Mantine UI library
 import { Modal } from '@mantine/core';
 // Import ShapeDiver viewer interfaces
-import { ISessionApi, IViewportApi } from '@shapediver/viewer';
+import { ISessionApi, IViewportApi, FLAG_TYPE } from '@shapediver/viewer';
 // Import component styles
 import './ConfiguratorPage.css';
 // Import error boundary component for error handling
@@ -17,6 +17,9 @@ import ShapeDiverViewer from './components/ShapeDiverViewer';
 import ShareButton from './components/Share/ShareButton';
 import SupplierButton from './components/SupplierButton/SupplierButton';
 import Sidebar from './components/Sidebar/Sidebar';
+import { bikeTemplates, BikeTemplate } from './components/Sidebar';
+import { MODEL_ID } from './components/Sidebar/bikeTemplates';
+
 
 // Main configurator component definition
 const ConfiguratorPage: React.FC = () => {
@@ -30,6 +33,8 @@ const ConfiguratorPage: React.FC = () => {
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
   // State for controlling QR modal visibility
   const [showQrModal, setShowQrModal] = useState(false);
+  // State for controlling loading state
+  const [isLoading, setIsLoading] = useState(false);
   
   // Reference to track component mount state
   const isMounted = useRef(true);
@@ -61,18 +66,50 @@ const ConfiguratorPage: React.FC = () => {
 
 
   // Add handler for template selection
-  const handleTemplateSelect = useCallback((templateId: string) => {
-    // This will be implemented later to load specific parameters
-    console.log(`Loading template: ${templateId}`);
-    // Example of what we might do:
-    // if (session) {
-    //   session.parameters.updateMany({
-    //     'template1_param': templateId === 'bike1' ? 'value1' : 'default',
-    //     'template2_param': templateId === 'bike2' ? 'value2' : 'default',
-    //     // ... more parameters
-    //   });
-    // }
-  }, [/* session */]);
+  const handleTemplateSelect = useCallback(async (templateId: string) => {
+    console.log('handleTemplateSelect called with:', templateId);
+    
+    const template = bikeTemplates.find(t => t.id === templateId);
+    console.log('Found template:', template);
+    
+    if (!template || !session) {
+      console.log('Early return - template or session missing:', { template, hasSession: !!session });
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      console.log('Loading template:', {
+        templateId,
+        parameters: template.parameters
+      });
+
+      if (viewport) {
+        const token = viewport.addFlag(FLAG_TYPE.BUSY_MODE);
+        try {
+          // Use customize() to update all parameters at once
+          await session.customize(template.parameters, true);
+          
+          // Update the viewport
+          if (session.node) {
+            await viewport.updateNode(session.node);
+            viewport.update();
+            viewport.render();
+          }
+        } finally {
+          viewport.removeFlag(token);
+        }
+      }
+    } catch (error) {
+      console.error('Template loading error:', {
+        template,
+        error: error instanceof Error ? error.message : error,
+        currentParameters: session.parameterValues
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [session, viewport]);
 
   // Component render
   return (
@@ -94,7 +131,8 @@ const ConfiguratorPage: React.FC = () => {
               <ShapeDiverViewer
                 session={session}
                 setSession={setSession}
-                setViewport={setViewport}
+                setViewport={setViewport} 
+                isLoading={isLoading}
               />
             </Suspense>
           </div>
@@ -131,5 +169,4 @@ const ConfiguratorPage: React.FC = () => {
   );
 };
 
-// Export component as default
 export default ConfiguratorPage;

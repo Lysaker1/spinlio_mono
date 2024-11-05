@@ -39,6 +39,7 @@ interface ShapeDiverViewerProps {
   session: ISessionApi | null;
   setSession: React.Dispatch<React.SetStateAction<ISessionApi | null>>;
   setViewport: React.Dispatch<React.SetStateAction<IViewportApi | null>>;
+  isLoading: boolean;
 }
 
 // Extend Window interface to include THREE property
@@ -69,6 +70,7 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
   session,
   setSession,
   setViewport,
+  isLoading: externalLoading,
 }) => {
   // Refs for canvas and ShapeDiver APIs
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -78,7 +80,10 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
   // State for QR code and loading status
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
   const [showQrModal, setShowQrModal] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [internalLoading, setInternalLoading] = useState(true);
+
+  // Combine both loading states
+  const isLoading = externalLoading || internalLoading;
 
   useEffect(() => {
     let isActive = true;
@@ -171,7 +176,7 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
           // Add context loss handling using canvas events
           const handleContextLoss = () => {
             console.log('WebGL context lost');
-            setIsLoading(true);
+            setInternalLoading(true);
             // Pause rendering and show loading state
             newViewport.pauseRendering();
           };
@@ -181,7 +186,7 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
             // Resume rendering and hide loading state
             newViewport.continueRendering();
             newViewport.render();
-            setIsLoading(false);
+            setInternalLoading(false);
           };
 
           canvasRef.current?.addEventListener('webglcontextlost', handleContextLoss);
@@ -200,6 +205,10 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
           const newSession = await createSession({
             ticket: 'ea43238a81435b9752d32b9a700313da48dd146809faa76381f44bf13715e3003c126431b2f53918e77dae2f349cc56586111838f00b8a1664fea5b7497c79167f528f9b5f4e4e8042862096e0e56e0deee6a85d6dc7a79b916614ebfb8602b5dcfaf272d4f262-c8b9f82b782e40abfdbe64118b8f3367',
             modelViewUrl: 'https://sdr8euc1.eu-central-1.shapediver.com',
+            loadOutputs: true,
+            waitForOutputs: true,
+            allowOutputLoading: true,
+            loadSdtf: true
           });
 
           // Check if component is still mounted
@@ -224,9 +233,11 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
             newViewport.update();
             newViewport.render();
             newViewport.show = true;
-            setIsLoading(false);
+            setInternalLoading(false);
             console.log('ShapeDiverViewer: Initialization completed successfully');
           }
+
+          setInternalLoading(false); // Set to false when initialization completes
 
           return () => {
             isActive = false;
@@ -246,13 +257,13 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
         } catch (error) {
           console.error('Error initializing ShapeDiver:', error);
           if (isActive) {
-            setIsLoading(false);
+            setInternalLoading(false);
           }
         }
       } catch (error) {
         console.error('ShapeDiverViewer initialization failed:', error);
         if (isActive) {
-          setIsLoading(false);
+          setInternalLoading(false);
         }
       }
     };

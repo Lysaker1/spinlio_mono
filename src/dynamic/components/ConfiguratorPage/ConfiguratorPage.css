@@ -18,7 +18,7 @@
   width: 10%; /* Space for templates and buttons */
   height: 100vh;
   padding: 6.25rem 1.25rem 1.25rem 1.25rem; /* Top padding for header */
-  background: rgba(117, 117, 117, 0.4);
+  background: rgba(117, 117, 117, 0.2);
   backdrop-filter: blur(10px);
   z-index: 900;
   display: flex;

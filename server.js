@@ -167,7 +167,7 @@ app.use((req, res, next) => {
   if (req.path === '/') {
     res.setHeader('Link', [
       // Only preload critical resources
-      '<https://res.cloudinary.com/da8qnqmmh/image/upload/v1730055768/background_final_last_dm9bl2.png>; rel=preload; as=image',
+      '<https://res.cloudinary.com/da8qnqmmh/image/upload/v1730794027/back3back_oye0ev.jpg>; rel=preload; as=image',
       '</framework.bundle.js>; rel=preload; as=script',
       '</shapediver.bundle.js>; rel=prefetch; as=script'  // Use prefetch for non-critical
     ].join(','));

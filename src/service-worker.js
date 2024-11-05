@@ -9,7 +9,7 @@ const staticUrlsToCache = [
   '/framework.bundle.js',
   '/vendors.bundle.js',
   '/main.bundle.js',
-  'https://res.cloudinary.com/da8qnqmmh/image/upload/v1730055768/background_final_last_dm9bl2.png'
+  'https://res.cloudinary.com/da8qnqmmh/image/upload/v1730794027/back3back_oye0ev.jpg'
 ];
 
 const modelUrlsToCache = [

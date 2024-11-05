@@ -101,7 +101,7 @@
   /* Support for iOS safe areas */
   @supports (padding: max(0px)) {
     .parameter-panel {
-      padding-bottom: max(env(safe-area-inset-bottom), 20px); /* Add padding for notches */
+      padding-bottom: max(env(safe-area-inset-bottom), 0.2rem); /* Add padding for notches */
     }
   }
 }

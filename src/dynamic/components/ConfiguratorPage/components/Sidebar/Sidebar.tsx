@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import SupplierButton from '../SupplierButton/SupplierButton';
 import './Sidebar.css';
 
@@ -9,9 +9,21 @@ interface BikeTemplate {
 }
 
 const bikeTemplates: BikeTemplate[] = [
-  { id: 'bike1', image: '/images/bike1.png', name: 'Racing Bike' },
-  { id: 'bike2', image: '/images/bike2.png', name: 'City Bike' },
-  { id: 'bike3', image: '/images/bike3.png', name: 'Mountain Bike' },
+  { 
+    id: 'bike1', 
+    image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/v1730769376/bike1_gflojr.png', 
+    name: 'Racing Bike' 
+  },
+  { 
+    id: 'bike2', 
+    image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/v1730769376/bike2_m9etyc.png', 
+    name: 'City Bike' 
+  },
+  { 
+    id: 'bike3', 
+    image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/v1730769375/bike3_rqalwn.png', 
+    name: 'Mountain Bike' 
+  },
 ];
 
 interface SidebarProps {
@@ -19,33 +31,54 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ onTemplateSelect }) => {
+  const [showCatalog, setShowCatalog] = useState(false);
+
+  const handleCatalogClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent event bubbling
+    setShowCatalog(!showCatalog);
+  };
+
   const handleTemplateClick = (templateId: string) => {
-    console.log(`Template ${templateId} selected`);
     onTemplateSelect(templateId);
   };
 
+  const handleClickOutside = (e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest('.catalog-button')) return;
+    if ((e.target as HTMLElement).closest('.template-container')) return;
+    setShowCatalog(false);
+  };
+
   return (
-    <div className="left-sidebar">
+    <div className="left-sidebar" onClick={handleClickOutside}>
       <div className="supplier-button-container">
         <SupplierButton />
       </div>
       
-      <div className="template-container">
-        {bikeTemplates.map((template) => (
-          <button
-            key={template.id}
-            className="template-button"
-            onClick={() => handleTemplateClick(template.id)}
-          >
-            <img 
-              src={template.image} 
-              alt={template.name}
-              className="template-image"
-            />
-            <span className="template-name">{template.name}</span>
-          </button>
-        ))}
-      </div>
+      <button 
+        className="catalog-button"
+        onClick={handleCatalogClick}
+      >
+        Catalog
+      </button>
+
+      {showCatalog && (
+        <div className="template-container">
+          {bikeTemplates.map((template) => (
+            <button
+              key={template.id}
+              className="template-button"
+              onClick={() => handleTemplateClick(template.id)}
+            >
+              <img 
+                src={template.image} 
+                alt={template.name}
+                className="template-image"
+              />
+              <span className="template-name">{template.name}</span>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

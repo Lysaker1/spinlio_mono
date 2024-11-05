@@ -1,30 +1,7 @@
 import React, { useState } from 'react';
 import SupplierButton from '../SupplierButton/SupplierButton';
+import { bikeTemplates, BikeTemplate } from './bikeTemplates';
 import './Sidebar.css';
-
-interface BikeTemplate {
-  id: string;
-  image: string;
-  name: string;
-}
-
-const bikeTemplates: BikeTemplate[] = [
-  { 
-    id: 'bike1', 
-    image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/v1730769376/bike1_gflojr.png', 
-    name: 'Racing Bike' 
-  },
-  { 
-    id: 'bike2', 
-    image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/v1730769376/bike2_m9etyc.png', 
-    name: 'City Bike' 
-  },
-  { 
-    id: 'bike3', 
-    image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/v1730769375/bike3_rqalwn.png', 
-    name: 'Mountain Bike' 
-  },
-];
 
 interface SidebarProps {
   onTemplateSelect: (templateId: string) => void;
@@ -39,6 +16,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onTemplateSelect }) => {
   };
 
   const handleTemplateClick = (templateId: string) => {
+    console.log('Template clicked:', templateId);
     onTemplateSelect(templateId);
   };
 
@@ -70,7 +48,6 @@ const Sidebar: React.FC<SidebarProps> = ({ onTemplateSelect }) => {
               onClick={() => handleTemplateClick(template.id)}
             >
               <img 
-                src={template.image} 
                 alt={template.name}
                 className="template-image"
               />

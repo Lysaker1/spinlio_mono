@@ -13,7 +13,7 @@ interface AccessoriesPanelProps {
 export const AccessoriesPanel: React.FC<AccessoriesPanelProps> = (props) => {
   const categories = [
     {
-      title: "Dropouts & Brakes",
+      title: " ",
       filter: (param: ParameterDefinition) => 
         param.category === 'accessories' && 
         (param.name.toLowerCase().includes('drop out') ||
@@ -25,7 +25,8 @@ export const AccessoriesPanel: React.FC<AccessoriesPanelProps> = (props) => {
       filter: (param: ParameterDefinition) => 
         param.category === 'accessories' && 
         (param.name.toLowerCase().includes('spacing') || 
-         param.name.toLowerCase().includes('rim'))
+         param.name.toLowerCase().includes('rim') ||
+         param.name.toLowerCase().includes('tire'))
     },
     {
       title: "Bottle Mounts",

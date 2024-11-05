@@ -16,7 +16,10 @@ import { parameterDefinitions } from './parameterDefinitions5';
 import { useMediaQuery } from '@mantine/hooks';
 // Import navigation tabs component
 import { CategoryTabs, TabType } from './components/CategoryTabs/CategoryTabs';
+// Import panel settings component
+import { PanelSettings } from './components/PanelSettings/PanelSettings';
 // Main component documentation block explaining core responsibilities
+
 // This is the main controller component that:
 // 1. Manages the overall parameter state
 // 2. Handles ShapeDiver communication
@@ -35,6 +38,8 @@ export const ParameterPanel: React.FC<ParameterPanelProps> = ({
   const isMobile = useMediaQuery('(max-width: 768px)'); // Boolean flag for mobile viewport
   const [lastUpdate, setLastUpdate] = useState<number>(0); // Timestamp of last model update
   const updateThreshold = 500; // Minimum time between updates in milliseconds
+  const [showOnlyFrame, setShowOnlyFrame] = useState(false);
+  const [showDimensions, setShowDimensions] = useState(false);
 
   // Reset subcategory selection when main category tab changes
   useEffect(() => {
@@ -45,6 +50,23 @@ export const ParameterPanel: React.FC<ParameterPanelProps> = ({
     }), {});
     setParameterValues(initialValues);
   }, [session]);
+
+  // Combine both effects into one
+  useEffect(() => {
+    // Update "Show Only Frame" parameter
+    const frameParam = parameterDefinitions.find(p => p.id === 'b5bf6f12-a078-4417-a4ae-d2049807178c');
+    if (frameParam) {
+      console.log('showOnlyFrame', showOnlyFrame);
+      handleParameterChange(showOnlyFrame.toString(), frameParam);
+    }
+
+    // Update "Show Dimensions" parameter
+    const dimensionsParam = parameterDefinitions.find(p => p.id === '7088e5a1-f07f-49c3-b1f6-98e74ae3734c');
+    if (dimensionsParam) {
+      console.log('showDimensions', showDimensions);
+      handleParameterChange(showDimensions.toString(), dimensionsParam);
+    }
+  }, [showOnlyFrame, showDimensions]); // Include both dependencies
 
   // Debounced ShapeDiver update
   const updateModel = useCallback(
@@ -91,6 +113,12 @@ export const ParameterPanel: React.FC<ParameterPanelProps> = ({
   // Render component UI
   return (
     <div className={`parameter-panel ${isMobile ? 'mobile' : ''}`}>
+      <PanelSettings
+        showOnlyFrame={showOnlyFrame}
+        showDimensions={showDimensions}
+        onShowOnlyFrameChange={setShowOnlyFrame}
+        onShowDimensionsChange={setShowDimensions}
+      />
       {/* Navigation tabs for parameter categories */}
       <div className="category-navigation">
         <CategoryTabs 

@@ -50,8 +50,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '33ab6af5-42db-494e-834e-0f652a911a85',
-    name: 'Rear bracket width',
-    category: 'geometry',
+    name: 'Rear Wheel Spacing',
+    category: 'accessories',
     type: 'dropdown',
     value: '0',
     options: [
@@ -71,7 +71,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '6eac979f-e146-4021-8439-0cf495cf0431',
-    name: 'Tyre Diameter',
+    name: 'Tire Diameter',
     category: 'accessories',
     type: 'dropdown',
     tag: 'man',
@@ -106,19 +106,19 @@ export const parameterDefinitions: ParameterDefinition[] = [
     name: 'Dimension_color',
     category: 'accessories',
     type: 'color',
-    value: '0xb06363ff'
+    value: '0x000000ff'
   },
   {
     id: 'b5bf6f12-a078-4417-a4ae-d2049807178c',
     name: 'Show Only Frame',
-    category: 'accessories',
+    category: 'geometry',
     type: 'checkbox',
     value: 'false'
   },
   {
     id: '748ef0ef-9e2c-493e-ad09-d908404f289c',
     name: 'Bottle Colour',
-    category: 'tubing',
+    category: 'accessories',
     type: 'color',
     value: '0x76808285'
   },
@@ -166,7 +166,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '4ec438ea-a490-434b-82ea-88f84f67f6b7',
-    name: 'DownTube Diameter',
+    name: 'Down Tube Diameter',
     value: '50',
     category: 'tubing',
     type: 'slider',
@@ -177,54 +177,54 @@ export const parameterDefinitions: ParameterDefinition[] = [
   {
     id: '39881cea-9d0d-4879-99ee-6ed1d4c0574d',
     name: 'HandleBar Colour',
-    category: 'tubing',
+    category: 'accessories',
     type: 'color',
     value: '0x363636ff'
   },
-  {
-    id: '74a9482f-e1bb-4b5e-9dff-a182a2b738b4',
-    name: 'HandleBar Metallic Factor',
-    category: 'accessories',
-    type: 'dropdown',
-    value: '0.5',
-    options: [
-      { label: 'matte', value: '0' },
-      { label: 'mid', value: '0.5' },
-      { label: 'glossy', value: '1' }
-    ]
-  },
+  // {
+  //   id: '74a9482f-e1bb-4b5e-9dff-a182a2b738b4',
+  //   name: 'HandleBar Metallic Factor',
+  //   category: 'accessories',
+  //   type: 'dropdown',
+  //   value: '0.5',
+  //   options: [
+  //     { label: 'matte', value: '0' },
+  //     { label: 'mid', value: '0.5' },
+  //     { label: 'glossy', value: '1' }
+  //   ]
+  // },
   {
     id: 'ea2fe86c-71b3-459e-8bd3-e056db0b5e8d',
     name: 'Seat Colour',
-    category: 'tubing',
+    category: 'accessories',
     type: 'color',
     value: '0x262626ff'
   },
-  {
-    id: '34db677e-094f-4ca3-ba28-1ffa0c21c9c0',
-    name: 'Crank Colour',
-    category: 'tubing',
-    type: 'color',
-    value: '0x2b2b2bff'
-  },
-  {
-    id: '251d59ff-4c5d-4a33-94bb-31fafb7df894',
-    name: 'Crank Metallic Factor',
-    category: 'accessories',
-    type: 'slider',
-    value: '0.3',
-    min: 0,
-    max: 1
-  },
-  {
-    id: 'c0a88d51-ae73-40f8-bc5d-97ccb3e605d0',
-    name: 'Crank Roughness Factor',
-    category: 'accessories',
-    type: 'slider',
-    value: '0.5',
-    min: 0,
-    max: 1
-  },
+  // {
+  //   id: '34db677e-094f-4ca3-ba28-1ffa0c21c9c0',
+  //   name: 'Crank Colour',
+  //   category: 'accessories',
+  //   type: 'color',
+  //   value: '0x2b2b2bff'
+  // },
+  // {
+  //   id: '251d59ff-4c5d-4a33-94bb-31fafb7df894',
+  //   name: 'Crank Metallic Factor',
+  //   category: 'accessories',
+  //   type: 'slider',
+  //   value: '0.3',
+  //   min: 0,
+  //   max: 1
+  // },
+  // {
+  //   id: 'c0a88d51-ae73-40f8-bc5d-97ccb3e605d0',
+  //   name: 'Crank Roughness Factor',
+  //   category: 'accessories',
+  //   type: 'slider',
+  //   value: '0.5',
+  //   min: 0,
+  //   max: 1
+  // },
   {
     id: '5422df73-826b-4478-88d3-016cf74499f6',
     name: 'Rear DropOut Type',
@@ -279,7 +279,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '7935dece-7133-4678-a77e-a3dd54c8e114',
-    name: 'Tyre Rim Thickness',
+    name: 'Rim Depth',
     category: 'accessories',
     type: 'slider',
     value: '30',
@@ -304,7 +304,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '62738150-ac17-418d-81ab-2876c45a413e',
-    name: 'Top tube shape',
+    name: 'Down tube shape',
     category: 'tubing',
     type: 'grid',
     value: '5',
@@ -376,8 +376,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '9e546ccd-7767-458c-80f9-9d17be0fc957',
-    name: 'Frame Metallic Factor',
-    category: 'accessories',
+    name: 'Paint Finish',
+    category: 'tubing',
     type: 'dropdown',
     value: '0.5',
     options: [
@@ -405,23 +405,23 @@ export const parameterDefinitions: ParameterDefinition[] = [
     type: 'color',
     value: '5'
   },
-  {
-    id: '677efb6e-49ff-4e40-9619-01cece75a222',
-    name: 'Human Height',
-    category: 'accessories',
-    type: 'slider',
-    value: '1800',
-    min: 0,
-    max: 2500,
-    unit: 'mm'
-  },
-  {
-    id: '93bc5629-83b5-406c-a808-e33522171489',
-    name: 'silhouette_color',
-    category: 'accessories',
-    type: 'color',
-    value: '0xc6c6c6ff'
-  },
+  // {
+  //   id: '677efb6e-49ff-4e40-9619-01cece75a222',
+  //   name: 'Human Height',
+  //   category: 'accessories',
+  //   type: 'slider',
+  //   value: '1800',
+  //   min: 0,
+  //   max: 2500,
+  //   unit: 'mm'
+  // },
+  // {
+  //   id: '93bc5629-83b5-406c-a808-e33522171489',
+  //   name: 'silhouette_color',
+  //   category: 'accessories',
+  //   type: 'color',
+  //   value: '0xc6c6c6ff'
+  // },
   {
     id: '55f308a4-1f48-4319-93c2-19fc11f04865',
     name: 'Pedestal_color',

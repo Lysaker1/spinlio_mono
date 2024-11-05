@@ -20,6 +20,8 @@ import Sidebar from './components/Sidebar/Sidebar';
 import { bikeTemplates, BikeTemplate } from './components/Sidebar';
 import { MODEL_ID } from './components/Sidebar/bikeTemplates';
 
+// Import the Footer component
+import Footer from '../../../shared/components/Footer/Footer'; // Adjust the path as necessary
 
 // Main configurator component definition
 const ConfiguratorPage: React.FC = () => {
@@ -164,6 +166,9 @@ const ConfiguratorPage: React.FC = () => {
             />
           )}
         </Modal>
+
+        {/* Include the Footer component */}
+        <Footer />
       </div>
     </ErrorBoundary>
   );

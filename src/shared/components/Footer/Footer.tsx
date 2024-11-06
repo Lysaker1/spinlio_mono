@@ -1,22 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Container, Text } from '@mantine/core';
 import './Footer.css';
 
 const Footer: React.FC = () => {
-  const [isVisible, setIsVisible] = useState(false);
-
   useEffect(() => {
-    // Load Klaviyo script with your actual company ID
     const script = document.createElement('script');
-    script.src = '//static.klaviyo.com/onsite/js/klaviyo.js?company_id=WnKLxt';  // Replace with your actual ID
+    script.src = '//static.klaviyo.com/onsite/js/klaviyo.js?company_id=WnKLxt';
     script.async = true;
     document.body.appendChild(script);
 
-    // Remove the scroll visibility logic
-    setIsVisible(true);  // Always show footer
-
     return () => {
-      document.body.removeChild(script);
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
     };
   }, []);
 

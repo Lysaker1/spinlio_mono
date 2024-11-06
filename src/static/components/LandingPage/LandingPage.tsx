@@ -46,7 +46,7 @@ const LandingPage: React.FC = () => {
         <div className="text-container">
           <h1 className="main-title">3D design, made simple</h1>
           <div className="subtitle-container">
-            <span className="subtitle">And ready for production - all in one platform</span>
+            <span className="subtitle">And ready for production</span>
           </div>
           <span className="version-text">Beta V0.1</span>
         </div>

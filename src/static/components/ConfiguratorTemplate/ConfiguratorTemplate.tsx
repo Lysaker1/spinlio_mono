@@ -35,7 +35,6 @@ const ConfiguratorTemplate: React.FC = () => {
           </div>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };

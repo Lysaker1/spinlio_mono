@@ -87,7 +87,6 @@ module.exports = (env) => {
       new webpack.DefinePlugin({
         'process.env': {
           ...envKeys,
-          NODE_ENV: JSON.stringify(isProd ? 'production' : 'development')
         }
       }),
       new CopyWebpackPlugin({

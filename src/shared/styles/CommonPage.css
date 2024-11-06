@@ -1,25 +1,27 @@
 .common-page {
     min-height: 100vh;
     display: flex;
-    align-items: center;  /* This centers vertically */
-    justify-content: center;  /* This centers horizontally */
+    align-items: flex-start;
+    justify-content: center;
     color: white;
-    width: 100%;  /* Added to ensure full width */
-    position: relative;  /* Added for positioning context */
-    margin-top: -68px;  /* Offset the header height */
+    width: 100%;
+    position: relative;
+    margin-top: 0;
+    padding-top: 68px;
+    overflow-y: auto;
 }
 
 .common-content {
     text-align: center;
     padding: 2rem;
-    margin: auto;  /* This helps with centering */
-    width: 100%;
-    max-width: 800px;
+    margin: 2rem auto;
+    width: 90%;
+    max-width: 600px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.3);
     backdrop-filter: blur(10px);
     border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -44,10 +46,13 @@
 }
 
 .common-content .mantine-Stack-root {
-    align-items: center;  /* Changed to center */
-    justify-content: center;  /* Added to center */
-    gap: 2rem;
-    width: 100%;
+    line-height: 1.8;
+    white-space: pre-line;
+    text-align: center;
+    max-width: 500px;
+    margin: 0 auto;
+    font-size: 1.1rem;  /* Increased font size */
+    color: #333;  /* Dark text color */
 }
 
 .common-content form {
@@ -61,16 +66,25 @@
 }
 
 .common-content .mantine-Title-root {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
-  text-align: center; /* Keep title centered */
-  width: 100%;
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    width: 100%;
+    color: #333;
 }
 
 .common-content .mantine-Text-root {
-  line-height: 1.6;
-  white-space: pre-line; /* Preserve line breaks */
-  text-align: center;  /* Changed to center */
-  max-width: 600px;  /* Added to control text width */
-  margin: 0 auto;  /* Center the text block */
+    line-height: 1.8;
+    white-space: pre-line;
+    text-align: center;
+    max-width: 500px;
+    margin: 0 auto;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.klaviyo-form-container {
+    width: 100%;
+    max-width: 400px;
+    margin: 2rem auto 0;
 }

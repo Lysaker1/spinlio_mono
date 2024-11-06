@@ -92,3 +92,24 @@
       min-width: unset;
     }
   }
+
+.newsletter-container {
+    min-width: 300px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Adjust Klaviyo form styling */
+:global(.klaviyo-form-RqHT8c) {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 50px !important;
+    padding: 4px 4px 4px 20px !important;
+}
+
+@media (max-width: 768px) {
+    .newsletter-container {
+        min-width: unset;
+        width: 100%;
+    }
+}

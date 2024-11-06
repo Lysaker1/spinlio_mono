@@ -1,25 +1,30 @@
 import React from 'react';
-import { Title, Text, Container, Stack } from '@mantine/core';
+import { Title, Text, Stack } from '@mantine/core';
 import '../../../shared/styles/CommonPage.css';
 
 const AboutPage: React.FC = () => {
   return (
     <div className="common-page">
-      <Container className="common-content">
-        <Stack gap="xl">
-          <Title order={1}>About us</Title>
-          <Text ta="center">
-            Spinlio is a 3D design tool that makes it easy to create physical products.
+      <div className="common-content">
+        <Stack justify ="center" align="center" style={{ width: '100%' }}>
+          <Title>About us</Title>
+          <Text size="lg" style={{ fontSize: '1.2rem', lineHeight: '1.8' }}>
+            Spinlio is a 3D design tool that makes it easy to create physical products. Our
+            platform bridges the gap between designers and producers, by providing the tools to
+            turn your ideas into production-ready products.
           </Text>
-          <Text ta="center">
-            Our platform bridges the gap between designers and producers, by providing the tools and environment that makes your ideas not only unique but also ready for production.
+          <Text size="lg" style={{ fontSize: '1.2rem', lineHeight: '1.8' }}>
+            We are an early-stage startup, currently focused on the bicycle industry, with
+            ambitions to expand into all industries. While we're in Beta, we'll be continuously
+            rolling out updates to improve your experience. Sign up for updates if you want to be
+            part of the ride!
           </Text>
-          <Text ta="center">
-            We are an early-stage startup, currently focused on the bicycle industry, with ambitions to expand into all industries. 
-            While we're in Beta, we'll be continuously rolling out updates daily to improve your experience so sign up for updates if you want to be part of the ride.
-          </Text>
+          
+          <div className="klaviyo-form-container" style={{ marginTop: '2rem' }}>
+            <div className="klaviyo-form-RqHT8c"></div>
+          </div>
         </Stack>
-      </Container>
+      </div>
     </div>
   );
 };

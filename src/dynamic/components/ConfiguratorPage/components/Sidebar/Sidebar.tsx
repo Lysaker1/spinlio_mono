@@ -1,20 +1,33 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { bikeTemplates } from './bikeTemplates';
+import { Checkbox } from '../ParameterPanel/components/ParameterTypes/Checkbox/Checkbox';
 import './Sidebar.css';
+import { ISessionApi } from '@shapediver/viewer';
 
 interface SidebarProps {
   onTemplateSelect: (templateId: string) => void;
+  showOnlyFrame: boolean;
+  showDimensions: boolean;
+  onShowOnlyFrameChange: (value: boolean) => void;
+  onShowDimensionsChange: (value: boolean) => void;
+  session: ISessionApi | null;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ onTemplateSelect }) => {
+const Sidebar: React.FC<SidebarProps> = ({ 
+  onTemplateSelect, 
+  showOnlyFrame, 
+  showDimensions, 
+  onShowOnlyFrameChange, 
+  onShowDimensionsChange,
+  session 
+}) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [showTemplates, setShowTemplates] = useState(false);
+  const [activeSection, setActiveSection] = useState<'none' | 'templates' | 'settings'>('none');
 
   const handleClickOutside = useCallback((e: MouseEvent) => {
     const sidebar = document.querySelector('.left-sidebar');
     if (sidebar && !sidebar.contains(e.target as Node)) {
       setIsExpanded(false);
-      setShowTemplates(false);
     }
   }, []);
 
@@ -26,22 +39,40 @@ const Sidebar: React.FC<SidebarProps> = ({ onTemplateSelect }) => {
   const handleMenuClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsExpanded(!isExpanded);
-    if (!isExpanded) {
-      setShowTemplates(false);
-    }
   };
 
   const handleTemplatesClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setShowTemplates(!showTemplates);
+    setActiveSection(activeSection === 'templates' ? 'none' : 'templates');
+  };
+
+  const handleSettingsClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setActiveSection(activeSection === 'settings' ? 'none' : 'settings');
   };
 
   const handleTemplateSelect = (templateId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     onTemplateSelect(templateId);
-    // Optionally close the sidebar after selection
     setIsExpanded(false);
-    setShowTemplates(false);
+  };
+
+  const handleShowOnlyFrameChange = (_: any, definition: any) => {
+    if (session) {
+      session.customize({
+        'b5bf6f12-a078-4417-a4ae-d2049807178c': (!showOnlyFrame).toString()
+      });
+      onShowOnlyFrameChange(!showOnlyFrame);
+    }
+  };
+
+  const handleShowDimensionsChange = (_: any, definition: any) => {
+    if (session) {
+      session.customize({
+        '7088e5a1-f07f-49c3-b1f6-98e74ae3734c': (!showDimensions).toString()
+      });
+      onShowDimensionsChange(!showDimensions);
+    }
   };
 
   return (
@@ -59,13 +90,20 @@ const Sidebar: React.FC<SidebarProps> = ({ onTemplateSelect }) => {
       ) : (
         <>
           <button 
-            className="templates-button" 
+            className={`sidebar-button ${activeSection === 'templates' ? 'active' : ''}`}
             onClick={handleTemplatesClick}
           >
             Templates
           </button>
-          {showTemplates && (
-            <div className={`template-container ${showTemplates ? 'visible' : ''}`}>
+          <button 
+            className={`sidebar-button ${activeSection === 'settings' ? 'active' : ''}`}
+            onClick={handleSettingsClick}
+          >
+            Settings
+          </button>
+
+          {activeSection === 'templates' && (
+            <div className="template-container visible">
               {bikeTemplates.map((template) => (
                 <button
                   key={template.id}
@@ -80,6 +118,33 @@ const Sidebar: React.FC<SidebarProps> = ({ onTemplateSelect }) => {
                   <span className="template-name">{template.name}</span>
                 </button>
               ))}
+            </div>
+          )}
+
+          {activeSection === 'settings' && (
+            <div className="settings-container visible">
+              <Checkbox
+                definition={{
+                  id: 'b5bf6f12-a078-4417-a4ae-d2049807178c',
+                  name: 'Show Only Frame',
+                  type: 'checkbox',
+                  category: 'geometry',
+                  value: showOnlyFrame.toString()
+                }}
+                value={showOnlyFrame.toString()}
+                onChange={handleShowOnlyFrameChange}
+              />
+              <Checkbox
+                definition={{
+                  id: '7088e5a1-f07f-49c3-b1f6-98e74ae3734c',
+                  name: 'Show Dimensions',
+                  type: 'checkbox',
+                  category: 'geometry',
+                  value: showDimensions.toString()
+                }}
+                value={showDimensions.toString()}
+                onChange={handleShowDimensionsChange}
+              />
             </div>
           )}
         </>

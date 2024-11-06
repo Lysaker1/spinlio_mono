@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ISessionApi, IViewportApi } from '@shapediver/viewer';
 import ARPreview from './components/ARPreview/ARPreview';
 import ExportOptions from './components/ExportOptions/ExportOptions';
@@ -10,13 +10,31 @@ interface ShareMenuProps {
   onClose: () => void;
   session: ISessionApi | null;
   viewport: IViewportApi | null;
+  onHeightChange?: (height: number) => void;
 }
 
-const ShareMenu: React.FC<ShareMenuProps> = ({ onClose, session, viewport }) => {
+const ShareMenu: React.FC<ShareMenuProps> = ({ onClose, session, viewport, onHeightChange }) => {
   const [activeView, setActiveView] = useState<'main' | 'ar' | 'export'>('main');
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [shareMenuHeight, setShareMenuHeight] = useState<number>(0);
+
+  useEffect(() => {
+    if (menuRef.current) {
+      const height = menuRef.current.getBoundingClientRect().height;
+      const viewportHeight = window.innerHeight;
+      setShareMenuHeight((height / viewportHeight) * 100); // Convert to vh units
+    }
+  }, [activeView]);
+
+  useEffect(() => {
+    if (menuRef.current && onHeightChange) {
+      const height = menuRef.current.getBoundingClientRect().height;
+      onHeightChange(height);
+    }
+  }, [activeView, onHeightChange]);
 
   return (
-    <div className="share-menu">
+    <div className="share-menu" ref={menuRef}>
       {activeView === 'main' && (
         <>
           <h3 className="share-title">Share this bike</h3>

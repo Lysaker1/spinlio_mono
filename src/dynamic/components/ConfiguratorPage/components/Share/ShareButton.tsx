@@ -2,15 +2,22 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ISessionApi, IViewportApi } from '@shapediver/viewer';
 import ShareMenu from './ShareMenu';
 import ShareIcon from './icons/ShareIcon';
+import './ShareButton.css';
 
 interface ShareButtonProps {
   session: ISessionApi | null;
   viewport: IViewportApi | null;
+  onMenuOpen: (isOpen: boolean) => void;
+  onMenuHeightChange?: (height: number) => void;
 }
 
-const ShareButton: React.FC<ShareButtonProps> = ({ session, viewport }) => {
+const ShareButton: React.FC<ShareButtonProps> = ({ session, viewport, onMenuOpen }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    onMenuOpen(isMenuOpen);
+  }, [isMenuOpen, onMenuOpen]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

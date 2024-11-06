@@ -11,7 +11,7 @@ import ErrorBoundary from '../../../shared/components/ErrorBoundary/ErrorBoundar
 // Import navigate function from react-router-dom
 import { useNavigate } from 'react-router-dom';
 // Import panel settings component
-import { PanelSettings } from './components/ParameterPanel/components/PanelSettings/PanelSettings';
+// import { PanelSettings } from './components/ParameterPanel/components/PanelSettings/PanelSettings';
 
 // Import main component dependencies
 import { ParameterPanel } from './components/ParameterPanel';
@@ -41,6 +41,8 @@ const ConfiguratorPage: React.FC = () => {
   const [showOnlyFrame, setShowOnlyFrame] = useState(false);
   // State for controlling dimensions visibility
   const [showDimensions, setShowDimensions] = useState(false);
+  const [isShareMenuOpen, setIsShareMenuOpen] = useState(false);
+  const [shareMenuHeight, setShareMenuHeight] = useState<number>(0);
   
   // Reference to track component mount state
   const isMounted = useRef(true);
@@ -70,6 +72,12 @@ const ConfiguratorPage: React.FC = () => {
     };
   }, [session, viewport, selectedComponent]);
 
+  // Update padding when share menu opens/closes
+  useEffect(() => {
+    const defaultPadding = 15; // vh units
+    const padding = isShareMenuOpen ? Math.max(defaultPadding, shareMenuHeight + 5) : defaultPadding;
+    document.documentElement.style.setProperty('--panel-top-padding', `${padding}vh`);
+  }, [isShareMenuOpen, shareMenuHeight]);
 
   // Add handler for template selection
   const handleTemplateSelect = useCallback(async (templateId: string) => {
@@ -122,17 +130,22 @@ const ConfiguratorPage: React.FC = () => {
     // Wrap entire component in error boundary
     <ErrorBoundary>
       <div className="configurator-page">
-        <Sidebar onTemplateSelect={handleTemplateSelect} />
+        <Sidebar 
+          onTemplateSelect={handleTemplateSelect}
+          showOnlyFrame={showOnlyFrame}
+          showDimensions={showDimensions}
+          onShowOnlyFrameChange={setShowOnlyFrame}
+          onShowDimensionsChange={setShowDimensions}
+          session={session}
+        />
         
         {/* Share button container */}
         <div className="top-right-buttons">
-          <PanelSettings
-            showOnlyFrame={showOnlyFrame}
-            showDimensions={showDimensions}
-            onShowOnlyFrameChange={setShowOnlyFrame}
-            onShowDimensionsChange={setShowDimensions}
+          <ShareButton 
+            session={session} 
+            viewport={viewport}
+            onMenuOpen={(isOpen) => setIsShareMenuOpen(isOpen)}
           />
-          <ShareButton session={session} viewport={viewport} />
         </div>
 
         {/* Main content container */}
@@ -150,7 +163,7 @@ const ConfiguratorPage: React.FC = () => {
           </div>
           
           {/* Parameter panel container */}
-          <div className="parameter-panel-container">
+          <div className={`parameter-panel-container ${isShareMenuOpen ? 'share-open' : ''}`}>
             <Suspense fallback={null}>
               <ParameterPanel
                 selectedComponent={selectedComponent}
@@ -176,7 +189,6 @@ const ConfiguratorPage: React.FC = () => {
             />
           )}
         </Modal>
-
 
       </div>
     </ErrorBoundary>

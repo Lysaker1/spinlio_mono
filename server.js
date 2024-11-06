@@ -39,7 +39,8 @@ app.use(cors({
       'https://contact.spinlio.com',
       'https://www.herokucdn.com',
       'https://viewer.shapediver.com',
-      'https://res.cloudinary.com'
+      'https://res.cloudinary.com',
+      'https://design.spinlio.com'
     ];
     if (!origin) return callback(null, true);
     callback(null, allowedOrigins.includes(origin));
@@ -63,6 +64,7 @@ app.use(helmet({
         "https://*.hubspot.com", 
         "https://*.hsforms.com",
         "https://spinlio.com",
+        "https://design.spinlio.com",
         "https://configurator.spinlio.com",
         "https://contact.spinlio.com",
         "https://www.herokucdn.com",
@@ -246,6 +248,15 @@ app.get('*', (req, res) => {
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send('Something broke!');
+});
+
+app.use((req, res, next) => {
+  if (req.hostname === 'configurator.spinlio.com') {
+    console.log(`Redirecting from configurator to design: ${req.path}`);
+
+    return res.redirect(301, `https://design.spinlio.com${req.path}`);
+  }
+  next();
 });
 
 const setupServer = () => {

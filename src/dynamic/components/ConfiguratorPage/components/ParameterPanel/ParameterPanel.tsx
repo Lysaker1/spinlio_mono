@@ -17,7 +17,6 @@ import { useMediaQuery } from '@mantine/hooks';
 // Import navigation tabs component
 import { CategoryTabs, TabType } from './components/CategoryTabs/CategoryTabs';
 // Import panel settings component
-import { PanelSettings } from './components/PanelSettings/PanelSettings';
 // Main component documentation block explaining core responsibilities
 
 // This is the main controller component that:
@@ -52,21 +51,21 @@ export const ParameterPanel: React.FC<ParameterPanelProps> = ({
   }, [session]);
 
   // Combine both effects into one
-  useEffect(() => {
-    // Update "Show Only Frame" parameter
-    const frameParam = parameterDefinitions.find(p => p.id === 'b5bf6f12-a078-4417-a4ae-d2049807178c');
-    if (frameParam) {
-      console.log('showOnlyFrame', showOnlyFrame);
-      handleParameterChange(showOnlyFrame.toString(), frameParam);
-    }
+  // useEffect(() => {
+  //   // Update "Show Only Frame" parameter
+  //   const frameParam = parameterDefinitions.find(p => p.id === 'b5bf6f12-a078-4417-a4ae-d2049807178c');
+  //   if (frameParam) {
+  //     console.log('showOnlyFrame', showOnlyFrame);
+  //     handleParameterChange(showOnlyFrame.toString(), frameParam);
+  //   }
 
-    // Update "Show Dimensions" parameter
-    const dimensionsParam = parameterDefinitions.find(p => p.id === '7088e5a1-f07f-49c3-b1f6-98e74ae3734c');
-    if (dimensionsParam) {
-      console.log('showDimensions', showDimensions);
-      handleParameterChange(showDimensions.toString(), dimensionsParam);
-    }
-  }, [showOnlyFrame, showDimensions]); // Include both dependencies
+  //   // Update "Show Dimensions" parameter
+  //   const dimensionsParam = parameterDefinitions.find(p => p.id === '7088e5a1-f07f-49c3-b1f6-98e74ae3734c');
+  //   if (dimensionsParam) {
+  //     console.log('showDimensions', showDimensions);
+  //     handleParameterChange(showDimensions.toString(), dimensionsParam);
+  //   }
+  // }, [showOnlyFrame, showDimensions]); // Include both dependencies
 
   // Debounced ShapeDiver update
   const updateModel = useCallback(
@@ -113,12 +112,12 @@ export const ParameterPanel: React.FC<ParameterPanelProps> = ({
   // Render component UI
   return (
     <div className={`parameter-panel ${isMobile ? 'mobile' : ''}`}>
-      <PanelSettings
+      {/* <PanelSettings
         showOnlyFrame={showOnlyFrame}
         showDimensions={showDimensions}
         onShowOnlyFrameChange={setShowOnlyFrame}
         onShowDimensionsChange={setShowDimensions}
-      />
+      /> */}
       {/* Navigation tabs for parameter categories */}
       <div className="category-navigation">
         <CategoryTabs 

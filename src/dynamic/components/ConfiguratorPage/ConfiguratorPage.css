@@ -1,14 +1,16 @@
 /* Base Layout Structure - Main container for the configurator page */
 /* -------------------------------------------------- */
 .configurator-page {
-  display: flex; /* Uses flexbox for layout */
-  flex-direction: column; /* Stacks children vertically */
-  min-height: 100vh; /* Takes up full viewport height */
-  width: 100vw; /* Takes up full viewport width */
-  background: transparent; /* Transparent background */
-  overflow-x: hidden; /* Prevents horizontal scrolling */
+  display: grid;
+  grid-template-areas: 
+    "sidebar header"
+    "sidebar viewer"
+    "sidebar panel";
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto 1fr auto;
+  height: 100vh;
+  overflow: hidden;
 }
-
 
 /* Add new left sidebar container */
 .left-sidebar {
@@ -39,42 +41,55 @@
 /* Main Content Container - Holds the viewer and parameter panel */
 /* -------------------------------------------------- */
 .configurator-content {
-  display: flex; /* Uses flexbox for layout */
-  height: 100%; /* Takes up full height of parent */
-  width: 90vw; /* Takes up full width of parent */
-  position: relative; /* Enables absolute positioning of children */
-  padding-left: 10vw; /* Match left sidebar width */
-  overflow-y: auto; /* Enables vertical scrolling if content overflows */
-  animation: fadeIn 0.3s ease-out forwards; /* Fade in animation on load */
-  }
+  display: flex;
+  height: calc(100vh - 68px); /* Viewport height minus header */
+  width: 90vw; /* 90% of viewport width */
+  padding-left: 10vw; /* Space for sidebar */
+  position: relative;
+
+}
 
 /* 3D Viewer Container - Desktop - Contains the 3D model viewer */
 /* -------------------------------------------------- */
 .viewer-container {
-  flex: 1; /* Takes up remaining space */
-  display: flex; /* Uses flexbox for layout */
-  flex-direction: column; /* Stacks children vertically */
-  justify-content: center; /* Centers content vertically */
-  align-items: center; /* Centers content horizontally */
-  position: relative; /* Enables absolute positioning of children */
-  width: 75%; /* Takes up 60% of parent width */
-  height: 100%; /* Takes up full height of parent */
+  width: 75%; /* 75% of configurator-content */
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
 }
 
 /* Parameter Panel Container - Desktop - Contains configuration controls */
 /* -------------------------------------------------- */
 .parameter-panel-container {
-  width: 25%; /* Fixed width */
-  height: calc(100vh - 25vh); /* Full viewport height minus top and bottom spacing */
-  margin: 15vh 2vh 10vh 2vh; /* Top, right, bottom, left spacing using vh units */
+  grid-area: panel;
   border-radius: 1.5rem; /* Rounded corners */
   background: rgba(68, 68, 68, 0.8); /* Semi-transparent dark background */
   backdrop-filter: blur(10px); /* Blur effect behind panel */
   overflow: hidden; /* Clips content to rounded corners */
-  display: flex; /* Uses flexbox for layout */
-  flex-direction: column; /* Stacks children vertically */
-  transition: all 0.3s ease-out; /* Smooth transitions for all properties */
-  overflow: hidden; /* Clips content to rounded corners */
+
+  position: relative;
+  width: 25%; /* Remaining 25% of configurator-content */
+  height: calc(100vh - 25vh);
+  margin: var(--panel-top-padding, 15vh) 4vh 10vh 2vh; /* Increased right margin from 2vh to 4vh */
+  padding-right: 2vh; /* Add additional padding on the right */
+  transition: margin-top 0.3s ease;
+  z-index: 800;
+}
+
+.top-right-buttons {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 1.5rem 1.25rem;
+  z-index: 1100;
+  pointer-events: all;
+}
+
+/* When share menu is open, adjust panel position */
+.parameter-panel-container.share-open {
+  transform: translateY(var(--share-menu-height, 0px));
 }
 
 /* Mobile Layout - Adjustments for smaller screens */
@@ -107,7 +122,6 @@
   }
 
  
-
   /* Safe area adjustments for notched devices */
   @supports (padding: max(0px)) {
     .category-navigation {
@@ -117,13 +131,3 @@
   }
 }
 
-.top-right-buttons {
-  position: fixed;
-  top: 1.5rem; /* Adjust as needed */
-  right: 1.25rem; /* Adjust as needed */
-  z-index: 1000; /* Ensure it appears above other elements */
-  display: flex; /* Use flexbox for layout */
-  gap: 3 rem; /* Space between buttons */
-  align-items: center; /* Center items vertically */
-  justify-content: flex-end; /* Align buttons to the right */
-}

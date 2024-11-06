@@ -73,7 +73,9 @@ app.use(helmet({
         "https://forms.hubspot.com",
         "https://*.hs-scripts.com",
         "https://*.hs-banner.com",
-        "https://*.hscollectedforms.net"
+        "https://*.hscollectedforms.net",
+        "https://static.klaviyo.com",
+        "https://*.klaviyo.com"
       ],
       frameSrc: [
         "'self'",
@@ -100,18 +102,25 @@ app.use(helmet({
         "https://*.hubspot.com",
         "https://*.hs-scripts.com",
         "https://*.hs-analytics.net",
-        "https://*.usemessages.com"
+        "https://*.usemessages.com",
+        "https://static.klaviyo.com",
+        "https://*.hsforms.com", 
+        "https://*.hubspot.com"
       ],
       styleSrc: [
         "'self'", 
         "'unsafe-inline'",
-        "https://*.hubspot.com"
+        "https://*.hubspot.com",
+        "https://static.klaviyo.com",
+        "https://*.klaviyo.com"
       ],
       fontSrc: [
         "'self'", 
         "data:", 
         "https://fonts.gstatic.com",
-        "https://*.hubspot.com"
+        "https://*.hubspot.com",
+        "https://static.klaviyo.com",
+        "https://*.klaviyo.com"
       ],
       objectSrc: ["'none'"],
       mediaSrc: ["'self'", "https://res.cloudinary.com"],

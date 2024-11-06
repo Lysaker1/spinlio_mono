@@ -1,44 +1,31 @@
 .configurator-template {
-    /* Match the exact layout of ConfiguratorPage */
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    background: inherit; /* Inherit the background from body */
+    display: flex; /* Makes the layout flexible */
+    flex-direction: column; /* Arranges items in a column */
+    height: 100%; /* Sets the height to 100% */
+    background: inherit; /* Inherits the background from body */
   }
   
   .viewer-placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    background: rgba(245, 240, 235, 0.2);
+    display: flex; /* Makes the layout flexible */
+    align-items: center; /* Centers the items */
+    justify-content: center; /* Centers the content */
+    height: 100%; /* Sets the height to 100% */
+    background: rgba(245, 240, 235, 0.2); /* Sets the background color */
   }
   
   .loading-gif {
-    width: 200px;
-    height: 200px;
-    object-fit: contain;
+    width: 100%; /* Sets the width to 100% of the container */
+    height: 100%; /* Sets the height to 100% of the container */
+    object-fit: contain; /* Fits the object within the container */
+  }@keyframes pulse {
+    0% { opacity: 0.6; } /* Starts with 60% opacity */
+    50% { opacity: 0.8; } /* Increases to 80% opacity */
+    100% { opacity: 0.6; } /* Returns to 60% opacity */
   }
   
   .parameter-panel-placeholder {
-    width: 300px;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-  }
-  
-  .panel-skeleton {
-    /* Add loading skeleton animation */
-    animation: pulse 1.5s infinite;
-    background: linear-gradient(90deg, 
-      rgba(255,255,255,0.1), 
-      rgba(255,255,255,0.2), 
-      rgba(255,255,255,0.1)
-    );
-    height: 100%;
-  }
-  
-  @keyframes pulse {
-    0% { opacity: 0.6; }
-    50% { opacity: 0.8; }
-    100% { opacity: 0.6; }
+    width: 25vw; /* Sets the width to 25% of the viewport width */
+    background: rgba(255, 255, 255, 0.1); /* Sets the background color */
+    backdrop-filter: blur(10px); /* Applies a blur effect to the background */
+    margin-left: auto; /* Aligns the panel to the right side */
   }

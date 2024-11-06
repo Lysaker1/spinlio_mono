@@ -37,21 +37,29 @@ module.exports = (env) => {
   const cspHeaders = {
     'Content-Security-Policy': `
       default-src 'self'; 
-      script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.hsforms.net https://*.hsforms.com https://*.hubspot.com; 
-      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.hsforms.com https://*.hubspot.com; 
-      img-src 'self' data: blob: https://*.hsforms.com https://*.hubspot.com https://res.cloudinary.com; 
-      media-src 'self' blob:; 
-      connect-src 'self' ws: wss: http: https: localhost:* 
+      script-src 'self' 'unsafe-eval' 'unsafe-inline' 
+        https://static.klaviyo.com
+        https://*.klaviyo.com
+        https://*.hsforms.com 
+        https://*.hubspot.com; 
+      style-src 'self' 'unsafe-inline' 
+        https://static.klaviyo.com
+        https://*.klaviyo.com
+        https://fonts.googleapis.com; 
+      connect-src 'self' ws: wss: http: https: localhost:* blob:
+        https://static.klaviyo.com
+        https://*.klaviyo.com
         https://*.spinlio.com 
-        https://*.shapediver.com 
-        wss://*.shapediver.com
-        https://*.hubspot.com 
-        https://*.hsforms.com
-        blob:; 
-      worker-src 'self' blob:; 
-      font-src 'self' https://fonts.gstatic.com https://*.hsforms.com; 
-      frame-src https://*.hsforms.com https://*.hubspot.com; 
-      form-action https://*.hsforms.com https://*.hubspot.com;
+        https://*.shapediver.com; 
+      font-src 'self' data:
+        https://static.klaviyo.com
+        https://*.klaviyo.com;
+      img-src 'self' data: blob:
+        https://static.klaviyo.com
+        https://*.klaviyo.com
+        https://res.cloudinary.com
+        https://*.cloudinary.com
+
     `.replace(/\s+/g, ' ')
   }
 

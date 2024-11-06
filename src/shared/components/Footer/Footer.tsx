@@ -4,8 +4,9 @@ import './Footer.css';
 
 const Footer: React.FC = () => {
   useEffect(() => {
+    // Load Klaviyo script with your company ID
     const script = document.createElement('script');
-    script.src = '//static.klaviyo.com/onsite/js/klaviyo.js?company_id=WnKLxt';
+    script.src = 'https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=UYRE7k';
     script.async = true;
     document.body.appendChild(script);
 

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import './LandingPage.css';
 
 const LandingPage: React.FC = () => {
-  const configuratorUrl = 'https://configurator.spinlio.com';
+  const configuratorUrl = 'https://design.spinlio.com';
 
   useEffect(() => {
     // Prefetch critical configurator resources when landing page is idle

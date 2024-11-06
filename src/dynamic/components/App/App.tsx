@@ -47,7 +47,7 @@ const App: React.FC = () => {
     }
     
     // If we're live on the internet:
-    if (hostname === 'configurator.spinlio.com') {
+    if (hostname === 'design.spinlio.com') {
       if (window.location.pathname.includes('/supplier')) {
         return <SupplierConfigurator />;
       }
@@ -76,7 +76,7 @@ const App: React.FC = () => {
     }
 
     // If we're on the bike configurator page, get the 3D stuff ready
-    if (window.location.hostname === 'configurator.spinlio.com' || 
+    if (window.location.hostname === 'design.spinlio.com' || 
         (process.env.NODE_ENV === 'development' && window.location.port === '3001')) {
       prefetchShapeDiver();
     }

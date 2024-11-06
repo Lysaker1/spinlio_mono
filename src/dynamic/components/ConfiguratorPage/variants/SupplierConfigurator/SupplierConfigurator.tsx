@@ -11,6 +11,7 @@ const SupplierConfigurator: React.FC = () => {
   const [selectedComponent, setSelectedComponent] = useState<string>('');
   const [session, setSession] = useState<ISessionApi | null>(null);
   const [viewport, setViewport] = useState<IViewportApi | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   
   const handleBackToUser = () => {
     navigate('/');
@@ -45,6 +46,7 @@ const SupplierConfigurator: React.FC = () => {
                 session={session}
                 setSession={setSession}
                 setViewport={setViewport}
+                isLoading={isLoading}
               />
             </Suspense>
           </div>

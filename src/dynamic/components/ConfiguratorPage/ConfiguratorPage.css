@@ -6,6 +6,7 @@
   min-height: 100vh; /* Takes up full viewport height */
   width: 100vw; /* Takes up full viewport width */
   background: transparent; /* Transparent background */
+  padding-bottom: 10rem;
 }
 
 

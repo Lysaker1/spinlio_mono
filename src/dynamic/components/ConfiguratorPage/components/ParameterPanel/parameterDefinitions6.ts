@@ -700,13 +700,13 @@ export const parameterDefinitions: ParameterDefinition[] = [
     category: 'accessories',
     type: 'color'
   },*/
-  {
+  /*{
     id: 'c1ed3412-a8ca-4b21-ba9d-cd16ac8a7021',
-    name: 'HandleBar color',
+    name: 'Handlebar color',
     value: '0x918484ff',
     category: 'accessories',
     type: 'color'
-  },
+  },*/
   // {
   //   id: '2c1f868d-5b6f-4eb0-8e59-4ef5e52e2f8c',
   //   name: 'HandleGrip Roughness Factor',

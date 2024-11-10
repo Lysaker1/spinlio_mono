@@ -38,4 +38,5 @@ export interface ParameterDefinition {
       // Value to be used when option is selected
       value: string;
     }>;
+    disabled?: boolean;
   }

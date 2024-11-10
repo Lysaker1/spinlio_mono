@@ -4,7 +4,7 @@ import { sendNotification } from '../../../../../../utils/exportUtils';
 import FileTypeSelect from './FileTypeSelect';
 import './ExportOptions.css';
 
-type FileFormat = 'OBJ' | 'STEP' | 'STL' | '3DM' | 'PNG';
+type FileFormat = 'OBJ' | 'STL' | '3DM';
 type ExportMethod = 'DOWNLOAD' | 'EMAIL';
 
 interface ExportOptionsProps {
@@ -14,7 +14,7 @@ interface ExportOptionsProps {
 }
 
 const ExportOptions: React.FC<ExportOptionsProps> = ({ onBack, session }) => {
-  const [selectedFormat, setSelectedFormat] = useState<FileFormat>('STL');
+  const [selectedFormat, setSelectedFormat] = useState<FileFormat>('OBJ');
   const [exportMethod, setExportMethod] = useState<ExportMethod>('DOWNLOAD');
   const [email, setEmail] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);

@@ -84,6 +84,11 @@ export const BasePanel: React.FC<BasePanelProps> = ({
 
   // Centralized parameter rendering logic
   const renderParameter = (param: ParameterDefinition) => {
+    // If parameter is disabled, don't render it
+    if (param.disabled) {
+      return null;
+    }
+
     const value = parameterValues[param.id];
 
     // Special case for "Tube Color"

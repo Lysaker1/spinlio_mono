@@ -30,6 +30,13 @@ export const TubingPanel: React.FC<TubingPanelProps> = (props) => {
         param.category === 'tubing' && 
         param.name.toLowerCase().includes('head tube')
     },
+  {
+    title: "Frame Finish",
+    filter: (param: ParameterDefinition) => 
+      param.category === 'accessories' && 
+      param.name.toLowerCase().includes('frame finish')
+  },
+  // ... ex
     {
       title: "Other Tubing",
       filter: (param: ParameterDefinition) => 

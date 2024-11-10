@@ -3,7 +3,7 @@
   display: flex;
   align-items: flex-start; /* Changed from center to flex-start */
   justify-content: center;
-  color: white;
+  color: rgba(0, 0, 0, 0.945);
   position: relative;
   z-index: 1;
   width: 100%;

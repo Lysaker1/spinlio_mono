@@ -44,5 +44,17 @@ export const ShapeIcons = {
     'Bolt Through': {
       type: 'image',
       src: 'https://res.cloudinary.com/da8qnqmmh/image/upload/v1730626306/BoltTrhu.png'
+    },
+    Glossy: {
+      type: 'image',
+      src: 'https://res.cloudinary.com/da8qnqmmh/image/upload/glossy_wslz1x.png'
+    },
+    Matte: {
+      type: 'image',
+      src: 'https://res.cloudinary.com/da8qnqmmh/image/upload/matt_ic7bdc.png'
+    },
+    Metallic: {
+      type: 'image',
+      src: 'https://res.cloudinary.com/da8qnqmmh/image/upload/metallic_o5umwt.png'
     }
   };

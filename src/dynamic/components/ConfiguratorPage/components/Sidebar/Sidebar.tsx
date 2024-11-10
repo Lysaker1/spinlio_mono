@@ -3,6 +3,7 @@ import { bikeTemplates } from './bikeTemplates';
 import { Checkbox } from '../ParameterPanel/components/ParameterTypes/Checkbox/Checkbox';
 import './Sidebar.css';
 import { ISessionApi } from '@shapediver/viewer';
+import { useNavigate } from 'react-router-dom';
 
 interface SidebarProps {
   onTemplateSelect: (templateId: string) => void;
@@ -22,7 +23,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   session 
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [activeSection, setActiveSection] = useState<'none' | 'templates' | 'settings'>('none');
+  const [activeSection, setActiveSection] = useState<'none' | 'Prefab' | 'settings'>('none');
+  const navigate = useNavigate();
 
   const handleClickOutside = useCallback((e: MouseEvent) => {
     const sidebar = document.querySelector('.left-sidebar');
@@ -43,7 +45,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const handleTemplatesClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setActiveSection(activeSection === 'templates' ? 'none' : 'templates');
+    setActiveSection(activeSection === 'Prefab' ? 'none' : 'Prefab');
   };
 
   const handleSettingsClick = (e: React.MouseEvent) => {
@@ -75,6 +77,11 @@ const Sidebar: React.FC<SidebarProps> = ({
     }
   };
 
+  const handleBetaClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate('/beta');
+  };
+
   return (
     <div className={`left-sidebar ${isExpanded ? 'expanded' : ''}`}>
       {!isExpanded ? (
@@ -90,10 +97,10 @@ const Sidebar: React.FC<SidebarProps> = ({
       ) : (
         <>
           <button 
-            className={`sidebar-button ${activeSection === 'templates' ? 'active' : ''}`}
+            className={`sidebar-button ${activeSection === 'Prefab' ? 'active' : ''}`}
             onClick={handleTemplatesClick}
           >
-            Templates
+            Prefab
           </button>
           <button 
             className={`sidebar-button ${activeSection === 'settings' ? 'active' : ''}`}
@@ -101,8 +108,16 @@ const Sidebar: React.FC<SidebarProps> = ({
           >
             Settings
           </button>
+          {/*
+          <button 
+            className="sidebar-button beta-button" 
+            onClick={handleBetaClick}
+          >
+            Beta
+          </button>
+          */}
 
-          {activeSection === 'templates' && (
+          {activeSection === 'Prefab' && (
             <div className="template-container visible">
               {bikeTemplates.map((template) => (
                 <button

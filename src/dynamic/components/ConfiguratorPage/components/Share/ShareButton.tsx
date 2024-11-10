@@ -11,13 +11,19 @@ interface ShareButtonProps {
   onMenuHeightChange?: (height: number) => void;
 }
 
-const ShareButton: React.FC<ShareButtonProps> = ({ session, viewport, onMenuOpen }) => {
+const ShareButton: React.FC<ShareButtonProps> = ({ session, viewport, onMenuOpen, onMenuHeightChange }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     onMenuOpen(isMenuOpen);
+    console.log('Menu state changed:', isMenuOpen);
   }, [isMenuOpen, onMenuOpen]);
+
+  const handleClick = () => {
+    console.log('Share button clicked');
+    setIsMenuOpen(!isMenuOpen);
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -36,10 +42,10 @@ const ShareButton: React.FC<ShareButtonProps> = ({ session, viewport, onMenuOpen
   }, [isMenuOpen]);
 
   return (
-    <div className="share-container" ref={containerRef}>
+    <div className={`share-container ${isMenuOpen ? 'menu-open' : ''}`} ref={containerRef}>
       <button 
         className="share-button"
-        onClick={() => setIsMenuOpen(!isMenuOpen)}
+        onClick={handleClick}
       >
         <ShareIcon />
         Share
@@ -49,6 +55,7 @@ const ShareButton: React.FC<ShareButtonProps> = ({ session, viewport, onMenuOpen
           onClose={() => setIsMenuOpen(false)}
           session={session}
           viewport={viewport}
+          onHeightChange={onMenuHeightChange}
         />
       )}
     </div>

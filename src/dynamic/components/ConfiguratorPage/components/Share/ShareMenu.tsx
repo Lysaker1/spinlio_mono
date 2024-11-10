@@ -14,24 +14,17 @@ interface ShareMenuProps {
 }
 
 const ShareMenu: React.FC<ShareMenuProps> = ({ onClose, session, viewport, onHeightChange }) => {
-  const [activeView, setActiveView] = useState<'main' | 'ar' | 'export'>('main');
   const menuRef = useRef<HTMLDivElement>(null);
+  const [activeView, setActiveView] = useState<'main' | 'ar' | 'export'>('main');
   const [shareMenuHeight, setShareMenuHeight] = useState<number>(0);
-
-  useEffect(() => {
-    if (menuRef.current) {
-      const height = menuRef.current.getBoundingClientRect().height;
-      const viewportHeight = window.innerHeight;
-      setShareMenuHeight((height / viewportHeight) * 100); // Convert to vh units
-    }
-  }, [activeView]);
 
   useEffect(() => {
     if (menuRef.current && onHeightChange) {
       const height = menuRef.current.getBoundingClientRect().height;
-      onHeightChange(height);
+      const heightInVh = (height / window.innerHeight) * 100;
+      onHeightChange(Math.max(15, heightInVh)); // Never less than 15vh
     }
-  }, [activeView, onHeightChange]);
+  }, [onHeightChange]);
 
   return (
     <div className="share-menu" ref={menuRef}>

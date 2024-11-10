@@ -1,116 +1,109 @@
+.share-menu {
+  width: calc(var(--panel-width) * 1.2);
+  min-width: 200px;
+  background: rgba(55, 53, 53, 0.90);
+  border-radius: 1rem;
+  backdrop-filter: blur(10px);
+  animation: menuAppear 0.2s ease;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1001;
+  padding: 1.5rem;
+}
+
+/* Share container positioning */
 .share-container {
-    position: relative;
-  }
-  
-  .share-button {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: rgba(55, 53, 53, 0.90);
-    border: 1.4px solid rgba(255, 255, 255, 0.40);
+  position: fixed;
+  top: 1.5rem;
+  right: 2vh;
+  z-index: 1000;
+  width: auto;
+}
+
+/* Back button positioning */
+.back-button {
+  padding: 0.5rem 1rem;
+  color: white;
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+/* Ensure the button is hidden when menu is open */
+.share-container.menu-open .share-button {
+  opacity: 0;
+}
+
+/* Scrollbar styles */
+.share-menu::-webkit-scrollbar {
+  width: 8px;
+}
+
+.share-menu::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.share-menu::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+@keyframes menuAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
     border-radius: 2.125rem;
-    padding: 0.75rem 1.25rem;
-    color: white;
-    font-family: "Helvetica Neue";
-    font-size: 0.875rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
   }
-  
-  .share-button:hover {
-    background: rgba(75, 73, 73, 0.90);
-  }
-  
-  .share-menu {
-    position: absolute;
-    top: calc(100% + 0.5rem);
-    right: 0;
-    background: rgba(40, 40, 40, 0.95);
+  to {
+    opacity: 1;
+    transform: scale(1);
     border-radius: 1rem;
-    backdrop-filter: blur(10px);
-    width: 280px;
-    overflow: hidden;
-    z-index: 1000;
   }
-  
-  .share-title {
-    color: white;
-    font-size: 1.25rem;
-    font-weight: 500;
-    margin: 1.5rem;
-    text-align: center;
-  }
-  
-  .share-options {
-    display: flex;
-    gap: 0.5rem;
-    padding: 0 1rem 1rem;
-  }
-  
-  .share-option-button {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    background: rgba(60, 60, 60, 0.95);
-    border: none;
-    border-radius: 0.75rem;
-    padding: 0.75rem;
-    color: white;
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: background 0.2s ease;
-  }
-  
-  .share-option-button:hover {
-    background: rgba(80, 80, 80, 0.95);
-  }
-  
-  /* Export options specific styles */
-  .export-section {
-    padding: 1rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  
-  .export-section h4 {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 0.875rem;
-    margin-bottom: 0.75rem;
-  }
-  
-  .file-format-select {
-    background: rgba(60, 60, 60, 0.95);
-    border: none;
-    border-radius: 0.5rem;
-    color: white;
-    width: 100%;
-    padding: 0.75rem;
-    margin-bottom: 1rem;
-    appearance: none;
-    background-image: url("data:image/svg+xml,...");
-    background-repeat: no-repeat;
-    background-position: right 0.75rem center;
-  }
-  
-  .export-actions {
-    display: flex;
-    gap: 0.5rem;
-  }
-  
-  .export-action-button {
-    flex: 1;
-    background: rgba(60, 60, 60, 0.95);
-    border: none;
-    border-radius: 0.75rem;
-    padding: 0.75rem;
-    color: white;
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: background 0.2s ease;
-  }
-  
-  .export-action-button:hover {
-    background: rgba(80, 80, 80, 0.95);
-  }
+}
+
+.share-title {
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0 0 0.75rem 0;
+  text-align: center;
+}
+
+.share-options {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+}
+
+.share-option-button {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: rgba(60, 60, 60, 0.95);
+  border: none;
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  color: white;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.share-option-button:hover {
+  background: rgba(80, 80, 80, 0.95);
+}
+
+/* Make back button more subtle */
+.back-button {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+ 

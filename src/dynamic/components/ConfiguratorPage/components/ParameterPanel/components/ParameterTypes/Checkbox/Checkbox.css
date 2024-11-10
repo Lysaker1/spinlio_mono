@@ -122,13 +122,7 @@
     transform: scale(1.1);
 }
 
-.checkbox-label {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 14px;
-    font-weight: 500;
-    text-align: left;
-    transition: color 0.2s ease;
-}
+
 
 /* Label hover effect */
 .checkbox-button:hover .checkbox-label {

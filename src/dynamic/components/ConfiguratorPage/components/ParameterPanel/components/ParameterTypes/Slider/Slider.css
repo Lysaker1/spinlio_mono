@@ -1,7 +1,7 @@
 /* Container for the entire slider component */
 .slider-container {
   width: 100%;
-  padding: 0.75rem;
+  box-sizing: border-box;
 }
 
 /* Header with label and value */
@@ -9,23 +9,22 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem; /* Increased spacing between sections */
 }
 
-/* Label text style */
-.slider-label {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 20px;
-  font-weight: 700;
-}
+
 
 /* Current value display */
 .slider-value {
   color: rgba(255, 255, 255, 0.819);
-  font-size: 14px;
-  padding: 4px 8px;
+  font-size: 0.875rem; /* Relative font size */
+  padding: 0.25rem 0.5rem; /* Adjusted padding for better alignment */
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
+  border-radius: 0.25rem; /* Adjusted border radius */
+  text-align: center; /* Centered text for better alignment */
+  position: relative;  /* Change from absolute positioning */
+  margin-left: auto;
+  padding-right: 0.5rem;
 }
 
 /* Slider track and controls */
@@ -33,6 +32,11 @@
   position: relative;
   height: 2rem;
   cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+  /* Add margin instead of padding for internal spacing */
+  margin: 0.5rem 0;
+
 }
 
 /* Base track for slider */
@@ -40,9 +44,9 @@
   position: absolute;
   top: 50%;
   width: 100%;
-  height: 4px;
+  height: 0.25rem; /* Relative height */
   background: rgba(255, 255, 255, 0.2);
-  border-radius: 2px;
+  border-radius: 0.125rem; /* Adjusted border radius */
   transform: translateY(-50%);
 }
 
@@ -51,7 +55,7 @@
   position: absolute;
   height: 100%;
   background: rgba(255, 255, 255, 0.8);
-  border-radius: 2rem;
+  border-radius: 1.25rem; /* Adjusted border radius */
   transition: width 0.1s ease;
 }
 
@@ -64,8 +68,8 @@
 .slider-thumb {
   position: absolute;
   top: 50%;
-  width: 16px;
-  height: 16px;
+  width: 1rem; /* Relative width */
+  height: 1rem; /* Relative height */
   background: #fff;
   border-radius: 50%;
   transform: translate(-50%, -50%);
@@ -74,18 +78,18 @@
 
 /* Active state for thumb */
 .slider-thumb.active {
-  width: 20px;
-  height: 20px;
-  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.349);
+  width: 1.25rem; /* Relative width */
+  height: 1.25rem; /* Relative height */
+  box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.349);
 }
 
 /* Min/Max range display */
 .slider-range {
   display: flex;
   justify-content: space-between;
-  margin-top: 0.5rem;
+  margin-top: 0.625rem; /* Increased spacing between sections */
   color: rgba(255, 255, 255, 0.966);
-  font-size: 12px;
+  font-size: 0.75rem; /* Relative font size */
 }
 
 /* Mobile-specific styles */

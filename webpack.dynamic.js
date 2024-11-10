@@ -138,7 +138,7 @@ module.exports = (env) => {
         },
         {
           test: /three\/examples\/jsm/,
-          type: 'javascript/auto'
+          use: 'babel-loader',
         }
       ],
     },
@@ -200,13 +200,6 @@ module.exports = (env) => {
         algorithm: 'gzip'
       }),
       process.env.ANALYZE && new BundleAnalyzerPlugin(),
-      new webpack.ProvidePlugin({
-        THREE: 'three'
-      }),
-      new webpack.NormalModuleReplacementPlugin(
-        /three$/, 
-        path.resolve('./node_modules/three')
-      )
     ].filter(Boolean),
     optimization: {
       splitChunks: {

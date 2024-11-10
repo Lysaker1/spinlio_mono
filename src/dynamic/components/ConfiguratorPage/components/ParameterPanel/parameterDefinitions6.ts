@@ -10,7 +10,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: 'eea4374e-a513-4f61-924a-f8175351fa8b',
-    name: 'Stack Height',
+    name: 'Stack height',
     category: 'geometry',
     type: 'slider',
     value: '540',
@@ -20,7 +20,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '15c239d7-8130-41d2-8470-342335fcfb5f',
-    name: 'Fork Crown Height',
+    name: 'Fork crown height',
     value: '15',
     category: 'geometry',
     type: 'slider',
@@ -30,7 +30,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: 'd1f726c0-fb21-4f15-8f11-06ba73e0f3a9',
-    name: 'BB Drop',
+    name: 'Bottom bracket drop',
     category: 'geometry',
     type: 'slider',
     value: '75',
@@ -40,7 +40,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: 'c4d4c978-5b58-49ce-a567-739894dc5d36',
-    name: 'Top tube End Diameter',
+    name: 'Top tube end diameter',
     value: '40',
     category: 'tubing',
     type: 'slider',
@@ -50,7 +50,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '6bebc909-bc55-448c-b316-4d9acb7e1c9a',
-    name: 'Frame Finish',
+    name: 'Frame finish',
     category: 'accessories',
     type: 'grid',
     value: '0',
@@ -71,7 +71,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '972de871-83ed-4243-9510-f4c2ab3228a3',
-    name: 'Front Wheel Spacing',
+    name: 'Front wheel spacing',
     category: 'accessories',
     type: 'dropdown',
     value: '0',
@@ -88,7 +88,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '6eac979f-e146-4021-8439-0cf495cf0431',
-    name: 'Tire Diameter',
+    name: 'Tire diameter',
     category: 'accessories',
     type: 'dropdown',
     tag: 'man',
@@ -156,7 +156,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '3902e965-6a81-4d91-a8c0-e65209a882a3',
-    name: 'All tube Diameter ?',
+    name: 'Meta-tube Diameter',
     value: '27',
     category: 'tubing',
     type: 'slider',
@@ -174,16 +174,16 @@ export const parameterDefinitions: ParameterDefinition[] = [
     max: 60,
     unit: 'mm'
   },
-  {
-    id: '7dc55512-0324-4e59-8686-2c97488645ca',
-    name: 'Dimension_color',
-    category: 'accessories',
-    type: 'color',
-    value: '0xdb663bff'
-  },
+  // {
+  //   id: '7dc55512-0324-4e59-8686-2c97488645ca',
+  //   name: 'Dimension color',
+  //   category: 'accessories',
+  //   type: 'color',
+  //   value: '0xdb663bff'
+  // },
   {
     id: 'fbb5d1c5-9ede-49e3-8d68-5b5a7d390ce1',
-    name: 'Fork Crown width',
+    name: 'Fork crown width',
     value: '23',
     category: 'geometry',
     type: 'slider',
@@ -224,7 +224,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '9c43fdf1-d21d-4c8f-b8a3-b7d9602bfe1d',
-    name: 'seatTube_bottlePlacement',
+    name: 'Seat tube bottle placement',
     category: 'accessories',
     type: 'slider',
     value: '0.5',
@@ -233,7 +233,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '03c193b3-bbc9-491b-b4d5-1a2b48a4e0d1',
-    name: 'Seat Tube Water Bottle',
+    name: 'Seat tube water bottle',
     category: 'accessories',
     type: 'dropdown',
     value: '1',
@@ -250,7 +250,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '44d398e1-f057-4d3f-8446-2f8e38703b86',
-    name: 'Down Tube Water Bottle',
+    name: 'Down tube water bottle',
     category: 'accessories',
     type: 'dropdown',
     value: '0',
@@ -267,7 +267,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '00d82c20-556f-4710-bff6-84e43117f680',
-    name: 'Seat tube Diameter',
+    name: 'Seat tube diameter',
     value: '32',
     category: 'geometry',
     type: 'slider',
@@ -275,13 +275,13 @@ export const parameterDefinitions: ParameterDefinition[] = [
     max: 40,
     unit: 'mm'
   },
-  {
-    id: 'f4a8c8c8-5f5d-4995-8d5c-fc6a89baa720',
-    name: 'DownTube DiameterPoints',
-    value: '0,0;0.1,0.5;0.5,0.9;1,1',
-    category: 'geometry',
-    type: 'graphmapper'
-  },
+  // {
+  //   id: 'f4a8c8c8-5f5d-4995-8d5c-fc6a89baa720',
+  //   name: 'Down tube diameter',
+  //   value: '0,0;0.1,0.5;0.5,0.9;1,1',
+  //   category: 'geometry',
+  //   type: 'graphmapper'
+  // },
   {
     id: '62738150-ac17-418d-81ab-2876c45a413e',
     name: 'Down tube shape',
@@ -349,15 +349,15 @@ export const parameterDefinitions: ParameterDefinition[] = [
     type: 'color',
     value: '0x363636ff'
   },
-  {
-    id: '74a9482f-e1bb-4b5e-9dff-a182a2b738b4',
-    name: 'HandleBar Metallic Factor',
-    value: '0.5',
-    category: 'accessories',
-    type: 'slider',
-    min: 0,
-    max: 1
-  },
+  // {
+  //   id: '74a9482f-e1bb-4b5e-9dff-a182a2b738b4',
+  //   name: 'HandleBar Metallic Factor',
+  //   value: '0.5',
+  //   category: 'accessories',
+  //   type: 'slider',
+  //   min: 0,
+  //   max: 1
+  // },
   {
     id: 'ea2fe86c-71b3-459e-8bd3-e056db0b5e8d',
     name: 'Seat Colour',
@@ -372,24 +372,24 @@ export const parameterDefinitions: ParameterDefinition[] = [
     category: 'accessories',
     type: 'color'
   },
-  {
-    id: '251d59ff-4c5d-4a33-94bb-31fafb7df894',
-    name: 'Crank Metallic Factor',
-    value: '0.3',
-    category: 'accessories',
-    type: 'slider',
-    min: 0,
-    max: 1
-  },
-  {
-    id: 'c0a88d51-ae73-40f8-bc5d-97ccb3e605d0',
-    name: 'Crank Roughness Factor',
-    value: '0.5',
-    category: 'accessories',
-    type: 'slider',
-    min: 0,
-    max: 1
-  },
+  // {
+  //   id: '251d59ff-4c5d-4a33-94bb-31fafb7df894',
+  //   name: 'Crank Metallic Factor',
+  //   value: '0.3',
+  //   category: 'accessories',
+  //   type: 'slider',
+  //   min: 0,
+  //   max: 1
+  // },
+  // {
+  //   id: 'c0a88d51-ae73-40f8-bc5d-97ccb3e605d0',
+  //   name: 'Crank Roughness Factor',
+  //   value: '0.5',
+  //   category: 'accessories',
+  //   type: 'slider',
+  //   min: 0,
+  //   max: 1
+  // },
   {
     id: '5422df73-826b-4478-88d3-016cf74499f6',
     name: 'Rear DropOut Type',
@@ -409,7 +409,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '33ab6af5-42db-494e-834e-0f652a911a85',
-    name: 'Rear Wheel Spacing',
+    name: 'Rear wheel spacing',
     category: 'accessories',
     type: 'dropdown',
     value: '1',
@@ -465,23 +465,23 @@ export const parameterDefinitions: ParameterDefinition[] = [
     type: 'color',
     value: '0x6e6969ff'
   },
-  {
-    id: '94f3a489-2284-42b9-875d-554a28bfd7c2',
-    name: 'Rim Roughness Factor',
-    category: 'accessories',
-    type: 'dropdown',
-    value: '0',
-    options: [
-      {
-        label: 'matte',
-        value: '0'
-      },
-      {
-        label: 'glossy',
-        value: '1'
-      }
-    ]
-  },
+  // {
+  //   id: '94f3a489-2284-42b9-875d-554a28bfd7c2',
+  //   name: 'Rim Roughness Factor',
+  //   category: 'accessories',
+  //   type: 'dropdown',
+  //   value: '0',
+  //   options: [
+  //     {
+  //       label: 'matte',
+  //       value: '0'
+  //     },
+  //     {
+  //       label: 'glossy',
+  //       value: '1'
+  //     }
+  //   ]
+  // },
   {
     id: 'fb34be77-f67f-4ee9-989e-c8baf24eacf1',
     name: 'Disc brake mount type',
@@ -501,21 +501,21 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '7b5d938d-b964-4f31-bd97-e36008869962',
-    name: 'Rim Color',
+    name: 'Rim color',
     value: '0x827e7eff',
     category: 'accessories',
     type: 'color'
   },
-  {
-    id: 'a4fa915b-bbc1-47d4-8f55-5b4d71e12400',
-    name: 'Rim Roughness Factor',
-    value: '0.0',
-    category: 'accessories',
-    type: 'slider',
-    min: 0,
-    max: 1,
-    tag: 'man'
-  },
+  // {
+  //   id: 'a4fa915b-bbc1-47d4-8f55-5b4d71e12400',
+  //   name: 'Rim Roughness Factor',
+  //   value: '0.0',
+  //   category: 'accessories',
+  //   type: 'slider',
+  //   min: 0,
+  //   max: 1,
+  //   tag: 'man'
+  // },
   {
     id: '7935dece-7133-4678-a77e-a3dd54c8e114',
     name: 'Rim Depth',
@@ -643,7 +643,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     type: 'color',
     value: '10'
   },
-  {
+  /*{
     id: '9e546ccd-7767-458c-80f9-9d17be0fc957',
     name: 'Paint Finish',
     category: 'tubing',
@@ -663,8 +663,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
         value: '1'
       }
     ]
-  },
-  {
+  },*/
+  /*{
     id: '0442b7b5-8dac-4cce-95e4-dddf8b934171',
     name: 'Frame Roughness Factor',
     category: 'accessories',
@@ -684,7 +684,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
         value: '1'
       }
     ]
-  },
+  },*/
   {
     id: 'c01258ac-67a5-4ab2-968e-e368f3391b63',
     name: 'Show Pedestal',
@@ -706,15 +706,15 @@ export const parameterDefinitions: ParameterDefinition[] = [
     category: 'accessories',
     type: 'color'
   },
-  {
-    id: '2c1f868d-5b6f-4eb0-8e59-4ef5e52e2f8c',
-    name: 'HandleGrip Roughness Factor',
-    value: '1.0',
-    category: 'accessories',
-    type: 'slider',
-    min: 0,
-    max: 1
-  },
+  // {
+  //   id: '2c1f868d-5b6f-4eb0-8e59-4ef5e52e2f8c',
+  //   name: 'HandleGrip Roughness Factor',
+  //   value: '1.0',
+  //   category: 'accessories',
+  //   type: 'slider',
+  //   min: 0,
+  //   max: 1
+  // },
   {
     id: '95dcfa93-c88e-4804-a541-3e441d4f4d63',
     name: 'Client Email',
@@ -725,7 +725,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   {
     id: '48c92029-20cb-4a4a-a92d-4e367075d8bf',
     name: 'Email Body for Client',
-    value: 'Hey,\n\nThanks for using Spinlio! We\'ve attached the 3D file of your custom bike, she\'s a beaut! \n\nIf you have any thoughts on how we can improve Spinlio or features you\'d love to see, please reach out—we\'d love to hear from you. Your feedback helps us make Spinlio better for everyone.\n\nAll the best,\nJack & Markus\nThe Spinlio Team',
+    value: 'Hey,\n\nThanks for using Spinlio! We\'ve attached the 3D file of your custom bike, she\'s a beauty! \n\nIf you have any thoughts on how we can improve Spinlio or features you\'d love to see, please reach out—we\'d love to hear from you. Your feedback helps us make Spinlio better for everyone.\n\nAll the best,\nJack & Markus\nThe Spinlio Team',
     category: 'other',
     type: 'text'
   }

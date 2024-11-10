@@ -92,10 +92,6 @@ module.exports = (env) => {
       new CopyWebpackPlugin({
         patterns: [
           // Copy background image from shared assets
-          { 
-            from: path.resolve(__dirname, 'src/shared/assets/images'),
-            to: path.resolve(__dirname, 'dist/static/images')
-          },
           // Copy from src/static/public
           { 
             from: path.resolve(__dirname, 'src/static/public'),
@@ -106,14 +102,15 @@ module.exports = (env) => {
             from: path.resolve(__dirname, 'public/_redirects'),
             to: path.resolve(__dirname, 'dist/static')
           },
-          // New pattern to copy netlify.toml to dist root
+          // Copy netlify.toml
           { 
             from: path.resolve(__dirname, 'netlify.toml'),
-            to: path.resolve(__dirname, 'dist/static/netlify.toml') // Specify full path
+            to: path.resolve(__dirname, 'dist/static')
           },
+          // Copy service worker
           { 
             from: path.resolve(__dirname, 'src/service-worker.js'),
-            to: path.resolve(__dirname, 'dist/static/service-worker.js')  // For static sites
+            to: path.resolve(__dirname, 'dist/static/service-worker.js')
           }
         ]
       }),

@@ -201,21 +201,21 @@ export interface BikeTemplate {
   export const bikeTemplates: BikeTemplate[] = [
     { 
         id: 'Canyon Bike',
-        image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/v1730780385/Screenshot_2024-11-05_at_11.19.07_odzm8o.png',
+        image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/Canyon-bike_zitfqq.png',
         name: 'Canyon Bike',
         modelStateId: '9d74c500-e310-45bc-8c63-6dd2ee132cc6',
         parameters: CanyonParameters
       },
       {
         id: 'Classic road bike',
-        image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/v1730780385/Screenshot_2024-11-05_at_11.19.21_oyqvjr.png',
+        image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/classic-road-bike_zmqq8b.png',
         name: 'Classic road bike',
         modelStateId: '9d74c500-e310-45bc-8c63-6dd2ee132cc6',
         parameters: ClassicroadbikejsonParameters
       },
       {
         id: 'Girls bike',
-        image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/v1730781138/Screenshot_2024-11-05_at_11.31.51_i9bauk.png',
+        image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/girls-bike_j3kyi2.png',
         name: 'Girls bike',
         modelStateId: '9d74c500-e310-45bc-8c63-6dd2ee132cc6',
         parameters: girlsbikejsonParameters

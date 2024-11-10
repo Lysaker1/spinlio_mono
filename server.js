@@ -104,6 +104,8 @@ app.use(helmet({
         "https://*.hs-analytics.net",
         "https://*.usemessages.com",
         "https://static.klaviyo.com",
+        "https://*.klaviyo.com",
+        "https://static-tracking.klaviyo.com",
         "https://*.hsforms.com", 
         "https://*.hubspot.com"
       ],

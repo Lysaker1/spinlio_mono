@@ -686,13 +686,13 @@ export const parameterDefinitions: ParameterDefinition[] = [
       }
     ]
   },*/
-  {
+  /*{
     id: 'c01258ac-67a5-4ab2-968e-e368f3391b63',
     name: 'Show Pedestal',
     value: 'true',
     category: 'other',
     type: 'text'
-  },
+  },*/
   /*{
     id: '55f308a4-1f48-4319-93c2-19fc11f04865',
     name: 'Pedestal color',

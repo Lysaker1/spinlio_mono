@@ -203,7 +203,7 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
 
           // Create new ShapeDiver session
           const newSession = await createSession({
-            ticket: '9930dea353b00ef0a0c7d1d9221db9c78119cfbf24b7944d2b2042dc7672cfa524e144088c2785990ff5b7dc6f8ab9a7532e7605f7c64da950037a479d18f000a6daac54fa225018fc7819cabdb7bbbf63093bf03d5f7000f5dd5fad795fb2126e208a8c9efad0-a9ae44c7adf30024119b126addbda062',
+            ticket: 'b021787b7f9145fac66864ceadaf6f22485f7ffd343b9457be88d6dcc1c5b57b0765fef63cd9d50343c198817fe012010d1a5f5b8812711a0fc97d10b04c5acc97ec792837b9d635c2d419963acd4faec66806a4d64c72f2190ca5a9ed70771e32ee9a1eaae259-5287e488963b30e9b61b5e0132ff7e0a',
             modelViewUrl: 'https://sdr8euc1.eu-central-1.shapediver.com',
             loadOutputs: true,
             waitForOutputs: true,

@@ -37,8 +37,20 @@ Stats: ${Object.keys(matchingParameters).length} parameters matched
 }
 
 describe('Template Parameter Extraction', () => {
-  test('Extract matching parameters from spinlio-v091', () => {
-    console.log(extractTemplateParameters('spinlio-v091.json')); // Add .json extension here
+  test('Extract matching parameters from canyon bike', () => {
+    console.log(extractTemplateParameters('Canyon-bike.json')); // Add .json extension here
+  });
+});
+
+describe('Template Parameter Extraction', () => {
+  test('Extract matching parameters from classic road bike', () => {
+    console.log(extractTemplateParameters('Classic-road-bike.json')); // Add .json extension here
+  });
+});
+
+describe('Template Parameter Extraction', () => {
+  test('Extract matching parameters from girls bike', () => {
+    console.log(extractTemplateParameters('girls-bike.json')); // Add .json extension here
   });
 });
 

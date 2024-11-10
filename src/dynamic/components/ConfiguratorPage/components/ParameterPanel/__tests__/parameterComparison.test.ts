@@ -20,7 +20,7 @@ describe('Parameter Comparison Analysis', () => {
     // Read and parse the external JSON file
     const externalJson = JSON.parse(
       fs.readFileSync(
-        path.join(__dirname, '../__fixtures__/spinlio-v091.json'),
+        path.join(__dirname, '../__fixtures__/spinlio-v095-6.json'),
         'utf8'
       )
     ) as ExternalConfig;

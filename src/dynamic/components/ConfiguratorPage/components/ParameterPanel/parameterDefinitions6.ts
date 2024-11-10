@@ -49,8 +49,29 @@ export const parameterDefinitions: ParameterDefinition[] = [
     unit: 'mm'
   },
   {
+    id: '6bebc909-bc55-448c-b316-4d9acb7e1c9a',
+    name: 'Frame Finish',
+    category: 'accessories',
+    type: 'grid',
+    value: '0',
+    options: [
+      {
+        label: 'Matte',
+        value: '0'
+      },
+      {
+        label: 'Glossy',
+        value: '1'
+      },
+      {
+        label: 'Metallic',
+        value: '2'
+      }
+    ]
+  },
+  {
     id: '972de871-83ed-4243-9510-f4c2ab3228a3',
-    name: 'Front bracket width',
+    name: 'Front Wheel Spacing',
     category: 'accessories',
     type: 'dropdown',
     value: '0',
@@ -463,7 +484,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: 'fb34be77-f67f-4ee9-989e-c8baf24eacf1',
-    name: 'DiskBreak Mount Type',
+    name: 'Disc brake mount type',
     category: 'accessories',
     type: 'grid',
     value: '1',
@@ -507,14 +528,38 @@ export const parameterDefinitions: ParameterDefinition[] = [
     unit: 'mm'
   },
   {
-    id: '30dce7a0-9766-45e5-976d-aec3e4b852df',
-    name: 'Spoke Number',
-    value: '20',
+    id: 'cbdf47f8-4e69-45ce-bc08-dda011276a06',
+    name: 'Spoke Holes',
     category: 'accessories',
-    type: 'slider',
-    min: 18,
-    max: 28,
-    tag: 'man'
+    type: 'dropdown',
+    value: '0',
+    options: [
+      {
+        label: '32',
+        value: '0'
+      },
+      {
+        label: '36',
+        value: '1'
+      }
+    ]
+  },
+  {
+    id: '50033fab-4882-439f-8413-a68a99314ed2',
+    name: 'Brake type',
+    category: 'accessories',
+    type: 'dropdown',
+    value: '0',
+    options: [
+      {
+        label: 'V-brake',
+        value: '0'
+      },
+      {
+        label: 'Disc-brake',
+        value: '1'
+      }
+    ]
   },
   {
     id: '2003e7ab-bfba-4449-9e23-93fb09ca9614',

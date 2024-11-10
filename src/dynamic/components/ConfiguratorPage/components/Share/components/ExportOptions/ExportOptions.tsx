@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ISessionApi, IViewportApi } from '@shapediver/viewer';
 import { sendNotification } from '../../../../../../utils/exportUtils';
 import FileTypeSelect from './FileTypeSelect';
@@ -17,7 +17,30 @@ const ExportOptions: React.FC<ExportOptionsProps> = ({ onBack, session }) => {
   const [selectedFormat, setSelectedFormat] = useState<FileFormat>('OBJ');
   const [exportMethod, setExportMethod] = useState<ExportMethod>('DOWNLOAD');
   const [email, setEmail] = useState<string>('');
+  const [name, setName] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!session) return;
+
+    const updateClientInfo = async () => {
+      try {
+        const nameParam = session.getParameterByName('Client name')?.[0];
+        if (nameParam && name) {
+          nameParam.value = name;
+        }
+
+        const emailParam = session.getParameterByName('Client Email')?.[0];
+        if (emailParam && email) {
+          emailParam.value = email;
+        }
+      } catch (error) {
+        console.error('Error updating client info:', error);
+      }
+    };
+
+    updateClientInfo();
+  }, [session, name, email]);
 
   const handleExport = async () => {
     if (!session) {
@@ -93,17 +116,35 @@ const ExportOptions: React.FC<ExportOptionsProps> = ({ onBack, session }) => {
             Email
           </button>
         </div>
+
         {exportMethod === 'DOWNLOAD' && (
-          <button
-            className="export-button"
-            onClick={handleExport}
-            disabled={isLoading}
-          >
-            {isLoading ? 'Exporting...' : 'Download'}
-          </button>
+          <>
+            <input
+              type="text"
+              placeholder="Enter your name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="name-input"
+            />
+            <button
+              className="export-button"
+              onClick={handleExport}
+              disabled={isLoading || !name}
+            >
+              {isLoading ? 'Exporting...' : 'Download'}
+            </button>
+          </>
         )}
+
         {exportMethod === 'EMAIL' && (
           <div className="email-input-container">
+            <input
+              type="text"
+              placeholder="Enter your name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="name-input"
+            />
             <input
               type="email"
               placeholder="Enter your email"
@@ -113,7 +154,7 @@ const ExportOptions: React.FC<ExportOptionsProps> = ({ onBack, session }) => {
             <button
               className="export-button"
               onClick={handleExport}
-              disabled={isLoading || !email}
+              disabled={isLoading || !email || !name}
             >
               {isLoading ? '...' : 'Export'}
             </button>

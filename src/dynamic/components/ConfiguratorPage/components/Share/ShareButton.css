@@ -1,6 +1,11 @@
 .share-container {
-    position: relative;
-    z-index: 1100;
+    position: fixed;
+    top: 1.5rem;
+    right: 2vh;
+    z-index: 1000;
+    width: var(--panel-width);
+    min-width: var(--min-panel-width);
+    max-width: var(--max-panel-width);
 }
   
 .share-button {
@@ -11,6 +16,7 @@
     border: 1.4px solid rgba(255, 255, 255, 0.40);
     border-radius: 2.125rem;
     padding: 0.75rem 1.25rem;
+    width: 100%;
     color: white;
     font-family: "Helvetica Neue";
     font-size: 0.875rem;
@@ -23,14 +29,13 @@
     background: rgba(75, 73, 73, 0.90);
 }
 
-.share-menu {
-    position: absolute;
-    top: calc(100% + 0.5rem);
-    right: 0;
-    background: rgba(40, 40, 40, 0.95);
-    border-radius: 1rem;
-    backdrop-filter: blur(10px);
-    width: 280px;
-    overflow: hidden;
-    z-index: 1000;
+@keyframes menuAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }

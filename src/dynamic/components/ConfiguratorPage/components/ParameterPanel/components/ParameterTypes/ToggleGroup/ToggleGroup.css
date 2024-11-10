@@ -27,15 +27,6 @@
   margin-bottom: 1rem;
 }
 
-/* Parameter Label Styling */
-.parameter-label {
-  /* Nearly white text with slight transparency */
-  color: rgba(255, 255, 255, 0.9);
-  /* Compact text size */
-  font-size: 14px;
-  /* Medium font weight for readability */
-  font-weight: 500;
-}
 
 /* Toggle Group Container - Holds all toggle options */
 .toggle-options {

@@ -1,5 +1,5 @@
 import { describe, test } from '@jest/globals';
-import { parameterDefinitions } from '../parameterDefinitions4';
+import { parameterDefinitions } from '../parameterDefinitions6';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -37,20 +37,12 @@ Stats: ${Object.keys(matchingParameters).length} parameters matched
 }
 
 describe('Template Parameter Extraction', () => {
-  test('Extract matching parameters from model_c', () => {
-    console.log(extractTemplateParameters('model_c'));
+  test('Extract matching parameters from spinlio-v091', () => {
+    console.log(extractTemplateParameters('spinlio-v091.json')); // Add .json extension here
   });
-
-  test('Extract matching parameters from model_b', () => {
-    console.log(extractTemplateParameters('model_b'));
-  });
-
-  test('Extract matching parameters from model_a', () => {
-    console.log(extractTemplateParameters('model_a'));
-  });
+});
 
   // You can now easily add more models by adding new test cases:
   // test('Extract matching parameters from model_x', () => {
   //   console.log(extractTemplateParameters('model_x'));
   // });
-});

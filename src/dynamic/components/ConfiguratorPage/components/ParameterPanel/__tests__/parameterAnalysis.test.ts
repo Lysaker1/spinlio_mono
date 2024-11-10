@@ -1,5 +1,5 @@
 import { describe, expect, test } from '@jest/globals';
-import { parameterDefinitions } from '../parameterDefinitions5';
+import { parameterDefinitions } from '../parameterDefinitions6';
 import { ParameterDefinition } from '../types';
 
 interface ParameterAnalysis {

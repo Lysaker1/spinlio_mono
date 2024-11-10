@@ -15,7 +15,7 @@
 }
 
 .left-sidebar.expanded {
-  width: 12%;
+  width: 10%;
 }
 
 .menu-button {
@@ -34,7 +34,7 @@
 }
 
 .menu-button:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.8);
 }
 
 .menu-line {
@@ -154,6 +154,23 @@
   border-color: rgba(255, 255, 255, 0.4);
 }
 
+.sidebar-button.beta-button {
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: 0.0625rem solid rgba(255, 255, 255, 0.2);
+  border-radius: 1.25rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  margin-bottom: 0.5rem;
+}
+
+.sidebar-button.beta-button:hover {
+  background: rgba(0, 0, 0, 0.8);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
 .settings-container {
   margin-top: 1rem;
   display: flex;
@@ -162,10 +179,17 @@
   opacity: 0;
   transition: opacity 0.3s ease;
   padding: 0 1rem;
+  background-color: transparent;
+  color: black;  /* Ensure container text is black */
 }
 
 .settings-container.visible {
   opacity: 1;
+}
+
+/* Add specific styling for checkbox labels */
+.settings-container .checkbox-label {
+  color: black !important;  /* Force black color for checkbox labels */
 }
 
 /* The rest of the checkbox styling will come from the Checkbox component's CSS */

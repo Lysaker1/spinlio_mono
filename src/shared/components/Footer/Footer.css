@@ -1,16 +1,16 @@
 .footer {
     background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(10px);
-    padding: 20px 0;
+    padding: 0.625rem 0; /* 10px */
     position: relative;
     z-index: 1000;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .footer-content {
-    max-width: 1184px;
+    max-width: 74.25rem; /* 1184px */
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 0.625rem; /* 10px */
     display: flex;
     justify-content: space-between; /* This spreads the content */
     align-items: center;
@@ -19,7 +19,7 @@
   .footer-text {
     color: rgb(255, 255, 255);
     font-family: 'Inter', sans-serif;
-    font-size: 14px;
+    font-size: 0.875rem; /* 14px */
   }
   
   .newsletter-form {
@@ -27,10 +27,10 @@
     align-items: center;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 50px;
-    padding: 4px 4px 4px 20px;
-    gap: 8px;
-    min-width: 300px;
+    border-radius: 3.125rem; /* 50px */
+    padding: 0.125rem 0.125rem 0.125rem 0.625rem; /* 2px 2px 2px 10px */
+    gap: 0.5rem; /* 8px */
+    min-width: 18.75rem; /* 300px */
   }
   
   .newsletter-input {
@@ -41,12 +41,12 @@
     background: transparent !important;
     border: none !important;
     color: white !important;
-    height: 36px !important;
+    height: 2.25rem !important; /* 36px */
     padding: 0 !important;
     font-family: 'Inter', sans-serif !important;
-    font-size: 14px !important;
+    font-size: 0.875rem !important; /* 14px */
     width: 100% !important;
-    min-width: 200px !important;
+    min-width: 12.5rem !important; /* 200px */
   }
   
   .newsletter-input input:focus {
@@ -61,26 +61,26 @@
   .newsletter-button {
     background: rgba(255, 255, 255, 0.2) !important;
     border: none !important;
-    border-radius: 50px !important;
-    padding: 0 20px !important;
-    height: 36px !important;
+    border-radius: 3.125rem !important; /* 50px */
+    padding: 0 0.625rem !important; /* 10px */
+    height: 2.25rem !important; /* 36px */
     color: white !important;
     font-family: 'Inter', sans-serif !important;
-    font-size: 14px !important;
+    font-size: 0.875rem !important; /* 14px */
     font-weight: 400 !important;
     transition: background-color 0.3s ease !important;
-    margin-right: 2px !important;
+    margin-right: 0.125rem !important; /* 2px */
   }
   
   .newsletter-button:hover {
     background: rgba(255, 255, 255, 0.3) !important;
   }
   
-  @media (max-width: 768px) {
+  @media (max-width: 48rem) { /* 768px */
     .footer-content {
       flex-direction: column;
-      gap: 20px;
-      padding: 0 20px;
+      gap: 0.625rem; /* 10px */
+      padding: 0 0.625rem; /* 10px */
     }
   
     .newsletter-form {
@@ -94,7 +94,7 @@
   }
 
 .newsletter-container {
-    min-width: 300px;
+    min-width: 18.75rem; /* 300px */
     display: flex;
     justify-content: flex-end;
 }
@@ -103,11 +103,11 @@
 :global(.klaviyo-form-RqHT8c) {
     background: rgba(255, 255, 255, 0.1) !important;
     border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    border-radius: 50px !important;
-    padding: 4px 4px 4px 20px !important;
+    border-radius: 3.125rem !important; /* 50px */
+    padding: 0.125rem 0.125rem 0.125rem 0.625rem !important; /* 2px 2px 2px 10px */
 }
 
-@media (max-width: 768px) {
+@media (max-width: 48rem) { /* 768px */
     .newsletter-container {
         min-width: unset;
         width: 100%;

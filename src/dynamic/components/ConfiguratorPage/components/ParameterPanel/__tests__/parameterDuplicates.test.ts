@@ -5,7 +5,7 @@
  */
 
 import { describe, expect, test } from '@jest/globals';
-import { parameterDefinitions } from "../parameterDefinitions5";
+import { parameterDefinitions } from "../parameterDefinitions6";
 
 describe('Parameter Definitions Uniqueness', () => {
     test('All parameter IDs are unique and properly formatted', () => {

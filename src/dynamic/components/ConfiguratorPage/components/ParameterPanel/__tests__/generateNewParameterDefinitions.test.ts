@@ -1,5 +1,5 @@
 import { describe, expect, test } from '@jest/globals';
-import { parameterDefinitions as existingDefs } from '../parameterDefinitions4';
+import { parameterDefinitions as existingDefs } from '../parameterDefinitions5';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -15,9 +15,9 @@ interface ExternalConfig {
 }
 
 describe('Generate New Parameter Definitions', () => {
-  test('Generate parameter definitions from spinlio-v08.json and write to TypeScript file', () => {
+  test('Generate parameter definitions from spinlio-v091.json and write to TypeScript file', () => {
     // Read the new model JSON
-    const modelPath = path.join(__dirname, '../__fixtures__/spinlio-v08.json');
+    const modelPath = path.join(__dirname, '../__fixtures__/spinlio-v091.json');
     const modelData = JSON.parse(fs.readFileSync(modelPath, 'utf8')) as ExternalConfig;
 
     // Create a map of existing definitions for easy lookup
@@ -62,7 +62,7 @@ describe('Generate New Parameter Definitions', () => {
     expect(newParameters.length).toBeGreaterThan(0);
 
     // Write the new parameter definitions to a TypeScript file
-    const outputPath = path.join(__dirname, '../parameterDefinitions5.ts');
+    const outputPath = path.join(__dirname, '../parameterDefinitions6.ts');
     const fileContent = `import { ParameterDefinition } from './types';\n\n` +
       `export const parameterDefinitions: ParameterDefinition[] = ${JSON.stringify(newParameterDefinitions, null, 2)};\n`;
 

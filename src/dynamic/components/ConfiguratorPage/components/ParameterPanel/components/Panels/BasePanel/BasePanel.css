@@ -9,15 +9,74 @@
 
 /* Common section styles */
 .parameter-section {
-  margin-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+  width: 100%;
+  padding: 0 1rem;
+
+  /* Add slightly more prominent divider between sections */
+  &:not(:last-child)::after {
+    content: '';
+    display: block;
+    height: 1px;
+    background: rgba(124, 124, 124, 0.183);  /* Slightly more visible */
+    margin-top: 1.5rem;
+  }
+}
+/* Update shared parameter card styles */
+.parameter-card,
+.color-picker-container,
+.dropdown-container,
+.grid-container {
+  padding: 0 0.5rem;  /* Match slider's padding */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Update specific component containers */
+.color-picker-container .color-options-row,
+.dropdown-container .dropdown-trigger,
+.grid-container .grid-options {
+  margin: 0;  /* Remove any default margins */
   width: 100%;
 }
 
-.section-title {
+/* Standardize all parameter labels */
+.parameter-label,
+.slider-label,
+.color-picker-label,
+.toggle-label,
+.checkbox-label,
+.dropdown-label,
+.grid-label {
   color: rgba(255, 255, 255, 0.9);
-  font-size: 14px;
+  font-size: 0.95rem;
   font-weight: 500;
-  margin-bottom: 0.1rem;
+  margin-bottom: 0.5rem;
+  text-align: left;
+  padding: 0;  /* Remove padding from labels */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.section-title {
+  color: rgba(255, 255, 255, 0.9);  /* Brighter white for better contrast */
+  font-size: 3rem;  /* Slightly larger than before */
+  font-weight: 600;
+  margin: 1.5rem 0 1rem 0;  /* More vertical spacing */
+  padding: 0.5rem 1rem;  /* Padding for background */
+  background: rgba(0, 0, 0, 0.314);  /* Very subtle light background */
+  border-radius: 1rem;  /* More rounded corners */
+  text-transform: uppercase;  /* Makes it look more like a header */
+  text-align: center;
+  letter-spacing: 0.05em;  /* Slight letter spacing for readability */
+  
+  /* Subtle left border for additional emphasis */
+  border-left: 2px solid rgba(255, 255, 255, 0.2);
+  
+  /* First section title needs less top margin */
+  &:first-of-type {
+    margin-top: 0.5rem;
+  }
 }
 
 /* Base panel structure */
@@ -28,42 +87,46 @@
   background: transparent;
   backdrop-filter: blur(10px);
   overflow: hidden;
+  padding-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .parameter-list {
-  height: 98%;
+  height: 100%;
   width: 100%;
   display: flex;
-  padding: 0.5rem 1rem;
-  padding-bottom: 0.25rem;
+  padding: 1rem top, 1rem right, 10rem bottom, 1rem left; /* Increased bottom padding for scroll space */
   flex-direction: column;
   gap: 1rem;
   overflow-y: auto;
   overflow-x: hidden;
   box-sizing: border-box;
-  
-  /* Add subtle divider lines between parameters */
-  & > * {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    padding-bottom: 1rem;
-  }
 
-  & > *:last-child {
-    border-bottom: none;
-  }
-  
+  /* Single, consistent scrollbar style */
   &::-webkit-scrollbar {
-      width: 2px;
+    width: 3px;
+    background: transparent;
+    right: 0;
   }
 
   &::-webkit-scrollbar-track {
-      background: transparent;
+    background: transparent;
   }
 
   &::-webkit-scrollbar-thumb {
-      background: rgba(0, 0, 0, 0.8);
-      border-radius: 3px;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 3px;
   }
+
+  /* Remove bottom border from last parameter */
+  & > *:last-child {
+    border-bottom: 1rem; /* border badding means no bottom border on last parameter */
+    margin-bottom: 2rem; /* Extra space at bottom */
+  }
+}
+.panel, .geometry-panel, .tubing-panel, .accessories-panel {
+  overflow: hidden;
 }
   /* Mobile-specific styles for screens under 768px */
   @media screen and (max-width: 768px) {
@@ -100,3 +163,27 @@
       margin: 0 auto; /* Center the card */
     }
   }
+
+/* Parameter item styling */
+.parameter-item {
+  width: 100%;
+  padding: 0.5rem 0;  /* Increased horizontal padding */
+  box-sizing: border-box;
+  position: relative;
+
+  /* Subtle divider between parameters */
+  &:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;  /* Slightly increased from edges */
+    right: 0;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);  /* Very subtle line */
+  }
+
+  /* More spacing between parameters */
+  &:not(:last-child) {
+    margin-bottom: 0.75rem;  /* Increased from 0.5rem */
+  }
+}

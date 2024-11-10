@@ -5,7 +5,7 @@
  */
 
 import { describe, expect, test } from '@jest/globals';
-import { parameterDefinitions } from '../parameterDefinitions4';
+import { parameterDefinitions } from '../parameterDefinitions6';
 import { ParameterDefinition } from '../types';
 
 describe('Parameter Definitions Validation', () => {

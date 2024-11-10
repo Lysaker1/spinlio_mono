@@ -3,9 +3,8 @@
   /* Semi-transparent dark background for card */
   background: rgba(40, 40, 40, 0.5);
   /* Rounded corners for modern look */
-  border-radius: 12px;
-  /* Internal spacing around content */
-  padding: 1.25rem;
+  border-radius: 0.75rem;
+
   /* Glass-like blur effect on background */
   backdrop-filter: blur(10px);
   /* Card takes full width of container */
@@ -50,168 +49,112 @@
   border-radius: 6px;
 }
 
-/* Grid container for shape options */
-.shape-grid {
-  /* CSS Grid layout */
-  display: grid;
-  /* Three columns by default for tube shapes */
-  grid-template-columns: repeat(3, 1fr);
-  /* Space between grid items */
-  gap: 0.75rem;
-}
-
-/* Two columns layout for mount options */
-.shape-grid.two-columns {
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-}
-
-.shape-grid.two-columns .shape-icon {
-  width: 100%;    /* Take full width of container */
-  height: auto;   /* Height follows naturally */
-  aspect-ratio: 16/9; /* Maintain aspect ratio */
-}
-
-.shape-grid.two-columns .shape-icon-image {
+.shape-grid-container {
   width: 100%;
-  height: 100%;
-  object-fit: contain;
-  padding: 1rem;  /* Add some padding inside the container */
-}
-
-/* Make the buttons larger in two-column layout */
-.shape-grid.two-columns .shape-option {
-  width: 100%;
-  padding: 1rem;
-}
-
-/* Individual shape option button styling */
-.shape-option {
-  /* Semi-transparent background */
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
-  border-radius: 0.5rem;
   padding: 0.75rem;
+}
+
+.shape-grid-header {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+
+/* Make grid responsive */
+.shape-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Fixed 3 columns */
+  grid-template-rows: auto auto; /* Two rows, auto height */
   gap: 0.5rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-/* Hover state for shape options */
-.shape-option:hover {
-  /* Slightly lighter background on hover */
-  background: rgba(255, 255, 255, 0.15);
-}
-
-/* Selected state for shape options */
-.shape-option.selected {
-  /* Lighter background for selected state */
-  background: rgba(255, 255, 255, 0.2);
-  /* Highlight border */
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4);
-}
-
-/* Container for shape icons */
-.shape-icon {
-  /* Increased size */
-  width: 5rem;  /* Doubled from 2.5rem */
-  height: 5rem; /* Doubled from 2.5rem */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  position: relative;
-}
-
-/* Special sizing for mount and dropout images */
-.shape-icon.mount-image,
-.shape-icon.dropout-image {
-  width: 100%;    /* Take full width of container */
-  height: auto;   /* Height follows naturally */
-  aspect-ratio: 16/9; /* Maintain aspect ratio */
-}
-
-/* SVG icon styling */
-.shape-icon svg {
-  /* Fill container */
   width: 100%;
-  height: 100%;
+  box-sizing: border-box;
 }
 
-/* Shape label text styling */
+
+/* Label below shape */
 .shape-label {
-  /* Nearly white text */
-  color: rgba(255, 255, 255, 0.9);
-  /* Small text size */
-  font-size: 12px;
-  /* Center text */
+  margin-top: 0.25rem;
+  font-size: 0.7rem;  /* Slightly reduced from 0.75rem */
+  color: rgba(255, 255, 255, 0.8);
   text-align: center;
 }
 
-/* Image styling within shape container */
-.shape-icon-image {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-/* Selection indicator styling */
-.selection-indicator {
-  /* Absolute positioning relative to shape-icon */
-  position: absolute;
-  /* Position below the icon */
-  bottom: -0.5rem;
-  /* Center horizontally */
-  left: 50%;
-  transform: translateX(-50%);
-  /* Fixed size for indicator */
-  width: 1.25rem;
-  height: 1.25rem;
-  /* Ensure it's above other elements */
-  z-index: 1;
-}
-
-/* Mobile-specific styles */
-@media screen and (max-width: 768px) {
-  /* Mobile card layout */
-  .parameter-card.mobile {
-    /* Fixed width for mobile */
-    width: 280px;
-    /* Prevent shrinking */
-    flex-shrink: 0;
-    /* For smooth scrolling */
-    scroll-snap-align: start;
-    /* Space between cards */
-    margin-right: 1rem;
-    /* Remove bottom margin */
-    margin-bottom: 0;
-  }
-
-  /* Mobile grid layout remains 2 columns */
-  .shape-grid {
-    /* Larger gaps between items */
-    gap: 1rem;
-  }
-
-  /* Even larger icons for mobile */
-  .shape-icon {
-    width: 6rem;  /* Increased from 3rem */
-    height: 6rem; /* Increased from 3rem */
-  }
-
-  /* Larger text for mobile */
-  .shape-label {
-    font-size: 14px;
-  }
-
-  .shape-grid.two-columns .shape-icon {
-    aspect-ratio: 16/9;
-  }
+/* Two columns version for specific parameters */
+/* Two columns version for specific parameters - make these bigger */
+.shape-grid.two-columns {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;  /* Slightly bigger gap for larger items */
   
-  .shape-grid.two-columns .shape-option {
-    padding: 0.75rem;
+  /* Make the options bigger when in two-column layout */
+  .shape-option {
+    aspect-ratio: 1.2;  /* Slightly taller */
+    padding: 0.75rem;   /* More padding */
+
+    /* Make images much bigger for dropouts and mounts */
+    .shape-icon-image {
+      width: 90%;      /* Increased from 80% */
+      height: 90%;     /* Increased from 80% */
+      object-fit: contain;
+    }
+
+    /* Adjust label size for bigger containers */
+    .shape-label {
+      font-size: 0.8rem;  /* Slightly bigger font */
+      margin-top: 0.5rem; /* More space above label */
+    }
+  }
+}
+.shape-option {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0.5rem;
+  
+  /* Ensure SVG icons scale with container */
+  & svg {
+    width: 95%;  /* Increased from 60% */
+    height: 95%; /* Increased from 60% */
+  }
+
+  /* Also adjust image icons if present */
+  & .shape-icon-image {
+    width: 90%;
+    height: 90%;
+    object-fit: contain;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  &.selected {
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 0 0.125rem rgba(255, 255, 255, 0.8);
+  }
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+  .shape-grid {
+    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+  }
+
+  .shape-option {
+    padding: 0.35rem;
+    
+    & svg {
+      max-width: 30px;
+      max-height: 30px;
+    }
   }
 }

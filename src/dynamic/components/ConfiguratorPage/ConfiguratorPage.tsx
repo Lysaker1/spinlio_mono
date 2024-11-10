@@ -42,7 +42,7 @@ const ConfiguratorPage: React.FC = () => {
   // State for controlling dimensions visibility
   const [showDimensions, setShowDimensions] = useState(false);
   const [isShareMenuOpen, setIsShareMenuOpen] = useState(false);
-  const [shareMenuHeight, setShareMenuHeight] = useState<number>(0);
+  const [shareMenuHeight, setShareMenuHeight] = useState<number>(15);
   
   // Reference to track component mount state
   const isMounted = useRef(true);
@@ -75,7 +75,8 @@ const ConfiguratorPage: React.FC = () => {
   // Update padding when share menu opens/closes
   useEffect(() => {
     const defaultPadding = 15; // vh units
-    const padding = isShareMenuOpen ? Math.max(defaultPadding, shareMenuHeight + 5) : defaultPadding;
+    const menuHeight = isShareMenuOpen ? shareMenuHeight : 0;
+    const padding = Math.min(defaultPadding + menuHeight, 30); // Cap maximum padding
     document.documentElement.style.setProperty('--panel-top-padding', `${padding}vh`);
   }, [isShareMenuOpen, shareMenuHeight]);
 
@@ -125,6 +126,12 @@ const ConfiguratorPage: React.FC = () => {
     }
   }, [session, viewport]);
 
+  // Effect hook for updating CSS custom property when height changes
+  useEffect(() => {
+    // Update CSS custom property when height changes
+    document.documentElement.style.setProperty('--share-menu-height', `${shareMenuHeight}vh`);
+  }, [shareMenuHeight]);
+
   // Component render
   return (
     // Wrap entire component in error boundary
@@ -144,7 +151,8 @@ const ConfiguratorPage: React.FC = () => {
           <ShareButton 
             session={session} 
             viewport={viewport}
-            onMenuOpen={(isOpen) => setIsShareMenuOpen(isOpen)}
+            onMenuOpen={setIsShareMenuOpen}
+            onMenuHeightChange={setShareMenuHeight}
           />
         </div>
 

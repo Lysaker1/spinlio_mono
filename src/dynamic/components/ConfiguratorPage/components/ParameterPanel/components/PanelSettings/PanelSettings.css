@@ -11,7 +11,7 @@
     border-radius: 2.125rem;
     background: rgba(55, 53, 53, 0.90);
     border: 1.4px solid rgba(255, 255, 255, 0.40);
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(0, 0, 0, 0.8);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -39,7 +39,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(0, 0, 0, 0.9);
     padding: 0.5rem;
     cursor: pointer;
     font-size: 0.875rem;

@@ -9,6 +9,13 @@ export const parameterDefinitions: ParameterDefinition[] = [
     value: 'false'
   },
   {
+    id: 'b5bf6f12-a078-4417-a4ae-d2049807178c',
+    name: 'Show Only Frame',
+    category: 'geometry',
+    type: 'checkbox',
+    value: 'false'
+  },
+  {
     id: 'beff3154-f6bd-494e-998b-13f9660e9506',
     name: 'Seat tube length',
     category: 'geometry',
@@ -108,13 +115,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     type: 'color',
     value: '0x000000ff'
   },
-  {
-    id: 'b5bf6f12-a078-4417-a4ae-d2049807178c',
-    name: 'Show Only Frame',
-    category: 'geometry',
-    type: 'checkbox',
-    value: 'false'
-  },
+
   {
     id: '748ef0ef-9e2c-493e-ad09-d908404f289c',
     name: 'Bottle Colour',

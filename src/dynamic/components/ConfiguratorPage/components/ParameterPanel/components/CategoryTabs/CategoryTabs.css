@@ -1,21 +1,27 @@
 /* Desktop Tab Styling */
 .category-tabs {
   display: flex;
-  padding: 0.5rem;
+  padding: 0.2rem;
   align-items: center;
-  gap: 0.5rem;
-  border-radius: 2rem;
+  gap: 0.2rem;
+  border-radius: 1rem;
   backdrop-filter: blur(5px);
   width: 100%;
+  justify-content: space-between;
+
 }
 
 .tab-button {
   flex: 1;
-  padding: 0.5rem 1rem;
+  min-width: 0;
+  white-space: nowrap;
+  font-size: clamp(0.8rem, 0.8vw, 0.8rem); /* Even smaller responsive font size */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0.1rem 0.1rem;
   border-radius: 1.5rem;
   color: rgba(255, 255, 255, 0.7);
   font-family: "Helvetica Neue";
-  font-size: 14px;
   font-weight: 500;
   border: none;
   background: transparent;
@@ -31,13 +37,16 @@
   }
 
   &.active {
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(0, 0, 0, 0.822);
     color: #FFF;
     font-weight: 600;
     box-shadow: 
       0 2px 4px rgba(0, 0, 0, 0.1),
       inset 0 1px 1px rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
+    padding: 0.85rem 1.2rem;  /* Slightly larger when active */
+    transform: scale(1.02);  /* Subtle scale effect */
+  
   }
 }
 

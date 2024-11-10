@@ -1,5 +1,5 @@
 import { describe, expect, test } from '@jest/globals';
-import { parameterDefinitions } from '../parameterDefinitions4';
+import { parameterDefinitions } from '../parameterDefinitions6';
 import { ParameterDefinition } from '../types';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -20,7 +20,7 @@ describe('Parameter Comparison Analysis', () => {
     // Read and parse the external JSON file
     const externalJson = JSON.parse(
       fs.readFileSync(
-        path.join(__dirname, '../__fixtures__/externalParameters.json'),
+        path.join(__dirname, '../__fixtures__/spinlio-v091.json'),
         'utf8'
       )
     ) as ExternalConfig;

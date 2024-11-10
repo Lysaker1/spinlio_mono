@@ -1,7 +1,7 @@
 /* Desktop Panel Structure */
 .parameter-panel {
   width: 100%;                          
-  height: 100vh;                         /* Full viewport height */
+  height: 100%;                         /* Full viewport height */
   display: flex;                         /* Use flexbox layout */
   flex-direction: column;                /* Stack children vertically */
   backdrop-filter: blur(10px);           /* Blur effect behind panel */
@@ -22,9 +22,9 @@
 /* Container for parameter controls on desktop */
 .panel-content {
   flex: 1;                              /* Take remaining vertical space */
-  overflow-y: auto;                     /* Vertical scroll when needed */
+  overflow-y: hidden;                     /* Vertical scroll when needed */
   overflow-x: hidden;                   /* Hide horizontal overflow */
-  padding: 0 0.25rem;                    /* Small equal padding on sides */
+  padding: 0.5rem, 0.5rem;                    /* Small equal padding on sides */
   width: 100%;                          /* Full width of parent */
   max-width: 100%;                      /* Never exceed parent width */
   font-size: calc(14px + 0.2vw);
@@ -92,12 +92,7 @@
       black 95%,
       transparent
     );
-    
-    /* Hide scrollbar on mobile */
-    &::-webkit-scrollbar {
-      display: none;                 /* Hide webkit scrollbar */
-    }
-    scrollbar-width: none;           /* Hide Firefox scrollbar */
+
   }
 
   /* Support for iOS safe areas */

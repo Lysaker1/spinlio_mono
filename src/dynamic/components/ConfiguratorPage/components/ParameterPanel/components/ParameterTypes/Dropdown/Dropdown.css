@@ -1,12 +1,12 @@
 /* Card Layout Component */
 .parameter-card {
   border-radius: 0.75rem;
-  padding: 1rem;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
   position: relative;
   background: transparent;
+  padding: 0;
 }
 
 /* Header Section Styling */
@@ -14,11 +14,6 @@
   display: flex;
   align-items: center;
   margin-bottom: 0.75rem;
-}
-
-.parameter-label {
-  font-size: 0.875rem;
-  font-weight: 500;
 }
 
 /* Dropdown Container */

@@ -3,8 +3,6 @@
   background: transparent;
   /* Rounded corners for modern look */
   border-radius: 0.75rem;
-  /* Internal spacing around content */
-  padding: 0.75rem;
   /* Frosted glass effect */
   backdrop-filter: blur(10px);
   /* Card takes full width of container */
@@ -20,15 +18,7 @@
   margin-bottom: 0.75rem;
 }
 
-/* Main parameter label styling */
-.parameter-label {
-  /* Nearly white text with slight transparency */
-  color: rgba(255, 255, 255, 0.9);
-  /* Compact text size */
-  font-size: 14px;
-  /* Medium font weight for readability */
-  font-weight: 500;
-}
+
 
 /* Currently selected color display label */
 .selected-color-label {

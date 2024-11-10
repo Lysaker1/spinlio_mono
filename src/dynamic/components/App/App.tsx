@@ -21,6 +21,13 @@ const SupplierConfigurator = lazy(() =>
   }))
 );
 
+// Import the BetaPage component
+const BetaPage = lazy(() => 
+  import('../BetaPage/BetaPage').then(module => ({
+    default: module.default
+  }))
+);
+
 const App: React.FC = () => {
   // Figure out where we are on the internet
   const hostname = window.location.hostname;  // Like checking which building we're in
@@ -104,6 +111,14 @@ const App: React.FC = () => {
                   element={
                     <React.Suspense fallback={<div className="loading-placeholder" />}>
                       <SupplierConfigurator />
+                    </React.Suspense>
+                  } 
+                />
+                <Route 
+                  path="/beta" 
+                  element={
+                    <React.Suspense fallback={<div className="loading-placeholder" />}>
+                      <BetaPage />
                     </React.Suspense>
                   } 
                 />

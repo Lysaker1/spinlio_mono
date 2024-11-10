@@ -51,7 +51,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   {
     id: '6bebc909-bc55-448c-b316-4d9acb7e1c9a',
     name: 'Frame finish',
-    category: 'accessories',
+    category: 'tubing',
     type: 'grid',
     value: '0',
     options: [
@@ -203,25 +203,25 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '748ef0ef-9e2c-493e-ad09-d908404f289c',
-    name: 'Bottle Colour',
+    name: 'Bottle color',
     category: 'accessories',
     type: 'color',
     value: '0x76808285'
   },
   {
     id: 'b5bf6f12-a078-4417-a4ae-d2049807178c',
-    name: 'Show Only Frame',
+    name: 'Show only frame',
     category: 'geometry',
     type: 'checkbox',
     value: 'false'
   },
-  {
-    id: 'ac947279-5f74-46ec-93c6-a3fdac0a9eb0',
-    name: 'Show Only Fork',
-    value: 'false',
-    category: 'accessories',
-    type: 'checkbox'
-  },
+  // {
+  //   id: 'ac947279-5f74-46ec-93c6-a3fdac0a9eb0',
+  //   name: 'Show Only Fork',
+  //   value: 'false',
+  //   category: 'accessories',
+  //   type: 'checkbox'
+  // },
   {
     id: '9c43fdf1-d21d-4c8f-b8a3-b7d9602bfe1d',
     name: 'Seat tube bottle placement',
@@ -236,7 +236,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     name: 'Seat tube water bottle',
     category: 'accessories',
     type: 'dropdown',
-    value: '1',
+    value: '0',
     options: [
       {
         label: 'Yes',
@@ -344,7 +344,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '39881cea-9d0d-4879-99ee-6ed1d4c0574d',
-    name: 'HandleBar Colour',
+    name: 'Handlebar color',
     category: 'accessories',
     type: 'color',
     value: '0x363636ff'
@@ -360,14 +360,14 @@ export const parameterDefinitions: ParameterDefinition[] = [
   // },
   {
     id: 'ea2fe86c-71b3-459e-8bd3-e056db0b5e8d',
-    name: 'Seat Colour',
+    name: 'Seat color',
     category: 'accessories',
     type: 'color',
     value: '0x262626ff'
   },
   {
     id: '34db677e-094f-4ca3-ba28-1ffa0c21c9c0',
-    name: 'Crank Colour',
+    name: 'Crank color',
     value: '0x2b2b2bff',
     category: 'accessories',
     type: 'color'
@@ -392,7 +392,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   // },
   {
     id: '5422df73-826b-4478-88d3-016cf74499f6',
-    name: 'Rear DropOut Type',
+    name: 'Rear drop out type',
     category: 'accessories',
     type: 'grid',
     value: '0',
@@ -431,11 +431,12 @@ export const parameterDefinitions: ParameterDefinition[] = [
     category: 'tubing',
     type: 'slider',
     min: 30,
-    max: 40
+    max: 40,
+    unit: 'mm'
   },
   {
     id: '7920797e-f807-4b15-b964-d97d9a9d58a2',
-    name: 'Rim Width',
+    name: 'Rim width',
     category: 'accessories',
     type: 'dropdown',
     value: '0',
@@ -451,16 +452,16 @@ export const parameterDefinitions: ParameterDefinition[] = [
     ],
     tag: 'man'
   },
-  {
-    id: '734e8f5c-4006-47e6-b84f-61df7fb0dde2',
-    name: 'TopTube CurvePoints',
-    value: '0,0;0.1,0.4;0.4,0.8;1,1',
-    category: 'tubing',
-    type: 'graphmapper'
-  },
+  // {
+  //   id: '734e8f5c-4006-47e6-b84f-61df7fb0dde2',
+  //   name: 'TopTube CurvePoints',
+  //   value: '0,0;0.1,0.4;0.4,0.8;1,1',
+  //   category: 'tubing',
+  //   type: 'graphmapper'
+  // },
   {
     id: 'cb15151e-0bb2-4895-b40d-3184fe772fe1',
-    name: 'Derailleur Color',
+    name: 'Derailleur color',
     category: 'accessories',
     type: 'color',
     value: '0x6e6969ff'
@@ -518,7 +519,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   // },
   {
     id: '7935dece-7133-4678-a77e-a3dd54c8e114',
-    name: 'Rim Depth',
+    name: 'Rim depth',
     category: 'accessories',
     type: 'slider',
     value: '18',
@@ -529,7 +530,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: 'cbdf47f8-4e69-45ce-bc08-dda011276a06',
-    name: 'Spoke Holes',
+    name: 'Spoke holes',
     category: 'accessories',
     type: 'dropdown',
     value: '0',
@@ -692,16 +693,16 @@ export const parameterDefinitions: ParameterDefinition[] = [
     category: 'other',
     type: 'text'
   },
-  {
+  /*{
     id: '55f308a4-1f48-4319-93c2-19fc11f04865',
-    name: 'Pedestal_color',
+    name: 'Pedestal color',
     value: '0x424141ff',
     category: 'accessories',
     type: 'color'
-  },
+  },*/
   {
     id: 'c1ed3412-a8ca-4b21-ba9d-cd16ac8a7021',
-    name: 'HandleBar Colour',
+    name: 'HandleBar color',
     value: '0x918484ff',
     category: 'accessories',
     type: 'color'

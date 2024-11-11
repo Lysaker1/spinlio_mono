@@ -54,6 +54,12 @@ describe('Template Parameter Extraction', () => {
   });
 });
 
+describe('Template Parameter Extraction', () => {
+  test('Extract matching parameters from canyon endurance 7', () => {
+    console.log(extractTemplateParameters('canyon-endurance-7.json')); // Add .json extension here
+  });
+});
+
   // You can now easily add more models by adding new test cases:
   // test('Extract matching parameters from model_x', () => {
   //   console.log(extractTemplateParameters('model_x'));

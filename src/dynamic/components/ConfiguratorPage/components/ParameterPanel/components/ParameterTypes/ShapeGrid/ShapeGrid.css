@@ -3,7 +3,7 @@
   /* Semi-transparent dark background for card */
   background: rgba(40, 40, 40, 0.5);
   /* Rounded corners for modern look */
-  border-radius: 0.75rem;
+  border-radius: 1.5rem;
 
   /* Glass-like blur effect on background */
   backdrop-filter: blur(10px);

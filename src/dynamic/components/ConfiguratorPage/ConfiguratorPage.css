@@ -82,13 +82,14 @@
 }
 
 .top-right-buttons {
-  position: fixed;
+  position: absolute;
   top: 1.5rem;
-  z-index: 1100;
-  width: var(--panel-width);
-  min-width: var(--min-panel-width);
-  max-width: var(--max-panel-width);
-  z-index: 1100;
+  right: 4vh;
+  width: auto;
+  height: 3rem;
+  z-index: 900;
+  pointer-events: all;
+  background: rgba(0, 0, 255, 0.3); /* Temporary blue background */
 }
 
 /* When share menu is open, adjust panel position */

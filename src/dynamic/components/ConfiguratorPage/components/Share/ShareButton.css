@@ -1,28 +1,35 @@
 .share-container {
-    position: fixed;
+    position: absolute;
     top: 1.5rem;
-    right: 2vh;
+    right: 1vh;
     z-index: 1000;
-    width: var(--panel-width);
-    min-width: var(--min-panel-width);
-    max-width: var(--max-panel-width);
+    width: auto;
+    height: 3rem;
+    display: flex;
+    justify-content: flex-end;
+    pointer-events: all;
 }
   
 .share-button {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
     background: rgba(55, 53, 53, 0.90);
     border: 1.4px solid rgba(255, 255, 255, 0.40);
     border-radius: 2.125rem;
     padding: 0.75rem 1.25rem;
-    width: 100%;
+    width: auto;
+    min-height: 3rem;
     color: white;
     font-family: "Helvetica Neue";
     font-size: 0.875rem;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
+    position: relative;
+    z-index: 1000;
+    pointer-events: all;
 }
 
 .share-button:hover {

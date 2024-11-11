@@ -1,25 +1,17 @@
 .share-menu {
-  width: calc(var(--panel-width) * 1.2);
-  min-width: 200px;
+  width: 220px; /* Fixed width for consistency */
   background: rgba(55, 53, 53, 0.90);
   border-radius: 1rem;
   backdrop-filter: blur(10px);
   animation: menuAppear 0.2s ease;
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 0;  /* Align with share button */
+  right: 0; /* Align with share button */
   z-index: 1001;
   padding: 1.5rem;
 }
 
-/* Share container positioning */
-.share-container {
-  position: fixed;
-  top: 1.5rem;
-  right: 2vh;
-  z-index: 1000;
-  width: auto;
-}
+
 
 /* Back button positioning */
 .back-button {

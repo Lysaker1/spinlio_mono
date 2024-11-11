@@ -197,6 +197,56 @@ export interface BikeTemplate {
     "2c1f868d-5b6f-4eb0-8e59-4ef5e52e2f8c": "1.0",
     "95dcfa93-c88e-4804-a541-3e441d4f4d63": "yourname@email.com",
   };
+
+  export const canyonendurance7jsonParameters = {
+    "7088e5a1-f07f-49c3-b1f6-98e74ae3734c": "false",
+    "eea4374e-a513-4f61-924a-f8175351fa8b": "543",
+    "15c239d7-8130-41d2-8470-342335fcfb5f": "15",
+    "d1f726c0-fb21-4f15-8f11-06ba73e0f3a9": "73",
+    "c4d4c978-5b58-49ce-a567-739894dc5d36": "48",
+    "972de871-83ed-4243-9510-f4c2ab3228a3": "0",
+    "6eac979f-e146-4021-8439-0cf495cf0431": "1",
+    "815b0eaf-cd38-4638-8bde-5f6ac27739d0": "421",
+    "beff3154-f6bd-494e-998b-13f9660e9506": "522",
+    "98f0a457-b4e5-44ea-8e55-8577941d49ad": "73.0",
+    "64ecfdab-39bb-4d5c-a11d-b98690404bf9": "546",
+    "09aa3a63-8d46-4b67-b87b-b4b869e5befd": "73.5",
+    "3902e965-6a81-4d91-a8c0-e65209a882a3": "15",
+    "4ec438ea-a490-434b-82ea-88f84f67f6b7": "43",
+    "fbb5d1c5-9ede-49e3-8d68-5b5a7d390ce1": "26.00",
+    "a250e630-2572-402a-af6e-e36136793a42": "9.0",
+    "748ef0ef-9e2c-493e-ad09-d908404f289c": "0x76808285",
+    "b5bf6f12-a078-4417-a4ae-d2049807178c": "false",
+    "9c43fdf1-d21d-4c8f-b8a3-b7d9602bfe1d": "0.5",
+    "03c193b3-bbc9-491b-b4d5-1a2b48a4e0d1": "0",
+    "44d398e1-f057-4d3f-8446-2f8e38703b86": "0",
+    "00d82c20-556f-4710-bff6-84e43117f680": "31",
+    "62738150-ac17-418d-81ab-2876c45a413e": "5",
+    "ac762528-d92e-4d5a-8c48-e364432e61e9": "48",
+    "cc667ffa-3487-46e8-8b36-48ae1cd78efa": "0",
+    "39881cea-9d0d-4879-99ee-6ed1d4c0574d": "0x141313ff",
+    "ea2fe86c-71b3-459e-8bd3-e056db0b5e8d": "0x0e0e0eff",
+    "34db677e-094f-4ca3-ba28-1ffa0c21c9c0": "0x0e0e0eff",
+    "50033fab-4882-439f-8413-a68a99314ed2": "1",
+    "5422df73-826b-4478-88d3-016cf74499f6": "0",
+    "33ab6af5-42db-494e-834e-0f652a911a85": "1",
+    "fb34be77-f67f-4ee9-989e-c8baf24eacf1": "1",
+    "f0f25a06-82aa-4584-b4ab-2f39c4e71651": "30",
+    "7920797e-f807-4b15-b964-d97d9a9d58a2": "0",
+    "cb15151e-0bb2-4895-b40d-3184fe772fe1": "0x6e6969ff",
+    "7b5d938d-b964-4f31-bd97-e36008869962": "0x131312ff",
+    "7935dece-7133-4678-a77e-a3dd54c8e114": "18",
+    "cbdf47f8-4e69-45ce-bc08-dda011276a06": "0",
+    "0c908c83-7337-42f5-896a-005f9b10f33c": "0",
+    "8620773c-238b-4627-ba8e-2d1c0995b089": "your name",
+    "9e898618-6cce-4a45-bc4d-ea7bbd9af54f": "1",
+    "7a55821d-3981-4eb8-9a4c-26b7e275e56c": "0,0;1,1",
+    "3afee937-c9ca-487d-b912-165b4be705be": "2",
+    "ef670dec-8b9c-4f01-8dec-072095cceb5a": "2",
+    "56fa370a-8b83-4bd6-9797-f1e0897faac3": "7",
+    "6bebc909-bc55-448c-b316-4d9acb7e1c9a": "2",
+    "95dcfa93-c88e-4804-a541-3e441d4f4d63": "yourname@email.com"
+  };
   
   export const bikeTemplates: BikeTemplate[] = [
     { 
@@ -219,6 +269,14 @@ export interface BikeTemplate {
         name: 'Girls bike',
         modelStateId: '9d74c500-e310-45bc-8c63-6dd2ee132cc6',
         parameters: girlsbikejsonParameters
+      },
+      {
+        id: 'Canyon Endurance 7',
+        image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/Canyon-bike_zitfqq.png',
+        name: 'Canyon Endurance 7',
+        modelStateId: '9d74e8ca-fbd2-4fae-8b88-91dd3132e316',
+        parameters: canyonendurance7jsonParameters
       }
+
 
   ];

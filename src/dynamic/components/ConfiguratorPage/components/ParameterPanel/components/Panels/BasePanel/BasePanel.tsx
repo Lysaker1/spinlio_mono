@@ -163,11 +163,21 @@ export const BasePanel: React.FC<BasePanelProps> = ({
           
           if (categoryParams.length === 0) return null;
           
+          // Sort parameters: sliders first, then grid
+          const sortedParams = [...categoryParams].sort((a, b) => {
+            // If both are sliders or both are grid, maintain original order
+            if (a.type === b.type) return 0;
+            // Sliders come before grid
+            if (a.type === 'slider') return -1;
+            if (b.type === 'slider') return 1;
+            return 0;
+          });
+          
           return (
             <div key={index} className="parameter-section">
               <h3 className="section-title">{category.title}</h3>
               <div className="category-items">
-                {categoryParams.map(param => (
+                {sortedParams.map(param => (
                   <div key={param.id} className="parameter-item">
                     {renderParameter(param)}
                   </div>

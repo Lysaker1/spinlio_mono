@@ -154,16 +154,16 @@ export const parameterDefinitions: ParameterDefinition[] = [
     max: 75,
     unit: '°'
   },
-  {
-    id: '3902e965-6a81-4d91-a8c0-e65209a882a3',
-    name: 'Meta-tube Diameter',
-    value: '16',
-    category: 'tubing',
-    type: 'slider',
-    min: 15,
-    max: 40,
-    unit: 'mm'
-  },
+  // {
+  //   id: '3902e965-6a81-4d91-a8c0-e65209a882a3',
+  //   name: 'Meta-tube Diameter',
+  //   value: '16',
+  //   category: 'tubing',
+  //   type: 'slider',
+  //   min: 15,
+  //   max: 40,
+  //   unit: 'mm'
+  // },
   {
     id: '4ec438ea-a490-434b-82ea-88f84f67f6b7',
     name: 'Down tube start diameter',
@@ -342,13 +342,13 @@ export const parameterDefinitions: ParameterDefinition[] = [
       }
     ]
   },
-  {
-    id: '39881cea-9d0d-4879-99ee-6ed1d4c0574d',
-    name: 'Handlebar color',
-    category: 'accessories',
-    type: 'color',
-    value: '0x161515ff'
-  },
+  // {
+  //   id: '39881cea-9d0d-4879-99ee-6ed1d4c0574d',
+  //   name: 'Handlebar color',
+  //   category: 'accessories',
+  //   type: 'color',
+  //   value: '0x161515ff'
+  // },
   // {
   //   id: '74a9482f-e1bb-4b5e-9dff-a182a2b738b4',
   //   name: 'HandleBar Metallic Factor',
@@ -358,20 +358,20 @@ export const parameterDefinitions: ParameterDefinition[] = [
   //   min: 0,
   //   max: 1
   // },
-  {
+  /*{
     id: 'ea2fe86c-71b3-459e-8bd3-e056db0b5e8d',
     name: 'Seat color',
     category: 'accessories',
     type: 'color',
     value: '0x1d1b1bff'
-  },
-  {
-    id: '34db677e-094f-4ca3-ba28-1ffa0c21c9c0',
-    name: 'Crank color',
-    value: '0x111111ff',
-    category: 'accessories',
-    type: 'color'
-  },
+  },*/
+  // {
+  //   id: '34db677e-094f-4ca3-ba28-1ffa0c21c9c0',
+  //   name: 'Crank color',
+  //   value: '0x111111ff',
+  //   category: 'accessories',
+  //   type: 'color'
+  // },
   // {
   //   id: '251d59ff-4c5d-4a33-94bb-31fafb7df894',
   //   name: 'Crank Metallic Factor',
@@ -459,13 +459,13 @@ export const parameterDefinitions: ParameterDefinition[] = [
   //   category: 'tubing',
   //   type: 'graphmapper'
   // },
-  {
-    id: 'cb15151e-0bb2-4895-b40d-3184fe772fe1',
-    name: 'Derailleur color',
-    category: 'accessories',
-    type: 'color',
-    value: '0x6e6969ff'
-  },
+  // {
+  //   id: 'cb15151e-0bb2-4895-b40d-3184fe772fe1',
+  //   name: 'Derailleur color',
+  //   category: 'accessories',
+  //   type: 'color',
+  //   value: '0x6e6969ff'
+  // },
   // {
   //   id: '94f3a489-2284-42b9-875d-554a28bfd7c2',
   //   name: 'Rim Roughness Factor',
@@ -690,8 +690,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
     id: 'c01258ac-67a5-4ab2-968e-e368f3391b63',
     name: 'Show Pedestal',
     value: 'true',
-    category: 'other',
-    type: 'text'
+    category: 'accessories',
+    type: 'checkbox'
   },*/
   /*{
     id: '55f308a4-1f48-4319-93c2-19fc11f04865',

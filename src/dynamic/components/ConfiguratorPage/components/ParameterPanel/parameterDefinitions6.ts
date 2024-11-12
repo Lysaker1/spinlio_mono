@@ -13,7 +13,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     name: 'Stack height',
     category: 'geometry',
     type: 'slider',
-    value: '540',
+    value: '560',
     min: 540,
     max: 580,
     unit: 'mm'
@@ -21,7 +21,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   {
     id: '15c239d7-8130-41d2-8470-342335fcfb5f',
     name: 'Fork crown height',
-    value: '15',
+    value: '12',
     category: 'geometry',
     type: 'slider',
     min: 12,
@@ -33,7 +33,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     name: 'Bottom bracket drop',
     category: 'geometry',
     type: 'slider',
-    value: '75',
+    value: '65',
     min: 65,
     max: 75,
     unit: 'mm'
@@ -41,7 +41,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   {
     id: 'c4d4c978-5b58-49ce-a567-739894dc5d36',
     name: 'Top tube end diameter',
-    value: '40',
+    value: '37',
     category: 'tubing',
     type: 'slider',
     min: 30,
@@ -109,7 +109,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     name: 'Chain stay length',
     category: 'geometry',
     type: 'slider',
-    value: '420',
+    value: '444',
     min: 420,
     max: 450,
     unit: 'mm'
@@ -119,7 +119,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     name: 'Seat tube length',
     category: 'geometry',
     type: 'slider',
-    value: '620',
+    value: '597',
     min: 500,
     max: 620,
     unit: 'mm'
@@ -130,8 +130,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
     category: 'geometry',
     type: 'slider',
     value: '72.0',
-    min: 65,
-    max: 72,
+    min: 72,
+    max: 73,
     unit: '°'
   },
   {
@@ -139,7 +139,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     name: 'Effective top tube length',
     category: 'geometry',
     type: 'slider',
-    value: '555',
+    value: '548',
     min: 535,
     max: 555,
     unit: 'mm'
@@ -149,7 +149,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     name: 'Seat tube angle',
     category: 'geometry',
     type: 'slider',
-    value: '72.5',
+    value: '74.3',
     min: 72.5,
     max: 75,
     unit: '°'
@@ -157,7 +157,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   {
     id: '3902e965-6a81-4d91-a8c0-e65209a882a3',
     name: 'Meta-tube Diameter',
-    value: '27',
+    value: '16',
     category: 'tubing',
     type: 'slider',
     min: 15,
@@ -184,7 +184,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   {
     id: 'fbb5d1c5-9ede-49e3-8d68-5b5a7d390ce1',
     name: 'Fork crown width',
-    value: '23',
+    value: '25.91',
     category: 'geometry',
     type: 'slider',
     min: 20,
@@ -194,7 +194,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   {
     id: 'a250e630-2572-402a-af6e-e36136793a42',
     name: 'Fork width at axel',
-    value: '9',
+    value: '9.0',
     category: 'geometry',
     type: 'slider',
     min: 8,
@@ -236,7 +236,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     name: 'Seat tube water bottle',
     category: 'accessories',
     type: 'dropdown',
-    value: '0',
+    value: '1',
     options: [
       {
         label: 'Yes',
@@ -268,7 +268,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   {
     id: '00d82c20-556f-4710-bff6-84e43117f680',
     name: 'Seat tube diameter',
-    value: '32',
+    value: '31',
     category: 'geometry',
     type: 'slider',
     min: 28,
@@ -287,7 +287,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     name: 'Down tube shape',
     category: 'tubing',
     type: 'grid',
-    value: '0',
+    value: '4',
     options: [
       {
         label: 'Oval',
@@ -318,7 +318,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   {
     id: 'ac762528-d92e-4d5a-8c48-e364432e61e9',
     name: 'Down tube end diameter',
-    value: '48',
+    value: '41',
     category: 'tubing',
     type: 'slider',
     min: 30,
@@ -347,7 +347,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     name: 'Handlebar color',
     category: 'accessories',
     type: 'color',
-    value: '0x363636ff'
+    value: '0x161515ff'
   },
   // {
   //   id: '74a9482f-e1bb-4b5e-9dff-a182a2b738b4',
@@ -363,12 +363,12 @@ export const parameterDefinitions: ParameterDefinition[] = [
     name: 'Seat color',
     category: 'accessories',
     type: 'color',
-    value: '0x262626ff'
+    value: '0x1d1b1bff'
   },
   {
     id: '34db677e-094f-4ca3-ba28-1ffa0c21c9c0',
     name: 'Crank color',
-    value: '0x2b2b2bff',
+    value: '0x111111ff',
     category: 'accessories',
     type: 'color'
   },
@@ -503,7 +503,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   {
     id: '7b5d938d-b964-4f31-bd97-e36008869962',
     name: 'Rim color',
-    value: '0x827e7eff',
+    value: '0x131312ff',
     category: 'accessories',
     type: 'color'
   },
@@ -522,7 +522,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     name: 'Rim depth',
     category: 'accessories',
     type: 'slider',
-    value: '18',
+    value: '19',
     min: 10,
     max: 50,
     tag: 'man',
@@ -550,7 +550,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     name: 'Brake type',
     category: 'accessories',
     type: 'dropdown',
-    value: '0',
+    value: '1',
     options: [
       {
         label: 'V-brake',
@@ -581,7 +581,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     name: 'Top tube shape',
     category: 'tubing',
     type: 'grid',
-    value: '1',
+    value: '5',
     options: [
       {
         label: 'Oval',
@@ -626,14 +626,14 @@ export const parameterDefinitions: ParameterDefinition[] = [
   {
     id: '3afee937-c9ca-487d-b912-165b4be705be',
     name: 'End Of Line',
-    value: '0',
+    value: '2',
     category: 'other',
     type: 'text'
   },
   {
     id: 'ef670dec-8b9c-4f01-8dec-072095cceb5a',
     name: 'Export Rhino Object names',
-    value: '0',
+    value: '2',
     category: 'other',
     type: 'text'
   },

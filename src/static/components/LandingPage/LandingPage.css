@@ -107,3 +107,20 @@
 .design-button:hover {
   background: #2a2a2a; /* Slightly lighter on hover */
 }
+
+.landing-image {
+  max-width: 40rem; /* Adjust size as needed */
+  height: auto;
+  margin: 2rem 0; /* Add space above and below */
+  mix-blend-mode: multiply; /* This helps with transparency */
+  filter: brightness(1.1) contrast(1.1); /* Adjust image appearance if needed */
+}
+
+/* If you need to adjust spacing of surrounding elements */
+.version-text {
+  margin-bottom: 1rem; /* Reduce bottom margin since image has its own margin */
+}
+
+.design-button {
+  margin-top: 1rem; /* Reduce top margin since image has its own margin */
+}

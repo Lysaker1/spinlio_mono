@@ -49,6 +49,11 @@ const LandingPage: React.FC = () => {
             <span className="subtitle">Beta V0.1</span>
           </div>
         </div>
+        {/* <img 
+          src="https://res.cloudinary.com/da8qnqmmh/image/upload/WhatsApp_Image_2024-11-12_at_14.55.41_wfahwk.jpg"
+          alt="Landing page illustration"
+          className="landing-image"
+        /> */}
         <a href={configuratorUrl} 
            onClick={handleDesignClick} 
            className="design-button">

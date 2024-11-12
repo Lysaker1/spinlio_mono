@@ -44,11 +44,10 @@ const LandingPage: React.FC = () => {
     <div className="landing-page">
       <div className="landing-content">
         <div className="text-container">
-          <h1 className="main-title">3D design, made simple</h1>
+          <h1 className="main-title">3D Design - Made Simple</h1>
           <div className="subtitle-container">
-            <span className="subtitle">And ready for production</span>
+            <span className="subtitle">Beta V0.1</span>
           </div>
-          <span className="version-text">Beta V0.1</span>
         </div>
         <a href={configuratorUrl} 
            onClick={handleDesignClick} 

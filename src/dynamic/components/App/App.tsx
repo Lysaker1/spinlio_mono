@@ -30,6 +30,18 @@ const BetaPage = lazy(() =>
 );
 
 const App: React.FC = () => {
+  return (
+    <ErrorBoundary>
+      <MantineProvider theme={theme}>
+        <Router>
+          <AppContent />
+        </Router>
+      </MantineProvider>
+    </ErrorBoundary>
+  );
+};
+
+const AppContent: React.FC = () => {
   const location = useLocation();
 
   useEffect(() => {
@@ -100,44 +112,42 @@ const App: React.FC = () => {
   return (
     <ErrorBoundary>  {/* This catches any oopsies */}
       <MantineProvider theme={theme}>  {/* This makes everything look pretty */}
-        <Router>  {/* This handles all the page navigation */}
-          <div className="app">
-            <Header />  {/* The top bar */}
-            <main className="main-content">
-              <Routes>  {/* This is like a map of our website */}
-                <Route 
-                  path="/" 
-                  element={
-                    <React.Suspense fallback={<div className="loading-placeholder" />}>
-                      {getMainComponent()}  {/* Show the right page */}
-                    </React.Suspense>
-                  } 
-                />
-                <Route 
-                  path="/supplier" 
-                  element={
-                    <React.Suspense fallback={<div className="loading-placeholder" />}>
-                      <SupplierConfigurator />
-                    </React.Suspense>
-                  } 
-                />
-                <Route 
-                  path="/beta" 
-                  element={
-                    <React.Suspense fallback={<div className="loading-placeholder" />}>
-                      <BetaPage />
-                    </React.Suspense>
-                  } 
-                />
-                <Route path="/configurator" element={getMainComponent()} />
-                <Route path="/contact" element={getMainComponent()} />
-                <Route path="/about" element={<AboutPage />} />
-                <Route path="*" element={<Navigate to="/" />} />  {/* If lost, go home */}
-              </Routes>
-            </main>
-            <Footer />  {/* The bottom bar */}
-          </div>
-        </Router>
+        <div className="app">
+          <Header />  {/* The top bar */}
+          <main className="main-content">
+            <Routes>  {/* This is like a map of our website */}
+              <Route 
+                path="/" 
+                element={
+                  <React.Suspense fallback={<div className="loading-placeholder" />}>
+                    {getMainComponent()}  {/* Show the right page */}
+                  </React.Suspense>
+                } 
+              />
+              <Route 
+                path="/supplier" 
+                element={
+                  <React.Suspense fallback={<div className="loading-placeholder" />}>
+                    <SupplierConfigurator />
+                  </React.Suspense>
+                } 
+              />
+              <Route 
+                path="/beta" 
+                element={
+                  <React.Suspense fallback={<div className="loading-placeholder" />}>
+                    <BetaPage />
+                  </React.Suspense>
+                } 
+              />
+              <Route path="/configurator" element={getMainComponent()} />
+              <Route path="/contact" element={getMainComponent()} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="*" element={<Navigate to="/" />} />  {/* If lost, go home */}
+            </Routes>
+          </main>
+          <Footer />  {/* The bottom bar */}
+        </div>
       </MantineProvider>
     </ErrorBoundary>
   );

@@ -75,7 +75,10 @@ app.use(helmet({
         "https://*.hs-banner.com",
         "https://*.hscollectedforms.net",
         "https://static.klaviyo.com",
-        "https://*.klaviyo.com"
+        "https://*.klaviyo.com",
+        "https://*.google-analytics.com",
+        "https://*.analytics.google.com",
+        "https://*.googletagmanager.com"
       ],
       frameSrc: [
         "'self'",
@@ -92,7 +95,9 @@ app.use(helmet({
         "https://res.cloudinary.com",
         "https://*.cloudinary.com",
         "https://*.hubspot.com",
-        "https://forms-na1.hsforms.com"
+        "https://forms-na1.hsforms.com",
+        "https://*.google-analytics.com",
+        "https://*.googletagmanager.com"
       ],
       scriptSrc: [
         "'self'", 
@@ -107,7 +112,9 @@ app.use(helmet({
         "https://*.klaviyo.com",
         "https://static-tracking.klaviyo.com",
         "https://*.hsforms.com", 
-        "https://*.hubspot.com"
+        "https://*.hubspot.com",
+        "https://*.googletagmanager.com",
+        "https://www.google-analytics.com"
       ],
       styleSrc: [
         "'self'", 
@@ -120,6 +127,7 @@ app.use(helmet({
         "'self'", 
         "data:", 
         "https://fonts.gstatic.com",
+        "https://fonts.googleapis.com",
         "https://*.hubspot.com",
         "https://static.klaviyo.com",
         "https://*.klaviyo.com"

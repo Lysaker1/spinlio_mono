@@ -5,8 +5,17 @@ import { theme } from '../shared/theme';
 import { Header, Footer } from '../shared/components';
 import { LandingPage, AboutPage, ConfiguratorTemplate } from './components';
 import ErrorBoundary from '../shared/components/ErrorBoundary/ErrorBoundary';
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { pageView } from '../shared/utils/analytics';
 
 const AppContent: React.FC = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    pageView(location.pathname + location.search);
+  }, [location]);
+
   return (
     <div className="app">
       <Header />

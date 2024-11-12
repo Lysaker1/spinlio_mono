@@ -34,7 +34,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     category: 'geometry',
     type: 'slider',
     value: '75',
-    min: 60,
+    min: 65,
     max: 75,
     unit: 'mm'
   },
@@ -45,7 +45,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     category: 'tubing',
     type: 'slider',
     min: 30,
-    max: 50,
+    max: 48,
     unit: 'mm'
   },
   {
@@ -120,7 +120,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     category: 'geometry',
     type: 'slider',
     value: '620',
-    min: 450,
+    min: 500,
     max: 620,
     unit: 'mm'
   },
@@ -140,8 +140,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
     category: 'geometry',
     type: 'slider',
     value: '555',
-    min: 530,
-    max: 610,
+    min: 535,
+    max: 555,
     unit: 'mm'
   },
   {
@@ -150,7 +150,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     category: 'geometry',
     type: 'slider',
     value: '72.5',
-    min: 70,
+    min: 72.5,
     max: 75,
     unit: '°'
   },
@@ -161,7 +161,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     category: 'tubing',
     type: 'slider',
     min: 15,
-    max: 50,
+    max: 40,
     unit: 'mm'
   },
   {
@@ -171,7 +171,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     category: 'tubing',
     type: 'slider',
     min: 30,
-    max: 60,
+    max: 50,
     unit: 'mm'
   },
   // {
@@ -271,7 +271,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     value: '32',
     category: 'geometry',
     type: 'slider',
-    min: 15,
+    min: 28,
     max: 40,
     unit: 'mm'
   },
@@ -523,8 +523,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
     category: 'accessories',
     type: 'slider',
     value: '18',
-    min: 8,
-    max: 30,
+    min: 10,
+    max: 50,
     tag: 'man',
     unit: 'mm'
   },

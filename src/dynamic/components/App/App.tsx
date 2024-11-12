@@ -1,12 +1,13 @@
 // Get all the tools we need to build our app
 import React, { lazy, useEffect, useCallback } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { MantineProvider } from '@mantine/core';
 import { theme } from '../../../shared/theme';
 import { Footer, Header } from '../../../shared/components';
 import { AboutPage } from '../../../static/components';
 import { ContactUsPage } from '..';
 import ErrorBoundary from '../../../shared/components/ErrorBoundary/ErrorBoundary';
+import { pageView } from '../../../shared/utils/analytics';
 
 // Don't load the big 3D page right away - wait until we need it
 const ConfiguratorPage = lazy(() => 
@@ -29,6 +30,12 @@ const BetaPage = lazy(() =>
 );
 
 const App: React.FC = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    pageView(location.pathname + location.search);
+  }, [location]);
+
   // Figure out where we are on the internet
   const hostname = window.location.hostname;  // Like checking which building we're in
   const isDevelopment = process.env.NODE_ENV === 'development';  // Are we testing or for real?

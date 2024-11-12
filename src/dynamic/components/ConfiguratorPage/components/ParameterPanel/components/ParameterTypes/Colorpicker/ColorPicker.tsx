@@ -25,9 +25,8 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
   // Check if viewport is mobile-sized using media query
   const isMobile = useMediaQuery('(max-width: 768px)');
   
-  // Limit to 8 colors for mobile view
+  // Changed to show all colors instead of limiting to 8
   const availableColors = Object.entries(colorPalette)
-    .slice(0, 8)  // Limit to first 8 colors
     .map(([value, color]) => ({
       value,
       hex: color.hex,

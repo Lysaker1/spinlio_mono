@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ParameterDefinition } from '../../../types';
 import { BasePanel } from '../BasePanel/BasePanel';
+import { ActionIcon } from '@mantine/core';
+import { IconChevronDown, IconChevronUp } from '@tabler/icons-react';
 import './TubingPanel.css';
 
 interface TubingPanelProps {
@@ -11,6 +13,8 @@ interface TubingPanelProps {
 }
 
 export const TubingPanel: React.FC<TubingPanelProps> = (props) => {
+  const [showAdvanced, setShowAdvanced] = useState(false);
+
   const categories = [
     // Color and Finish first
     {
@@ -25,7 +29,8 @@ export const TubingPanel: React.FC<TubingPanelProps> = (props) => {
       filter: (param: ParameterDefinition) => 
         param.category === 'tubing' && 
         param.name.toLowerCase().includes('top tube') &&
-        (param.type === 'slider' || param.type === 'grid')
+        param.type !== 'graphmapper' &&
+        param.type !== 'fileinput'
     },
     // All Down Tube parameters under one header
     {
@@ -33,7 +38,8 @@ export const TubingPanel: React.FC<TubingPanelProps> = (props) => {
       filter: (param: ParameterDefinition) => 
         param.category === 'tubing' && 
         param.name.toLowerCase().includes('down tube') &&
-        (param.type === 'slider' || param.type === 'grid')
+        param.type !== 'graphmapper' &&
+        param.type !== 'fileinput'
     },
     // Head Tube last
     {
@@ -51,7 +57,17 @@ export const TubingPanel: React.FC<TubingPanelProps> = (props) => {
         !param.name.toLowerCase().includes('down tube') &&
         !param.name.toLowerCase().includes('head tube') &&
         !param.name.toLowerCase().includes('frame finish') &&
-        param.type !== 'color'
+        param.type !== 'color' &&
+        param.type !== 'graphmapper' &&
+        param.type !== 'fileinput'
+    },
+    // Advanced section for graph mappers and file upload
+    {
+      title: "Advanced",
+      filter: (param: ParameterDefinition) => 
+        param.category === 'tubing' && 
+        (param.type === 'graphmapper' || param.type === 'fileinput'),
+      isAdvanced: true
     }
   ];
 
@@ -60,6 +76,18 @@ export const TubingPanel: React.FC<TubingPanelProps> = (props) => {
       {...props}
       className="tubing-panel"
       categories={categories}
+      advancedControls={{
+        showAdvanced,
+        setShowAdvanced,
+        advancedTitle: (
+          <div className="advanced-header" onClick={() => setShowAdvanced(!showAdvanced)}>
+            <span>Advanced Options</span>
+            <ActionIcon variant="subtle" color="gray">
+              {showAdvanced ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />}
+            </ActionIcon>
+          </div>
+        )
+      }}
     />
   );
 };

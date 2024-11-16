@@ -15,6 +15,7 @@ import './BasePanel.css';
 interface ParameterCategory {
   title: string;
   filter: (param: ParameterDefinition) => boolean;
+  isAdvanced?: boolean;
 }
 
 interface BasePanelProps {
@@ -24,6 +25,11 @@ interface BasePanelProps {
   isActive?: boolean;
   className?: string;
   categories: ParameterCategory[];
+  advancedControls?: {
+    showAdvanced: boolean;
+    setShowAdvanced: (show: boolean) => void;
+    advancedTitle: React.ReactNode;
+  };
 }
 
 // Main panel component that handles both mobile and desktop layouts
@@ -33,7 +39,8 @@ export const BasePanel: React.FC<BasePanelProps> = ({
   onParameterChange,
   isActive = false,
   className = '',
-  categories
+  categories,
+  advancedControls
 }) => {
   const [activeParamIndex, setActiveParamIndex] = useState(0);
   // Check if viewport is mobile sized
@@ -176,28 +183,21 @@ export const BasePanel: React.FC<BasePanelProps> = ({
 
   // New function to render desktop categories
   const renderDesktopContent = () => {
+    const regularCategories = categories.filter(cat => !cat.isAdvanced);
+    const advancedCategory = categories.find(cat => cat.isAdvanced);
+
     return (
       <div className="parameter-list">
-        {categories.map((category, index) => {
+        {/* Regular categories */}
+        {regularCategories.map((category, index) => {
           const categoryParams = parameters.filter(category.filter);
-          
           if (categoryParams.length === 0) return null;
-          
-          // Sort parameters: sliders first, then grid
-          const sortedParams = [...categoryParams].sort((a, b) => {
-            // If both are sliders or both are grid, maintain original order
-            if (a.type === b.type) return 0;
-            // Sliders come before grid
-            if (a.type === 'slider') return -1;
-            if (b.type === 'slider') return 1;
-            return 0;
-          });
-          
+
           return (
             <div key={index} className="parameter-section">
               <h3 className="section-title">{category.title}</h3>
               <div className="category-items">
-                {sortedParams.map(param => (
+                {categoryParams.map(param => (
                   <div key={param.id} className="parameter-item">
                     {renderParameter(param)}
                   </div>
@@ -206,6 +206,24 @@ export const BasePanel: React.FC<BasePanelProps> = ({
             </div>
           );
         })}
+
+        {/* Advanced section */}
+        {advancedCategory && (
+          <div className="advanced-section">
+            {advancedControls?.advancedTitle}
+            {advancedControls?.showAdvanced && (
+              <div className="parameter-section">
+                <div className="category-items">
+                  {parameters.filter(advancedCategory.filter).map(param => (
+                    <div key={param.id} className="parameter-item">
+                      {renderParameter(param)}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     );
   };
@@ -225,16 +243,7 @@ export const BasePanel: React.FC<BasePanelProps> = ({
         </div>
       ) : (
         // Desktop layout: either custom content or standard parameter list
-        <div className="parameter-list">
-          {renderDesktopContent ? renderDesktopContent() : 
-            sortedParameters.map(param => (
-              // Container for each parameter with unique key
-              <div key={param.id} className="parameter-item">
-                {renderParameter(param)}
-              </div>
-            ))
-          }
-        </div>
+        renderDesktopContent()
       )}
     </div>
   );

@@ -50,6 +50,9 @@ const ConfiguratorPage: React.FC = () => {
   // Add navigate function
   const navigate = useNavigate();
 
+  // Add new state for parameter values
+  const [parameterValues, setParameterValues] = useState<Record<string, string>>({});
+
   // Effect hook for debugging component lifecycle and state changes
   useEffect(() => {
     // Log when component mounts
@@ -80,7 +83,7 @@ const ConfiguratorPage: React.FC = () => {
     document.documentElement.style.setProperty('--panel-top-padding', `${padding}vh`);
   }, [isShareMenuOpen, shareMenuHeight]);
 
-  // Add handler for template selection
+  // Handle template selection
   const handleTemplateSelect = useCallback(async (templateId: string) => {
     console.log('handleTemplateSelect called with:', templateId);
     
@@ -94,16 +97,15 @@ const ConfiguratorPage: React.FC = () => {
 
     try {
       setIsLoading(true);
-      console.log('Loading template:', {
-        templateId,
-        parameters: template.parameters
-      });
-
+      
       if (viewport) {
         const token = viewport.addFlag(FLAG_TYPE.BUSY_MODE);
         try {
           // Use customize() to update all parameters at once
           await session.customize(template.parameters, true);
+          
+          // The session.parameterValues will be automatically updated after customize()
+          // No need to manually set parameter values
           
           // Update the viewport
           if (session.node) {
@@ -116,11 +118,7 @@ const ConfiguratorPage: React.FC = () => {
         }
       }
     } catch (error) {
-      console.error('Template loading error:', {
-        template,
-        error: error instanceof Error ? error.message : error,
-        currentParameters: session.parameterValues
-      });
+      console.error('Template loading error:', error);
     } finally {
       setIsLoading(false);
     }

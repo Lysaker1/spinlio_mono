@@ -7,6 +7,8 @@ import { Dropdown } from '../../ParameterTypes/Dropdown/Dropdown';
 import { ColorPicker } from '../../ParameterTypes/Colorpicker/ColorPicker';
 import { ShapeGrid } from '../../ParameterTypes/ShapeGrid/ShapeGrid';
 import { Checkbox } from '../../ParameterTypes/Checkbox/Checkbox';
+import { FileInput } from '../../ParameterTypes/FileInput/FileInput';
+import { GraphMapper } from '../../ParameterTypes/GraphMapper/GraphMapper';
 import './BasePanel.css';
 
 // Define props interface for BasePanel component
@@ -146,6 +148,24 @@ export const BasePanel: React.FC<BasePanelProps> = ({
                     definition={param}
                     value={value}
                     onChange={(newValue) => onParameterChange(newValue, param)}
+                />
+            );
+        case 'fileinput':
+            return (
+                <FileInput
+                    key={param.id}
+                    definition={param}
+                    value={parameterValues[param.id] || ''}
+                    onChange={onParameterChange}
+                />
+            );
+        case 'graphmapper':
+            return (
+                <GraphMapper
+                    key={param.id}
+                    definition={param}
+                    value={parameterValues[param.id] || ''}
+                    onChange={onParameterChange}
                 />
             );
         default:

@@ -1,3 +1,24 @@
+/**
+ * This test extracts and formats parameter values from bike model JSON files to create template configurations.
+ * 
+ * The test performs the following:
+ * 
+ * 1. Reads a bike model JSON file from the fixtures directory
+ * 2. Compares the parameters against the current parameter definitions
+ * 3. Extracts matching parameters and their values
+ * 4. Formats the output as a TypeScript object that can be used as a template
+ * 5. Includes basic statistics about how many parameters were matched
+ * 
+ * The test runs this extraction for multiple bike models:
+ * - Canyon bike
+ * - Classic road bike  
+ * - Girls bike
+ * - Canyon endurance 7
+ * 
+ * This helps generate reusable parameter templates from existing bike configurations,
+ * which can be used as starting points for new bike customizations.
+ */
+
 import { describe, test } from '@jest/globals';
 import { parameterDefinitions } from '../parameterDefinitions6';
 import * as fs from 'fs';

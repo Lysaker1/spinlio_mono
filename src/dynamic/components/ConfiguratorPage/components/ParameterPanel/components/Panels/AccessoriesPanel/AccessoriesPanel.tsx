@@ -8,6 +8,7 @@ interface AccessoriesPanelProps {
   parameterValues: { [id: string]: string };
   onParameterChange: (value: any, definition: ParameterDefinition) => void;
   isActive?: boolean;
+  
 }
 
 export const AccessoriesPanel: React.FC<AccessoriesPanelProps> = (props) => {

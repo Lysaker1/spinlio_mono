@@ -1,5 +1,23 @@
+/**
+ * This test generates new parameter definitions by merging existing parameter definitions 
+ * with updated data from a newer model configuration file.
+ * 
+ * The test performs the following:
+ * 
+ * 1. Reads parameter data from a new model JSON file (spinlio-v091.json)
+ * 2. Compares parameters against existing definitions (parameterDefinitions5)
+ * 3. For each parameter:
+ *    - If it exists: Merges with existing definition, keeping metadata but updating name/value
+ *    - If new: Creates basic definition with default category and type
+ * 4. Tracks all newly added parameters for verification
+ * 5. Writes the merged definitions to a new TypeScript file (parameterDefinitions6.ts)
+ * 
+ * This helps maintain parameter definitions as the model evolves, preserving existing
+ * metadata while incorporating new parameters and updated values.
+ */
+
 import { describe, expect, test } from '@jest/globals';
-import { parameterDefinitions as existingDefs } from '../parameterDefinitions5';
+import { parameterDefinitions as existingDefs } from '../parameterDefinitions6';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -15,9 +33,9 @@ interface ExternalConfig {
 }
 
 describe('Generate New Parameter Definitions', () => {
-  test('Generate parameter definitions from spinlio-v091.json and write to TypeScript file', () => {
+  test('Generate parameter definitions from vulz-v3.json and write to TypeScript file', () => {
     // Read the new model JSON
-    const modelPath = path.join(__dirname, '../__fixtures__/spinlio-v091.json');
+    const modelPath = path.join(__dirname, '../__fixtures__/vulz-v3.json');
     const modelData = JSON.parse(fs.readFileSync(modelPath, 'utf8')) as ExternalConfig;
 
     // Create a map of existing definitions for easy lookup

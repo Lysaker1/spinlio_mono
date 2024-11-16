@@ -1,3 +1,22 @@
+/**
+ * This test compares parameters from an external JSON configuration file with the internal parameter definitions.
+ * It performs the following validations:
+ * 
+ * 1. Checks for matching parameter IDs between external config and internal definitions
+ * 2. Identifies name mismatches for parameters with same ID
+ * 3. Finds parameters that have matching names but different IDs
+ * 4. Lists any parameters present in external config but missing from definitions
+ * 
+ * The test outputs a detailed analysis including:
+ * - Total count of parameters in both sources
+ * - Number of matching IDs
+ * - Name conflicts and mismatches
+ * - Missing parameter details
+ * 
+ * This helps validate parameter consistency between external configurations and internal definitions,
+ * which is crucial for proper parameter mapping and configuration handling.
+ */
+
 import { describe, expect, test } from '@jest/globals';
 import { parameterDefinitions } from '../parameterDefinitions6';
 import { ParameterDefinition } from '../types';
@@ -20,7 +39,7 @@ describe('Parameter Comparison Analysis', () => {
     // Read and parse the external JSON file
     const externalJson = JSON.parse(
       fs.readFileSync(
-        path.join(__dirname, '../__fixtures__/spinlio-v095-6.json'),
+        path.join(__dirname, '../__fixtures__/vulz-v3.json'),
         'utf8'
       )
     ) as ExternalConfig;

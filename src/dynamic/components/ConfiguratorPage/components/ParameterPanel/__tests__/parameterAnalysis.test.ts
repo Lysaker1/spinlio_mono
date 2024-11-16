@@ -1,3 +1,30 @@
+/**
+ * This test performs a comprehensive analysis of parameter definitions in the configurator.
+ * It generates a detailed report that includes:
+ * 
+ * 1. Overview statistics:
+ *    - Total number of parameters
+ *    - Number of parameter categories
+ * 
+ * 2. Type Distribution:
+ *    - Breakdown of parameter types (sliders, dropdowns, etc.)
+ *    - Percentage of each type
+ * 
+ * 3. Detailed Category Analysis:
+ *    - Parameters grouped by category
+ *    - Type distribution within each category
+ *    - List of all parameters with their details
+ *    - For sliders: min/max ranges and units
+ *    - For dropdowns: available options
+ *    - Average statistics for sliders and dropdowns
+ * 
+ * The test outputs a formatted report to the console and includes basic assertions
+ * to ensure the analysis contains valid data.
+ * 
+ * This analysis helps validate the parameter structure and distribution,
+ * making it easier to identify patterns, inconsistencies, or areas needing attention.
+ */
+
 import { describe, expect, test } from '@jest/globals';
 import { parameterDefinitions } from '../parameterDefinitions6';
 import { ParameterDefinition } from '../types';

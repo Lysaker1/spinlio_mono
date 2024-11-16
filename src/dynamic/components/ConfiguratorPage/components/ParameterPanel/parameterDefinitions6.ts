@@ -129,7 +129,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     name: 'Head tube angle',
     category: 'geometry',
     type: 'slider',
-    value: '72.0',
+    value: '72.1',
     min: 72,
     max: 73,
     unit: '°'
@@ -729,5 +729,142 @@ export const parameterDefinitions: ParameterDefinition[] = [
     value: 'Hey,\n\nThanks for using Spinlio! We\'ve attached the 3D file of your custom bike, she\'s a beauty! \n\nIf you have any thoughts on how we can improve Spinlio or features you\'d love to see, please reach out—we\'d love to hear from you. Your feedback helps us make Spinlio better for everyone.\n\nAll the best,\nJack & Markus\nThe Spinlio Team',
     category: 'other',
     type: 'text'
-  }
+  },
+  // New VULZ-specific parameters
+  {
+    id: '3902e965-6a81-4d91-a8c0-e65209a882a3',
+      name: 'Tube End Offset',
+      category: 'tubing',
+      type: 'slider',
+      value: '8',
+      min: 6,
+      max: 20,
+      unit: 'mm',
+      configuratorTypes: ['vulz']
+    },
+    {
+      id: 'f4a8c8c8-5f5d-4995-8d5c-fc6a89baa720',
+      name: 'DownTube DiameterPoints',
+      category: 'tubing',
+      type: 'graphmapper',
+      value: '0,0;0.1,0.5;0.5,0.9;1,1',
+      configuratorTypes: ['vulz']
+    },
+    {
+      id: 'b81e6aa3-43d2-4f12-9670-b563802985dd',
+      name: 'Upload DownTube curve Shape',
+      category: 'tubing',
+      type: 'fileinput',
+      value: '',
+      configuratorTypes: ['vulz']
+    },
+    {
+      id: '6c895932-e37c-4815-88ef-9bc7ef8520b0',
+      name: 'MatchSeatStay&TopTube',
+      category: 'accessories',
+      type: 'checkbox',
+      value: 'false'
+      // No configuratorTypes means it appears in all configurators
+    },
+    {
+      id: 'da8f6e1f-fe0a-43f1-a8c7-f7c2d27c5a4d',
+      name: 'Seat stay angle',
+      category: 'geometry',
+      type: 'slider',
+      value: '46.2',
+      min: 45,
+      max: 75,
+      unit: '°',
+      configuratorTypes: ['vulz']
+    },
+    {
+      id: '734e8f5c-4006-47e6-b84f-61df7fb0dde2',
+      name: 'TopTube CurvePoints',
+      category: 'tubing',
+      type: 'graphmapper',
+      value: '0,0;0.1,0.4;0.4,0.8;1,1',
+      configuratorTypes: ['vulz']
+    },
+    {
+      id: '67a48467-5e1f-4a63-8246-d78fc5cac650',
+      name: 'Domain start',
+      category: 'tubing',
+      type: 'slider',
+      value: '1.0',
+      min: 0,
+      max: 1,
+      configuratorTypes: ['vulz']
+    },
+    {
+      id: 'b4a6298a-e0d9-4d7d-bdf8-51db53a813f1',
+      name: 'SeatStay seatside Diameter',
+      category: 'geometry',
+      type: 'slider',
+      value: '24',
+      min: 15,
+      max: 40,
+      unit: 'mm',
+      configuratorTypes: ['vulz']
+    },
+    {
+      id: '93d72eca-25cc-4eb1-8a95-16ee449dd01d',
+      name: 'SeatStay thickness',
+      category: 'geometry',
+      type: 'slider',
+      value: '12',
+      min: 12,
+      max: 24,
+      unit: 'mm',
+      configuratorTypes: ['vulz']
+    },
+    {
+      id: '278842f7-3407-4521-bc20-ee46abf7a298',
+      name: 'ChainStay Crankside Diameter',
+      category: 'geometry',
+      type: 'slider',
+      value: '24',
+      min: 15,
+      max: 40,
+      unit: 'mm',
+      configuratorTypes: ['vulz']
+    },
+    {
+      id: '3672f35e-3592-4a50-bd73-14ab6def8e96',
+      name: 'ChainStay thickness',
+      category: 'geometry',
+      type: 'slider',
+      value: '16',
+      min: 15,
+      max: 40,
+      unit: 'mm',
+      configuratorTypes: ['vulz']
+    },
+    // {
+    //   id: 'c01258ac-67a5-4ab2-968e-e368f3391b63',
+    //   name: 'Show Pedestal',
+    //   category: 'accessories',
+    //   type: 'checkbox',
+    //   value: 'true',
+    //   configuratorTypes: ['vulz']
+    // },
+    // {
+    //   id: '0ed98865-6bd9-4d34-9c2a-6281adb138c3',
+    //   name: 'a',
+    //   category: 'accessories',
+    //   type: 'slider',
+    //   value: '40',
+    //   min: 0,
+    //   max: 100,
+    //   configuratorTypes: ['vulz']
+    // },
+    // {
+    //   id: '167d6ee2-a2c7-4bab-87c6-576ca7886fc7',
+    //   name: 't',
+    //   category: 'accessories',
+    //   type: 'slider',
+    //   value: '20',
+    //   min: 0,
+    //   max: 100,
+    //   configuratorTypes: ['vulz']
+    // }
 ];

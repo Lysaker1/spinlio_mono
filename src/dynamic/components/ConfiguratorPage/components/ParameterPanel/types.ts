@@ -9,6 +9,8 @@ export interface ParameterPanelProps {
   session: ISessionApi | null;
   // ShapeDiver viewport API instance, can be null if not initialized
   viewport: IViewportApi | null;
+  configuratorType?: 'default' | 'vulz' | 'electric'; // Add this line
+
 }
 
 // Interface defining the structure of a parameter that can be configured
@@ -24,6 +26,8 @@ export interface ParameterDefinition {
     // Current value of the parameter as a string
     value: string;
     // Optional minimum value for numeric parameters
+    configuratorTypes?: ('default' | 'vulz' | 'electric')[]; // Add this instead of tags
+
     min?: number;
     // Optional maximum value for numeric parameters
     max?: number;

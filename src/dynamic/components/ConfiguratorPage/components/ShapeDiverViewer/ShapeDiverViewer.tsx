@@ -34,12 +34,14 @@ const loadShapeDiver = async () => {
 const isMobile = window.innerWidth <= 768;
 
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader';
+import { configuratorConfigs } from '../../config/configuratorConfig';
 // Define component props interface
 interface ShapeDiverViewerProps {
   session: ISessionApi | null;
   setSession: React.Dispatch<React.SetStateAction<ISessionApi | null>>;
   setViewport: React.Dispatch<React.SetStateAction<IViewportApi | null>>;
   isLoading: boolean;
+  ticket?: string;
 }
 
 // Extend Window interface to include THREE property
@@ -71,6 +73,7 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
   setSession,
   setViewport,
   isLoading: externalLoading,
+  ticket = 'fb56400eb88a6e3af0896d90b87ee69881c284ada493a0cc22023c7843443a1129d8e0ec8df7d6489976bae37c94b54c5fd1296134de1ea5bc52fb4fa92affa89e0c32f4e85ee71361521013e796a7679834f130144f49449a6b9d0fe2a2997b3eb1921ca2e614-3c83fa0e441a5e2c873f2b3f1cd9d237'
 }) => {
   // Refs for canvas and ShapeDiver APIs
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -203,7 +206,7 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
 
           // Create new ShapeDiver session
           const newSession = await createSession({
-            ticket: 'b021787b7f9145fac66864ceadaf6f22485f7ffd343b9457be88d6dcc1c5b57b0765fef63cd9d50343c198817fe012010d1a5f5b8812711a0fc97d10b04c5acc97ec792837b9d635c2d419963acd4faec66806a4d64c72f2190ca5a9ed70771e32ee9a1eaae259-5287e488963b30e9b61b5e0132ff7e0a',
+            ticket: ticket,
             modelViewUrl: 'https://sdr8euc1.eu-central-1.shapediver.com',
             loadOutputs: true,
             waitForOutputs: true,
@@ -285,7 +288,7 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
         viewportRef.current = null;
       }
     };
-  }, [setSession, setViewport, canvasRef.current]);
+  }, [setSession, setViewport, canvasRef.current, ticket]);
 
   // Handler for AR view functionality
   const handleARView = useCallback(async () => {

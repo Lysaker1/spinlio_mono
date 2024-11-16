@@ -453,13 +453,6 @@ export const parameterDefinitions: ParameterDefinition[] = [
     tag: 'man'
   },
   // {
-  //   id: '734e8f5c-4006-47e6-b84f-61df7fb0dde2',
-  //   name: 'TopTube CurvePoints',
-  //   value: '0,0;0.1,0.4;0.4,0.8;1,1',
-  //   category: 'tubing',
-  //   type: 'graphmapper'
-  // },
-  // {
   //   id: 'cb15151e-0bb2-4895-b40d-3184fe772fe1',
   //   name: 'Derailleur color',
   //   category: 'accessories',
@@ -614,7 +607,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
     name: 'Top tube diameter points',
     value: '0,0;1,1',
     category: 'tubing',
-    type: 'graphmapper'
+    type: 'graphmapper',
+    configuratorTypes: ['vulz']
   },
   {
     id: '0c908c83-7337-42f5-896a-005f9b10f33c',

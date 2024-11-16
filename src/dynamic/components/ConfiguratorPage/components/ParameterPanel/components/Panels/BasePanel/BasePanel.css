@@ -60,22 +60,22 @@
 
 .section-title {
   color: rgba(255, 255, 255, 0.9);  /* Brighter white for better contrast */
-  font-size: 3rem;  /* Slightly larger than before */
+  font-size: 1.4rem;  /* Increased font size */
   font-weight: 600;
-  margin: 1.5rem 0 1rem 0;  /* More vertical spacing */
-  padding: 0.5rem 1rem;  /* Padding for background */
-  background: rgba(0, 0, 0, 0.314);  /* Very subtle light background */
-  border-radius: 1rem;  /* More rounded corners */
-  text-transform: uppercase;  /* Makes it look more like a header */
+  margin: 1.8rem 0 1.2rem 0;  /* Slightly larger margins */
+  padding: 0.6rem 1.2rem;  /* Increased padding */
+  background: rgba(0, 0, 0, 0.314);  /* Subtle background */
+  border-radius: 1.2rem;  /* Slightly larger radius */
+  text-transform: uppercase;  /* Keep uppercase style */
   text-align: center;
-  letter-spacing: 0.05em;  /* Slight letter spacing for readability */
+  letter-spacing: 0.05em;  /* Slight letter spacing */
   
-  /* Subtle left border for additional emphasis */
-  border-left: 2px solid rgba(255, 255, 255, 0.2);
+  /* Subtle left border for emphasis */
+  border-left: 3px solid rgba(255, 255, 255, 0.2);  /* Slightly thicker border */
   
   /* First section title needs less top margin */
   &:first-of-type {
-    margin-top: 0.5rem;
+    margin-top: 0.6rem;
   }
 }
 
@@ -186,4 +186,41 @@
   &:not(:last-child) {
     margin-bottom: 0.75rem;  /* Increased from 0.5rem */
   }
+}
+
+.advanced-section {
+  margin-top: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.advanced-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.advanced-header:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.parameter-section {
+  margin-bottom: 1.5rem;
+}
+
+.section-title {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  padding: 0 1rem;
+}
+
+.category-items {
+  padding: 0 1rem;
 }

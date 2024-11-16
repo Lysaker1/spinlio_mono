@@ -66,3 +66,24 @@
     max-height: 15vh;
   }
 }
+
+.advanced-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  font-weight: 500;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 1rem;
+}
+
+.advanced-header:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.advanced-section {
+  margin-top: auto; /* Push to bottom */
+}

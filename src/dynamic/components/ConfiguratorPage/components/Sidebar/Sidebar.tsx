@@ -82,6 +82,11 @@ const Sidebar: React.FC<SidebarProps> = ({
     navigate('/beta');
   };
 
+  const handleVulzClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate('/vulz');
+  };
+
   return (
     <div className={`left-sidebar ${isExpanded ? 'expanded' : ''}`}>
       {!isExpanded ? (
@@ -107,6 +112,12 @@ const Sidebar: React.FC<SidebarProps> = ({
             onClick={handleSettingsClick}
           >
             Settings
+          </button>
+          <button 
+            className="sidebar-button vulz-button"
+            onClick={handleVulzClick}
+          >
+            VULZ
           </button>
           {/*
           <button 

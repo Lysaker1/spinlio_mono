@@ -29,6 +29,12 @@ const BetaPage = lazy(() =>
   }))
 );
 
+const VulzConfigurator = lazy(() => 
+  import('../ConfiguratorPage/variants/VulzConfigurator/VulzConfigurator').then(module => ({
+    default: module.default
+  }))
+);
+
 const App: React.FC = () => {
   return (
     <ErrorBoundary>
@@ -137,6 +143,14 @@ const AppContent: React.FC = () => {
                 element={
                   <React.Suspense fallback={<div className="loading-placeholder" />}>
                     <BetaPage />
+                  </React.Suspense>
+                } 
+              />
+              <Route 
+                path="/vulz" 
+                element={
+                  <React.Suspense fallback={<div className="loading-placeholder" />}>
+                    <VulzConfigurator />
                   </React.Suspense>
                 } 
               />

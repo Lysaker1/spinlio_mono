@@ -27,8 +27,10 @@ import { CategoryTabs, TabType } from './components/CategoryTabs/CategoryTabs';
 
 // Component definition with TypeScript props interface
 export const ParameterPanel: React.FC<ParameterPanelProps> = ({ 
+  selectedComponent,
   session, // ShapeDiver session instance
-  viewport // ShapeDiver viewport instance
+  viewport, // ShapeDiver viewport instance
+  configuratorType = 'default'
 }) => {
 
   // State hooks for managing component data
@@ -105,6 +107,10 @@ export const ParameterPanel: React.FC<ParameterPanelProps> = ({
   // Get filtered parameters for current tab
   const getCurrentParameters = () => 
     parameterDefinitions.filter(p => p.category === activeTab);
+
+  const filteredParameters = parameterDefinitions.filter(param => 
+    !param.configuratorTypes || param.configuratorTypes.includes(configuratorType)
+  );
 
   // Return null if no session exists
   if (!session) return null;

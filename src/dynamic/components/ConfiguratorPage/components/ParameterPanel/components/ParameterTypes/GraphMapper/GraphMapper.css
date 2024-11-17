@@ -12,6 +12,12 @@
     margin-bottom: 0.75rem;
   }
   
+  .parameter-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
   .reset-button {
     background: none;
     border: none;

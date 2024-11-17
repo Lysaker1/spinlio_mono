@@ -142,7 +142,19 @@ export const parameterDefinitions: ParameterDefinition[] = [
     value: '548',
     min: 535,
     max: 555,
-    unit: 'mm'
+    unit: 'mm',
+    configuratorTypes: ['default']
+  },
+  {
+    id: '64ecfdab-39bb-4d5c-a11d-b98690404bf9',
+    name: 'Effective top tube length',
+    category: 'geometry',
+    type: 'slider',
+    value: '620',
+    min: 535,
+    max: 620,
+    unit: 'mm',
+    configuratorTypes: ['vulz']
   },
   {
     id: '09aa3a63-8d46-4b67-b87b-b4b869e5befd',
@@ -273,7 +285,19 @@ export const parameterDefinitions: ParameterDefinition[] = [
     type: 'slider',
     min: 28,
     max: 40,
-    unit: 'mm'
+    unit: 'mm',
+    configuratorTypes: ['default']
+  },
+  {
+    id: '00d82c20-556f-4710-bff6-84e43117f680',
+    name: 'Seat tube diameter',
+    value: '51',
+    category: 'geometry',
+    type: 'slider',
+    min: 28,
+    max: 55,
+    unit: 'mm',
+    configuratorTypes: ['vulz']
   },
   // {
   //   id: 'f4a8c8c8-5f5d-4995-8d5c-fc6a89baa720',
@@ -323,7 +347,21 @@ export const parameterDefinitions: ParameterDefinition[] = [
     type: 'slider',
     min: 30,
     max: 48,
-    unit: 'mm'
+    unit: 'mm',
+    configuratorTypes: ['default']
+
+  },
+  {
+    id: 'ac762528-d92e-4d5a-8c48-e364432e61e9',
+    name: 'Down tube thickness',
+    value: '74',
+    category: 'tubing',
+    type: 'slider',
+    min: 30,
+    max: 78,
+    unit: 'mm',
+    configuratorTypes: ['vulz']
+
   },
   {
     id: 'cc667ffa-3487-46e8-8b36-48ae1cd78efa',

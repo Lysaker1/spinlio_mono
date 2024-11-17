@@ -8,6 +8,7 @@ import { AboutPage } from '../../../static/components';
 import { ContactUsPage } from '..';
 import ErrorBoundary from '../../../shared/components/ErrorBoundary/ErrorBoundary';
 import { pageView } from '../../../shared/utils/analytics';
+import MobileWarning from '../../../shared/components/MobileWarning/MobileWarning';
 
 // Don't load the big 3D page right away - wait until we need it
 const ConfiguratorPage = lazy(() => 
@@ -49,10 +50,18 @@ const App: React.FC = () => {
 
 const AppContent: React.FC = () => {
   const location = useLocation();
+  const isMobile = window.innerWidth <= 768;
+  const isConfiguratorRoute = location.pathname === '/' || 
+                             location.pathname.includes('/configurator');
 
   useEffect(() => {
     pageView(location.pathname + location.search);
   }, [location]);
+
+  // If on mobile and trying to access configurator, show warning
+  if (isMobile && isConfiguratorRoute) {
+    return <MobileWarning />;
+  }
 
   // Figure out where we are on the internet
   const hostname = window.location.hostname;  // Like checking which building we're in

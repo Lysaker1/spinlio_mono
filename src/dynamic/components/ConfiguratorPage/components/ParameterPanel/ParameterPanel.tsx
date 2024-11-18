@@ -1,5 +1,5 @@
 // Import required React hooks for state management, side effects and memoization
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 // Import debounce utility to limit frequency of function calls
 import { debounce } from 'lodash';
 // Import panel components for different parameter categories
@@ -37,48 +37,59 @@ export const ParameterPanel: React.FC<ParameterPanelProps> = ({
   const [parameterValues, setParameterValues] = useState<{ [id: string]: string }>({});
   const isMobile = useMediaQuery('(max-width: 768px)');
 
-  // Initialize and sync parameter values
-  useEffect(() => {
-    if (!session) return;
-    
-    // Convert session values to strings
-    const sessionValues = Object.entries(session.parameterValues).reduce((acc, [key, value]) => ({
-      ...acc,
-      [key]: String(value)
-    }), {});
+  const prevParamValuesRef = useRef<any>(null);
 
-    setParameterValues(sessionValues);
-  }, [session, session?.parameterValues]); // Re-run when session values change
+  // Create a debounced version of the session update
+  const debouncedSessionUpdate = useCallback(
+    debounce(async (paramId: string, value: any) => {
+      if (!session) return;
 
-  // Handle parameter changes
-  const handleParameterChange = useCallback(async (value: any, definition: ParameterDefinition) => {
-    if (!session) return;
-
-    const stringValue = String(value);
-    
-    // Update local state immediately for UI responsiveness
-    setParameterValues(prev => ({
-      ...prev,
-      [definition.id]: stringValue
-    }));
-
-    try {
-      const token = viewport?.addFlag(FLAG_TYPE.BUSY_MODE);
       try {
-        await session.customize({ [definition.id]: value });
+        const token = viewport?.addFlag(FLAG_TYPE.BUSY_MODE);
+        await session.customize({ [paramId]: value });
         
         if (session.node && viewport) {
           await viewport.updateNode(session.node);
           viewport.update();
           viewport.render();
         }
-      } finally {
         if (token) viewport?.removeFlag(token);
+      } catch (error) {
+        console.error('Error updating parameter:', error);
       }
-    } catch (error) {
-      console.error('Error updating parameter:', error);
+    }, 100), // 100ms delay
+    [session, viewport]
+  );
+
+  // Handle parameter changes
+  const handleParameterChange = useCallback(async (value: any, definition: ParameterDefinition) => {
+    // Update UI immediately
+    setParameterValues(prev => ({
+      ...prev,
+      [definition.id]: String(value)
+    }));
+
+    // Debounce the actual session update
+    debouncedSessionUpdate(definition.id, value);
+  }, [debouncedSessionUpdate]);
+
+  // Modify useEffect to prevent unnecessary updates
+  useEffect(() => {
+    if (!session?.parameterValues) return;
+    
+    const newValues = Object.entries(session.parameterValues).reduce((acc, [key, value]) => ({
+      ...acc,
+      [key]: String(value)
+    }), {});
+
+    // Only update if values have actually changed
+    const currentValuesStr = JSON.stringify(parameterValues);
+    const newValuesStr = JSON.stringify(newValues);
+    
+    if (currentValuesStr !== newValuesStr) {
+      setParameterValues(newValues);
     }
-  }, [session, viewport]);
+  }, [session]);
 
   // Get filtered parameters for current tab
   const getCurrentParameters = () => {

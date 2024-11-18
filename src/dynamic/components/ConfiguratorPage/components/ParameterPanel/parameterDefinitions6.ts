@@ -130,9 +130,23 @@ export const parameterDefinitions: ParameterDefinition[] = [
     category: 'geometry',
     type: 'slider',
     value: '72.1',
-    min: 72,
-    max: 73,
-    unit: '°'
+    min: 72.0,
+    max: 73.0,
+    unit: '°',
+    configuratorTypes: ['default']
+
+  },
+  {
+    id: '98f0a457-b4e5-44ea-8e55-8577941d49ad',
+    name: 'Head tube angle',
+    category: 'geometry',
+    type: 'slider',
+    value: '70.0',
+    min: 70.0,
+    max: 74.0,
+    unit: '°',
+    configuratorTypes: ['vulz']
+
   },
   {
     id: '64ecfdab-39bb-4d5c-a11d-b98690404bf9',
@@ -242,7 +256,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     category: 'accessories',
     type: 'slider',
     value: '0.5',
-    min: 0,
+    min: 0.0,
     max: 1
   },
   {
@@ -795,7 +809,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     },
     {
       id: '6c895932-e37c-4815-88ef-9bc7ef8520b0',
-      name: 'MatchSeatStay&TopTube',
+      name: 'Match Seatstay & Top tube',
       category: 'accessories',
       type: 'checkbox',
       value: 'false'
@@ -832,7 +846,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     // },
     {
       id: 'b4a6298a-e0d9-4d7d-bdf8-51db53a813f1',
-      name: 'SeatStay seatside Diameter',
+      name: 'Seatstay seatside Diameter',
       category: 'geometry',
       type: 'slider',
       value: '24',
@@ -843,7 +857,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     },
     {
       id: '93d72eca-25cc-4eb1-8a95-16ee449dd01d',
-      name: 'SeatStay thickness',
+      name: 'Seatstay thickness',
       category: 'geometry',
       type: 'slider',
       value: '12',
@@ -854,7 +868,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     },
     {
       id: '278842f7-3407-4521-bc20-ee46abf7a298',
-      name: 'ChainStay Crankside Diameter',
+      name: 'Chainstay Crankside Diameter',
       category: 'geometry',
       type: 'slider',
       value: '24',
@@ -865,7 +879,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     },
     {
       id: '3672f35e-3592-4a50-bd73-14ab6def8e96',
-      name: 'ChainStay thickness',
+      name: 'Chainstay thickness',
       category: 'geometry',
       type: 'slider',
       value: '16',

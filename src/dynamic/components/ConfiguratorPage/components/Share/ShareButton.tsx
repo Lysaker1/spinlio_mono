@@ -1,8 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { ISessionApi, IViewportApi } from '@shapediver/viewer';
 import ShareMenu from './ShareMenu';
 import ShareIcon from './icons/ShareIcon';
 import './ShareButton.css';
+import QRCode from 'qrcode';
 
 interface ShareButtonProps {
   session: ISessionApi | null;
@@ -14,6 +15,7 @@ interface ShareButtonProps {
 const ShareButton: React.FC<ShareButtonProps> = ({ session, viewport, onMenuOpen, onMenuHeightChange }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [qrCodeCache, setQrCodeCache] = useState<string | null>(null);
 
   useEffect(() => {
     onMenuOpen(isMenuOpen);
@@ -40,6 +42,15 @@ const ShareButton: React.FC<ShareButtonProps> = ({ session, viewport, onMenuOpen
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isMenuOpen]);
+
+  const generateQRCode = useCallback(async () => {
+    if (qrCodeCache) return qrCodeCache;
+    
+    // Generate QR code only when needed
+    const qrCode = await QRCode.toDataURL(window.location.href);
+    setQrCodeCache(qrCode);
+    return qrCode;
+  }, [qrCodeCache]);
 
   return (
     <div className={`share-container ${isMenuOpen ? 'menu-open' : ''}`} ref={containerRef}>

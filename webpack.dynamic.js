@@ -39,6 +39,7 @@ module.exports = (env) => {
       default-src 'self'; 
       script-src 'self' 'unsafe-eval' 'unsafe-inline' 
         https://static.klaviyo.com
+        https://www.googletagmanager.com
         https://*.klaviyo.com
         https://*.hsforms.com 
         https://*.hubspot.com; 
@@ -50,6 +51,7 @@ module.exports = (env) => {
         https://static.klaviyo.com
         https://*.klaviyo.com
         https://*.spinlio.com 
+        https://www.google-analytics.com
         https://*.shapediver.com; 
       font-src 'self' data:
         https://static.klaviyo.com
@@ -104,7 +106,8 @@ module.exports = (env) => {
       filename: isProd ? '[name].[contenthash].js' : '[name].bundle.js',
       chunkFilename: isProd ? '[name].[contenthash].chunk.js' : '[name].chunk.js',
       publicPath: '/',
-      clean: true
+      clean: true,
+      crossOriginLoading: 'anonymous'
     },
     module: {
       rules: [
@@ -164,7 +167,7 @@ module.exports = (env) => {
         template: './public/index.html',
         templateParameters: {
           BASE_URL: isProd 
-            ? 'https://configurator.spinlio.com' 
+            ? 'https://design.spinlio.com' 
             : 'http://localhost:3001'
         },
         minify: isProd ? {
@@ -178,7 +181,13 @@ module.exports = (env) => {
           minifyJS: true,
           minifyCSS: true,
           minifyURLs: true,
-        } : false
+        } : false,
+        meta: {
+          'Content-Security-Policy': {
+            'http-equiv': 'Content-Security-Policy',
+            content: cspHeaders['Content-Security-Policy']
+          }
+        }
       }),
       new CopyWebpackPlugin({
         patterns: [
@@ -281,6 +290,8 @@ module.exports = (env) => {
       headers: {
         ...cspHeaders,
         "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+        "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization"
       },
       proxy: [
         {

@@ -130,6 +130,27 @@ const ConfiguratorPage: React.FC = () => {
     document.documentElement.style.setProperty('--share-menu-height', `${shareMenuHeight}vh`);
   }, [shareMenuHeight]);
 
+  const handlePrefabSelect = useCallback(async (prefab: BikeTemplate) => {
+    if (!session) return;
+
+    try {
+      const token = viewport?.addFlag(FLAG_TYPE.BUSY_MODE);
+      
+      // Update all parameters at once instead of one by one
+      await session.customize(prefab.parameters);
+      
+      if (session.node && viewport) {
+        await viewport.updateNode(session.node);
+        viewport.update();
+        viewport.render();
+      }
+      
+      if (token) viewport?.removeFlag(token);
+    } catch (error) {
+      console.error('Error applying prefab:', error);
+    }
+  }, [session, viewport]);
+
   // Component render
   return (
     // Wrap entire component in error boundary

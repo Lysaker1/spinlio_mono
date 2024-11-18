@@ -73,7 +73,11 @@ const AppContent: React.FC = () => {
     // If we're in testing mode (development)
     if (isDevelopment) {
       if (port === '3001') {
-        // Check for supplier route first
+        // Check for vulz route first
+        if (window.location.pathname.includes('/vulz')) {
+          return <VulzConfigurator />;
+        }
+        // Check for supplier route
         if (window.location.pathname.includes('/supplier')) {
           return <SupplierConfigurator />;
         }
@@ -89,6 +93,9 @@ const AppContent: React.FC = () => {
     
     // If we're live on the internet:
     if (hostname === 'design.spinlio.com') {
+      if (window.location.pathname.includes('/vulz')) {
+        return <VulzConfigurator />;
+      }
       if (window.location.pathname.includes('/supplier')) {
         return <SupplierConfigurator />;
       }

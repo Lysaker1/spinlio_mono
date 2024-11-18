@@ -259,7 +259,15 @@ module.exports = (env) => {
       },
       compress: true,
       port: finalEnv.PORT_DYNAMIC || 3001,
-      historyApiFallback: true,
+      historyApiFallback: {
+        disableDotRule: true,
+        rewrites: [
+          { from: /^\/vulz/, to: '/index.html' },
+          { from: /^\/supplier/, to: '/index.html' },
+          { from: /^\/configurator/, to: '/index.html' },
+          { from: /./, to: '/index.html' }
+        ]
+      },
       hot: false,
       liveReload: false,
       client: {

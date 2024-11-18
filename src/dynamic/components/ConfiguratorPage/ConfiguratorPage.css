@@ -10,6 +10,10 @@
   grid-template-rows: auto 1fr auto;
   height: 100vh;
   overflow: hidden;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
 }
 
 /* Add new left sidebar container */
@@ -43,7 +47,7 @@
 .configurator-content {
   display: flex;
   height: 100vh; /* Viewport height minus header */
-  width: 90vw; /* 90% of viewport width */
+  width: 84vw; /* 90% of viewport width */
   padding-left: 10vw; /* Space for sidebar */
   position: relative;
 
@@ -52,39 +56,41 @@
 /* 3D Viewer Container - Desktop - Contains the 3D model viewer */
 /* -------------------------------------------------- */
 .viewer-container {
-  width: 75%; /* 75% of configurator-content */
-  height: 100%;
+  width: 75%;
+  height: 100vh; /* Take full height */
   display: flex;
   justify-content: center;
   align-items: center;
-
+  overflow: hidden;
 }
 
 /* Parameter Panel Container - Desktop - Contains configuration controls */
 /* -------------------------------------------------- */
 .parameter-panel-container {
   grid-area: panel;
-  border-radius: 1.5rem; /* Rounded corners */
-  background: rgba(68, 68, 68, 0.8); /* Semi-transparent dark background */
-  backdrop-filter: blur(10px); /* Blur effect behind panel */
-  overflow: hidden; /* Clips content to rounded corners */
+  border-radius: 1.5rem;
+  background: rgba(68, 68, 68, 0.8);
+  backdrop-filter: blur(10px);
+  overflow: hidden;
 
-  position: relative;
-  width: 25%; /* Remaining 25% of configurator-content */
-  max-height: calc(85vh - var(--panel-top-padding, 15vh));
-  height: auto;
-  margin: var(--panel-top-padding, 15vh) 4vh 10vh 2vh; /* Increased right margin from 2vh to 4vh */
-  padding-right: 1vh; /* Add additional padding on the right */
-  transition: margin-top 0.3s ease;
-  z-index: 800;
+  position: fixed;
+  bottom: 2vh;
+  right: 1vh;
+  width: 25%; /* Match the width from viewer container */
+  height: 85vh; /* Increased from 35vh to 45vh */
+  margin-top: 10vh; /* Add top padding to avoid share button */
+  padding: 1rem;
+  background-color: transparent;
   display: flex;
   flex-direction: column;
+  justify-content: flex-end;
+  z-index: 100;
 }
 
 .top-right-buttons {
   position: absolute;
   top: 1.5rem;
-  right: 4vh;
+  right: 2vh;
   width: auto;
   height: 3rem;
   z-index: 900;

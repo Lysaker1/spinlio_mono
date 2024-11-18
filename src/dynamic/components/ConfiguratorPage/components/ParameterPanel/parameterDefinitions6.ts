@@ -257,7 +257,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     type: 'slider',
     value: '0.5',
     min: 0.0,
-    max: 1
+    max: 1.0
   },
   {
     id: '03c193b3-bbc9-491b-b4d5-1a2b48a4e0d1',

@@ -42,7 +42,8 @@ module.exports = (env) => {
         https://www.googletagmanager.com
         https://*.klaviyo.com
         https://*.hsforms.com 
-        https://*.hubspot.com; 
+        https://*.hubspot.com
+        https://js.hsforms.net; 
       style-src 'self' 'unsafe-inline' 
         https://static.klaviyo.com
         https://*.klaviyo.com

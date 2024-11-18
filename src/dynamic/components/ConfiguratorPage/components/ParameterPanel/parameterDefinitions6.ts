@@ -184,7 +184,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
     type: 'slider',
     min: 30,
     max: 50,
-    unit: 'mm'
+    unit: 'mm',
+    configuratorTypes: ['default']
   },
   // {
   //   id: '7dc55512-0324-4e59-8686-2c97488645ca',
@@ -218,7 +219,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
     name: 'Bottle color',
     category: 'accessories',
     type: 'color',
-    value: '0x76808285'
+    value: '0x76808285',
+    configuratorTypes: ['default']
   },
   {
     id: 'b5bf6f12-a078-4417-a4ae-d2049807178c',
@@ -275,7 +277,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
         label: 'No',
         value: '1'
       }
-    ]
+    ],
+    configuratorTypes: ['default']
   },
   {
     id: '00d82c20-556f-4710-bff6-84e43117f680',
@@ -337,7 +340,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
         label: 'Square',
         value: '5'
       }
-    ]
+    ],
+    configuratorTypes: ['default']
   },
   {
     id: 'ac762528-d92e-4d5a-8c48-e364432e61e9',
@@ -351,18 +355,17 @@ export const parameterDefinitions: ParameterDefinition[] = [
     configuratorTypes: ['default']
 
   },
-  {
-    id: 'ac762528-d92e-4d5a-8c48-e364432e61e9',
-    name: 'Down tube thickness',
-    value: '74',
-    category: 'tubing',
-    type: 'slider',
-    min: 30,
-    max: 78,
-    unit: 'mm',
-    configuratorTypes: ['vulz']
-
-  },
+  // {
+  //   id: 'ac762528-d92e-4d5a-8c48-e364432e61e9',
+  //   name: 'Down tube thickness',
+  //   value: '74',
+  //   category: 'tubing',
+  //   type: 'slider',
+  //   min: 30,
+  //   max: 78,
+  //   unit: 'mm',
+  //   configuratorTypes: ['vulz']
+  // },
   {
     id: 'cc667ffa-3487-46e8-8b36-48ae1cd78efa',
     name: 'Head tube Diameter',
@@ -763,17 +766,17 @@ export const parameterDefinitions: ParameterDefinition[] = [
     type: 'text'
   },
   // New VULZ-specific parameters
-  {
-    id: '3902e965-6a81-4d91-a8c0-e65209a882a3',
-      name: 'Tube End Offset',
-      category: 'tubing',
-      type: 'slider',
-      value: '8',
-      min: 6,
-      max: 20,
-      unit: 'mm',
-      configuratorTypes: ['vulz']
-    },
+  // {
+  //   id: '3902e965-6a81-4d91-a8c0-e65209a882a3',
+  //     name: 'Tube End Offset',
+  //     category: 'tubing',
+  //     type: 'slider',
+  //     value: '8',
+  //     min: 6,
+  //     max: 20,
+  //     unit: 'mm',
+  //     configuratorTypes: ['vulz']
+  //   },
     {
       id: 'f4a8c8c8-5f5d-4995-8d5c-fc6a89baa720',
       name: 'DownTube DiameterPoints',
@@ -817,16 +820,16 @@ export const parameterDefinitions: ParameterDefinition[] = [
       value: '0,0;0.1,0.4;0.4,0.8;1,1',
       configuratorTypes: ['vulz']
     },
-    {
-      id: '67a48467-5e1f-4a63-8246-d78fc5cac650',
-      name: 'Domain start',
-      category: 'tubing',
-      type: 'slider',
-      value: '1.0',
-      min: 0,
-      max: 1,
-      configuratorTypes: ['vulz']
-    },
+    // {
+    //   id: '67a48467-5e1f-4a63-8246-d78fc5cac650',
+    //   name: 'Domain start', 
+    //   category: 'tubing',
+    //   type: 'slider',
+    //   value: '1.0',
+    //   min: 0,
+    //   max: 1,
+    //   configuratorTypes: ['vulz']
+    // },
     {
       id: 'b4a6298a-e0d9-4d7d-bdf8-51db53a813f1',
       name: 'SeatStay seatside Diameter',

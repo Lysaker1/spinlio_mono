@@ -1,5 +1,5 @@
 // Get all the tools we need to build our app
-import React, { lazy, useEffect, useCallback } from 'react';
+import React, { lazy, useEffect, useCallback, useMemo } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { MantineProvider } from '@mantine/core';
 import { theme } from '../../../shared/theme';
@@ -67,6 +67,25 @@ const AppContent: React.FC = () => {
   const hostname = window.location.hostname;  // Like checking which building we're in
   const isDevelopment = process.env.NODE_ENV === 'development';  // Are we testing or for real?
   const port = window.location.port;  // Which door are we using?
+  
+  // Add this new function to check if we're on a configurator page
+  const isConfiguratorPage = useMemo(() => {
+    const isDesignDomain = hostname === 'design.spinlio.com';
+    const isDesignLocal = isDevelopment && port === '3001';
+    return isDesignDomain || isDesignLocal;
+  }, [hostname, isDevelopment, port]);
+
+  // Add this effect to handle scrolling
+  useEffect(() => {
+    if (isConfiguratorPage) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [isConfiguratorPage]);
   
   // This is like a bouncer that decides which room to let you into
   const getMainComponent = useCallback(() => {
@@ -176,7 +195,7 @@ const AppContent: React.FC = () => {
               <Route path="*" element={<Navigate to="/" />} />  {/* If lost, go home */}
             </Routes>
           </main>
-          <Footer />  {/* The bottom bar */}
+          {!isConfiguratorPage && <Footer />}
         </div>
       </MantineProvider>
     </ErrorBoundary>

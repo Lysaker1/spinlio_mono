@@ -62,6 +62,7 @@ export const TubingPanel: React.FC<TubingPanelProps> = (props) => {
         param.type !== 'fileinput'
     },
     // Advanced section for graph mappers and file upload
+    /* Temporarily hide advanced section
     {
       title: "Advanced",
       filter: (param: ParameterDefinition) => 
@@ -69,6 +70,7 @@ export const TubingPanel: React.FC<TubingPanelProps> = (props) => {
         (param.type === 'graphmapper' || param.type === 'fileinput'),
       isAdvanced: true
     }
+    */
   ];
 
   return (
@@ -76,6 +78,7 @@ export const TubingPanel: React.FC<TubingPanelProps> = (props) => {
       {...props}
       className="tubing-panel"
       categories={categories}
+      /* Temporarily hide advanced controls
       advancedControls={{
         showAdvanced,
         setShowAdvanced,
@@ -88,6 +91,7 @@ export const TubingPanel: React.FC<TubingPanelProps> = (props) => {
           </div>
         )
       }}
+      */
     />
   );
 };

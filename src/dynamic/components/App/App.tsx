@@ -9,6 +9,7 @@ import { ContactUsPage } from '..';
 import ErrorBoundary from '../../../shared/components/ErrorBoundary/ErrorBoundary';
 import { pageView } from '../../../shared/utils/analytics';
 import MobileWarning from '../../../shared/components/MobileWarning/MobileWarning';
+import { Toaster } from 'react-hot-toast';
 
 // Don't load the big 3D page right away - wait until we need it
 const ConfiguratorPage = lazy(() => 
@@ -198,6 +199,7 @@ const AppContent: React.FC = () => {
           {!isConfiguratorPage && <Footer />}
         </div>
       </MantineProvider>
+      <Toaster position="top-right" />
     </ErrorBoundary>
   );
 };

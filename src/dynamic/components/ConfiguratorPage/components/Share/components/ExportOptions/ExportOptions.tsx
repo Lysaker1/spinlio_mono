@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ISessionApi, IViewportApi } from '@shapediver/viewer';
+import { ISessionApi, IParameterApi, IViewportApi } from '@shapediver/viewer';
 import { sendNotification } from '../../../../../../utils/exportUtils';
 import FileTypeSelect from './FileTypeSelect';
 import './ExportOptions.css';
@@ -47,44 +47,59 @@ const ExportOptions: React.FC<ExportOptionsProps> = ({ onBack, session }) => {
       sendNotification('Export Error', 'No active session');
       return;
     }
-
+  
     setIsLoading(true);
     try {
+      // First update the client info parameters
+      const nameParam = session.getParameterByName('Client name')?.[0];
+      const emailParam = session.getParameterByName('Client Email')?.[0];
+  
+      if (nameParam) {
+        nameParam.value = name;
+      }
+      if (emailParam && email) {
+        emailParam.value = email;
+      }
+  
+      // Get the correct export based on method and format
       const exportName = exportMethod === 'DOWNLOAD'
         ? `Download ${selectedFormat} File`
         : `Email ${selectedFormat} File`;
-
-      const exportObject = session.getExportByName(exportName)[0];
+  
+      const exportObject = session.getExportByName(exportName)?.[0];
       if (!exportObject) {
         sendNotification('Export Error', 'Export format not available');
         return;
       }
-
-      const exportParams = exportMethod === 'EMAIL' ? { email } : {};
-      const result = await exportObject.request(exportParams);
-
+  
+      // Request the export with proper parameters
+      const exportParams = exportMethod === 'EMAIL' 
+        ? { 
+            email,
+            filename: `bike_${name.replace(/\s+/g, '_')}` // Add name to filename
+          } 
+        : {
+            filename: `bike_${name.replace(/\s+/g, '_')}` // Add name to filename
+          };
+  
+      const result = await exportObject.request({
+        parameters: exportParams
+      });
+  
+      // Rest of your existing success/error handling...
       if (exportMethod === 'DOWNLOAD') {
-        if (result.content && result.content[0]) {
+        if (result.content?.[0]) {
           const { href, format } = result.content[0];
-          const filename = `${result.filename || 'model'}.${format}`;
-
           const link = document.createElement('a');
           link.href = href;
-          link.download = filename;
+          link.download = `bike_${name.replace(/\s+/g, '_')}.${format.toLowerCase()}`;
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
-
           sendNotification('Export Success', `${selectedFormat} file downloaded successfully`);
-        } else {
-          sendNotification('Export Failed', 'No download URL received');
         }
-      } else if (exportMethod === 'EMAIL') {
-        if (result.msg === 'success') {
-          sendNotification('Export Success', `The ${selectedFormat} file will be sent to ${email}`);
-        } else {
-          sendNotification('Export Failed', 'Failed to send email');
-        }
+      } else {
+        sendNotification('Export Success', `The ${selectedFormat} file will be sent to ${email}`);
       }
     } catch (error) {
       console.error('Error during export:', error);

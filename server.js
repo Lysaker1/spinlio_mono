@@ -255,12 +255,30 @@ app.get('/favicon.ico', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist/dynamic/assets/icons/favicon.ico'));
 });
 
+app.use((req, res, next) => {
+  if (req.hostname === 'configurator.spinlio.com') {
+    console.log(`Redirecting from configurator to design: ${req.path}`);
+    return res.redirect(301, `https://design.spinlio.com${req.path}`);
+  }
+  next();
+});
+
+// Simple catch-all route that serves index.html
 // Simple catch-all route that serves index.html
 app.get('*', (req, res) => {
-  if (req.path !== '/' && req.path !== '/about') {
-    return res.redirect('/');
+  // Allow direct access to these routes
+  const allowedRoutes = ['/', '/about', '/vulz', '/supplier', '/configurator', '/contact'];
+  
+  // Log the incoming request
+  console.log('Incoming request path:', req.path);
+  
+  // If it's an allowed route or we're on design.spinlio.com, serve the app
+  if (allowedRoutes.includes(req.path) || req.hostname === 'design.spinlio.com') {
+    return res.sendFile(path.join(__dirname, 'dist/dynamic', 'index.html'));
   }
-  res.sendFile(path.join(__dirname, 'dist/dynamic', 'index.html'));
+  
+  // Otherwise redirect to root
+  res.redirect('/');
 });
 
 // Error handling middleware
@@ -269,14 +287,7 @@ app.use((err, req, res, next) => {
   res.status(500).send('Something broke!');
 });
 
-app.use((req, res, next) => {
-  if (req.hostname === 'configurator.spinlio.com') {
-    console.log(`Redirecting from configurator to design: ${req.path}`);
 
-    return res.redirect(301, `https://design.spinlio.com${req.path}`);
-  }
-  next();
-});
 
 const setupServer = () => {
   return app;

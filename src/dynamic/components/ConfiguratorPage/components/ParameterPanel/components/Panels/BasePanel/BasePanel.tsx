@@ -93,11 +93,28 @@ export const BasePanel: React.FC<BasePanelProps> = ({
 
   // Centralized parameter rendering logic
   const renderParameter = (param: ParameterDefinition) => {
+    // If parameter is disabled, don't render it
     if (param.disabled) {
-        return null;
+      return null;
     }
 
     const value = parameterValues[param.id];
+
+    // Special case for "Tube Color"
+    if (param.id === '56fa370a-8b83-4bd6-979f-1e0897faac3') { // Use the correct ID for the Tube Color parameter
+        const colorValue = getColorFromValue(value); // Get the hex color based on the value
+        return (
+            <ColorPicker
+                definition={param}
+                value={colorValue} // Use the hex color
+                onChange={(newValue) => {
+                    // Map the new color back to the corresponding value
+                    const newColorValue = Object.keys(colorPalette).find(key => colorPalette[key].hex === newValue) || '5'; // Default to '5' if not found
+                    onParameterChange(newColorValue, param);
+                }}
+            />
+        );
+    }
 
     switch(param.type) {
         case 'slider':
@@ -117,20 +134,6 @@ export const BasePanel: React.FC<BasePanelProps> = ({
                 />
             );
         case 'color':
-            if (param.id === '56fa370a-8b83-4bd6-979f-1e0897faac3') {
-                const colorValue = getColorFromValue(value);
-                return (
-                    <ColorPicker
-                        definition={param}
-                        value={colorValue}
-                        onChange={(newValue) => {
-                            const newColorValue = Object.keys(colorPalette)
-                                .find(key => colorPalette[key].hex === newValue) || '5';
-                            onParameterChange(newColorValue, param);
-                        }}
-                    />
-                );
-            }
             return (
                 <ColorPicker
                     definition={param}

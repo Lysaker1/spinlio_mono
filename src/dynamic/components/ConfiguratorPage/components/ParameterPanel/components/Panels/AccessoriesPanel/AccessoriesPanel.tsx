@@ -44,7 +44,8 @@ export const AccessoriesPanel: React.FC<AccessoriesPanelProps> = (props) => {
         param.category === 'accessories' && 
         (param.name.toLowerCase().includes('spacing') || 
          param.name.toLowerCase().includes('rim') ||
-         param.name.toLowerCase().includes('tire'))
+         param.name.toLowerCase().includes('tire')) ||
+         param.name.toLowerCase().includes('spoke')
     },
     {
       title: "Bottle Mounts",
@@ -60,7 +61,9 @@ export const AccessoriesPanel: React.FC<AccessoriesPanelProps> = (props) => {
         !param.name.toLowerCase().includes('disk brake') &&
         !param.name.toLowerCase().includes('spacing') &&
         !param.name.toLowerCase().includes('rim') &&
-        !param.name.toLowerCase().includes('bottle')
+        !param.name.toLowerCase().includes('bottle') &&
+        !param.name.toLowerCase().includes('spoke') &&
+        !param.name.toLowerCase().includes('tire')
     }
   ];
 

@@ -1,13 +1,13 @@
 import { ParameterDefinition } from './types';
 
 export const parameterDefinitions: ParameterDefinition[] = [
-  {
-    id: '7088e5a1-f07f-49c3-b1f6-98e74ae3734c',
-    name: 'Show Dimensions',
-    category: 'geometry',
-    type: 'checkbox',
-    value: 'false'
-  },
+  // {
+  //   id: '7088e5a1-f07f-49c3-b1f6-98e74ae3734c',
+  //   name: 'Show Dimensions',
+  //   category: 'geometry',
+  //   type: 'checkbox',
+  //   value: 'false'
+  // },
   {
     id: 'eea4374e-a513-4f61-924a-f8175351fa8b',
     name: 'Stack height',
@@ -40,7 +40,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: 'c4d4c978-5b58-49ce-a567-739894dc5d36',
-    name: 'Top tube end diameter',
+    name: 'Top Tube Rear Width',
     value: '37',
     category: 'tubing',
     type: 'slider',
@@ -150,7 +150,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '64ecfdab-39bb-4d5c-a11d-b98690404bf9',
-    name: 'Effective top tube length',
+    name: 'Top tube length',
     category: 'geometry',
     type: 'slider',
     value: '548',
@@ -180,19 +180,19 @@ export const parameterDefinitions: ParameterDefinition[] = [
     max: 75,
     unit: '°'
   },
-  // {
-  //   id: '3902e965-6a81-4d91-a8c0-e65209a882a3',
-  //   name: 'Meta-tube Diameter',
-  //   value: '16',
-  //   category: 'tubing',
-  //   type: 'slider',
-  //   min: 15,
-  //   max: 40,
-  //   unit: 'mm'
-  // },
+  {
+    id: '3902e965-6a81-4d91-a8c0-e65209a882a3',
+    name: 'Rear-Triangle Tubing Diameter',
+    value: '16',
+    category: 'geometry',
+    type: 'slider',
+    min: 15,
+    max: 40,
+    unit: 'mm'
+  },
   {
     id: '4ec438ea-a490-434b-82ea-88f84f67f6b7',
-    name: 'Down tube start diameter',
+    name: 'Down Tube Front Width',
     value: '38',
     category: 'tubing',
     type: 'slider',
@@ -359,7 +359,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: 'ac762528-d92e-4d5a-8c48-e364432e61e9',
-    name: 'Down tube end diameter',
+    name: 'Down Tube Rear Width',
     value: '41',
     category: 'tubing',
     type: 'slider',
@@ -481,7 +481,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: 'f0f25a06-82aa-4584-b4ab-2f39c4e71651',
-    name: 'Top tube start diameter',
+    name: 'Top Tube Front Width',
     value: '30',
     category: 'tubing',
     type: 'slider',

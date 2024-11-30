@@ -160,17 +160,6 @@ const Sidebar: React.FC<SidebarProps> = ({
                 value={showOnlyFrame.toString()}
                 onChange={handleShowOnlyFrameChange}
               />
-              <Checkbox
-                definition={{
-                  id: '7088e5a1-f07f-49c3-b1f6-98e74ae3734c',
-                  name: 'Show Dimensions',
-                  type: 'checkbox',
-                  category: 'geometry',
-                  value: showDimensions.toString()
-                }}
-                value={showDimensions.toString()}
-                onChange={handleShowDimensionsChange}
-              />
             </div>
           )}
         </>

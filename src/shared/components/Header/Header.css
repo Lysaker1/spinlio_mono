@@ -3,7 +3,6 @@
   top: 0;
   left: 0;
   right: 0;
-  z-index: 1000;
   padding: 10px;
   /* Remove any background effects from the header wrapper */
   background: transparent;
@@ -12,7 +11,6 @@
 .header-content {
   display: flex;
   height: 2rem;
-  padding: 0.75rem 1rem;
   align-items: center;
   gap: 0.5rem;
   margin: 0 auto;
@@ -21,13 +19,11 @@
   background: rgba(0, 0, 0, 0.40);
   backdrop-filter: blur(50px);
   -webkit-backdrop-filter: blur(50px);
-  max-width: 900px;
-  width: 40%;
+  max-width: 500px;
   /* Contain the backdrop effect */
   transform: translateZ(0);
   isolation: isolate;
-  padding: 0.75rem 1.5rem; /* Increased horizontal padding */
-
+  padding: 0.75rem 1.5rem;
 }
 
 .logo {
@@ -50,7 +46,7 @@
 .nav-links a {
   display: flex;
   height: 2rem;
-  padding: 0.75rem 1rem;
+  padding: 0 1rem;
   align-items: center;
   gap: 0.5rem;
   color: #FFF;

@@ -18,13 +18,16 @@ const VulzConfigurator: React.FC = () => {
   const [isShareMenuOpen, setIsShareMenuOpen] = useState(false);
   const [shareMenuHeight, setShareMenuHeight] = useState<number>(15);
   const navigate = useNavigate();
+  const [showOnlyFrame, setShowOnlyFrame] = useState(false);
+  const [showDimensions, setShowDimensions] = useState(false);
+
 
   const handleTemplateSelect = useCallback(async (templateId: string) => {
     console.log('handleTemplateSelect called with:', templateId);
-    
+
     const template = vulzBikeTemplates.find((t: BikeTemplate) => t.id === templateId);
     console.log('Found template:', template);
-    
+
     if (!template || !session) {
       console.log('Early return - template or session missing:', { template, hasSession: !!session });
       return;
@@ -41,7 +44,7 @@ const VulzConfigurator: React.FC = () => {
         const token = viewport.addFlag(FLAG_TYPE.BUSY_MODE);
         try {
           await session.customize(template.parameters, true);
-          
+
           if (session.node) {
             await viewport.updateNode(session.node);
             viewport.update();
@@ -61,14 +64,18 @@ const VulzConfigurator: React.FC = () => {
   return (
     <ErrorBoundary>
       <div className="configurator-page vulz">
-        <VulzSidebar 
+        <VulzSidebar
           onTemplateSelect={handleTemplateSelect}
           session={session}
+          showOnlyFrame={showOnlyFrame}
+          showDimensions={showDimensions}
+          onShowOnlyFrameChange={setShowOnlyFrame}
+          onShowDimensionsChange={setShowDimensions}
         />
-        
+
         <div className="top-right-buttons">
-          <ShareButton 
-            session={session} 
+          <ShareButton
+            session={session}
             viewport={viewport}
             onMenuOpen={setIsShareMenuOpen}
             onMenuHeightChange={setShareMenuHeight}
@@ -81,13 +88,13 @@ const VulzConfigurator: React.FC = () => {
               <ShapeDiverViewer
                 session={session}
                 setSession={setSession}
-                setViewport={setViewport} 
+                setViewport={setViewport}
                 isLoading={isLoading}
                 ticket={configuratorConfigs.vulz.ticket}
               />
             </Suspense>
           </div>
-          
+
           <div className={`parameter-panel-container ${isShareMenuOpen ? 'share-open' : ''}`}>
             <Suspense fallback={null}>
               <ParameterPanel

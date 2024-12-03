@@ -54,15 +54,15 @@ const ShareButton: React.FC<ShareButtonProps> = ({ session, viewport, onMenuOpen
 
   return (
     <div className={`share-container ${isMenuOpen ? 'menu-open' : ''}`} ref={containerRef}>
-      <button 
+      <button
         className="share-button"
         onClick={handleClick}
       >
         <ShareIcon />
-        Share
+        <p className="share-button-text">Share</p>
       </button>
       {isMenuOpen && (
-        <ShareMenu 
+        <ShareMenu
           onClose={() => setIsMenuOpen(false)}
           session={session}
           viewport={viewport}

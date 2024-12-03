@@ -100,9 +100,8 @@
 
 /* When share menu is open, adjust panel position */
 .parameter-panel-container.share-open {
-  transform: translateY(var(--share-menu-height, 0px));
+  transform: translateY(calc(var(--share-menu-height, 0px) - 6vh));
 }
-
 /* Mobile Layout - Adjustments for smaller screens */
 /* -------------------------------------------------- */
 @media screen and (max-width: 768px) {

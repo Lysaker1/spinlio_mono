@@ -47,7 +47,7 @@
 .configurator-content {
   display: flex;
   height: 100vh; /* Viewport height minus header */
-  width: 84vw; /* 90% of viewport width */
+  width: 100vw; /* 90% of viewport width */
   padding-left: 10vw; /* Space for sidebar */
   position: relative;
 

@@ -1,14 +1,11 @@
 import React from 'react';
 
 const ARIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M3 7V17C3 18.1046 3.89543 19 5 19H19C20.1046 19 21 18.1046 21 17V7C21 5.89543 20.1046 5 19 5H5C3.89543 5 3 5.89543 3 7Z" 
-          stroke="currentColor" strokeWidth="1.5"/>
-    <path d="M7.5 10L9.5 14M9.5 14L11.5 10M9.5 14L7.5 14M9.5 14L11.5 14" 
-          stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M13 10V14M13 14L16 14M13 12H15.5" 
-          stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
+    <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" clip-rule="evenodd"
+              d="M12.5899 3.09975C12.8115 2.96675 13.0885 2.96675 13.3101 3.09975L20.8101 7.59975C21.021 7.72626 21.15 7.95412 21.15 8.2V16.7C21.15 16.9459 21.021 17.1737 20.8101 17.3002L13.3101 21.8002C13.0993 21.9268 12.8375 21.9334 12.6206 21.8176L5.12059 17.8176C4.89248 17.696 4.75 17.4585 4.75 17.2V8.2C4.75 7.95412 4.87901 7.72626 5.08985 7.59975L12.5899 3.09975ZM6.15 9.43633L12.25 13.0963V20.0333L6.15 16.78V9.43633ZM13.65 19.9637L19.75 16.3037V9.62051L13.65 13.1062V19.9637ZM12.9586 11.8888L19.2478 8.29502L12.95 4.51633L6.81056 8.2L12.9586 11.8888Z"
+              fill="white"/>
+    </svg>
 );
 
 export default ARIcon;

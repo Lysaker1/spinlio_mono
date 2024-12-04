@@ -4,6 +4,7 @@ import ShareMenu from './ShareMenu';
 import ShareIcon from './icons/ShareIcon';
 import './ShareButton.css';
 import QRCode from 'qrcode';
+import ARIcon from "@dynamic/components/ConfiguratorPage/components/Share/icons/ARIcon";
 
 interface ShareButtonProps {
   session: ISessionApi | null;
@@ -45,7 +46,7 @@ const ShareButton: React.FC<ShareButtonProps> = ({ session, viewport, onMenuOpen
 
   const generateQRCode = useCallback(async () => {
     if (qrCodeCache) return qrCodeCache;
-    
+
     // Generate QR code only when needed
     const qrCode = await QRCode.toDataURL(window.location.href);
     setQrCodeCache(qrCode);
@@ -53,23 +54,28 @@ const ShareButton: React.FC<ShareButtonProps> = ({ session, viewport, onMenuOpen
   }, [qrCodeCache]);
 
   return (
-    <div className={`share-container ${isMenuOpen ? 'menu-open' : ''}`} ref={containerRef}>
-      <button
-        className="share-button"
-        onClick={handleClick}
-      >
-        <ShareIcon />
-        <p className="share-button-text">Share</p>
-      </button>
-      {isMenuOpen && (
-        <ShareMenu
-          onClose={() => setIsMenuOpen(false)}
-          session={session}
-          viewport={viewport}
-          onHeightChange={onMenuHeightChange}
-        />
-      )}
-    </div>
+      <div className={`share-container ${isMenuOpen ? 'menu-open' : ''}`} ref={containerRef}>
+
+        <div className="share-button-container">
+          <button
+              className="share-button"
+              onClick={handleClick}
+          >
+            <p className="share-button-text">Share</p>
+            <ShareIcon/>
+          </button>
+        </div>
+
+
+        {isMenuOpen && (
+            <ShareMenu
+                onClose={() => setIsMenuOpen(false)}
+                session={session}
+                viewport={viewport}
+                onHeightChange={onMenuHeightChange}
+            />
+        )}
+      </div>
   );
 };
 

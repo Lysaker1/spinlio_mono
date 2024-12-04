@@ -1,9 +1,10 @@
 .share-menu {
-  width: 220px; /* Fixed width for consistency */
-  background: rgba(55, 53, 53, 0.90);
+  width: 19em;
+  background: #595959;
   border-radius: 1rem;
   backdrop-filter: blur(10px);
-  animation: menuAppear 0.2s ease;
+  animation: menuAppear 0.5s ease;
+  border: 1px solid #6a6a6a;
   position: absolute;
   top: 0;  /* Align with share button */
   right: 0; /* Align with share button */
@@ -58,17 +59,33 @@
 
 .share-title {
   color: white;
-  font-size: 1rem;
+  font-size: 1.5rem;
   font-weight: 500;
-  margin: 0 0 0.75rem 0;
-  text-align: center;
+  margin: 0 0 0.5rem 0;
+  text-align: left;
 }
 
 .share-options {
+  justify-content: space-between;
   display: flex;
   gap: 0.75rem;
-  padding: 0.5rem 0;
 }
+.share-option-button-container-ar {
+  width: 50%;
+  background: linear-gradient(to top, #494949, #777777);
+  border-radius: 2rem;
+  padding: 1px;
+  display: inline-block;
+}
+
+.share-option-button-container-export {
+  width: 50%;
+  background: linear-gradient(to top, #6c6c6c, #a7a7a7);
+  border-radius: 2rem;
+  padding: 1px;
+  display: inline-block;
+}
+
 
 .share-option-button {
   flex: 1;
@@ -76,14 +93,24 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  background: rgba(60, 60, 60, 0.95);
+  position: relative;
   border: none;
-  border-radius: 0.75rem;
-  padding: 0.75rem;
+  border-radius: 2rem;
+  padding: 0.5rem 1rem;
   color: white;
   font-size: 0.875rem;
   cursor: pointer;
+  width: 100%;
+  background: #000;
   transition: background 0.2s ease;
+}
+
+.share-button-ar {
+   background: #343434;
+}
+
+.share-button-export {
+  background: #787878;
 }
 
 .share-option-button:hover {
@@ -117,4 +144,4 @@
 .share-input::placeholder {
   color: rgba(255, 255, 255, 0.5);
 }
- 
+

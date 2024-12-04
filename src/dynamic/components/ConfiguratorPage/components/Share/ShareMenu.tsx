@@ -32,33 +32,37 @@ const ShareMenu: React.FC<ShareMenuProps> = ({ onClose, session, viewport, onHei
         <>
           <h3 className="share-title">Share this bike</h3>
           <div className="share-options">
-            <button 
-              className="share-option-button"
-              onClick={() => setActiveView('ar')}
+            <div className="share-option-button-container-ar">
+              <button
+                  className="share-option-button share-button-ar"
+                  onClick={() => setActiveView('ar')}
+              >
+                <ARIcon/>
+                AR
+              </button>
+            </div>
+            <div className="share-option-button-container-export">
+            <button
+                className="share-option-button share-button-export"
+                onClick={() => setActiveView('export')}
             >
-              <ARIcon />
-              AR
-            </button>
-            <button 
-              className="share-option-button"
-              onClick={() => setActiveView('export')}
-            >
-              <ExportIcon />
+              <ExportIcon/>
               Export
             </button>
+            </div>
           </div>
         </>
       )}
-      
+
       {activeView === 'ar' && (
-        <ARPreview 
-          onBack={() => setActiveView('main')} 
-          viewport={viewport}
-        />
+          <ARPreview
+              onBack={() => setActiveView('main')}
+              viewport={viewport}
+          />
       )}
-      
+
       {activeView === 'export' && (
-        <ExportOptions 
+        <ExportOptions
           onBack={() => setActiveView('main')}
           session={session}
           viewport={viewport}

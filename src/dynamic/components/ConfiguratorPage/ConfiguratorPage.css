@@ -2,7 +2,7 @@
 /* -------------------------------------------------- */
 .configurator-page {
   display: grid;
-  grid-template-areas: 
+  grid-template-areas:
     "sidebar header"
     "sidebar viewer"
     "sidebar panel";
@@ -76,7 +76,7 @@
   position: fixed;
   bottom: 2vh;
   right: 1vh;
-  width: 25%; /* Match the width from viewer container */
+  width: 22em; /* Match the width from viewer container */
   height: 85vh; /* Increased from 35vh to 45vh */
   margin-top: 10vh; /* Add top padding to avoid share button */
   padding: 1rem;
@@ -92,15 +92,14 @@
   top: 1.5rem;
   right: 2vh;
   width: auto;
-  height: 3rem;
   z-index: 900;
   pointer-events: all;
-  background: rgba(0, 0, 255, 0.3); /* Temporary blue background */
 }
 
 /* When share menu is open, adjust panel position */
 .parameter-panel-container.share-open {
   transform: translateY(calc(var(--share-menu-height, 0px) - 6vh));
+  transition: transform 0.5s ease;
 }
 /* Mobile Layout - Adjustments for smaller screens */
 /* -------------------------------------------------- */
@@ -131,7 +130,7 @@
     z-index: 100; /* Controls stacking order - higher values appear on top of lower values. Set to 100 to ensure panel appears above viewer (z-index: 1) but below navigation (z-index: 101) and options (z-index: 102) */
   }
 
- 
+
   /* Safe area adjustments for notched devices */
   @supports (padding: max(0px)) {
     .category-navigation {

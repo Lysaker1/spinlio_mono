@@ -2,7 +2,7 @@
 /* -------------------------------------------------- */
 .configurator-page {
   display: grid;
-  grid-template-areas: 
+  grid-template-areas:
     "sidebar header"
     "sidebar viewer"
     "sidebar panel";
@@ -29,7 +29,7 @@
   z-index: 900;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1rem;
 }
 
 /* Adjust supplier button for new layout */
@@ -131,7 +131,7 @@
     z-index: 100; /* Controls stacking order - higher values appear on top of lower values. Set to 100 to ensure panel appears above viewer (z-index: 1) but below navigation (z-index: 101) and options (z-index: 102) */
   }
 
- 
+
   /* Safe area adjustments for notched devices */
   @supports (padding: max(0px)) {
     .category-navigation {

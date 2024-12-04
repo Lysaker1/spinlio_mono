@@ -11,10 +11,9 @@ interface ExportOptionsProps {
   onBack: () => void;
   session: ISessionApi | null;
   viewport: IViewportApi | null;
-  onParameterChange: (value: any, parameter: IParameterApi<any>) => void;
 }
 
-const ExportOptions: React.FC<ExportOptionsProps> = ({ onBack, session, onParameterChange }) => {
+const ExportOptions: React.FC<ExportOptionsProps> = ({ onBack, session,viewport }) => {
   const [selectedFormat, setSelectedFormat] = useState<FileFormat>('OBJ');
   const [exportMethod, setExportMethod] = useState<ExportMethod>('DOWNLOAD');
   const [email, setEmail] = useState<string>('');
@@ -65,13 +64,13 @@ const ExportOptions: React.FC<ExportOptionsProps> = ({ onBack, session, onParame
       if (exportMethod === 'DOWNLOAD') {
         const exportName = `Download ${selectedFormat} File`;
         console.log('Requesting download export:', exportName);
-        
+
         const exportObject = Object.values(session.exports).find(
           (exp: IExportApi) => exp.name === exportName
         );
 
         if (!exportObject) {
-          console.error('Available export names:', 
+          console.error('Available export names:',
             Object.values(session.exports).map((exp: IExportApi) => exp.name)
           );
           sendNotification('Export Error', 'Export format not available');
@@ -98,7 +97,7 @@ const ExportOptions: React.FC<ExportOptionsProps> = ({ onBack, session, onParame
         // For email exports, we don't need to match the format name
         // We just use the specific export names defined in ShapeDiver
         console.log('Requesting email exports...');
-        
+
         const clientExport = Object.values(session.exports).find(
           (exp: IExportApi) => exp.name === "Client Email Export"
         );
@@ -107,7 +106,7 @@ const ExportOptions: React.FC<ExportOptionsProps> = ({ onBack, session, onParame
         );
 
         if (!clientExport || !ownerExport) {
-          console.error('Available export names:', 
+          console.error('Available export names:',
             Object.values(session.exports).map((exp: IExportApi) => exp.name)
           );
           sendNotification('Export Error', 'Email export not available');

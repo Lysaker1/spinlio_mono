@@ -75,12 +75,10 @@
 
   position: fixed;
   bottom: 2vh;
-  right: 1vh;
+  right: 3vh;
   width: 22em; /* Match the width from viewer container */
   height: 85vh; /* Increased from 35vh to 45vh */
   margin-top: 10vh; /* Add top padding to avoid share button */
-  padding: 1rem;
-  background-color: transparent;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -98,7 +96,7 @@
 
 /* When share menu is open, adjust panel position */
 .parameter-panel-container.share-open {
-  transform: translateY(calc(var(--share-menu-height, 0px) - 6vh));
+  transform: translateY(calc(var(--share-menu-height, 0px) - 5vh));
   transition: transform 0.5s ease;
 }
 /* Mobile Layout - Adjustments for smaller screens */

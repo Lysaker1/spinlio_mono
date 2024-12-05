@@ -35,10 +35,10 @@ export const Slider: React.FC<SliderProps> = ({
     const clientX = 'touches' in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
     const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
     const percentage = x / rect.width;
-    
+
     const range = definition.max! - definition.min!;
     const rawValue = definition.min! + (range * percentage);
-    
+
     // Use float values only if the initial value was a float
     const newValue = isFloat ? Number(rawValue.toFixed(1)) : Math.round(rawValue);
     onChange(newValue, definition);
@@ -69,7 +69,7 @@ export const Slider: React.FC<SliderProps> = ({
         </span>
       </div>
 
-      <div 
+      <div
         className="slider-control"
         onMouseDown={(e) => {
           setIsDragging(true);
@@ -83,14 +83,14 @@ export const Slider: React.FC<SliderProps> = ({
         onTouchMove={(e) => isDragging && handleInteraction(e)}
       >
         <div className="slider-track">
-          <div 
+          <div
             className={`slider-fill ${isDragging ? 'active' : ''}`}
             style={{ width: `${calculatePosition(Number(value))}%` }}
           />
         </div>
-        <div 
+        <div
           className={`slider-thumb ${isDragging ? 'active' : ''}`}
-          style={{ left: `${calculatePosition(Number(value))}%` }}
+          style={{ left: `${calculatePosition(Number(value)) - 1}%` }}
         />
       </div>
 

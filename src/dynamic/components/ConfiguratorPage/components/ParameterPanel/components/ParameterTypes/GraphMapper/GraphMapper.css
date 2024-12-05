@@ -4,20 +4,13 @@
     background: rgba(255, 255, 255, 0.05);
     border-radius: 0.75rem;
   }
-  
-  .parameter-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.75rem;
-  }
-  
+
   .parameter-controls {
     display: flex;
     align-items: center;
     gap: 0.5rem;
   }
-  
+
   .reset-button {
     background: none;
     border: none;
@@ -30,12 +23,12 @@
     align-items: center;
     justify-content: center;
   }
-  
+
   .reset-button:hover {
     color: rgba(255, 255, 255, 0.9);
     background: rgba(255, 255, 255, 0.1);
   }
-  
+
   .graph-canvas {
     width: 100%;
     height: 200px;

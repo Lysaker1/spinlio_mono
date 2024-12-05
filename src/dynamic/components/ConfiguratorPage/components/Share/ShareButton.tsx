@@ -70,6 +70,7 @@ const ShareButton: React.FC<ShareButtonProps> = ({ session, viewport, onMenuOpen
         {isMenuOpen && (
             <ShareMenu
                 onClose={() => setIsMenuOpen(false)}
+                isMenuOpen={isMenuOpen}
                 session={session}
                 viewport={viewport}
                 onHeightChange={onMenuHeightChange}

@@ -14,7 +14,11 @@
     margin-bottom: 1rem;
 }
 
-/* Base styles for the checkbox button container */
+.parameter-card  .checkbox-button {
+    padding: 0;
+}
+
+    /* Base styles for the checkbox button container */
 .checkbox-button {
     /* Makes button take full width */
     width: 100%;
@@ -31,7 +35,6 @@
     /* Shows pointer cursor on hover */
     cursor: pointer;
     /* Adds internal spacing */
-    padding: 8px;
     /* Rounds the corners */
     border-radius: 8px;
     /* Smooth transition for all property changes */
@@ -138,7 +141,7 @@
         margin-right: 1rem;
         margin-bottom: 0;
     }
-    
+
     /* Larger touch target on mobile */
     .checkbox-button {
         padding: 12px;

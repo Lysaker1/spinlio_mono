@@ -14,6 +14,7 @@
   /* Flex container for header elements */
   display: flex;
   align-items: center;
+  justify-content: space-between;
   /* Space between header and content */
   margin-bottom: 0.75rem;
 }
@@ -51,6 +52,8 @@
     display: none;
   }
   scrollbar-width: none;
+
+  flex-wrap: wrap;
 }
 
 /* Individual color option button */

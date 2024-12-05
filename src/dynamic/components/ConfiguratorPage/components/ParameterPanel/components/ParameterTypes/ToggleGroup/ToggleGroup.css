@@ -15,19 +15,6 @@
   margin-bottom: 1rem;
 }
 
-/* Header Section - Contains the parameter label and any additional controls */
-.parameter-header {
-  /* Flex layout for header items */
-  display: flex;
-  /* Spreads items to opposite ends */
-  justify-content: space-between;
-  /* Vertically centers items */
-  align-items: center;
-  /* Space between header and content */
-  margin-bottom: 1rem;
-}
-
-
 /* Toggle Group Container - Holds all toggle options */
 .toggle-options {
   /* Horizontal flex layout */

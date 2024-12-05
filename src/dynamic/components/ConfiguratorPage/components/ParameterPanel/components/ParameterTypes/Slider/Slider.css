@@ -9,7 +9,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem; /* Increased spacing between sections */
+  margin-bottom: 0; /* Increased spacing between sections */
 }
 
 
@@ -32,7 +32,7 @@
   position: relative;
   height: 2rem;
   cursor: pointer;
-  width: 100%;
+  width: 99%;
   box-sizing: border-box;
   /* Add margin instead of padding for internal spacing */
   margin: 0.5rem 0;
@@ -44,9 +44,9 @@
   position: absolute;
   top: 50%;
   width: 100%;
-  height: 0.25rem; /* Relative height */
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 0.125rem; /* Adjusted border radius */
+  height: 0.5rem; /* Relative height */
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem; /* Adjusted border radius */
   transform: translateY(-50%);
 }
 
@@ -54,7 +54,7 @@
 .slider-fill {
   position: absolute;
   height: 100%;
-  background: rgba(255, 255, 255, 0.8);
+  background:#9E9E9E;
   border-radius: 1.25rem; /* Adjusted border radius */
   transition: width 0.1s ease;
 }

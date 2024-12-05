@@ -13,8 +13,8 @@ export const configuratorConfigs: Record<ConfiguratorType, ConfiguratorConfig> =
     parameterTags: ['default']
   },
   vulz: {
-    ticket: '7670d81b5c5f5fcf850b395d55b283fc5703a4d49a674f9ad359923377dc556219bc75a18fd0c6faf260dce89e3936981ed93773034f6e44202f1cb218f9cc91c85c6af3c0cd599bfeeb0d898d2108b480398c463f49ae273660d6b5a021c80f7f803ac6f426d6-3a3d3f9911517198b0d998836a3e7684',
-    modelId: 'vulz-model-id',
+    ticket: '5db2f417d9886d671ee4de30433d484cd3cd1efd251da8f222fc259618c6c3c70eb1174323bd9b5c14efda7a7db405b62e45a08237afb227b6b757320894e4d3e0ab7b369241ff8070a08e0c729a7b6e8bb3effae47df980a0decc268d6ce86d608b6d2d73e933-a9a9083f2ad6e62574bbf57a41c252ea',
+    modelId: '9da63e22-84c4-4900-b6f4-6eea15c074dc',
     parameterTags: ['vulz']
   },
   electric: {

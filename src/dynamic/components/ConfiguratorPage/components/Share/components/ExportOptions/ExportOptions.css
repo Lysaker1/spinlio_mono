@@ -3,6 +3,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding-top: 1.5rem;
 }
 
 .export-content {
@@ -22,7 +23,10 @@
 }
 
 .file-type-select {
+  display: flex;
   width: 100%;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .file-type-select label {
@@ -33,11 +37,12 @@
 }
 
 .file-type-select select {
-  width: 100%;
-  padding: 0.75rem;
+  outline: none;
+  width: 25%;
+  padding: 0.3rem;
   background: rgba(60, 60, 60, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 0.75rem;
+  border-radius: 0.5rem;
   color: white;
   font-size: 0.875rem;
 }
@@ -66,18 +71,29 @@
 
 .name-input,
 input[type="email"] {
-  width: 100%;
+  width: 90%;
   padding: 0.75rem;
   background: rgba(60, 60, 60, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 0.75rem;
   color: white;
   font-size: 0.875rem;
+  outline: none;
 }
 
 .name-input::placeholder,
 input[type="email"]::placeholder {
   color: rgba(255, 255, 255, 0.5);
+}
+
+.name-input:focus {
+  border: 1px solid rgba(255, 255, 255, 0.5);
+
+}
+
+input[type="email"]:focus {
+  border: 1px solid rgba(255, 255, 255, 0.5);
+
 }
 
 .export-button {

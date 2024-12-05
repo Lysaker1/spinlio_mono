@@ -11,26 +11,66 @@ interface GeometryPanelProps {
 }
 
 export const GeometryPanel: React.FC<GeometryPanelProps> = (props) => {
+  // Define the exact order of subCategories and their parameters
+  const subCategoryOrder = [
+    'Top Tube',        // Length
+    'Seat Tube',       // Length, Angle, Width
+    'Head Tube',       // Angle, Length, Width
+    'Rear Triangle'    // Chain Stay Length, Seat Stay Angle, Bottom Bracket Drop
+  ];
+
+  // Define parameter order within each subCategory
+  const parameterOrder: Record<string, string[]> = {
+    'Top Tube': ['Length'],
+    'Seat Tube': ['Length', 'Angle', 'Width'],
+    'Head Tube': ['Angle', 'Length', 'Width'],
+    'Rear Triangle': ['Chain Stay Length', 'Seat Stay Angle', 'Bottom Bracket Drop']
+  };
+
   const categories = [
     {
-      title: "Frame Measurements",
+      title: "Geometry Parameters",
       filter: (param: ParameterDefinition) => 
-        param.category === 'geometry' && 
-        param.type === 'slider' &&
-        !param.name.toLowerCase().includes('angle')
-    },
-    {
-      title: "Angles",
-      filter: (param: ParameterDefinition) => 
-        param.category === 'geometry' && 
-        param.name.toLowerCase().includes('angle')
-    },
-    {
-      title: "Other Settings",
-      filter: (param: ParameterDefinition) => 
-        param.category === 'geometry' && 
-        !param.name.toLowerCase().includes('angle') &&
-        param.type !== 'slider'
+        param.category === 'geometry',
+      sortSubCategories: (a: string, b: string) => {
+        // Get indices from the order array
+        const indexA = subCategoryOrder.indexOf(a);
+        const indexB = subCategoryOrder.indexOf(b);
+        
+        // If both categories are in the order array, sort by their position
+        if (indexA !== -1 && indexB !== -1) {
+          return indexA - indexB;
+        }
+        
+        // If only one category is in the order array, it should come first
+        if (indexA !== -1) return -1;
+        if (indexB !== -1) return 1;
+        
+        // If neither category is in the order array and one is "Other", put it last
+        if (a === 'Other') return 1;
+        if (b === 'Other') return -1;
+        
+        // For any other categories, sort alphabetically
+        return a.localeCompare(b);
+      },
+      // Add parameter sorting within subCategories
+      sortParameters: (a: ParameterDefinition, b: ParameterDefinition) => {
+        if (!a.subCategory || !b.subCategory) return 0;
+        
+        const orderArray = parameterOrder[a.subCategory];
+        if (!orderArray) return 0;
+
+        const indexA = orderArray.indexOf(a.name);
+        const indexB = orderArray.indexOf(b.name);
+
+        if (indexA !== -1 && indexB !== -1) {
+          return indexA - indexB;
+        }
+        if (indexA !== -1) return -1;
+        if (indexB !== -1) return 1;
+        
+        return 0;
+      }
     }
   ];
 

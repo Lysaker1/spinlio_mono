@@ -224,3 +224,23 @@
 .category-items {
   padding: 0 1rem;
 }
+
+.sub-category {
+  margin-bottom: 2rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 0.8rem;
+  padding: 1rem;
+}
+
+.sub-category-title {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 1rem;
+  padding: 0.5rem 1rem;
+  border-left: 3px solid rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}

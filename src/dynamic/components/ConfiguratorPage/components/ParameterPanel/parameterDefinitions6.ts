@@ -18,19 +18,20 @@ export const parameterDefinitions: ParameterDefinition[] = [
     max: 580,
     unit: 'mm'
   },
-  {
-    id: '15c239d7-8130-41d2-8470-342335fcfb5f',
-    name: 'Fork crown height',
-    value: '12',
-    category: 'geometry',
-    type: 'slider',
-    min: 12,
-    max: 15,
-    unit: 'mm'
-  },
+  // {
+  //   id: '15c239d7-8130-41d2-8470-342335fcfb5f',
+  //   name: 'Fork crown height',
+  //   value: '12',
+  //   category: 'geometry',
+  //   type: 'slider',
+  //   min: 12,
+  //   max: 15,
+  //   unit: 'mm'
+  // },
   {
     id: 'd1f726c0-fb21-4f15-8f11-06ba73e0f3a9',
-    name: 'Bottom bracket drop',
+    name: 'Bottom Bracket Drop',
+    subCategory: 'Rear Triangle',
     category: 'geometry',
     type: 'slider',
     value: '65',
@@ -111,6 +112,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   {
     id: '815b0eaf-cd38-4638-8bde-5f6ac27739d0',
     name: 'Chain Stay Length',
+    subCategory: 'Rear Triangle',
     category: 'geometry',
     type: 'slider',
     value: '444',
@@ -223,7 +225,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     id: 'fbb5d1c5-9ede-49e3-8d68-5b5a7d390ce1',
     name: 'Crown Width',
     subCategory: 'Fork',
-    category: 'geometry',
+    category: 'accessories',
     type: 'slider',
     value: '25.91',
     min: 20,
@@ -232,10 +234,11 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: 'a250e630-2572-402a-af6e-e36136793a42',
-    name: 'Fork width at axel',
-    value: '9.0',
-    category: 'geometry',
+    name: 'Fork Width at Axle',
+    subCategory: 'Fork',
+    category: 'accessories',
     type: 'slider',
+    value: '9.0',
     min: 8,
     max: 20,
     unit: 'mm'
@@ -266,6 +269,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     id: '9c43fdf1-d21d-4c8f-b8a3-b7d9602bfe1d',
     name: 'Seat Tube Bottle Placement',
     category: 'accessories',
+    subCategory: 'Water Bottle',
     type: 'slider',
     value: '0.5',
     min: 0.0,
@@ -376,7 +380,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: 'ac762528-d92e-4d5a-8c48-e364432e61e9',
-    name: 'Width',
+    name: 'Rear Width',
     category: 'tubing',
     subCategory: 'Down Tube',
     type: 'slider',
@@ -466,7 +470,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   // },
   {
     id: '5422df73-826b-4478-88d3-016cf74499f6',
-    name: 'Drop Out',
+    name: ' Rear Drop Out',
     subCategory: 'Fittings',
     category: 'accessories',
     type: 'grid',
@@ -486,6 +490,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     id: '33ab6af5-42db-494e-834e-0f652a911a85',
     name: 'Rear wheel spacing',
     category: 'accessories',
+    subCategory: 'Wheels',
     type: 'dropdown',
     value: '1',
     options: [
@@ -604,6 +609,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   {
     id: 'cbdf47f8-4e69-45ce-bc08-dda011276a06',
     name: 'Spoke holes',
+    subCategory: 'Wheels',
     category: 'accessories',
     type: 'dropdown',
     value: '0',
@@ -622,6 +628,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     id: '50033fab-4882-439f-8413-a68a99314ed2',
     name: 'Brake type',
     category: 'accessories',
+    subCategory: 'Fittings',
     type: 'dropdown',
     value: '1',
     options: [
@@ -683,7 +690,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
       }
     ]
   },
-  {
+  /*{
     id: '7a55821d-3981-4eb8-9a4c-26b7e275e56c',
     name: 'Diameter Points',
     subCategory: 'Top Tube',
@@ -691,7 +698,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     category: 'tubing',
     type: 'graphmapper',
     configuratorTypes: ['vulz']
-  },
+  },*/
   {
     id: '0c908c83-7337-42f5-896a-005f9b10f33c',
     name: 'File Format',
@@ -819,22 +826,22 @@ export const parameterDefinitions: ParameterDefinition[] = [
   //     unit: 'mm',
   //     configuratorTypes: ['vulz']
   //   },
-    {
+    /*{
       id: 'f4a8c8c8-5f5d-4995-8d5c-fc6a89baa720',
       name: 'DownTube DiameterPoints',
       category: 'tubing',
       type: 'graphmapper',
       value: '0,0;0.1,0.5;0.5,0.9;1,1',
       configuratorTypes: ['vulz']
-    },
-    {
-      id: 'b81e6aa3-43d2-4f12-9670-b563802985dd',
-      name: 'Upload DownTube curve Shape',
-      category: 'tubing',
-      type: 'fileinput',
-      value: '',
-      configuratorTypes: ['vulz']
-    },
+    },*/
+    // {
+    //   id: 'b81e6aa3-43d2-4f12-9670-b563802985dd',
+    //   name: 'Upload DownTube curve Shape',
+    //   category: 'tubing',
+    //   type: 'fileinput',
+    //   value: '',
+    //   configuratorTypes: ['vulz']
+    // },
     {
       id: '6c895932-e37c-4815-88ef-9bc7ef8520b0',
       name: 'Match Seatstay & Top tube',
@@ -846,6 +853,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     {
       id: 'da8f6e1f-fe0a-43f1-a8c7-f7c2d27c5a4d',
       name: 'Seat stay angle',
+      subCategory: 'Rear Triangle',
       category: 'geometry',
       type: 'slider',
       value: '46.2',
@@ -854,14 +862,14 @@ export const parameterDefinitions: ParameterDefinition[] = [
       unit: '°',
       configuratorTypes: ['vulz']
     },
-    {
+    /*{
       id: '734e8f5c-4006-47e6-b84f-61df7fb0dde2',
       name: 'TopTube CurvePoints',
       category: 'tubing',
       type: 'graphmapper',
       value: '0,0;0.1,0.4;0.4,0.8;1,1',
       configuratorTypes: ['vulz']
-    },
+    },*/
     // {
     //   id: '67a48467-5e1f-4a63-8246-d78fc5cac650',
     //   name: 'Domain start', 
@@ -872,50 +880,177 @@ export const parameterDefinitions: ParameterDefinition[] = [
     //   max: 1,
     //   configuratorTypes: ['vulz']
     // },
+    // {
+    //   id: 'b4a6298a-e0d9-4d7d-bdf8-51db53a813f1',
+    //   name: 'Seatstay seatside Diameter',
+    //   category: 'geometry',
+    //   type: 'slider',
+    //   value: '24',
+    //   min: 15,
+    //   max: 40,
+    //   unit: 'mm',
+    //   configuratorTypes: ['vulz']
+    // },
+    // {
+    //   id: '93d72eca-25cc-4eb1-8a95-16ee449dd01d',
+    //   name: 'Seatstay thickness',
+    //   category: 'geometry',
+    //   type: 'slider',
+    //   value: '12',
+    //   min: 12,
+    //   max: 24,
+    //   unit: 'mm',
+    //   configuratorTypes: ['vulz']
+    // },
+    // {
+    //   id: '278842f7-3407-4521-bc20-ee46abf7a298',
+    //   name: 'Chainstay Crankside Diameter',
+    //   category: 'geometry',
+    //   type: 'slider',
+    //   value: '24',
+    //   min: 15,
+    //   max: 40,
+    //   unit: 'mm',
+    //   configuratorTypes: ['vulz']
+    // },
+    // {
+    //   id: '3672f35e-3592-4a50-bd73-14ab6def8e96',
+    //   name: 'Chainstay thickness',
+    //   category: 'geometry',
+    //   type: 'slider',
+    //   value: '16',
+    //   min: 15,
+    //   max: 40,
+    //   unit: 'mm',
+    //   configuratorTypes: ['vulz']
+    // },
     {
-      id: 'b4a6298a-e0d9-4d7d-bdf8-51db53a813f1',
-      name: 'Seatstay seatside Diameter',
-      category: 'geometry',
-      type: 'slider',
-      value: '24',
-      min: 15,
-      max: 40,
-      unit: 'mm',
+      id: 'd4c506b0-01e8-4958-883f-d7dac161eebe',
+      name: 'Bike Type',
+      subCategory: 'Other',
+      category: 'other',
+      type: 'dropdown',
+      value: '0',
+      options: [
+        {
+          label: 'Road Bike',
+          value: '0'
+        },
+        {
+          label: 'Electrical Male',
+          value: '1'
+        },
+        {
+          label: 'Electrical Female',
+          value: '2'
+        }
+      ],
       configuratorTypes: ['vulz']
     },
     {
-      id: '93d72eca-25cc-4eb1-8a95-16ee449dd01d',
-      name: 'Seatstay thickness',
-      category: 'geometry',
+      id: '3902e965-6a81-4d91-a8c0-e65209a882a3',
+      name: 'Height',
+      category: 'tubing',
+      subCategory: 'Top Tube',
       type: 'slider',
-      value: '12',
-      min: 12,
-      max: 24,
+      value: '8',
+      min: 6,
+      max: 20,
       unit: 'mm',
-      configuratorTypes: ['vulz']
     },
     {
-      id: '278842f7-3407-4521-bc20-ee46abf7a298',
-      name: 'Chainstay Crankside Diameter',
-      category: 'geometry',
+      id: 'name-width',
+      name: 'Width',
+      category: 'tubing',
+      subCategory: 'Down Tube',
       type: 'slider',
-      value: '24',
-      min: 15,
-      max: 40,
+      value: '30',
+      min: 30,
+      max: 100,
       unit: 'mm',
       configuratorTypes: ['vulz']
     },
-    {
-      id: '3672f35e-3592-4a50-bd73-14ab6def8e96',
-      name: 'Chainstay thickness',
-      category: 'geometry',
-      type: 'slider',
-      value: '16',
-      min: 15,
-      max: 40,
-      unit: 'mm',
-      configuratorTypes: ['vulz']
-    },
+    // {
+    //   id: '5e5d90ef-320f-44d0-a24a-a73b12cb7bc4',
+    //   name: 'Top Tube Logo Position',
+    //   category: 'accessories',
+    //   type: 'slider',
+    //   value: '0.6',
+    //   min: 0,
+    //   max: 1,
+    //   unit: '',
+    //   configuratorTypes: ['vulz']
+    // },
+    // {
+    //   id: '91f05499-a206-4c8e-94f6-963cc7b70d39',
+    //   name: 'Down Tube Logo Size',
+    //   category: 'accessories',
+    //   type: 'slider',
+    //   value: '0.7',
+    //   min: 0,
+    //   max: 1,
+    //   unit: '',
+    //   configuratorTypes: ['vulz']
+    // },
+    // {
+    //   id: '1bd1f334-5a33-43d5-bae5-fe44fae61cda',
+    //   name: 'Import DownTube logo(png)',
+    //   category: 'accessories',
+    //   type: 'fileinput',
+    //   value: '',
+    //   configuratorTypes: ['vulz']
+    // },
+    // {
+    //   id: '23369373-f2f8-404b-9577-e48a24d39f83',
+    //   name: 'DownTube Logo Position',
+    //   category: 'accessories',
+    //   type: 'slider',
+    //   value: '0.9',
+    //   min: 0,
+    //   max: 1,
+    //   unit: '',
+    //   configuratorTypes: ['vulz']
+    // },
+    // {
+    //   id: 'd40a0688-0501-4f4a-8e32-fb9ef4a6565b',
+    //   name: 'Input custom pipe shape',
+    //   category: 'accessories',
+    //   type: 'checkbox',
+    //   value: 'true',
+    //   configuratorTypes: ['vulz']
+    // },
+    // {
+    //   id: 'c720c466-f77d-43d2-bebe-26edc370a650',
+    //   name: 'Import DownTube Frame Curve',
+    //   category: 'accessories',
+    //   type: 'fileinput',
+    //   value: '',
+    //   configuratorTypes: ['vulz']
+    // },
+    // {
+    //   id: '206889f8-8ef2-4f95-ac06-34486923c73e',
+    //   name: 'Tube color texture',
+    //   category: 'accessories',
+    //   type: 'text',
+    //   value: 'https://thumbs.dreamstime.com/b/diagonal-stripes-pattern-vector-seamless-striped-texture-abstract-monochrome-geometric-background-thin-slanted-lines-black-104236907.jpg',
+    //   configuratorTypes: ['vulz']
+    // },
+    // {
+    //   id: 'bf8489bb-a14c-46be-b41c-54f4951e838b',
+    //   name: 'Import TopTube logo(png)',
+    //   category: 'accessories',
+    //   type: 'fileinput',
+    //   value: '',
+    //   configuratorTypes: ['vulz']
+    // }
+    // {
+    //   id: 'accessory-file',
+    //   name: 'File Input',
+    //   category: 'accessories',
+    //   type: 'fileinput',
+    //   value: '',
+    //   configuratorTypes: ['vulz']
+    // },
     // {
     //   id: 'c01258ac-67a5-4ab2-968e-e368f3391b63',
     //   name: 'Show Pedestal',
@@ -944,4 +1079,5 @@ export const parameterDefinitions: ParameterDefinition[] = [
     //   max: 100,
     //   configuratorTypes: ['vulz']
     // }
+
 ];

@@ -40,9 +40,10 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: 'c4d4c978-5b58-49ce-a567-739894dc5d36',
-    name: 'Top Tube Rear Width',
+    name: 'Rear Width',
     value: '37',
     category: 'tubing',
+    subCategory: 'Top Tube',
     type: 'slider',
     min: 30,
     max: 48,
@@ -50,7 +51,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '6bebc909-bc55-448c-b316-4d9acb7e1c9a',
-    name: 'Frame finish',
+    name: 'Paint Finish',
+    subCategory: 'Frame',
     category: 'tubing',
     type: 'grid',
     value: '0',
@@ -71,9 +73,10 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '972de871-83ed-4243-9510-f4c2ab3228a3',
-    name: 'Front wheel spacing',
+    name: 'Wheel Spacing',
     category: 'accessories',
     type: 'dropdown',
+    subCategory: 'Fork',
     value: '0',
     options: [
       {
@@ -88,10 +91,11 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '6eac979f-e146-4021-8439-0cf495cf0431',
-    name: 'Tire diameter',
+    name: 'Size',
     category: 'accessories',
     type: 'dropdown',
     tag: 'man',
+    subCategory: 'Wheels',
     value: '1',
     options: [
       {
@@ -106,7 +110,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '815b0eaf-cd38-4638-8bde-5f6ac27739d0',
-    name: 'Chain stay length',
+    name: 'Chain Stay Length',
     category: 'geometry',
     type: 'slider',
     value: '444',
@@ -116,8 +120,9 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: 'beff3154-f6bd-494e-998b-13f9660e9506',
-    name: 'Seat tube length',
+    name: 'Length',
     category: 'geometry',
+    subCategory: 'Seat Tube',
     type: 'slider',
     value: '597',
     min: 500,
@@ -126,8 +131,9 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '98f0a457-b4e5-44ea-8e55-8577941d49ad',
-    name: 'Head tube angle',
+    name: 'Angle',
     category: 'geometry',
+    subCategory: 'Head Tube',
     type: 'slider',
     value: '72.1',
     min: 72.0,
@@ -138,8 +144,9 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '98f0a457-b4e5-44ea-8e55-8577941d49ad',
-    name: 'Head tube angle',
+    name: 'Angle',
     category: 'geometry',
+    subCategory: 'Head Tube',
     type: 'slider',
     value: '70.0',
     min: 70.0,
@@ -150,8 +157,9 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '64ecfdab-39bb-4d5c-a11d-b98690404bf9',
-    name: 'Top tube length',
+    name: 'Length',
     category: 'geometry',
+    subCategory: 'Top Tube',
     type: 'slider',
     value: '548',
     min: 535,
@@ -161,8 +169,9 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '64ecfdab-39bb-4d5c-a11d-b98690404bf9',
-    name: 'Effective top tube length',
+    name: 'Length',
     category: 'geometry',
+    subCategory: 'Top Tube',
     type: 'slider',
     value: '620',
     min: 535,
@@ -172,30 +181,32 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '09aa3a63-8d46-4b67-b87b-b4b869e5befd',
-    name: 'Seat tube angle',
+    name: 'Angle',
     category: 'geometry',
+    subCategory: 'Seat Tube',
     type: 'slider',
     value: '74.3',
     min: 72.5,
     max: 75,
     unit: '°'
   },
-  {
-    id: '3902e965-6a81-4d91-a8c0-e65209a882a3',
-    name: 'Rear-Triangle Tubing Diameter',
-    value: '16',
-    category: 'geometry',
-    type: 'slider',
-    min: 15,
-    max: 40,
-    unit: 'mm'
-  },
+  // {
+  //   id: '3902e965-6a81-4d91-a8c0-e65209a882a3',
+  //   name: 'Rear-Triangle Tubing Diameter',
+  //   value: '16',
+  //   category: 'geometry',
+  //   type: 'slider',
+  //   min: 15,
+  //   max: 40,
+  //   unit: 'mm'
+  // },
   {
     id: '4ec438ea-a490-434b-82ea-88f84f67f6b7',
-    name: 'Down Tube Front Width',
-    value: '38',
+    name: 'Front Width',
+    subCategory: 'Down Tube',
     category: 'tubing',
     type: 'slider',
+    value: '38',
     min: 30,
     max: 50,
     unit: 'mm',
@@ -210,10 +221,11 @@ export const parameterDefinitions: ParameterDefinition[] = [
   // },
   {
     id: 'fbb5d1c5-9ede-49e3-8d68-5b5a7d390ce1',
-    name: 'Fork crown width',
-    value: '25.91',
+    name: 'Crown Width',
+    subCategory: 'Fork',
     category: 'geometry',
     type: 'slider',
+    value: '25.91',
     min: 20,
     max: 35,
     unit: 'mm'
@@ -228,14 +240,14 @@ export const parameterDefinitions: ParameterDefinition[] = [
     max: 20,
     unit: 'mm'
   },
-  {
+  /*{
     id: '748ef0ef-9e2c-493e-ad09-d908404f289c',
     name: 'Bottle color',
     category: 'accessories',
     type: 'color',
     value: '0x76808285',
     configuratorTypes: ['default']
-  },
+  },*/
   {
     id: 'b5bf6f12-a078-4417-a4ae-d2049807178c',
     name: 'Show only frame',
@@ -252,7 +264,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   // },
   {
     id: '9c43fdf1-d21d-4c8f-b8a3-b7d9602bfe1d',
-    name: 'Seat tube bottle placement',
+    name: 'Seat Tube Bottle Placement',
     category: 'accessories',
     type: 'slider',
     value: '0.5',
@@ -261,7 +273,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '03c193b3-bbc9-491b-b4d5-1a2b48a4e0d1',
-    name: 'Seat tube water bottle',
+    name: 'Seat Tube',
+    subCategory: 'Water Bottle',
     category: 'accessories',
     type: 'dropdown',
     value: '1',
@@ -278,7 +291,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '44d398e1-f057-4d3f-8446-2f8e38703b86',
-    name: 'Down tube water bottle',
+    name: 'Down Tube',
+    subCategory: 'Water Bottle',
     category: 'accessories',
     type: 'dropdown',
     value: '0',
@@ -296,10 +310,11 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '00d82c20-556f-4710-bff6-84e43117f680',
-    name: 'Seat tube diameter',
-    value: '31',
+    name: 'Width',
+    subCategory: 'Seat Tube',
     category: 'geometry',
     type: 'slider',
+    value: '31',
     min: 28,
     max: 40,
     unit: 'mm',
@@ -307,10 +322,11 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '00d82c20-556f-4710-bff6-84e43117f680',
-    name: 'Seat tube diameter',
-    value: '51',
+    name: 'Width',
+    subCategory: 'Seat Tube',
     category: 'geometry',
     type: 'slider',
+    value: '51',
     min: 28,
     max: 55,
     unit: 'mm',
@@ -325,7 +341,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
   // },
   {
     id: '62738150-ac17-418d-81ab-2876c45a413e',
-    name: 'Down tube shape',
+    name: 'Shape',
+    subCategory: 'Down Tube',
     category: 'tubing',
     type: 'grid',
     value: '4',
@@ -359,10 +376,11 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: 'ac762528-d92e-4d5a-8c48-e364432e61e9',
-    name: 'Down Tube Rear Width',
-    value: '41',
+    name: 'Width',
     category: 'tubing',
+    subCategory: 'Down Tube',
     type: 'slider',
+    value: '41',
     min: 30,
     max: 48,
     unit: 'mm',
@@ -382,10 +400,11 @@ export const parameterDefinitions: ParameterDefinition[] = [
   // },
   {
     id: 'cc667ffa-3487-46e8-8b36-48ae1cd78efa',
-    name: 'Head tube Diameter',
-    value: '0',
+    name: 'Width',
+    subCategory: 'Head Tube',
     category: 'tubing',
     type: 'dropdown',
+    value: '0',
     options: [
       {
         label: '1 1/2"',
@@ -447,7 +466,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
   // },
   {
     id: '5422df73-826b-4478-88d3-016cf74499f6',
-    name: 'Rear drop out type',
+    name: 'Drop Out',
+    subCategory: 'Fittings',
     category: 'accessories',
     type: 'grid',
     value: '0',
@@ -481,17 +501,19 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: 'f0f25a06-82aa-4584-b4ab-2f39c4e71651',
-    name: 'Top Tube Front Width',
-    value: '30',
+    name: 'Front Width',
+    subCategory: 'Top Tube',
     category: 'tubing',
     type: 'slider',
+    value: '30',
     min: 30,
     max: 40,
     unit: 'mm'
   },
   {
     id: '7920797e-f807-4b15-b964-d97d9a9d58a2',
-    name: 'Rim width',
+    name: 'Width',
+    subCategory: 'Wheels',
     category: 'accessories',
     type: 'dropdown',
     value: '0',
@@ -533,7 +555,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
   // },
   {
     id: 'fb34be77-f67f-4ee9-989e-c8baf24eacf1',
-    name: 'Disc brake mount type',
+    name: 'Disc Brake Mount',
+    subCategory: 'Fittings',
     category: 'accessories',
     type: 'grid',
     value: '1',
@@ -550,7 +573,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '7b5d938d-b964-4f31-bd97-e36008869962',
-    name: 'Rim color',
+    name: 'Color',
+    subCategory: 'Wheels',
     value: '0x131312ff',
     category: 'accessories',
     type: 'color'
@@ -567,7 +591,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
   // },
   {
     id: '7935dece-7133-4678-a77e-a3dd54c8e114',
-    name: 'Rim depth',
+    name: 'Depth',
+    subCategory: 'Wheels',
     category: 'accessories',
     type: 'slider',
     value: '19',
@@ -626,7 +651,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '9e898618-6cce-4a45-bc4d-ea7bbd9af54f',
-    name: 'Top tube shape',
+    name: 'Shape',
+    subCategory: 'Top Tube',
     category: 'tubing',
     type: 'grid',
     value: '5',
@@ -659,7 +685,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '7a55821d-3981-4eb8-9a4c-26b7e275e56c',
-    name: 'Top tube diameter points',
+    name: 'Diameter Points',
+    subCategory: 'Top Tube',
     value: '0,0;1,1',
     category: 'tubing',
     type: 'graphmapper',
@@ -688,7 +715,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     id: '56fa370a-8b83-4bd6-9797-f1e0897faac3',
-    name: 'Frame color',
+    name: 'Color',
+    subCategory: 'Frame',
     category: 'tubing',
     type: 'color',
     value: '10'

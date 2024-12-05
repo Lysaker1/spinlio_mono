@@ -27,6 +27,8 @@ export interface ParameterDefinition {
     value: string;
     // Optional minimum value for numeric parameters
     configuratorTypes?: ('default' | 'vulz' | 'electric')[]; // Add this instead of tags
+    // Optional sub-category for the parameter
+    subCategory?: string;
 
     min?: number;
     // Optional maximum value for numeric parameters

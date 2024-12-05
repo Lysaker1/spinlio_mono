@@ -15,7 +15,8 @@ import './BasePanel.css';
 interface ParameterCategory {
   title: string;
   filter: (param: ParameterDefinition) => boolean;
-  isAdvanced?: boolean;
+  sortSubCategories?: (a: string, b: string) => number;
+  sortParameters?: (a: ParameterDefinition, b: ParameterDefinition) => number;
 }
 
 interface BasePanelProps {
@@ -183,47 +184,54 @@ export const BasePanel: React.FC<BasePanelProps> = ({
 
   // New function to render desktop categories
   const renderDesktopContent = () => {
-    const regularCategories = categories.filter(cat => !cat.isAdvanced);
-    const advancedCategory = categories.find(cat => cat.isAdvanced);
-
     return (
       <div className="parameter-list">
-        {/* Regular categories */}
-        {regularCategories.map((category, index) => {
+        {categories.map((category, index) => {
           const categoryParams = parameters.filter(category.filter);
           if (categoryParams.length === 0) return null;
+
+          const paramsBySubCategory = categoryParams.reduce((acc, param) => {
+            const subCat = param.subCategory || 'Other';
+            if (!acc[subCat]) {
+              acc[subCat] = [];
+            }
+            acc[subCat].push(param);
+            return acc;
+          }, {} as Record<string, ParameterDefinition[]>);
+
+          // Sort parameters within each subCategory if sortParameters function exists
+          if (category.sortParameters) {
+            Object.values(paramsBySubCategory).forEach(params => {
+              params.sort(category.sortParameters);
+            });
+          }
+
+          const sortedSubCategories = Object.keys(paramsBySubCategory).sort(
+            category.sortSubCategories || ((a, b) => {
+              if (a === 'Other') return 1;
+              if (b === 'Other') return -1;
+              return a.localeCompare(b);
+            })
+          );
 
           return (
             <div key={index} className="parameter-section">
               <h3 className="section-title">{category.title}</h3>
-              <div className="category-items">
-                {categoryParams.map(param => (
-                  <div key={param.id} className="parameter-item">
-                    {renderParameter(param)}
+              {sortedSubCategories.map(subCategory => (
+                <div key={subCategory} className="sub-category">
+                  <h4 className="sub-category-title">{subCategory}</h4>
+                  <div className="category-items">
+                    {paramsBySubCategory[subCategory].map(param => (
+                      <div key={param.id} className="parameter-item">
+                        {renderParameter(param)}
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
           );
         })}
-
-        {/* Advanced section */}
-        {advancedCategory && (
-          <div className="advanced-section">
-            {advancedControls?.advancedTitle}
-            {advancedControls?.showAdvanced && (
-              <div className="parameter-section">
-                <div className="category-items">
-                  {parameters.filter(advancedCategory.filter).map(param => (
-                    <div key={param.id} className="parameter-item">
-                      {renderParameter(param)}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
       </div>
     );
   };

@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { ParameterDefinition } from '../../../types';
 import { BasePanel } from '../BasePanel/BasePanel';
-import { ActionIcon } from '@mantine/core';
-import { IconChevronDown, IconChevronUp } from '@tabler/icons-react';
 import './TubingPanel.css';
 
 interface TubingPanelProps {
@@ -15,62 +13,66 @@ interface TubingPanelProps {
 export const TubingPanel: React.FC<TubingPanelProps> = (props) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
 
+  // Define the exact order of subCategories and their parameters
+  const subCategoryOrder = [
+    'Frame',           // Color, Paint Finish, Logo Upload, Logo Placement
+    'Top Tube',        // Shape, Front Width, Rear Width
+    'Down Tube',       // Shape, Front Width, Rear Width
+    'Head Tube'        // Keep existing Head Tube parameters
+  ];
+
+  // Define parameter order within each subCategory
+  const parameterOrder: Record<string, string[]> = {
+    'Frame': ['Color', 'Paint Finish', 'Logo Upload', 'Logo Placement'],
+    'Top Tube': ['Shape', 'Front Width', 'Rear Width'],
+    'Down Tube': ['Shape', 'Front Width', 'Rear Width']
+  };
+
   const categories = [
-    // Color and Finish first
     {
-      title: "Frame Color & Finish",
+      title: "Tubing Parameters",
       filter: (param: ParameterDefinition) => 
-        (param.category === 'tubing' && param.type === 'color' ) || 
-        (param.category === 'tubing' && param.name.toLowerCase().includes('frame finish'))
-    },
-    // All Top Tube parameters under one header
-    {
-      title: "Top Tube",
-      filter: (param: ParameterDefinition) => 
-        param.category === 'tubing' && 
-        param.name.toLowerCase().includes('top tube') &&
-        param.type !== 'graphmapper' &&
-        param.type !== 'fileinput'
-    },
-    // All Down Tube parameters under one header
-    {
-      title: "Down Tube",
-      filter: (param: ParameterDefinition) => 
-        param.category === 'tubing' && 
-        param.name.toLowerCase().includes('down tube') &&
-        param.type !== 'graphmapper' &&
-        param.type !== 'fileinput'
-    },
-    // Head Tube last
-    {
-      title: "Head Tube",
-      filter: (param: ParameterDefinition) => 
-        param.category === 'tubing' && 
-        param.name.toLowerCase().includes('head tube')
-    },
-    // Other tubing parameters if any
-    {
-      title: "Other Tubing",
-      filter: (param: ParameterDefinition) => 
-        param.category === 'tubing' && 
-        !param.name.toLowerCase().includes('top tube') &&
-        !param.name.toLowerCase().includes('down tube') &&
-        !param.name.toLowerCase().includes('head tube') &&
-        !param.name.toLowerCase().includes('frame finish') &&
-        param.type !== 'color' &&
-        param.type !== 'graphmapper' &&
-        param.type !== 'fileinput'
-    },
-    // Advanced section for graph mappers and file upload
-    /* Temporarily hide advanced section
-    {
-      title: "Advanced",
-      filter: (param: ParameterDefinition) => 
-        param.category === 'tubing' && 
-        (param.type === 'graphmapper' || param.type === 'fileinput'),
-      isAdvanced: true
+        param.category === 'tubing',
+      sortSubCategories: (a: string, b: string) => {
+        // Get indices from the order array
+        const indexA = subCategoryOrder.indexOf(a);
+        const indexB = subCategoryOrder.indexOf(b);
+        
+        // If both categories are in the order array, sort by their position
+        if (indexA !== -1 && indexB !== -1) {
+          return indexA - indexB;
+        }
+        
+        // If only one category is in the order array, it should come first
+        if (indexA !== -1) return -1;
+        if (indexB !== -1) return 1;
+        
+        // If neither category is in the order array and one is "Other", put it last
+        if (a === 'Other') return 1;
+        if (b === 'Other') return -1;
+        
+        // For any other categories, sort alphabetically
+        return a.localeCompare(b);
+      },
+      // Add parameter sorting within subCategories
+      sortParameters: (a: ParameterDefinition, b: ParameterDefinition) => {
+        if (!a.subCategory || !b.subCategory) return 0;
+        
+        const orderArray = parameterOrder[a.subCategory];
+        if (!orderArray) return 0;
+
+        const indexA = orderArray.indexOf(a.name);
+        const indexB = orderArray.indexOf(b.name);
+
+        if (indexA !== -1 && indexB !== -1) {
+          return indexA - indexB;
+        }
+        if (indexA !== -1) return -1;
+        if (indexB !== -1) return 1;
+        
+        return 0;
+      }
     }
-    */
   ];
 
   return (
@@ -78,20 +80,6 @@ export const TubingPanel: React.FC<TubingPanelProps> = (props) => {
       {...props}
       className="tubing-panel"
       categories={categories}
-      /* Temporarily hide advanced controls
-      advancedControls={{
-        showAdvanced,
-        setShowAdvanced,
-        advancedTitle: (
-          <div className="advanced-header" onClick={() => setShowAdvanced(!showAdvanced)}>
-            <span>Advanced Options</span>
-            <ActionIcon variant="subtle" color="gray">
-              {showAdvanced ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />}
-            </ActionIcon>
-          </div>
-        )
-      }}
-      */
     />
   );
 };

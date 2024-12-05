@@ -13,17 +13,6 @@
   margin-bottom: 1rem;
 }
 
-/* Header section containing parameter name and selected value */
-.parameter-header {
-  /* Use flexbox for layout */
-  display: flex;
-  /* Space items to opposite ends */
-  justify-content: space-between;
-  /* Center items vertically */
-  align-items: center;
-  /* Space between header and grid */
-  margin-bottom: 1rem;
-}
 
 /* Parameter name/label styling */
 .parameter-label {
@@ -86,10 +75,9 @@
 .shape-grid.two-columns {
   grid-template-columns: repeat(2, 1fr);
   gap: 0.75rem;  /* Slightly bigger gap for larger items */
-  
+
   /* Make the options bigger when in two-column layout */
   .shape-option {
-    aspect-ratio: 1.2;  /* Slightly taller */
     padding: 0.75rem;   /* More padding */
 
     /* Make images much bigger for dropouts and mounts */
@@ -97,6 +85,8 @@
       width: 90%;      /* Increased from 80% */
       height: 90%;     /* Increased from 80% */
       object-fit: contain;
+      max-width: 80px;
+      max-height: 80px;
     }
 
     /* Adjust label size for bigger containers */
@@ -110,7 +100,7 @@
 }
 .shape-option {
   position: relative;
-  width: 100%;
+  width: 90%;
   aspect-ratio: 1;
   display: flex;
   flex-direction: column;
@@ -121,11 +111,15 @@
   cursor: pointer;
   transition: all 0.2s ease;
   padding: 0.35rem;
-  
+  border: 1px solid transparent;
   /* Ensure SVG icons scale with container */
   & svg {
-    width: 95%;  /* Increased from 60% */
+    width: 75%;  /* Increased from 60% */
     height: 95%; /* Increased from 60% */
+  }
+
+  .shape-icon {
+    width: 100%;
   }
 
   /* Also adjust image icons if present */
@@ -140,8 +134,8 @@
   }
 
   &.selected {
+    border: 1px solid #fff;
     background: rgba(255, 255, 255, 0.3);
-    box-shadow: 0 0 0 0.125rem rgba(255, 255, 255, 0.8);
   }
 
   & img {  /* Add specific styling for material images */
@@ -150,17 +144,11 @@
     object-fit: contain;
     border-radius: 0.5rem;
   }
-  
+
   /* Add hover effect for material options */
   &:hover img {
     transform: scale(1.1);
     transition: transform 0.2s ease;
-  }
-
-  /* Selected state for material options */
-  &.selected img {
-    border: 0.125rem solid white;
-    box-shadow: 0 0 0.625rem rgba(255, 255, 255, 0.3);
   }
 }
 
@@ -172,7 +160,7 @@
 
   .shape-option {
     padding: 0.35rem;
-    
+
     & svg {
       max-width: 30px;
       max-height: 30px;

@@ -11,9 +11,10 @@ interface ShareMenuProps {
   session: ISessionApi | null;
   viewport: IViewportApi | null;
   onHeightChange?: (height: number) => void;
+  isMenuOpen: boolean;
 }
 
-const ShareMenu: React.FC<ShareMenuProps> = ({ onClose, session, viewport, onHeightChange }) => {
+const ShareMenu: React.FC<ShareMenuProps> = ({ onClose, session, viewport,isMenuOpen, onHeightChange }) => {
   const menuRef = useRef<HTMLDivElement>(null);
   const [activeView, setActiveView] = useState<'main' | 'ar' | 'export'>('main');
   const [shareMenuHeight, setShareMenuHeight] = useState<number>(0);
@@ -24,7 +25,7 @@ const ShareMenu: React.FC<ShareMenuProps> = ({ onClose, session, viewport, onHei
       const heightInVh = (height / window.innerHeight) * 100;
       onHeightChange(Math.max(15, heightInVh)); // Never less than 15vh
     }
-  }, [onHeightChange]);
+  }, [onHeightChange, activeView]);
 
   return (
     <div className="share-menu" ref={menuRef}>

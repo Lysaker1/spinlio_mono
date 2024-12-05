@@ -21,26 +21,72 @@
   color: white;
 }
 
-.file-type-select {
-  width: 100%;
-}
-
 .file-type-select label {
-  display: block;
   margin-bottom: 0.5rem;
   font-size: 0.875rem;
   color: rgba(255, 255, 255, 0.8);
 }
 
-.file-type-select select {
+.file-type-select {
   width: 100%;
-  padding: 0.75rem;
-  background: rgba(60, 60, 60, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.custom-select {
+  position: relative;
+  width: 20%;
+  padding: 0.5rem;
+  background: #626262;
+  border-radius: 0.5rem;
   color: white;
   font-size: 0.875rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
+
+.custom-select.open {
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.custom-select .selected-value {
+  flex: 1;
+}
+
+.custom-select .dropdown-icon {
+  margin-left: 0.5rem;
+}
+
+.options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: rgba(60, 60, 60, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  z-index: 10;
+  margin-top: 0.25rem;
+  list-style: none;
+  padding: 0;
+}
+
+.option {
+  padding: 0.5rem;
+  color: white;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.option:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.option.active {
+  background: rgba(255, 255, 255, 0.2);
+}
+
 
 .export-method-select {
   display: flex;
@@ -61,7 +107,7 @@
 }
 
 .method-button.active {
-  background: rgba(80, 80, 80, 0.95);
+  background: #626262;
 }
 
 .name-input,

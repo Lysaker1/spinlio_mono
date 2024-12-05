@@ -19,6 +19,7 @@ const ExportOptions: React.FC<ExportOptionsProps> = ({ onBack, session,viewport 
   const [email, setEmail] = useState<string>('');
   const [name, setName] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
+  const [emailError, setEmailError] = useState(false);
 
   useEffect(() => {
     if (!session) return;
@@ -41,6 +42,20 @@ const ExportOptions: React.FC<ExportOptionsProps> = ({ onBack, session,viewport 
 
     updateClientInfo();
   }, [session, name, email]);
+
+  const validateEmail = (value: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(value)) {
+      setEmailError(true);
+    } else {
+      setEmailError(false);
+    }
+  };
+
+  const handleEmailChange = (value: string) => {
+    setEmail(value);
+    validateEmail(value);
+  };
 
   const handleExport = async () => {
     if (!session) {
@@ -195,12 +210,12 @@ const ExportOptions: React.FC<ExportOptionsProps> = ({ onBack, session,viewport 
               type="email"
               placeholder="Enter your email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => handleEmailChange(e.target.value)}
             />
             <button
               className="export-button"
               onClick={handleExport}
-              disabled={isLoading || !email || !name}
+              disabled={isLoading || !email || !!emailError || !name}
             >
               {isLoading ? '...' : 'Export'}
             </button>

@@ -5,7 +5,7 @@
  */
 
 import { describe, expect, test } from '@jest/globals';
-import { parameterDefinitions } from "../parameterDefinitions6";
+import { parameterDefinitions } from "../parameterDefinitions6"
 
 describe('Parameter Definitions Uniqueness', () => {
     test('All parameter IDs are unique and properly formatted', () => {
@@ -43,7 +43,7 @@ describe('Parameter Definitions Uniqueness', () => {
         });
 
         // Fail the test with a clear message
-        fail(`Found ${duplicateIds.length} duplicate parameter IDs. Check console output for details.`);
+        throw new Error(`Found ${duplicateIds.length} duplicate parameter IDs. Check console output for details.`);
       }
 
       // Check for invalid ID formats
@@ -56,7 +56,7 @@ describe('Parameter Definitions Uniqueness', () => {
           console.log(`ID: "${id}" (Parameter: "${param?.name}")`);
         });
         
-        fail(`Found ${invalidFormattedIds.length} invalidly formatted IDs. Check console output for details.`);
+        throw new Error(`Found ${invalidFormattedIds.length} invalidly formatted IDs. Check console output for details.`);
       }
     });
 });

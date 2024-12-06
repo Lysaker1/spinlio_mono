@@ -52,10 +52,10 @@ export const BasePanel: React.FC<BasePanelProps> = ({
 
   const handleParameterClick = (index: number) => {
     setActiveParamIndex(index);
-    
+
     const container = scrollContainerRef.current;
     if (!container) return;
-    
+
     // Get all cards and calculate the scroll position
     const cards = container.getElementsByClassName('parameter-card');
     if (cards.length <= index) return;
@@ -64,10 +64,10 @@ export const BasePanel: React.FC<BasePanelProps> = ({
     const card = cards[index] as HTMLElement;
     const containerWidth = container.offsetWidth;
     const cardWidth = card.offsetWidth;
-    
+
     // Center the card in the container
     const scrollPosition = card.offsetLeft - (containerWidth - cardWidth) / 2;
-    
+
     // Smooth scroll to the position
     container.scrollTo({
       left: scrollPosition,
@@ -183,21 +183,30 @@ export const BasePanel: React.FC<BasePanelProps> = ({
   };
 
   // New function to render desktop categories
-  const renderDesktopContent = () => {
-    return (
-      <div className="parameter-list">
-        {categories.map((category, index) => {
-          const categoryParams = parameters.filter(category.filter);
-          if (categoryParams.length === 0) return null;
+    const renderDesktopContent = () => {
+        const [visibleSubCategories, setVisibleSubCategories] = useState<Record<string, boolean>>({});
 
-          const paramsBySubCategory = categoryParams.reduce((acc, param) => {
-            const subCat = param.subCategory || 'Other';
-            if (!acc[subCat]) {
-              acc[subCat] = [];
-            }
-            acc[subCat].push(param);
-            return acc;
-          }, {} as Record<string, ParameterDefinition[]>);
+        const toggleSubCategoryVisibility = (subCategory: string) => {
+            setVisibleSubCategories(prevState => ({
+                ...prevState,
+                [subCategory]: !prevState[subCategory],
+            }));
+        };
+
+        return (
+            <div className="parameter-list">
+                {categories.map((category, index) => {
+                    const categoryParams = parameters.filter(category.filter);
+                    if (categoryParams.length === 0) return null;
+
+                    const paramsBySubCategory = categoryParams.reduce((acc, param) => {
+                        const subCat = param.subCategory || 'Other';
+                        if (!acc[subCat]) {
+                            acc[subCat] = [];
+                        }
+                        acc[subCat].push(param);
+                        return acc;
+                    }, {} as Record<string, ParameterDefinition[]>);
 
           // Sort parameters within each subCategory if sortParameters function exists
           if (category.sortParameters) {
@@ -206,53 +215,66 @@ export const BasePanel: React.FC<BasePanelProps> = ({
             });
           }
 
-          const sortedSubCategories = Object.keys(paramsBySubCategory).sort(
-            category.sortSubCategories || ((a, b) => {
-              if (a === 'Other') return 1;
-              if (b === 'Other') return -1;
-              return a.localeCompare(b);
-            })
-          );
+                    const sortedSubCategories = Object.keys(paramsBySubCategory).sort(
+                        category.sortSubCategories || ((a, b) => {
+                            if (a === 'Other') return 1;
+                            if (b === 'Other') return -1;
+                            return a.localeCompare(b);
+                        })
+                    );
 
-          return (
-            <div key={index} className="parameter-section">
-              <h3 className="section-title">{category.title}</h3>
-              {sortedSubCategories.map(subCategory => (
-                <div key={subCategory} className="sub-category">
-                  <h4 className="sub-category-title">{subCategory}</h4>
-                  <div className="category-items">
-                    {paramsBySubCategory[subCategory].map(param => (
-                      <div key={param.id} className="parameter-item">
-                        {renderParameter(param)}
-                      </div>
+                    return (
+                        <div key={index} className="parameter-section">
+                            <h3 className="section-title">{category.title}</h3>
+                            {sortedSubCategories.map(subCategory => (
+                                <div key={subCategory} className="sub-category">
+                                    <h4
+                                        className={`${
+                                            visibleSubCategories[subCategory]
+                                                ? 'sub-category-title-active'
+                                                : 'sub-category-title'
+                                        }`}
+                                        onClick={() => toggleSubCategoryVisibility(subCategory)}
+                                    >
+                                        {subCategory}
+                                    </h4>
+                                    <div
+                                        className={`category-items ${
+                                            visibleSubCategories[subCategory] ? 'open' : ''
+                                        }`}
+                                    >
+                                        {paramsBySubCategory[subCategory].map(param => (
+                                            <div key={param.id} className="parameter-item">
+                                                {renderParameter(param)}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    );
+                })}
+            </div>
+        );
+    };
+
+    return (
+        // Main container with dynamic classes for mobile/active states
+        <div className={`panel ${className} ${isMobile ? 'mobile' : ''} ${isActive ? 'active' : ''}`}>
+            {isMobile ? (
+                // Mobile layout: scrollable list of parameter cards
+                <div className="parameter-scroll" ref={scrollContainerRef}>
+                    {sortedParameters.map(param => (
+                        // Container for each parameter with unique key
+                        <div key={param.id} className="parameter-card">
+                            {renderMobileParameter(param)}
+                        </div>
                     ))}
-                  </div>
                 </div>
-              ))}
-            </div>
-          );
-        })}
-      </div>
-    );
-  };
-
-  return (
-    // Main container with dynamic classes for mobile/active states
-    <div className={`panel ${className} ${isMobile ? 'mobile' : ''} ${isActive ? 'active' : ''}`}>
-      {isMobile ? (
-        // Mobile layout: scrollable list of parameter cards
-        <div className="parameter-scroll" ref={scrollContainerRef}>
-          {sortedParameters.map(param => (
-            // Container for each parameter with unique key
-            <div key={param.id} className="parameter-card">
-              {renderMobileParameter(param)}
-            </div>
-          ))}
+            ) : (
+                // Desktop layout: either custom content or standard parameter list
+                renderDesktopContent()
+            )}
         </div>
-      ) : (
-        // Desktop layout: either custom content or standard parameter list
-        renderDesktopContent()
-      )}
-    </div>
-  );
+    );
 };

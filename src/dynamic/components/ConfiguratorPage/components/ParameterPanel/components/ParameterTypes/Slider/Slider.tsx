@@ -90,7 +90,7 @@ export const Slider: React.FC<SliderProps> = ({
         </div>
         <div
           className={`slider-thumb ${isDragging ? 'active' : ''}`}
-          style={{ left: `${calculatePosition(Number(value)) === 0 ? 1 : calculatePosition(Number(value)) - 1}%` }}
+          style={{ left: `${calculatePosition(Number(value)) === 0 ? 3 : calculatePosition(Number(value)) - 2}%` }}
         />
       </div>
 

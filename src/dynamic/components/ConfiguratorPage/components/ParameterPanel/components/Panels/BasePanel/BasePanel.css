@@ -17,6 +17,7 @@
   width: 100%;
   padding: 0;
 
+
   /* Add slightly more prominent divider between sections */
   &:not(:last-child)::after {
     content: '';
@@ -244,9 +245,44 @@
 .sub-category-title {
   font-size: 1.1rem;
   color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 1rem;
-  border-radius: 0.4rem;
+  margin-bottom: 0.5rem;
+  border-radius: 2rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-weight: 500;
+  cursor: pointer;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: color 0.6s ease;
+  margin-top: 1rem;
+}
+
+.sub-category-title-active {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 0.5rem;
+  border-radius: 2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.6rem 0.8rem;
+  margin-top: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  transition: color 0.6s ease;
+}
+
+
+.category-items {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.6s ease, opacity 0.6s ease;
+}
+
+.category-items.open {
+  overflow: hidden;
+  max-height: 1000px;
+  width: 100%;
+  opacity: 1;
 }

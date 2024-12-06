@@ -19,11 +19,19 @@
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
+    overflow-y: scroll;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+  }
+
+  .parameter-section::-webkit-scrollbar {
+    display: none;
+
   }
 
   .section-title {
     color: #DDDDDD;
-    font-size: 16px;
+    font-size: 1.2rem;
     font-weight: 500;
     margin-bottom: 0.8rem;
     max-width: 100%;

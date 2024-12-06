@@ -61,15 +61,6 @@
   box-sizing: border-box;
 }
 
-
-/* Label below shape */
-.shape-label {
-  margin-top: 0.25rem;
-  font-size: 0.7rem;  /* Slightly reduced from 0.75rem */
-  color: rgba(255, 255, 255, 0.8);
-  text-align: center;
-}
-
 /* Two columns version for specific parameters */
 /* Two columns version for specific parameters - make these bigger */
 .shape-grid.two-columns {
@@ -87,14 +78,6 @@
       object-fit: contain;
       max-width: 80px;
       max-height: 80px;
-    }
-
-    /* Adjust label size for bigger containers */
-    .shape-label {
-      margin-top: 0.5rem;
-      font-size: 0.8rem;
-      color: rgba(255, 255, 255, 0.8);
-      text-align: center;
     }
   }
 }

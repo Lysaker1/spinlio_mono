@@ -72,7 +72,6 @@ export const ShapeGrid = ({
             onClick={() => onChange(option.value, definition)}
           >
             {renderIcon(option)}
-            <span className="shape-label">{option.label}</span>
           </button>
         ))}
       </div>

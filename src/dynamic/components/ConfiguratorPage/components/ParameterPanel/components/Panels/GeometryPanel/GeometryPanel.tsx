@@ -29,7 +29,6 @@ export const GeometryPanel: React.FC<GeometryPanelProps> = (props) => {
 
   const categories = [
     {
-      title: "Geometry Parameters",
       filter: (param: ParameterDefinition) => 
         param.category === 'geometry',
       sortSubCategories: (a: string, b: string) => {

@@ -13,7 +13,7 @@ import './BasePanel.css';
 
 // Define props interface for BasePanel component
 interface ParameterCategory {
-  title: string;
+  title?: string;
   filter: (param: ParameterDefinition) => boolean;
   sortSubCategories?: (a: string, b: string) => number;
   sortParameters?: (a: ParameterDefinition, b: ParameterDefinition) => number;

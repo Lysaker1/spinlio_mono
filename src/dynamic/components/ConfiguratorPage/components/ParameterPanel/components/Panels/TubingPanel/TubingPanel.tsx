@@ -30,7 +30,6 @@ export const TubingPanel: React.FC<TubingPanelProps> = (props) => {
 
   const categories = [
     {
-      title: "Tubing Parameters",
       filter: (param: ParameterDefinition) => 
         param.category === 'tubing',
       sortSubCategories: (a: string, b: string) => {

@@ -50,7 +50,6 @@ export const AccessoriesPanel: React.FC<AccessoriesPanelProps> = (props) => {
 
   const categories = [
     {
-      title: "Accessories Parameters",
       filter: (param: ParameterDefinition) => 
         param.category === 'accessories',
       sortSubCategories: (a: string, b: string) => {

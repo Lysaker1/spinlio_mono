@@ -105,7 +105,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             className={`sidebar-button ${activeSection === 'Prefab' ? 'active' : ''}`}
             onClick={handleTemplatesClick}
           >
-            Prefab
+            Prefabs
           </button>
           <button 
             className={`sidebar-button ${activeSection === 'settings' ? 'active' : ''}`}

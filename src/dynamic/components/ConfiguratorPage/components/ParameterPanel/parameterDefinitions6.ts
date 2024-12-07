@@ -12,6 +12,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     id: 'eea4374e-a513-4f61-924a-f8175351fa8b',
     name: 'Stack height',
     category: 'geometry',
+    subCategory: 'Head Tube',
     type: 'slider',
     value: '560',
     min: 540,
@@ -842,14 +843,14 @@ export const parameterDefinitions: ParameterDefinition[] = [
     //   value: '',
     //   configuratorTypes: ['vulz']
     // },
-    {
+    /*{
       id: '6c895932-e37c-4815-88ef-9bc7ef8520b0',
       name: 'Match Seatstay & Top tube',
       category: 'accessories',
       type: 'checkbox',
       value: 'false'
       // No configuratorTypes means it appears in all configurators
-    },
+    },*/
     {
       id: 'da8f6e1f-fe0a-43f1-a8c7-f7c2d27c5a4d',
       name: 'Seat stay angle',
@@ -958,18 +959,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
       max: 20,
       unit: 'mm',
     },
-    {
-      id: 'name-width',
-      name: 'Width',
-      category: 'tubing',
-      subCategory: 'Down Tube',
-      type: 'slider',
-      value: '30',
-      min: 30,
-      max: 100,
-      unit: 'mm',
-      configuratorTypes: ['vulz']
-    },
+  
     // {
     //   id: '5e5d90ef-320f-44d0-a24a-a73b12cb7bc4',
     //   name: 'Top Tube Logo Position',

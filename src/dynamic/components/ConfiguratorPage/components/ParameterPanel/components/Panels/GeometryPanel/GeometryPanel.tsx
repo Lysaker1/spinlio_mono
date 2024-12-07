@@ -31,6 +31,10 @@ export const GeometryPanel: React.FC<GeometryPanelProps> = (props) => {
     {
       filter: (param: ParameterDefinition) => 
         param.category === 'geometry',
+      // Add initial visibility state for subcategories
+      initialVisibility: {
+        'Top Tube': true  // Set Top Tube to be open by default
+      },
       sortSubCategories: (a: string, b: string) => {
         // Get indices from the order array
         const indexA = subCategoryOrder.indexOf(a);

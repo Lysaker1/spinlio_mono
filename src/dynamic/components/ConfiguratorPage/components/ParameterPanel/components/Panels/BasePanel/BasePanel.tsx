@@ -15,6 +15,7 @@ import './BasePanel.css';
 interface ParameterCategory {
   title?: string;
   filter: (param: ParameterDefinition) => boolean;
+  initialVisibility?: Record<string, boolean>;
   sortSubCategories?: (a: string, b: string) => number;
   sortParameters?: (a: ParameterDefinition, b: ParameterDefinition) => number;
 }
@@ -184,7 +185,13 @@ export const BasePanel: React.FC<BasePanelProps> = ({
 
   // New function to render desktop categories
     const renderDesktopContent = () => {
-        const [visibleSubCategories, setVisibleSubCategories] = useState<Record<string, boolean>>({});
+        const [visibleSubCategories, setVisibleSubCategories] = useState<Record<string, boolean>>(() => {
+            // Initialize with any default visible subcategories from all categories
+            return categories.reduce((acc, category) => ({
+                ...acc,
+                ...category.initialVisibility
+            }), {});
+        });
 
         const toggleSubCategoryVisibility = (subCategory: string) => {
             setVisibleSubCategories(prevState => ({

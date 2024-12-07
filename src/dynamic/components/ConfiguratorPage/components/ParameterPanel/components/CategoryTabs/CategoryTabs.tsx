@@ -10,7 +10,7 @@ export type TabType = 'tubing' | 'geometry' | 'accessories';
 const DEFAULT_TABS: Tab[] = [
   { id: 'tubing', label: 'Tubing' },
   { id: 'geometry', label: 'Geometry' },
-  { id: 'accessories', label: 'Accessories' },
+  { id: 'accessories', label: 'Parts' },
 ] as const;
 
 // Define the shape of a single tab object

@@ -32,6 +32,10 @@ export const TubingPanel: React.FC<TubingPanelProps> = (props) => {
     {
       filter: (param: ParameterDefinition) => 
         param.category === 'tubing',
+      // Add initial visibility state for subcategories
+      initialVisibility: {
+        'Frame': true  // Set Frame to be open by default
+      },
       sortSubCategories: (a: string, b: string) => {
         // Get indices from the order array
         const indexA = subCategoryOrder.indexOf(a);

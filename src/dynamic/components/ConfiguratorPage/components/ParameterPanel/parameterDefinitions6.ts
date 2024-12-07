@@ -67,10 +67,6 @@ export const parameterDefinitions: ParameterDefinition[] = [
         label: 'Glossy',
         value: '1'
       },
-      {
-        label: 'Metallic',
-        value: '2'
-      }
     ]
   },
   {
@@ -948,17 +944,17 @@ export const parameterDefinitions: ParameterDefinition[] = [
       ],
       configuratorTypes: ['vulz']
     },
-    {
-      id: '3902e965-6a81-4d91-a8c0-e65209a882a3',
-      name: 'Height',
-      category: 'tubing',
-      subCategory: 'Top Tube',
-      type: 'slider',
-      value: '8',
-      min: 6,
-      max: 20,
-      unit: 'mm',
-    },
+    // {
+    //   id: '3902e965-6a81-4d91-a8c0-e65209a882a3',
+    //   name: 'Height',
+    //   category: 'tubing',
+    //   subCategory: 'Top Tube',
+    //   type: 'slider',
+    //   value: '8',
+    //   min: 6,
+    //   max: 20,
+    //   unit: 'mm',
+    // },
   
     // {
     //   id: '5e5d90ef-320f-44d0-a24a-a73b12cb7bc4',

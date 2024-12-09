@@ -193,7 +193,8 @@ const ConfiguratorPage: React.FC = () => {
           <div className={`parameter-panel-container ${isShareMenuOpen ? 'share-open' : ''}`}>
             <Suspense fallback={null}>
               <ParameterPanel
-                selectedComponent={selectedComponent}
+                  key={JSON.stringify(session?.parameterValues)}
+                  selectedComponent={selectedComponent}
                 session={session}
                 viewport={viewport}
               />

@@ -89,7 +89,7 @@ export const ParameterPanel: React.FC<ParameterPanelProps> = ({
     if (currentValuesStr !== newValuesStr) {
       setParameterValues(newValues);
     }
-  }, [session?.parameterValues]);
+  }, [session]);
 
   // Get filtered parameters for current tab
   const getCurrentParameters = () => {

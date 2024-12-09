@@ -98,11 +98,12 @@
   /* Ensure SVG icons scale with container */
   & svg {
     width: 75%;  /* Increased from 60% */
-    height: 95%; /* Increased from 60% */
+    height: 100%; /* Increased from 60% */
   }
 
   .shape-icon {
     width: 100%;
+    height: 100%;
   }
 
   /* Also adjust image icons if present */

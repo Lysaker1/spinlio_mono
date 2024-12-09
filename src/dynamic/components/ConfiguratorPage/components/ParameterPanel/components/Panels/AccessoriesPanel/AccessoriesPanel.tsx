@@ -40,22 +40,30 @@ export const AccessoriesPanel: React.FC<AccessoriesPanelProps> = (props) => {
   const brakeTypeValue = props.parameterValues[brakeTypeId];
 
   // Filter parameters to exclude Brake Mount option if not disc brake
-  const filteredParameters = props.parameters.filter(param => {
+  const filteredParameters = props.parameters.map(param => {
+
+    //Disable Brake Mount parameter when v-brake brake type selected
+    if (param.name === 'Disc Brake Mount' && brakeTypeValue === '0') {
+      return { ...param, disabled: true };
+    }
+
+
     // Only include Brake Mount if Disc Brake is selected
     if (param.name === 'Brake Mount') {
-      return brakeTypeValue === 'Disc Brake'; // Adjust this value to match your actual Disc Brake value
+      return brakeTypeValue === 'Disc Brake' ? param : null;
     }
-    return true;
-  });
+
+    return param;
+  }).filter(Boolean);
 
   const categories = [
     {
-      filter: (param: ParameterDefinition) => 
+      filter: (param: ParameterDefinition) =>
         param.category === 'accessories',
       sortSubCategories: (a: string, b: string) => {
         const indexA = subCategoryOrder.indexOf(a);
         const indexB = subCategoryOrder.indexOf(b);
-        
+
         if (indexA !== -1 && indexB !== -1) {
           return indexA - indexB;
         }
@@ -67,7 +75,7 @@ export const AccessoriesPanel: React.FC<AccessoriesPanelProps> = (props) => {
       },
       sortParameters: (a: ParameterDefinition, b: ParameterDefinition) => {
         if (!a.subCategory || !b.subCategory) return 0;
-        
+
         const orderArray = parameterOrder[a.subCategory];
         if (!orderArray) return 0;
 
@@ -79,7 +87,7 @@ export const AccessoriesPanel: React.FC<AccessoriesPanelProps> = (props) => {
         }
         if (indexA !== -1) return -1;
         if (indexB !== -1) return 1;
-        
+
         return 0;
       }
     }

@@ -317,12 +317,6 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
         ref={canvasRef}
         className="viewerCanvas"
       />
-      {/* Loading overlay */}
-      {/*{isLoading && (*/}
-      {/*  <Overlay className="loadingOverlay">*/}
-      {/*    <img src={LOADING_GIF_URL} alt="Loading" className="loadingGif" />*/}
-      {/*  </Overlay>*/}
-      {/*)}*/}
       {/* QR code modal for AR view */}
       <Modal opened={showQrModal} onClose={() => setShowQrModal(false)} title="AR QR Code">
         {qrCodeUrl && <img src={qrCodeUrl} alt="AR QR Code" style={{ width: '100%' }} />}

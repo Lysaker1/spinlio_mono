@@ -24,9 +24,9 @@ export const ShapeGrid = ({
 
   const renderIcon = (option: { label: string; value: string }): ReactElement | null => {
     const icon = ShapeIcons[option.label.replace(' mount', ' Mount') as keyof typeof ShapeIcons] as IconType | ReactElement;
-    
+
     if (!icon) return null;
-  
+
     // Check if icon is an image type
     if (typeof icon === 'object' && 'type' in icon && icon.type === 'image' && 'src' in icon) {
       const isMount = definition.name.toLowerCase().includes('mount');
@@ -35,7 +35,7 @@ export const ShapeGrid = ({
 
       return (
         <div className={`shape-icon ${specialClass}`}>
-          <img 
+          <img
             src={icon.src}
             alt={option.label}
             className="shape-icon-image"
@@ -43,7 +43,7 @@ export const ShapeGrid = ({
         </div>
       );
     }
-  
+
     // Handle SVG icons (original behavior)
     return (
       <div className="shape-icon">
@@ -63,7 +63,9 @@ export const ShapeGrid = ({
 
       <div className={`shape-grid ${
         definition.name.toLowerCase().includes('mount') || 
-        definition.name.toLowerCase().includes('drop') ? 'two-columns' : ''
+        definition.name.toLowerCase().includes('drop') ? 'two-columns' : '' ||
+        definition.name.toLowerCase().includes('paint') ? 'two-columns' : ''
+        
       }`}>
         {definition.options?.map((option) => (
           <button

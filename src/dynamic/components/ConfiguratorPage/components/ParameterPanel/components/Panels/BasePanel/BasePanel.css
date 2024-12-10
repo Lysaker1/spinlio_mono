@@ -136,11 +136,6 @@
     background: rgba(0, 0, 0, 0.8);
     border-radius: 3px;
   }
-
-  /* Remove bottom border from last parameter */
-  & > *:last-child {
-    margin-bottom: 2rem; /* Extra space at bottom */
-  }
 }
 .panel, .geometry-panel, .tubing-panel, .accessories-panel {
   overflow: hidden;
@@ -226,10 +221,6 @@
   background: rgba(255, 255, 255, 0.05);
 }
 
-.parameter-section {
-  margin-bottom: 1.5rem;
-}
-
 .section-title {
   color: rgba(255, 255, 255, 0.9);
   font-size: 14px;
@@ -285,4 +276,5 @@
   max-height: 1000px;
   width: 100%;
   opacity: 1;
+  min-height: 135px;
 }

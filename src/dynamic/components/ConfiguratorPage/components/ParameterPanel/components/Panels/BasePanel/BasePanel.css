@@ -234,11 +234,10 @@
 }
 
 .sub-category-title {
-  font-size: 1.1rem;
+  font-size: .9rem;
   color: rgba(255, 255, 255, 0.8);
   margin-bottom: 0.5rem;
   border-radius: 2rem;
-  text-transform: uppercase;
   letter-spacing: 0.05em;
   font-weight: 500;
   cursor: pointer;
@@ -249,17 +248,17 @@
 }
 
 .sub-category-title-active {
-  font-size: 1.1rem;
-  color: rgba(255, 255, 255, 0.8);
+  font-size: .9rem;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
   margin-bottom: 0.5rem;
   border-radius: 2rem;
-  text-transform: uppercase;
   letter-spacing: 0.05em;
   font-weight: 500;
   cursor: pointer;
   padding: 0.6rem 0.8rem;
   margin-top: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   transition: color 0.6s ease;
 }
 

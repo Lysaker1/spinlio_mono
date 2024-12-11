@@ -14,14 +14,13 @@
   flex: 1;
   min-width: 0;
   white-space: nowrap;
-  font-size: clamp(0.8rem, 0.8vw, 0.8rem); /* Even smaller responsive font size */
+  font-size: clamp(1rem, 1vw, 1rem); /* Even smaller responsive font size */
   overflow: hidden;
   text-overflow: ellipsis;
   border-radius: 1.5rem;
   color: rgba(255, 255, 255, 0.7);
   font-family: "Helvetica Neue";
-  font-weight: 500;
-  padding: 0.7rem 1rem;
+  padding: 0.7rem 0.6rem;
   border: none;
   background: transparent;
   transition: all 0.2s ease;
@@ -38,12 +37,12 @@
   &.active {
     background: rgba(0, 0, 0, 0.822);
     color: #FFF;
-    font-weight: 600;
+    font-weight: 500;
     box-shadow:
       0 2px 4px rgba(0, 0, 0, 0.1),
       inset 0 1px 1px rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
-    padding: 0.7rem 1rem;  /* Slightly larger when active */
+    padding: 0.7rem 0.6rem;  /* Slightly larger when active */
     transform: scale(1.02);  /* Subtle scale effect */
 
   }

@@ -16,7 +16,7 @@ interface ShareButtonProps {
 const ShareButton: React.FC<ShareButtonProps> = ({ session, viewport, onMenuOpen, onMenuHeightChange }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [qrCodeCache, setQrCodeCache] = useState<string | null>(null);
+  const [isRequestInProgress, setIsRequestInProgress] = useState(false);
 
   useEffect(() => {
     onMenuOpen(isMenuOpen);
@@ -44,14 +44,32 @@ const ShareButton: React.FC<ShareButtonProps> = ({ session, viewport, onMenuOpen
     };
   }, [isMenuOpen]);
 
-  const generateQRCode = useCallback(async () => {
-    if (qrCodeCache) return qrCodeCache;
+  useEffect(() => {
+    if (!viewport) return;
 
-    // Generate QR code only when needed
-    const qrCode = await QRCode.toDataURL(window.location.href);
-    setQrCodeCache(qrCode);
-    return qrCode;
-  }, [qrCodeCache]);
+    const cachedQr = localStorage.getItem('arQrCodeUrl');
+    const canViewInAR = viewport.viewableInAR();
+
+    if (!cachedQr && !canViewInAR && !isRequestInProgress) {
+      const timeoutId = setTimeout(() => {
+        const generateQr = async () => {
+          try {
+            setIsRequestInProgress(true);
+            const qr = await viewport.createArSessionLink(undefined, true);
+            localStorage.setItem('arQrCodeUrl', qr);
+          } catch (error) {
+            console.error('Error generating QR code:', error);
+          }
+        };
+        generateQr();
+      }, 2000);
+
+      return () => {
+        clearTimeout(timeoutId);
+      };
+    }
+  }, [viewport, isRequestInProgress]);
+
 
   return (
       <div className={`share-container ${isMenuOpen ? 'menu-open' : ''}`} ref={containerRef}>

@@ -96,7 +96,7 @@ export const AccessoriesPanel: React.FC<AccessoriesPanelProps> = (props) => {
   return (
     <BasePanel
       {...props}
-      parameters={filteredParameters}
+      parameters={filteredParameters as ParameterDefinition[]}
       className="accessories-panel"
       categories={categories}
     />

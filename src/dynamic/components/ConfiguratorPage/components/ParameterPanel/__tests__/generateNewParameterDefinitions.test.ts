@@ -33,9 +33,9 @@ interface ExternalConfig {
 }
 
 describe('Generate New Parameter Definitions', () => {
-  test('Generate parameter definitions from vulz-v3.json and write to TypeScript file', () => {
+  test('Generate parameter definitions from bike-o1-r09-v24.json and write to TypeScript file', () => {
     // Read the new model JSON
-    const modelPath = path.join(__dirname, '../__fixtures__/vulz-v3.json');
+    const modelPath = path.join(__dirname, '../__fixtures__/bike-o1-r09-v24.json');
     const modelData = JSON.parse(fs.readFileSync(modelPath, 'utf8')) as ExternalConfig;
 
     // Create a map of existing definitions for easy lookup

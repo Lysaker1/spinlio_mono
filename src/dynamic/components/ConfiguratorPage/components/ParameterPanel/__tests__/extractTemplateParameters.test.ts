@@ -65,21 +65,21 @@ describe('Template Parameter Extraction', () => {
 
 describe('Template Parameter Extraction', () => {
   test('Extract matching parameters from classic road bike', () => {
-    console.log(extractTemplateParameters('Classic-road-bike.json')); // Add .json extension here
+    console.log(extractTemplateParameters('bike-o1-r09-v24.json')); // Add .json extension here
   });
 });
 
-describe('Template Parameter Extraction', () => {
-  test('Extract matching parameters from girls bike', () => {
-    console.log(extractTemplateParameters('girls-bike.json')); // Add .json extension here
-  });
-});
+// describe('Template Parameter Extraction', () => {
+//   test('Extract matching parameters from girls bike', () => {
+//     console.log(extractTemplateParameters('girls-bike.json')); // Add .json extension here
+//   });
+// });
 
-describe('Template Parameter Extraction', () => {
-  test('Extract matching parameters from canyon endurance 7', () => {
-    console.log(extractTemplateParameters('canyon-endurance-7.json')); // Add .json extension here
-  });
-});
+// describe('Template Parameter Extraction', () => {
+//   test('Extract matching parameters from canyon endurance 7', () => {
+//     console.log(extractTemplateParameters('canyon-endurance-7.json')); // Add .json extension here
+//   });
+// });
 
   // You can now easily add more models by adding new test cases:
   // test('Extract matching parameters from model_x', () => {

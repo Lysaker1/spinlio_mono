@@ -25,7 +25,6 @@
   height: 100vh;
   padding: 6.25rem 1.25rem 1.25rem 1.25rem; /* Top padding for header */
   background: rgba(117, 117, 117, 0.1);
-  backdrop-filter: blur(10px);
   z-index: 900;
   display: flex;
   flex-direction: column;
@@ -48,7 +47,6 @@
   display: flex;
   height: 100vh; /* Viewport height minus header */
   width: 100vw; /* 90% of viewport width */
-  padding-left: 10vw; /* Space for sidebar */
   position: relative;
 
 }
@@ -56,7 +54,7 @@
 /* 3D Viewer Container - Desktop - Contains the 3D model viewer */
 /* -------------------------------------------------- */
 .viewer-container {
-  width: 75%;
+  width: 100%;
   height: 100vh; /* Take full height */
   display: flex;
   justify-content: center;

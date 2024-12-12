@@ -27,6 +27,12 @@ const ShareMenu: React.FC<ShareMenuProps> = ({ onClose, session, viewport,isMenu
     }
   }, [onHeightChange, activeView]);
 
+  useEffect(() => {
+    if (activeView === 'ar' && onHeightChange) {
+        onHeightChange(30)
+    }
+  }, [activeView]);
+
   return (
     <div className="share-menu" ref={menuRef}>
       {activeView === 'main' && (

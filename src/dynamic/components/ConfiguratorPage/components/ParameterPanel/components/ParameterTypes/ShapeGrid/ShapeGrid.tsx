@@ -63,9 +63,10 @@ export const ShapeGrid = ({
 
       <div className={`shape-grid ${
         definition.name.toLowerCase().includes('mount') || 
-        definition.name.toLowerCase().includes('drop') ? 'two-columns' : '' ||
-        definition.name.toLowerCase().includes('paint') ? 'two-columns' : ''
-        
+        definition.name.toLowerCase().includes('drop') ||
+        definition.name.toLowerCase().includes('paint')
+          ? 'two-columns' 
+          : ''
       }`}>
         {definition.options?.map((option) => (
           <button

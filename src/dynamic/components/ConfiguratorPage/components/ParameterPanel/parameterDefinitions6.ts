@@ -19,13 +19,13 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "max": 600,
     "unit": "mm"
   },
-  {
-    "id": "15c239d7-8130-41d2-8470-342335fcfb5f",
-    "name": "X-Fork Crown Height",
-    "value": "20",
-    "category": "other",
-    "type": "text"
-  },
+  // {
+  //   "id": "15c239d7-8130-41d2-8470-342335fcfb5f",
+  //   "name": "X-Fork Crown Height",
+  //   "value": "20",
+  //   "category": "other",
+  //   "type": "text"
+  // },
   {
     "id": "d1f726c0-fb21-4f15-8f11-06ba73e0f3a9",
     "name": "Bottom Bracket Drop",
@@ -121,7 +121,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "subCategory": "Head Tube",
     "type": "slider",
     "value": "72.0",
-    "min": 70,
+    "min": 72,
     "max": 74,
     "unit": "°",
     "configuratorTypes": [
@@ -137,6 +137,20 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "value": "555",
     "min": 535,
     "max": 620,
+    "unit": "mm",
+    "configuratorTypes": [
+      "default"
+    ]
+  },
+  {
+    "id": "64ecfdab-39bb-4d5c-a11d-b98690404bf9",
+    "name": "Length",
+    "category": "geometry",
+    "subCategory": "Top Tube",
+    "type": "slider",
+    "value": "555",
+    "min": 535,
+    "max": 555,
     "unit": "mm",
     "configuratorTypes": [
       "vulz"
@@ -317,7 +331,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "type": "slider",
     "value": "40",
     "min": 28,
-    "max": 55,
+    "max": 40,
     "unit": "mm",
     "configuratorTypes": [
       "vulz"
@@ -538,6 +552,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "max": 40,
     "unit": "mm"
   },
+
+
   {
     "id": "734e8f5c-4006-47e6-b84f-61df7fb0dde2",
     "name": "TopTube CurvePoints",

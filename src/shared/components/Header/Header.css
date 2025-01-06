@@ -6,6 +6,8 @@
   padding: 10px;
   /* Remove any background effects from the header wrapper */
   background: transparent;
+  z-index: 1000;
+  /* Ensure header is above other elements */
 }
 
 .header-content {
@@ -34,6 +36,7 @@
   line-height: 1.75rem;
   text-decoration: none;
   margin-left: 0.7rem;
+  cursor: pointer;
 }
 
 .nav-links {
@@ -57,6 +60,7 @@
   text-decoration: none;
   border-radius: 2.125rem;
   transition: background 0.2s ease;
+  cursor: pointer;
 }
 
 .nav-links a:hover {
@@ -68,14 +72,22 @@
 /* Responsive design */
 @media (max-width: 640px) {
   .header-content {
-    padding: 0.5rem;
+    max-width: 90%;
+    /* Adjust width for mobile */
+    padding: 0.5rem 1rem;
   }
-  
+
+  .logo {
+    font-size: 1.25rem;
+    /* Slightly smaller on mobile */
+  }
+
   .nav-links {
-    gap: 0.25rem;
+    gap: 0.5rem;
   }
-  
+
   .nav-links a {
-    padding: 0.5rem 0.75rem;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
   }
 }

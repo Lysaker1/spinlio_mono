@@ -1,13 +1,8 @@
 import axios from 'axios';
 
-export const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://api.imagine.bike';
-
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  withCredentials: true,
+export const api = axios.create({
+  baseURL: 'http://localhost:3003',  // Update this to use port 3003
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
-
-api.defaults.xsrfCookieName = 'csrftoken';
-api.defaults.xsrfHeaderName = 'X-CSRFToken';
-
-export { api };

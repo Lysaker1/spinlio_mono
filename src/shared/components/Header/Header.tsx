@@ -1,5 +1,6 @@
 import React from 'react';
 import './Header.css';
+import AuthButton from '../AuthButton/AuthButton';
 
 const Header: React.FC = () => {
   // Define base URLs
@@ -28,6 +29,7 @@ const Header: React.FC = () => {
         <nav className="nav-links">
           <a href={`${MAIN_URL}/about`}>About</a>
           <a href={`${MAIN_URL}/contact1`}>Contact us</a>
+          <AuthButton />
         </nav>
       </div>
     </header>

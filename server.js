@@ -78,13 +78,16 @@ app.use(helmet({
         "https://*.klaviyo.com",
         "https://*.google-analytics.com",
         "https://*.analytics.google.com",
-        "https://*.googletagmanager.com"
+        "https://*.googletagmanager.com",
+        "https://*.auth0.com",
+        "https://dev-jxcml1qpmbgabh6v.us.auth0.com"
       ],
       frameSrc: [
         "'self'",
         "https://*.hsforms.com", 
         "https://*.hubspot.com",
-        "https://www.herokucdn.com"
+        "https://www.herokucdn.com",
+        "https://*.auth0.com"
       ],
       imgSrc: [
         "'self'",
@@ -113,8 +116,10 @@ app.use(helmet({
         "https://static-tracking.klaviyo.com",
         "https://*.hsforms.com", 
         "https://*.hubspot.com",
+        "https://fonts.gstatic.com",
         "https://*.googletagmanager.com",
-        "https://www.google-analytics.com"
+        "https://www.google-analytics.com",
+        "https://*.auth0.com"
       ],
       styleSrc: [
         "'self'", 

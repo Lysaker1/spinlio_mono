@@ -9,7 +9,7 @@ import './ConfiguratorPage.css';
 // Import error boundary component for error handling
 import ErrorBoundary from '../../../shared/components/ErrorBoundary/ErrorBoundary';
 // Import navigate function from react-router-dom
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 // Import panel settings component
 // import { PanelSettings } from './components/ParameterPanel/components/PanelSettings/PanelSettings';
 
@@ -21,6 +21,10 @@ import SupplierButton from './components/SupplierButton/SupplierButton';
 import Sidebar from './components/Sidebar/Sidebar';
 import { bikeTemplates, BikeTemplate } from './components/Sidebar';
 import { MODEL_ID } from './components/Sidebar/bikeTemplates';
+import { SaveDesignButton } from '../../../shared/components/SaveDesignButton/SaveDesignButton';
+import { DesignStorageService } from '@shared/services/designStorage';
+import { MyDesigns } from '../../../shared/components/MyDesigns/MyDesigns';
+import { CONFIGURATOR_TYPES } from '../../../shared/constants/configuratorTypes';
 
 
 // Main configurator component definition
@@ -49,6 +53,7 @@ const ConfiguratorPage: React.FC = () => {
 
   // Add navigate function
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Add new state for parameter values
   const [parameterValues, setParameterValues] = useState<Record<string, string>>({});
@@ -124,6 +129,8 @@ const ConfiguratorPage: React.FC = () => {
     }
   }, [session, viewport]);
 
+
+
   // Effect hook for updating CSS custom property when height changes
   useEffect(() => {
     // Update CSS custom property when height changes
@@ -151,6 +158,33 @@ const ConfiguratorPage: React.FC = () => {
     }
   }, [session, viewport]);
 
+  const handleDesignSelect = useCallback(async (parameters: Record<string, any>) => {
+    if (!session) return;
+
+    try {
+      const token = viewport?.addFlag(FLAG_TYPE.BUSY_MODE);
+      
+      // Update all parameters at once
+      await session.customize(parameters);
+      
+      if (session.node && viewport) {
+        await viewport.updateNode(session.node);
+        viewport.update();
+        viewport.render();
+      }
+      
+      if (token) viewport?.removeFlag(token);
+    } catch (error) {
+      console.error('Error loading saved design:', error);
+    }
+  }, [session, viewport]);
+
+  useEffect(() => {
+    if (location.state?.designParameters && session && viewport) {
+      handleDesignSelect(location.state.designParameters);
+    }
+  }, [session, viewport, location.state]);
+
   // Component render
   return (
     // Wrap entire component in error boundary
@@ -163,10 +197,19 @@ const ConfiguratorPage: React.FC = () => {
           onShowOnlyFrameChange={setShowOnlyFrame}
           onShowDimensionsChange={setShowDimensions}
           session={session}
-        />
+        >
+          <MyDesigns 
+            onSelect={handleDesignSelect} 
+            currentConfiguratorType={CONFIGURATOR_TYPES.DEFAULT}
+          />
+        </Sidebar>
         
         {/* Share button container */}
         <div className="top-right-buttons">
+          <SaveDesignButton 
+            getCurrentParameters={() => session?.parameterValues || {}}
+            configuratorType={CONFIGURATOR_TYPES.DEFAULT}
+          />
           <ShareButton 
             session={session} 
             viewport={viewport}

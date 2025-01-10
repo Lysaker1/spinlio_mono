@@ -12,6 +12,7 @@ interface SidebarProps {
   onShowOnlyFrameChange: (value: boolean) => void;
   onShowDimensionsChange: (value: boolean) => void;
   session: ISessionApi | null;
+  children?: React.ReactNode;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ 
@@ -20,10 +21,11 @@ const Sidebar: React.FC<SidebarProps> = ({
   showDimensions, 
   onShowOnlyFrameChange, 
   onShowDimensionsChange,
-  session 
+  session,
+  children
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [activeSection, setActiveSection] = useState<'none' | 'Prefab' | 'settings'>('none');
+  const [activeSection, setActiveSection] = useState<'none' | 'Prefab' | 'settings' | 'myDesigns'>('none');
   const navigate = useNavigate();
 
   const handleClickOutside = useCallback((e: MouseEvent) => {
@@ -51,6 +53,11 @@ const Sidebar: React.FC<SidebarProps> = ({
   const handleSettingsClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setActiveSection(activeSection === 'settings' ? 'none' : 'settings');
+  };
+
+  const handleMyDesignsClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setActiveSection(activeSection === 'myDesigns' ? 'none' : 'myDesigns');
   };
 
   const handleTemplateSelect = (templateId: string, e: React.MouseEvent) => {
@@ -119,14 +126,18 @@ const Sidebar: React.FC<SidebarProps> = ({
           >
             VULZ
           </button>
-          {/*
           <button 
-            className="sidebar-button beta-button" 
-            onClick={handleBetaClick}
+            className={`sidebar-button ${activeSection === 'myDesigns' ? 'active' : ''}`}
+            onClick={handleMyDesignsClick}
           >
-            Beta
+            My Designs
           </button>
-          */}
+
+          {activeSection === 'myDesigns' && (
+            <div className="template-container visible">
+              {children}
+            </div>
+          )}
 
           {activeSection === 'Prefab' && (
             <div className="template-container visible">

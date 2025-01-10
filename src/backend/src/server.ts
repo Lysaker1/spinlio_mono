@@ -4,15 +4,39 @@ import cors from 'cors';
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 import { RequestHandler } from 'express-serve-static-core';
+import { auth } from 'express-oauth2-jwt-bearer';
 
 dotenv.config();
+
+const AUTH0_AUDIENCE = process.env.NODE_ENV === 'production' 
+  ? process.env.AUTH0_AUDIENCE_PROD 
+  : process.env.AUTH0_AUDIENCE_DEV;
+
+const requiredEnvVars = [
+    'SUPABASE_URL',
+    'SUPABASE_ANON_KEY',
+    'AUTH0_AUDIENCE_DEV',
+    'AUTH0_AUDIENCE_PROD',
+    'AUTH0_ISSUER_BASE_URL'
+  ];
+  
+  requiredEnvVars.forEach(varName => {
+    if (!process.env[varName]) {
+      throw new Error(`Missing required environment variable: ${varName}`);
+    }
+  });
 
 const app = express();
 
 // Rate limiting configuration
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  legacyHeaders: false,
+  standardHeaders: true,
+  skip: (req) => {
+    return req.path === '/';
+  }
 }) as unknown as RequestHandler;
 
 // Initialize Supabase client
@@ -24,12 +48,23 @@ const supabase = createClient(
 // Middleware
 app.use(limiter);
 app.use(cors({
-  origin: ['http://localhost:3001', 'https://design.spinlio.com'],
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://localhost:3003',
+    'https://design.spinlio.com',
+    'https://spinlio.com',
+    'https://configurator.spinlio.com',
+    'https://api.spinlio.com'
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
+
+// Add this after app initialization
+app.set('trust proxy', 1);
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -229,7 +264,36 @@ app.get('/api/designs', (async (req: Request, res: Response) => {
   }
 }) as RequestHandler);
 
+const jwtCheck = auth({
+  audience: process.env.NODE_ENV === 'production'
+    ? 'https://api.spinlio.com'
+    : 'http://localhost:3003',
+  issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
+  tokenSigningAlg: 'RS256'
+});
+
+// Apply JWT check to protected routes only
+app.use('/api/designs', jwtCheck);
+app.use('/api/items', jwtCheck);
+
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  next();
+});
+
+app.use((err: any, req: Request, res: Response, next: any) => {
+  console.error('Unhandled error:', err);
+  res.status(500).json({ 
+    error: 'Internal server error',
+    message: process.env.NODE_ENV === 'development' ? err.message : undefined
+  });
+});
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+

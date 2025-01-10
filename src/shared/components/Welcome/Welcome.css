@@ -1,0 +1,41 @@
+.welcome-page {
+  min-height: 120vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  color: rgba(0, 0, 0, 0.945);
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  overflow-y: visible;
+}
+
+.welcome-content {
+  text-align: center;
+  padding: 2rem;
+  margin: auto;
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: calc(100vh - 4rem);
+  position: relative;
+  z-index: 1;
+}
+
+.text-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  margin-top: 6rem;
+  padding: 3rem;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+} 

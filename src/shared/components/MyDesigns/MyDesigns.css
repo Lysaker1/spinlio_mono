@@ -1,0 +1,98 @@
+.sidebar-button {
+  width: 100%;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  font-weight: 500;
+  text-transform: none;
+  padding: 12px 24px;
+} 
+
+.designs-container {
+  padding: 20px;
+  width: 100%;
+}
+
+.designs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.design-card {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.design-card:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.design-card h3 {
+  margin: 0 0 10px 0;
+  color: white;
+}
+
+.design-card p {
+  margin: 0 0 15px 0;
+  color: #ccc;
+  font-size: 0.9em;
+}
+
+.load-button {
+  width: 100%;
+  padding: 8px;
+  background: #4a4a4a;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+}
+
+.load-button:hover {
+  background: #5a5a5a;
+}
+
+.no-designs {
+  text-align: center;
+  color: #ccc;
+  padding: 40px;
+}
+
+.template-button {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.template-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.template-name {
+  display: block;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.template-date {
+  font-size: 0.8rem;
+  color: #000000;
+  margin: 0;
+}
+
+.configurator-type {
+  font-size: 0.8em;
+  color: #888;
+  margin-left: 0.5em;
+} 

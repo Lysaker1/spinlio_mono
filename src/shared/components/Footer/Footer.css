@@ -1,19 +1,30 @@
 .footer {
     background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(10px);
-    padding: 0.625rem 0; /* 10px */
-    position: relative;
-    z-index: 1000;
+    padding: 0.625rem 0;
+    position: fixed;
+    bottom: -100px; /* Start hidden below the viewport */
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 9999;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
+    transition: bottom 0.3s ease-in-out;
+    pointer-events: auto;
+}
+
+.footer.visible {
+    bottom: 0; /* Slide up into view */
 }
 
 .footer-content {
-    max-width: 74.25rem; /* 1184px */
+    max-width: 74.25rem;
     margin: 0 auto;
-    padding: 0 0.625rem; /* 10px */
+    padding: 0 0.625rem;
     display: flex;
-    justify-content: space-between; /* This spreads the content */
+    justify-content: space-between;
     align-items: center;
+    width: 100%;
 }
   
   .footer-text {

@@ -43,6 +43,7 @@ module.exports = (env) => {
         https://*.klaviyo.com
         https://*.hsforms.com 
         https://*.hubspot.com
+        https://*.auth0.com
         https://js.hsforms.net; 
       style-src 'self' 'unsafe-inline' 
         https://static.klaviyo.com
@@ -53,7 +54,8 @@ module.exports = (env) => {
         https://*.klaviyo.com
         https://*.spinlio.com 
         https://www.google-analytics.com
-        https://*.shapediver.com; 
+        https://*.shapediver.com
+        https://*.auth0.com; 
       font-src 'self' data:
         https://static.klaviyo.com
         https://*.klaviyo.com;

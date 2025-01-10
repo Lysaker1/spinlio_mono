@@ -84,12 +84,14 @@
 }
 
 .top-right-buttons {
-  position: absolute;
+  position: fixed;
   top: 1.5rem;
   right: 2vh;
-  width: auto;
-  z-index: 900;
-  pointer-events: all;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  z-index: 1001;
 }
 
 /* When share menu is open, adjust panel position */

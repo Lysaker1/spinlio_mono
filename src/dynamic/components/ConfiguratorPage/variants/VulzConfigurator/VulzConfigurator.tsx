@@ -1,6 +1,6 @@
-import React, { useState, Suspense, useCallback } from 'react';
+import React, { useState, Suspense, useCallback, useEffect } from 'react';
 import { ISessionApi, IViewportApi, FLAG_TYPE } from '@shapediver/viewer';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import ErrorBoundary from '../../../../../shared/components/ErrorBoundary/ErrorBoundary';
 import { ParameterPanel } from '../../components/ParameterPanel';
 import ShapeDiverViewer from '../../components/ShapeDiverViewer';
@@ -9,6 +9,8 @@ import VulzSidebar from './components/VulzSidebar/VulzSidebar';
 import { vulzBikeTemplates } from './components/VulzSidebar/vulzBikeTemplates';
 import { BikeTemplate } from '../../components/Sidebar/bikeTemplates';
 import { configuratorConfigs } from '../../config/configuratorConfig';
+import { SaveDesignButton } from '../../../../../shared/components/SaveDesignButton/SaveDesignButton';
+import { CONFIGURATOR_TYPES } from '../../../../../shared/constants/configuratorTypes';
 
 const VulzConfigurator: React.FC = () => {
   const [selectedComponent, setSelectedComponent] = useState<string>('');
@@ -20,7 +22,13 @@ const VulzConfigurator: React.FC = () => {
   const navigate = useNavigate();
   const [showOnlyFrame, setShowOnlyFrame] = useState(false);
   const [showDimensions, setShowDimensions] = useState(false);
+  const location = useLocation();
 
+  useEffect(() => {
+    if (location.state?.designParameters && session && viewport) {
+      handleDesignSelect(location.state.designParameters);
+    }
+  }, [session, viewport, location.state]);
 
   const handleTemplateSelect = useCallback(async (templateId: string) => {
     console.log('handleTemplateSelect called with:', templateId);
@@ -61,11 +69,35 @@ const VulzConfigurator: React.FC = () => {
     }
   }, [session, viewport]);
 
+  const handleDesignSelect = useCallback(async (parameters: Record<string, any>) => {
+    if (!session || !viewport) return;
+
+    try {
+      setIsLoading(true);
+      const token = viewport.addFlag(FLAG_TYPE.BUSY_MODE);
+      
+      await session.customize(parameters);
+      
+      if (session.node) {
+        await viewport.updateNode(session.node);
+        viewport.update();
+        viewport.render();
+      }
+      
+      if (token) viewport.removeFlag(token);
+    } catch (error) {
+      console.error('Error loading design:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [session, viewport]);
+
   return (
     <ErrorBoundary>
       <div className="configurator-page vulz">
         <VulzSidebar
           onTemplateSelect={handleTemplateSelect}
+          onDesignSelect={handleDesignSelect}
           session={session}
           showOnlyFrame={showOnlyFrame}
           showDimensions={showDimensions}
@@ -74,8 +106,12 @@ const VulzConfigurator: React.FC = () => {
         />
 
         <div className="top-right-buttons">
-          <ShareButton
-            session={session}
+          <SaveDesignButton 
+            getCurrentParameters={() => session?.parameterValues || {}}
+            configuratorType={CONFIGURATOR_TYPES.VULZ}
+          />
+          <ShareButton 
+            session={session} 
             viewport={viewport}
             onMenuOpen={setIsShareMenuOpen}
             onMenuHeightChange={setShareMenuHeight}

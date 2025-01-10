@@ -5,18 +5,23 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/server.js",
-    "dev": "nodemon src/server.ts",
+    "dev": "nodemon --exec ts-node src/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
+  "engines": {
+    "node": "18.x"
+  },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-oauth2-jwt-bearer": "^1.6.0",
+    "express-rate-limit": "^7.1.5",
+    "@supabase/supabase-js": "^2.39.3",
     "pg": "^8.13.1"
   },
   "devDependencies": {
@@ -24,6 +29,7 @@
     "@types/express": "^5.0.0",
     "@types/pg": "^8.11.10",
     "ts-node": "^10.9.2",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "nodemon": "^3.1.0"
   }
 }

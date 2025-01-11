@@ -10,8 +10,16 @@ const apiClient = axios.create({
 export class DesignStorageService {
   static async saveDesign(design: Omit<SavedDesign, 'id' | 'created_at'>, token: string): Promise<SavedDesign> {
     try {
-      if (!design.user_id.startsWith('auth0|') && design.user_id !== 'test-user-1') {
-        console.error('Invalid user ID:', design.user_id);
+      // Update validation to accept all Auth0 identity providers
+      const validProviderPattern = /^(auth0|google-oauth2|apple|microsoft|github|facebook)\|/;
+      
+      if (!design.user_id.match(validProviderPattern) && design.user_id !== 'test-user-1') {
+        console.error('Invalid user ID format:', {
+          userId: design.user_id,
+          matchesPattern: !!design.user_id.match(validProviderPattern),
+          isTestUser: design.user_id === 'test-user-1',
+          timestamp: new Date().toISOString()
+        });
         throw new Error('Invalid user ID format');
       }
 
@@ -23,7 +31,11 @@ export class DesignStorageService {
       });
       return response.data;
     } catch (error: any) {
-      console.error('Error saving design:', error);
+      console.error('Error saving design:', {
+        error: error.message,
+        userId: design.user_id,
+        timestamp: new Date().toISOString()
+      });
       throw error;
     }
   }

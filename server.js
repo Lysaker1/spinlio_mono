@@ -80,7 +80,11 @@ app.use(helmet({
         "https://*.analytics.google.com",
         "https://*.googletagmanager.com",
         "https://*.auth0.com",
-        "https://dev-jxcml1qpmbgabh6v.us.auth0.com"
+        "https://dev-jxcml1qpmbgabh6v.us.auth0.com",
+        "https://api.spinlio.com",
+        process.env.NODE_ENV === 'production' 
+          ? "https://api.spinlio.com" 
+          : "http://localhost:3003"
       ],
       frameSrc: [
         "'self'",
@@ -100,7 +104,8 @@ app.use(helmet({
         "https://*.hubspot.com",
         "https://forms-na1.hsforms.com",
         "https://*.google-analytics.com",
-        "https://*.googletagmanager.com"
+        "https://*.googletagmanager.com",
+        "https://viewer.shapediver.com"
       ],
       scriptSrc: [
         "'self'", 

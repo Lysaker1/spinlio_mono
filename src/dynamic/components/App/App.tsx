@@ -13,6 +13,7 @@ import { Toaster } from 'react-hot-toast';
 import { useAuth0 } from '@auth0/auth0-react';
 import { Welcome } from '../../../shared/components/Welcome/Welcome';
 import { Notifications } from '@mantine/notifications';
+import { MyDesigns } from '@shared/components/MyDesigns/MyDesigns';
 
 // Don't load the big 3D page right away - wait until we need it
 const ConfiguratorPage = lazy(() => 
@@ -137,6 +138,15 @@ const AppContent: React.FC = () => {
     </div>
   );
 };
+
+console.log('App: Runtime check:', {
+  Welcome: Welcome,
+  MyDesigns: MyDesigns,
+  importedCorrectly: Welcome !== undefined && MyDesigns !== undefined,
+  paths: {
+    welcome: require.resolve('@shared/components/Welcome/Welcome'),
+  }
+});
 
 const App: React.FC = () => {
   return (

@@ -55,7 +55,8 @@ module.exports = (env) => {
         https://*.spinlio.com 
         https://www.google-analytics.com
         https://*.shapediver.com
-        https://*.auth0.com; 
+        https://*.auth0.com
+        https://api.spinlio.com; 
       font-src 'self' data:
         https://static.klaviyo.com
         https://*.klaviyo.com;

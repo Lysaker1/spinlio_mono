@@ -4,11 +4,8 @@ import { ISessionApi } from '@shapediver/viewer';
 import { Checkbox } from '../../../../components/ParameterPanel/components/ParameterTypes/Checkbox/Checkbox';
 import { MyDesigns } from '@shared/components/MyDesigns/MyDesigns';
 import './VulzSidebar.css';
-import { BikeTemplate } from '../../../../components/Sidebar/bikeTemplates';
-import { vulzBikeTemplates } from './vulzBikeTemplates';
 
 interface VulzSidebarProps {
-  onTemplateSelect: (templateId: string) => void;
   onDesignSelect: (parameters: Record<string, any>) => void;
   session: ISessionApi | null;
   showOnlyFrame: boolean;
@@ -18,7 +15,6 @@ interface VulzSidebarProps {
 }
 
 const VulzSidebar: React.FC<VulzSidebarProps> = ({
-  onTemplateSelect,
   onDesignSelect,
   session,
   showOnlyFrame,
@@ -27,7 +23,7 @@ const VulzSidebar: React.FC<VulzSidebarProps> = ({
   onShowDimensionsChange,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [activeSection, setActiveSection] = useState<'none' | 'templates' | 'settings' | 'myDesigns'>('none');
+  const [activeSection, setActiveSection] = useState<'none' | 'settings' | 'myDesigns'>('none');
   const navigate = useNavigate();
 
   const handleClickOutside = useCallback((e: MouseEvent) => {
@@ -47,11 +43,6 @@ const VulzSidebar: React.FC<VulzSidebarProps> = ({
     setIsExpanded(!isExpanded);
   };
 
-  const handleTemplatesClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setActiveSection(activeSection === 'templates' ? 'none' : 'templates');
-  };
-
   const handleSettingsClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setActiveSection(activeSection === 'settings' ? 'none' : 'settings');
@@ -68,11 +59,6 @@ const VulzSidebar: React.FC<VulzSidebarProps> = ({
 
   const handleBackToMain = () => {
     navigate('/');
-  };
-
-  const handleTemplateSelect = (templateId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    onTemplateSelect(templateId);
   };
 
   const handleMyDesignsClick = (e: React.MouseEvent) => {
@@ -107,37 +93,11 @@ const VulzSidebar: React.FC<VulzSidebarProps> = ({
           </button>
 
           <button
-            className={`sidebar-button ${activeSection === 'templates' ? 'active' : ''} vulz-sidebar-button`}
-            onClick={handleTemplatesClick}
-          >
-            VULZ Models
-          </button>
-
-          <button
             className={`sidebar-button ${activeSection === 'myDesigns' ? 'active' : ''} vulz-sidebar-button`}
             onClick={handleMyDesignsClick}
           >
             My Designs
           </button>
-
-          {activeSection === 'templates' && (
-            <div className="template-container visible">
-              {vulzBikeTemplates.map((template: BikeTemplate) => (
-                <button
-                  key={template.id}
-                  className="template-button"
-                  onClick={(e) => handleTemplateSelect(template.id, e)}
-                >
-                  <img
-                    src={template.image}
-                    alt={template.name}
-                    className="template-image"
-                  />
-                  <span className="template-name">{template.name}</span>
-                </button>
-              ))}
-            </div>
-          )}
 
           {activeSection === 'settings' && (
             <div className="settings-container visible">

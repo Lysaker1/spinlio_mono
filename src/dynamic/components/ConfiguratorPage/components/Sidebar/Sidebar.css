@@ -12,6 +12,7 @@
   flex-direction: column;
   align-items: center;
   transition: width 0.3s ease;
+  overflow: hidden;
 }
 
 .left-sidebar.expanded {
@@ -51,9 +52,29 @@
   gap: 1rem;
   opacity: 0;
   transition: opacity 0.3s ease;
+  max-height: calc(100vh - 12rem);
+  overflow-y: auto;
+  width: 100%;
+  padding-right: 0.5rem;
 }
+
 .template-container.visible {
   opacity: 1;
+}
+
+/* Add custom scrollbar styling */
+.template-container::-webkit-scrollbar {
+  width: 4px;
+}
+
+.template-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.template-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
 }
 
 .template-button {

@@ -13,15 +13,36 @@
     align-items: center;
     transition: width 0.3s ease;
     padding: 6rem 1.25rem;
+    overflow: hidden;
   }
 
   .vulz-sidebar.expanded {
     width: 10%;
     background: transparent;
-    backdrop-filter: blur(10px);
   }
 
   .vulz-sidebar-button {
       padding: 0.75rem 0.75rem;
+  }
+
+  .template-container {
+    max-height: calc(100vh - 12rem);
+    overflow-y: auto;
+    width: 100%;
+    padding-right: 0.5rem;
+  }
+
+  .template-container::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .template-container::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+  }
+
+  .template-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
   }
 

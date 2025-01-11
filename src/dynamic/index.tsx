@@ -24,9 +24,12 @@ root.render(
       authorizationParams={{
         redirect_uri: window.location.origin,
         audience: apiUrl,
-        scope: "openid profile email",
+        scope: "openid profile email offline_access",
         response_mode: "query"
       }}
+      cacheLocation="localstorage"
+      useRefreshTokens={true}
+      useRefreshTokensFallback={true}
     >
       <App />
     </Auth0Provider>

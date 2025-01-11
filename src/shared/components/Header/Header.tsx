@@ -1,8 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './Header.css';
 import AuthButton from '../AuthButton/AuthButton';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const Header: React.FC = () => {
+  const { isAuthenticated, isLoading } = useAuth0();
+
+  useEffect(() => {
+    if (!isAuthenticated && !isLoading) {
+      console.log('User not authenticated');
+    }
+  }, [isAuthenticated, isLoading]);
+
   // Define base URLs
   const MAIN_URL = 'https://www.spinlio.com';
   const DESIGN_URL = 'https://design.spinlio.com';

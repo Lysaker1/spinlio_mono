@@ -1,6 +1,65 @@
 import React, { useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { Button } from '@mantine/core';
+import styled from 'styled-components';
+
+// Reuse the same futuristic button styling
+const FuturisticButton = styled.button`
+  background: rgba(0, 0, 0, 0.8);
+  border: 2px solid rgba(56, 189, 248, 0.5);
+  border-radius: 8px;
+  padding: 16px 40px;
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  z-index: 1;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(
+      45deg,
+      #00ffff,
+      #ff00ff,
+      #00ffff
+    );
+    z-index: -1;
+    border-radius: 10px;
+    filter: blur(8px);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      45deg,
+      rgba(56, 189, 248, 0.1),
+      rgba(168, 85, 247, 0.1)
+    );
+    border-radius: 8px;
+    z-index: -1;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: transparent;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+    
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+`;
 
 export const AuthTest = () => {
   const {
@@ -94,17 +153,12 @@ export const AuthTest = () => {
   }
 
   if (error) {
-    console.error('Auth error details:', error);
     return (
       <div style={{ textAlign: 'center' }}>
         <p>Authentication error: {error.message}</p>
-        <Button 
-          onClick={() => loginWithRedirect()}
-          variant="filled"
-          color="blue"
-        >
+        <FuturisticButton onClick={() => loginWithRedirect()}>
           Try Again
-        </Button>
+        </FuturisticButton>
       </div>
     );
   }
@@ -114,23 +168,16 @@ export const AuthTest = () => {
       <div style={{ textAlign: 'center' }}>
         <p>Successfully logged in as {user.name}</p>
         <p>Redirecting to configurator...</p>
-        <Button 
-          onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
-          variant="light"
-        >
+        <FuturisticButton onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
           Log out
-        </Button>
+        </FuturisticButton>
       </div>
     );
   }
 
   return (
-    <Button 
-      onClick={() => loginWithRedirect()}
-      variant="filled"
-      color="blue"
-    >
+    <FuturisticButton onClick={() => loginWithRedirect()}>
       Log in
-    </Button>
+    </FuturisticButton>
   );
 }; 

@@ -5,10 +5,6 @@ import { Button } from '@mantine/core';
 export const AuthButton: React.FC = () => {
   const { loginWithRedirect, logout, isAuthenticated, isLoading } = useAuth0();
 
-  if (isLoading) {
-    return null;
-  }
-
   const buttonStyles = {
     background: '#181818',
     color: '#FFF',
@@ -23,6 +19,10 @@ export const AuthButton: React.FC = () => {
       background: '#2a2a2a'
     }
   };
+
+  if (isLoading) {
+    return <Button variant="filled" styles={() => ({ root: buttonStyles })}>Loading...</Button>;
+  }
 
   return isAuthenticated ? (
     <Button

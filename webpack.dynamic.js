@@ -211,7 +211,10 @@ module.exports = (env) => {
         test: /\.(js|css|html|svg)$/,
         algorithm: 'gzip'
       }),
-      process.env.ANALYZE && new BundleAnalyzerPlugin(),
+      process.env.ANALYZE && new BundleAnalyzerPlugin({
+        analyzerMode: 'static',
+        openAnalyzer: false
+      }),
     ].filter(Boolean),
     optimization: {
       splitChunks: {

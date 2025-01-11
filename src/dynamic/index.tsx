@@ -3,8 +3,18 @@ import ReactDOM from 'react-dom/client';
 import { Auth0Provider } from '@auth0/auth0-react';
 import App from './components/App';
 import '../shared/styles/global.css';
+import { Welcome } from '@shared/components/Welcome/Welcome';
+import { apiUrl } from './config/api';
 
 const root = ReactDOM.createRoot(document.getElementById('root')!);
+
+// Add debug logging
+console.log('Environment Check:', {
+  nodeEnv: process.env.NODE_ENV,
+  apiUrl,
+  auth0Domain: "dev-jxcml1qpmbgabh6v.us.auth0.com",
+  auth0ClientId: "buzvq3JLo9qwHqQusnlkqWkldLKMQjAu"
+});
 
 root.render(
   <React.StrictMode>
@@ -13,9 +23,7 @@ root.render(
       clientId="buzvq3JLo9qwHqQusnlkqWkldLKMQjAu"
       authorizationParams={{
         redirect_uri: window.location.origin,
-        audience: process.env.NODE_ENV === 'production' 
-          ? "https://api.spinlio.com"
-          : "http://localhost:3003",
+        audience: apiUrl,
         scope: "openid profile email",
         response_mode: "query"
       }}

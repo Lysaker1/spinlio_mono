@@ -12,7 +12,7 @@ interface MyDesignsProps {
 
 export const MyDesigns: React.FC<MyDesignsProps> = ({ onSelect, currentConfiguratorType }) => {
   const [designs, setDesigns] = useState<SavedDesign[]>([]);
-  const { user, isAuthenticated } = useAuth0();
+  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,7 +20,8 @@ export const MyDesigns: React.FC<MyDesignsProps> = ({ onSelect, currentConfigura
       console.log('Auth state:', { isAuthenticated, userId: user?.sub });
       if (isAuthenticated && user?.sub) {
         try {
-          const userDesigns = await DesignStorageService.getDesignsByUser(user.sub);
+          const token = await getAccessTokenSilently();
+          const userDesigns = await DesignStorageService.getDesignsByUser(user.sub, token);
           console.log('Loaded designs:', userDesigns);
           setDesigns(userDesigns || []);
         } catch (error) {
@@ -29,7 +30,7 @@ export const MyDesigns: React.FC<MyDesignsProps> = ({ onSelect, currentConfigura
       }
     };
     loadDesigns();
-  }, [user, isAuthenticated]);
+  }, [user, isAuthenticated, getAccessTokenSilently]);
 
   const handleDesignSelect = (design: SavedDesign) => {
     if (design.configurator_type !== currentConfiguratorType) {

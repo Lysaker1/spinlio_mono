@@ -9,8 +9,8 @@ import VulzSidebar from './components/VulzSidebar/VulzSidebar';
 import { vulzBikeTemplates } from './components/VulzSidebar/vulzBikeTemplates';
 import { BikeTemplate } from '../../components/Sidebar/bikeTemplates';
 import { configuratorConfigs } from '../../config/configuratorConfig';
-import { SaveDesignButton } from '../../../../../shared/components/SaveDesignButton/SaveDesignButton';
-import { CONFIGURATOR_TYPES } from '../../../../../shared/constants/configuratorTypes';
+import { SaveDesignButton } from '@shared/components/SaveDesignButton/SaveDesignButton';
+import { CONFIGURATOR_TYPES } from '@shared/constants/configuratorTypes';
 
 const VulzConfigurator: React.FC = () => {
   const [selectedComponent, setSelectedComponent] = useState<string>('');

@@ -16,7 +16,7 @@ export const SaveDesignButton: React.FC<SaveDesignButtonProps> = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [designName, setDesignName] = useState('');
   const [isSaving, setIsSaving] = useState(false);
-  const { user, loginWithRedirect } = useAuth0();
+  const { user, loginWithRedirect, getAccessTokenSilently } = useAuth0();
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -66,6 +66,7 @@ export const SaveDesignButton: React.FC<SaveDesignButtonProps> = ({
       const parameters = getCurrentParameters();
       console.log('Current parameters:', parameters);
 
+      const token = await getAccessTokenSilently();
       const design: Omit<SavedDesign, 'id' | 'created_at'> = {
         name: designName,
         user_id: user.sub,
@@ -75,7 +76,7 @@ export const SaveDesignButton: React.FC<SaveDesignButtonProps> = ({
         configurator_type: configuratorType
       };
 
-      const savedDesign = await DesignStorageService.saveDesign(design);
+      const savedDesign = await DesignStorageService.saveDesign(design, token);
       console.log('Design saved successfully:', savedDesign);
       alert('Design saved successfully!');
       setIsModalOpen(false);

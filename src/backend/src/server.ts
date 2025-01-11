@@ -8,23 +8,19 @@ import { auth } from 'express-oauth2-jwt-bearer';
 
 dotenv.config();
 
-const AUTH0_AUDIENCE = process.env.NODE_ENV === 'production' 
-  ? process.env.AUTH0_AUDIENCE_PROD 
-  : process.env.AUTH0_AUDIENCE_DEV;
-
 const requiredEnvVars = [
     'SUPABASE_URL',
     'SUPABASE_ANON_KEY',
-    'AUTH0_AUDIENCE_DEV',
-    'AUTH0_AUDIENCE_PROD',
+    'AUTH0_AUDIENCE',  // Just use a single audience variable
     'AUTH0_ISSUER_BASE_URL'
-  ];
-  
-  requiredEnvVars.forEach(varName => {
-    if (!process.env[varName]) {
-      throw new Error(`Missing required environment variable: ${varName}`);
-    }
-  });
+];
+
+// Validate required env vars
+requiredEnvVars.forEach(varName => {
+  if (!process.env[varName]) {
+    throw new Error(`Missing required environment variable: ${varName}`);
+  }
+});
 
 const app = express();
 
@@ -109,7 +105,6 @@ app.get('/api/items', (async (req: Request, res: Response) => {
   }
 }) as RequestHandler);
 
-// Get single item by ID
 app.get('/api/items/:id', (async (req: Request, res: Response) => {
   try {
     const { data, error } = await supabase
@@ -264,10 +259,9 @@ app.get('/api/designs', (async (req: Request, res: Response) => {
   }
 }) as RequestHandler);
 
+// Update the JWT check configuration
 const jwtCheck = auth({
-  audience: process.env.NODE_ENV === 'production'
-    ? 'https://api.spinlio.com'
-    : 'http://localhost:3003',
+  audience: process.env.AUTH0_AUDIENCE,  // Use the single audience variable
   issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
   tokenSigningAlg: 'RS256'
 });
@@ -296,4 +290,3 @@ const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-

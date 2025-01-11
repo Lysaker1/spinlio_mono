@@ -7,10 +7,9 @@ import './Welcome.css';
 export const Welcome: React.FC = () => {
   const { isAuthenticated } = useAuth0();
   const navigate = useNavigate();
-          <h1>Welcome to Spinlio</h1>
+
   useEffect(() => {
     if (isAuthenticated) {
-      // Add a small delay to show the "Redirecting..." message
       const timer = setTimeout(() => {
         navigate('/configurator');
       }, 2000);
@@ -25,11 +24,13 @@ export const Welcome: React.FC = () => {
         <div className="text-container">
           <h1>Welcome to Spinlio</h1>
           {!isAuthenticated ? (
-            <p>Please log in to access the bike configurator</p>
+            <>
+              <p>Please log in to access the bike configurator</p>
+              <AuthTest />
+            </>
           ) : (
             <p>Redirecting to configurator...</p>
           )}
-          <AuthTest />
         </div>
       </div>
     </div>

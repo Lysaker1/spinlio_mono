@@ -82,9 +82,10 @@ app.use(helmet({
         "https://*.auth0.com",
         "https://dev-jxcml1qpmbgabh6v.us.auth0.com",
         "https://api.spinlio.com",
+        "https://api.spinlio.com/*",
         process.env.NODE_ENV === 'production' 
-          ? "https://api.spinlio.com" 
-          : "http://localhost:3003"
+          ? ["https://api.spinlio.com", "https://api.spinlio.com/*"] 
+          : ["http://localhost:3003", "http://localhost:3003/*"]
       ],
       frameSrc: [
         "'self'",

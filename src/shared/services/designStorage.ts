@@ -1,5 +1,11 @@
-import { api } from '../config/config';
 import { SavedDesign } from '../types/SavedDesign';
+import axios from 'axios';
+
+// Rename the axios instance to avoid conflict with the import
+const apiClient = axios.create({
+  baseURL: process.env.REACT_APP_API_URL || 'https://api.spinlio.com',
+  withCredentials: true
+});
 
 export class DesignStorageService {
   static async saveDesign(design: Omit<SavedDesign, 'id' | 'created_at'>, token: string): Promise<SavedDesign> {
@@ -9,7 +15,7 @@ export class DesignStorageService {
         throw new Error('Invalid user ID format');
       }
 
-      const response = await api.post('/api/designs', design, {
+      const response = await apiClient.post('/api/designs', design, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -29,8 +35,8 @@ export class DesignStorageService {
     }
 
     try {
-      console.log('Making API request to:', `${api.defaults.baseURL}/api/designs/${userId}`);
-      const response = await api.get(`/api/designs/${userId}`, {
+      console.log('Making API request to:', `${apiClient.defaults.baseURL}/api/designs/${userId}`);
+      const response = await apiClient.get(`/api/designs/${userId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -57,7 +63,7 @@ export class DesignStorageService {
 
   static async deleteDesign(designId: string, token: string): Promise<void> {
     try {
-      await api.delete(`/api/designs/${designId}`, {
+      await apiClient.delete(`/api/designs/${designId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

@@ -89,7 +89,8 @@ app.use(helmet({
         "https://*.hsforms.com", 
         "https://*.hubspot.com",
         "https://www.herokucdn.com",
-        "https://*.auth0.com"
+        "https://*.auth0.com",
+        "https://dev-jxcml1qpmbgabh6v.us.auth0.com",
       ],
       imgSrc: [
         "'self'",
@@ -103,7 +104,8 @@ app.use(helmet({
         "https://forms-na1.hsforms.com",
         "https://*.google-analytics.com",
         "https://*.googletagmanager.com",
-        "https://viewer.shapediver.com"
+        "https://viewer.shapediver.com",
+        "https://viewer.shapediver.com"  // Added as requested
       ],
       scriptSrc: [
         "'self'", 
@@ -122,7 +124,8 @@ app.use(helmet({
         "https://fonts.gstatic.com",
         "https://*.googletagmanager.com",
         "https://www.google-analytics.com",
-        "https://*.auth0.com"
+        "https://*.auth0.com",
+        "https://static.cloudflareinsights.com"
       ],
       styleSrc: [
         "'self'", 

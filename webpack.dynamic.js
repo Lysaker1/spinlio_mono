@@ -71,6 +71,10 @@ module.exports = (env) => {
 
   const copyPluginPatterns = isDevelopment ? [
     {
+      from: 'public/assets/icons',
+      to: 'assets/icons'
+    },
+    {
       from: 'src/shared/assets',
       to: 'static/assets'
     },
@@ -195,10 +199,13 @@ module.exports = (env) => {
       }),
       new CopyWebpackPlugin({
         patterns: [
-          // ... your existing patterns
+          {
+            from: 'public/assets/icons',
+            to: 'assets/icons'
+          },
           {
             from: path.resolve(__dirname, 'src/service-worker.js'),
-            to: path.resolve(__dirname, 'dist/dynamic/service-worker.js')  // For dynamic sites
+            to: path.resolve(__dirname, 'dist/dynamic/service-worker.js')
           }
         ]
       }),

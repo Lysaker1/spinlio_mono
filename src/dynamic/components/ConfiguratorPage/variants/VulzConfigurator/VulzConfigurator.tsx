@@ -5,10 +5,11 @@ import ErrorBoundary from '../../../../../shared/components/ErrorBoundary/ErrorB
 import { ParameterPanel } from '../../components/ParameterPanel';
 import ShapeDiverViewer from '../../components/ShapeDiverViewer';
 import ShareButton from '../../components/Share/ShareButton';
-import VulzSidebar from './components/VulzSidebar/VulzSidebar';
 import { configuratorConfigs } from '../../config/configuratorConfig';
 import { SaveDesignButton } from '@shared/components/SaveDesignButton/SaveDesignButton';
 import { CONFIGURATOR_TYPES } from '@shared/constants/configuratorTypes';
+import Sidebar from '../../components/Sidebar/Sidebar';
+import { BikeTemplate } from '../../components/Sidebar/Sidebar';
 
 const VulzConfigurator: React.FC = () => {
   const [selectedComponent, setSelectedComponent] = useState<string>('');
@@ -51,16 +52,37 @@ const VulzConfigurator: React.FC = () => {
     }
   }, [session, viewport]);
 
+  const handlePrefabSelect = useCallback(async (template: BikeTemplate) => {
+    if (!session || !viewport) return;
+
+    try {
+      setIsLoading(true);
+      const token = viewport.addFlag(FLAG_TYPE.BUSY_MODE);
+      
+      await session.customize(template.parameters);
+      
+      if (session.node) {
+        await viewport.updateNode(session.node);
+        viewport.update();
+        viewport.render();
+      }
+      
+      if (token) viewport.removeFlag(token);
+    } catch (error) {
+      console.error('Error applying prefab:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [session, viewport]);
+
   return (
     <ErrorBoundary>
       <div className="configurator-page vulz">
-        <VulzSidebar
+        <Sidebar
+          onTemplateSelect={handlePrefabSelect}
           onDesignSelect={handleDesignSelect}
           session={session}
-          showOnlyFrame={showOnlyFrame}
-          showDimensions={showDimensions}
-          onShowOnlyFrameChange={setShowOnlyFrame}
-          onShowDimensionsChange={setShowDimensions}
+          configuratorType="vulz"
         />
 
         <div className="top-right-buttons">

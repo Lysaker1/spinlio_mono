@@ -30,17 +30,25 @@ const ShareButton: React.FC<ShareButtonProps> = ({ session, viewport, onMenuOpen
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setIsMenuOpen(false);
+      if (isMenuOpen && containerRef.current) {
+        const shareMenu = document.querySelector('.share-menu');
+        const shareButton = containerRef.current.querySelector('.share-button');
+        
+        const clickedInsideMenu = shareMenu?.contains(event.target as Node);
+        const clickedInsideButton = shareButton?.contains(event.target as Node);
+        
+        if (!clickedInsideMenu && !clickedInsideButton) {
+          setIsMenuOpen(false);
+        }
       }
     };
 
     if (isMenuOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      window.addEventListener('click', handleClickOutside, true);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('click', handleClickOutside, true);
     };
   }, [isMenuOpen]);
 

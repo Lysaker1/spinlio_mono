@@ -91,7 +91,8 @@
   align-items: center;
   justify-content: flex-end;
   gap: 1rem;
-  z-index: 1001;
+  z-index: 1002;
+  pointer-events: none;
 }
 
 /* When share menu is open, adjust panel position */

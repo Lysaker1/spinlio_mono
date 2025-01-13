@@ -3,9 +3,12 @@
     justify-content: flex-end;
     pointer-events: all;
     height: 3.5rem;
+    position: relative;
+    z-index: 1;
 }
 
 .save-button-container {
+    pointer-events: all;
     cursor: pointer;
     background: linear-gradient(to top, #494949, #A9A9A9);
     border-radius: 2rem;

@@ -15,22 +15,37 @@
     height: 100%;
     width: 100%;
 }
-
+/* Styles for the share button */
 .share-button {
+    /* Display flex to align items in a row */
     display: flex;
+    /* Align items vertically in the center */
     align-items: center;
+    /* Justify content to the center */
     justify-content: center;
+    /* Gap between items */
     gap: 0.5rem;
+    /* Background color */
     background: #494949;
+    /* Border style */
     border: 1px solid transparent;
+    /* Border radius for rounded corners */
     border-radius: 2rem;
+    /* Text color */
     color: white;
+    /* Font family */
     font-family: "Helvetica Neue";
+    /* Font size */
     font-size: 0.875rem;
+    /* Font weight */
     font-weight: 500;
+    /* Cursor pointer for interactive elements */
     cursor: pointer;
+    /* Transition effect for smooth changes */
     transition: all 0.3s ease;
+    /* Padding for spacing */
     padding: 0 1.5rem;
+    /* Width and height set to 100% to cover the container */
     width: 100%;
     height: 100%;
 }

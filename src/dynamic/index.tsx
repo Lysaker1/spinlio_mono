@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client';
 import { Auth0Provider } from '@auth0/auth0-react';
 import App from './components/App';
 import '../shared/styles/global.css';
-import { Welcome } from '@shared/components/Welcome/Welcome';
 import { apiUrl } from './config/api';
 
 const root = ReactDOM.createRoot(document.getElementById('root')!);

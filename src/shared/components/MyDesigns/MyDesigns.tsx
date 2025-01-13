@@ -49,9 +49,6 @@ export const MyDesigns: React.FC<MyDesignsProps> = ({ onSelect, currentConfigura
       fallback={
         <div className="my-designs-login-prompt">
           <p>Login to view your saved designs</p>
-          <button onClick={() => loginWithRedirect()}>
-            Login
-          </button>
         </div>
       }
     >

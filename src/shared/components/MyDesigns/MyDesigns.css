@@ -95,4 +95,14 @@
   font-size: 0.8em;
   color: #888;
   margin-left: 0.5em;
+}
+
+.my-designs-login-prompt {
+  text-align: center;
+  padding: 0.5rem;
+}
+
+.my-designs-login-prompt p {
+  color: black;
+  margin: 0;
 } 

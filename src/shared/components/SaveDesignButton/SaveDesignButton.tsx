@@ -20,25 +20,30 @@ export const SaveDesignButton: React.FC<SaveDesignButtonProps> = ({
   const { user, loginWithRedirect, getAccessTokenSilently } = useAuth0();
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        menuRef.current && 
-        !menuRef.current.contains(event.target as Node) &&
-        buttonRef.current && 
-        !buttonRef.current.contains(event.target as Node)
-      ) {
-        setIsModalOpen(false);
+      if (isModalOpen) {
+        const saveMenu = document.querySelector('.save-menu');
+        const saveButton = buttonRef.current;
+        const clickTarget = event.target as Node;
+
+        const clickedInsideMenu = saveMenu?.contains(clickTarget);
+        const clickedInsideButton = saveButton?.contains(clickTarget);
+        
+        if (!clickedInsideMenu && !clickedInsideButton) {
+          setIsModalOpen(false);
+        }
       }
     };
 
     if (isModalOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      window.addEventListener('mousedown', handleClickOutside, true);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('mousedown', handleClickOutside, true);
     };
   }, [isModalOpen]);
 

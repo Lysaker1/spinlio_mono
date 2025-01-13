@@ -89,16 +89,8 @@ const ConfiguratorPage: React.FC = () => {
   }, [isShareMenuOpen, shareMenuHeight]);
 
   // Handle template selection
-  const handleTemplateSelect = useCallback(async (templateId: string) => {
-    console.log('handleTemplateSelect called with:', templateId);
-    
-    const template = bikeTemplates.find(t => t.id === templateId);
-    console.log('Found template:', template);
-    
-    if (!template || !session) {
-      console.log('Early return - template or session missing:', { template, hasSession: !!session });
-      return;
-    }
+  const handleTemplateSelect = useCallback(async (template: BikeTemplate) => {
+    if (!session) return;
 
     try {
       setIsLoading(true);
@@ -106,13 +98,8 @@ const ConfiguratorPage: React.FC = () => {
       if (viewport) {
         const token = viewport.addFlag(FLAG_TYPE.BUSY_MODE);
         try {
-          // Use customize() to update all parameters at once
           await session.customize(template.parameters, true);
           
-          // The session.parameterValues will be automatically updated after customize()
-          // No need to manually set parameter values
-          
-          // Update the viewport
           if (session.node) {
             await viewport.updateNode(session.node);
             viewport.update();
@@ -190,13 +177,11 @@ const ConfiguratorPage: React.FC = () => {
     // Wrap entire component in error boundary
     <ErrorBoundary>
       <div className="configurator-page">
-        <Sidebar 
+        <Sidebar
           onTemplateSelect={handleTemplateSelect}
-          showOnlyFrame={showOnlyFrame}
-          showDimensions={showDimensions}
-          onShowOnlyFrameChange={setShowOnlyFrame}
-          onShowDimensionsChange={setShowDimensions}
+          onDesignSelect={handleDesignSelect}
           session={session}
+          configuratorType="default"
         >
           <MyDesigns 
             onSelect={handleDesignSelect} 

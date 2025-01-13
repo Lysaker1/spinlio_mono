@@ -1,4 +1,4 @@
-// Get all the tools we need to build our app
+// Import necessary components and utilities for the app
 import React, { lazy, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { MantineProvider } from '@mantine/core';
@@ -10,8 +10,6 @@ import ErrorBoundary from '../../../shared/components/ErrorBoundary/ErrorBoundar
 import { pageView } from '../../../shared/utils/analytics';
 import MobileWarning from '../../../shared/components/MobileWarning/MobileWarning';
 import { Toaster } from 'react-hot-toast';
-import { useAuth0 } from '@auth0/auth0-react';
-import { Welcome } from '../../../shared/components/Welcome/Welcome';
 import { Notifications } from '@mantine/notifications';
 import { MyDesigns } from '@shared/components/MyDesigns/MyDesigns';
 
@@ -41,27 +39,6 @@ const VulzConfigurator = lazy(() =>
   }))
 );
 
-// Create a protected route wrapper
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isAuthenticated, isLoading } = useAuth0();
-
-  if (isLoading) {
-    return <div className="loading-placeholder" />;
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <div className="app">
-        <Header />
-        <Welcome />
-        <Footer />
-      </div>
-    );
-  }
-
-  return children;
-};
-
 const AppContent: React.FC = () => {
   const location = useLocation();
   const isMobile = window.innerWidth <= 768;
@@ -82,32 +59,31 @@ const AppContent: React.FC = () => {
       <Header />
       <main className="main-content">
         <Routes>
+          {/* Default route - goes straight to configurator */}
           <Route 
             path="/" 
             element={
               <React.Suspense fallback={<div className="loading-placeholder" />}>
-                <Welcome />
+                <ConfiguratorPage />
               </React.Suspense>
             } 
           />
+          
+          {/* Other routes */}
           <Route 
             path="/configurator" 
             element={
-              <ProtectedRoute>
-                <React.Suspense fallback={<div className="loading-placeholder" />}>
-                  <ConfiguratorPage />
-                </React.Suspense>
-              </ProtectedRoute>
+              <React.Suspense fallback={<div className="loading-placeholder" />}>
+                <ConfiguratorPage />
+              </React.Suspense>
             } 
           />
           <Route 
             path="/supplier" 
             element={
-              <ProtectedRoute>
-                <React.Suspense fallback={<div className="loading-placeholder" />}>
-                  <SupplierConfigurator />
-                </React.Suspense>
-              </ProtectedRoute>
+              <React.Suspense fallback={<div className="loading-placeholder" />}>
+                <SupplierConfigurator />
+              </React.Suspense>
             } 
           />
           <Route 
@@ -121,11 +97,9 @@ const AppContent: React.FC = () => {
           <Route 
             path="/vulz" 
             element={
-              <ProtectedRoute>
-                <React.Suspense fallback={<div className="loading-placeholder" />}>
-                  <VulzConfigurator />
-                </React.Suspense>
-              </ProtectedRoute>
+              <React.Suspense fallback={<div className="loading-placeholder" />}>
+                <VulzConfigurator />
+              </React.Suspense>
             } 
           />
           <Route path="/about" element={<AboutPage />} />
@@ -140,11 +114,10 @@ const AppContent: React.FC = () => {
 };
 
 console.log('App: Runtime check:', {
-  Welcome: Welcome,
   MyDesigns: MyDesigns,
-  importedCorrectly: Welcome !== undefined && MyDesigns !== undefined,
+  importedCorrectly: MyDesigns !== undefined,
   paths: {
-    welcome: require.resolve('@shared/components/Welcome/Welcome'),
+    myDesigns: require.resolve('@shared/components/MyDesigns/MyDesigns'),
   }
 });
 

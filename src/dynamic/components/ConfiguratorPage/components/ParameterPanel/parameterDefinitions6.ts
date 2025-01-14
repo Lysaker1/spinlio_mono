@@ -880,23 +880,35 @@ export const parameterDefinitions: ParameterDefinition[] = [
   },
   {
     "id": "91f05499-a206-4c8e-94f6-963cc7b70d39",
-    "name": "Down Tube Logo Size",
+    "name": "Logo Size",
+    "subCategory": "Frame",
+    "category": "tubing",
+    "type": "slider",
     "value": "0.7",
-    "category": "other",
-    "type": "text"
+    "min": 0,
+    "max": 1,
+    "configuratorTypes": ["vulz"]
   },
   {
     "id": "1bd1f334-5a33-43d5-bae5-fe44fae61cda",
-    "name": "Import DownTube logo(png)",
+    "name": "Logo Upload",
+    "subCategory": "Frame",
+    "category": "tubing",
     "value": "a399a762-ba8d-46b8-a66a-562c884845f4",
-    "category": "other",
-    "type": "text"
+    "type": "logoUpload",
+    "configuratorTypes": ["vulz"]
+
   },
   {
     "id": "23369373-f2f8-404b-9577-e48a24d39f83",
-    "name": "DownTube Logo Position",
+    "name": "Logo Position",
+    "subCategory": "Frame",
+    "category": "tubing",
+    "type": "slider",
     "value": "0.9",
-    "category": "other",
-    "type": "text"
+    "min": 0,
+    "max": 1,
+    "configuratorTypes": ["vulz"]
+
   }
 ];

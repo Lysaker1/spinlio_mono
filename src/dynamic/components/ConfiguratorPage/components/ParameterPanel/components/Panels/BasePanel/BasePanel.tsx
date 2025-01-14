@@ -10,6 +10,7 @@ import { Checkbox } from '../../ParameterTypes/Checkbox/Checkbox';
 import { FileInput } from '../../ParameterTypes/FileInput/FileInput';
 import { GraphMapper } from '../../ParameterTypes/GraphMapper/GraphMapper';
 import './BasePanel.css';
+import { LogoUpload } from '../../ParameterTypes/LogoUpload/LogoUpload';
 
 // Define props interface for BasePanel component
 interface ParameterCategory {
@@ -172,6 +173,14 @@ export const BasePanel: React.FC<BasePanelProps> = ({
             return (
                 <GraphMapper
                     key={param.id}
+                    definition={param}
+                    value={parameterValues[param.id] || ''}
+                    onChange={onParameterChange}
+                />
+            );
+        case 'logoUpload':
+            return (
+                <LogoUpload
                     definition={param}
                     value={parameterValues[param.id] || ''}
                     onChange={onParameterChange}

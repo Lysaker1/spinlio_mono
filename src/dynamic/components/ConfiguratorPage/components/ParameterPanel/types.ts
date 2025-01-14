@@ -20,7 +20,7 @@ export interface ParameterDefinition {
     // Display name of the parameter
     name: string;
     // Type of input control to display for this parameter
-    type: 'slider' | 'dropdown' | 'boolean' | 'color' | 'text' | 'checkbox' | 'graphmapper' | 'fileinput' | 'grid';
+    type: 'slider' | 'dropdown' | 'boolean' | 'color' | 'text' | 'checkbox' | 'graphmapper' | 'fileinput' | 'grid' | 'logoUpload';
     // Category the parameter belongs to for organizational purposes
     category: 'geometry' | 'surface' | 'hardware' | 'tubing' |'accessories' | 'client information' | 'other'| 'visual';
     // Current value of the parameter as a string

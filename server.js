@@ -298,7 +298,13 @@ app.use((err, req, res, next) => {
   res.status(500).send('Something broke!');
 });
 
-
+// Add before other middleware
+app.use((req, res, next) => {
+  if (!req.secure && req.get('x-forwarded-proto') !== 'https') {
+    return res.redirect('https://' + req.get('host') + req.url);
+  }
+  next();
+});
 
 const setupServer = () => {
   return app;

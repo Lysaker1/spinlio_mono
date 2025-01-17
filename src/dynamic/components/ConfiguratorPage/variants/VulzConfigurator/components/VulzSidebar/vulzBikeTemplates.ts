@@ -17,6 +17,7 @@ export const vulzBikeTemplates: BikeTemplate[] = [
     image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/Canyon-bike_zitfqq.png', // Placeholder image
     name: 'VULZ Road Bike',
     modelStateId: '9d74c500-e310-45bc-8c63-6dd2ee132cc6',
-    parameters: VulzRoadBikeParameters
+    parameters: VulzRoadBikeParameters,
+    type: 'vulz'
   }
 ];

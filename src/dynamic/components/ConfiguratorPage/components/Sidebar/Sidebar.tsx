@@ -98,12 +98,16 @@ const Sidebar: React.FC<SidebarProps> = ({
                   className="template-button"
                   onClick={(e) => handleTemplateSelect(template, e)}
                 >
-                  <img 
-                    src={template.image}
-                    alt={template.name}
-                    className="template-image"
-                  />
-                  <span className="template-name">{template.name}</span>
+                  <div className="template-image-container">
+                    <img 
+                      src={template.image}
+                      alt={template.name}
+                      className="template-image"
+                    />
+                  </div>
+                  <div className="template-name">
+                    {template.name}
+                  </div>
                 </button>
               ))}
             </div>

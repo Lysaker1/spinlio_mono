@@ -114,39 +114,35 @@ export const AuthTest = () => {
     testProtectedRoute();
   }, [isAuthenticated, getAccessTokenSilently]);
 
-  useEffect(() => {
-    const testDesignsAPI = async () => {
-      if (isAuthenticated && user) {
-        try {
-          const token = await getAccessTokenSilently();
-          // Test saving a design
-          const testDesign = {
-            user_id: user.sub,
-            name: "Test Design",
-            description: "Testing API",
-            parameters: { test: "value" },
-            configurator_type: "default"
-          };
-          
-          const response = await fetch('http://localhost:3003/api/designs', {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(testDesign)
-          });
-          
-          const data = await response.json();
-          console.log('Design saved:', data);
-        } catch (error) {
-          console.error('Error testing designs API:', error);
-        }
-      }
-    };
-
-    testDesignsAPI();
-  }, [isAuthenticated, user, getAccessTokenSilently]);
+  const testDesignsAPI = async () => {
+    if (!isAuthenticated || !user) return;
+    
+    try {
+      const token = await getAccessTokenSilently();
+      // Only create test design when explicitly requested
+      const testDesign = {
+        user_id: user.sub,
+        name: "Test Design",
+        description: "Testing API",
+        parameters: { test: "value" },
+        configurator_type: "default"
+      };
+      
+      const response = await fetch('http://localhost:3003/api/designs', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(testDesign)
+      });
+      
+      const data = await response.json();
+      console.log('Design saved:', data);
+    } catch (error) {
+      console.error('Error testing designs API:', error);
+    }
+  };
 
   if (isLoading) {
     return <div>Loading...</div>;

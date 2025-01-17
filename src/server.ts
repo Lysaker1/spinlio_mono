@@ -401,6 +401,13 @@ app.patch('/api/fix-thumbnails', async (req: Request, res: Response) => {
   }
 });
 
+const getBaseUrl = (req: Request) => {
+  if (process.env.NODE_ENV === 'production') {
+    return 'https://api.spinlio.com';
+  }
+  return `${req.protocol}://${req.get('host')}`;
+};
+
 app.post('/api/fix-thumbnail-urls', async (req: Request, res: Response) => {
   try {
     const { data: designs, error } = await supabase
@@ -409,11 +416,12 @@ app.post('/api/fix-thumbnail-urls', async (req: Request, res: Response) => {
     
     if (error) throw error;
 
+    const baseUrl = getBaseUrl(req);
     const updates = designs
       .filter(d => d.thumbnail_url && !d.thumbnail_url.startsWith('http'))
       .map(d => ({
         id: d.id,
-        thumbnail_url: `${req.protocol}://${req.get('host')}/api/thumbnail/${d.thumbnail_url}`
+        thumbnail_url: `${baseUrl}/api/thumbnail/${d.thumbnail_url}`
       }));
 
     for (const update of updates) {

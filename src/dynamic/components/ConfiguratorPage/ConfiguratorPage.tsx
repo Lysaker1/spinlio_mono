@@ -194,6 +194,7 @@ const ConfiguratorPage: React.FC = () => {
           <SaveDesignButton 
             getCurrentParameters={() => session?.parameterValues || {}}
             configuratorType={CONFIGURATOR_TYPES.DEFAULT}
+            viewport={viewport}
           />
           <ShareButton 
             session={session} 

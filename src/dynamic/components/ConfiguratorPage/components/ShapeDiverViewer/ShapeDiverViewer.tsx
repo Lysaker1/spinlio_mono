@@ -65,8 +65,7 @@ const logCameraDetails = (camera: any, label: string = 'Camera Details') => {
 
 
 // URL for loading animation GIF
-const LOADING_GIF_URL = 'https://res.cloudinary.com/da8qnqmmh/image/upload/e_make_transparent:10/v1729757636/BIKE_qa0p3v.gif';
-
+const LOADING_GIF_URL = 'https://res.cloudinary.com/da8qnqmmh/image/upload/e_bgremoval/WhatsApp_GIF_2025-01-15_at_12.36.33_tupvgo.gif';
 // Main ShapeDiverViewer component
 const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
   session,
@@ -125,7 +124,7 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
             // Only include valid creation properties
             branding: {
               backgroundColor: 'transparent',
-              spinnerPositioning: SPINNER_POSITIONING.CENTER,
+              spinnerPositioning: SPINNER_POSITIONING.BOTTOM_LEFT,
               busyModeSpinner: LOADING_GIF_URL,
               busyModeDisplay: BUSY_MODE_DISPLAY.SPINNER,
             }

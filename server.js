@@ -40,7 +40,14 @@ app.use(cors({
       'https://www.herokucdn.com',
       'https://viewer.shapediver.com',
       'https://res.cloudinary.com',
-      'https://design.spinlio.com'
+      'https://design.spinlio.com',
+      'https://auth.spinlio.com',
+      'https://api.spinlio.com',
+      'https://api.spinlio.com/*',
+      'https://api.spinlio.com/api/*',
+      'https://api.spinlio.com/api/thumbnail/*',
+
+
     ];
     if (!origin) return callback(null, true);
     callback(null, allowedOrigins.includes(origin));
@@ -53,11 +60,25 @@ app.use(cors({
 
 // Update the helmet configuration with HubSpot domains
 app.use(helmet({
-  contentSecurityPolicy: {
+  contentSecurityPolicy: process.env.NODE_ENV === 'production' ? {
     directives: {
-      defaultSrc: ["'self'"],
+      defaultSrc: ["'self'", "http://localhost:3003", "https://api.spinlio.com"],
       connectSrc: [
         "'self'", 
+        "http://localhost:3003",
+        "http://localhost:3003/*",
+        "http://localhost:3003/api/*",
+        "http://localhost:3003/api/thumbnail/*",
+        "https://api.spinlio.com",
+        "https://api.spinlio.com/*",
+        "https://api.spinlio.com/api/*",
+        "https://api.spinlio.com/api/thumbnail/*",
+        "https://api.spinlio.com/api/thumbnail/*",
+        "https://api.spinlio.com/api/designs/*",
+        "http://localhost:3001",
+        "http://localhost:3001/*",
+        "http://localhost:3001/api/*",
+        "http://localhost:3001/api/thumbnail/*",
         "https://*.shapediver.com", 
         "wss://*.shapediver.com",
         "blob:",
@@ -79,10 +100,18 @@ app.use(helmet({
         "https://*.google-analytics.com",
         "https://*.analytics.google.com",
         "https://*.googletagmanager.com",
+        "https://auth.spinlio.com",
         "https://*.auth0.com",
         "https://dev-jxcml1qpmbgabh6v.us.auth0.com",
+        "https://auth.spinlio.com"
         "https://api.spinlio.com",
-        "http://localhost:3003"
+        "http://localhost:3003",
+        "https://*.supabase.co",
+        "ws://localhost:3003",
+        "wss://localhost:3003",
+        process.env.SUPABASE_URL,
+        process.env.REACT_APP_SUPABASE_URL,
+        "*" 
       ],
       frameSrc: [
         "'self'",
@@ -90,79 +119,53 @@ app.use(helmet({
         "https://*.hubspot.com",
         "https://www.herokucdn.com",
         "https://*.auth0.com",
+        "https://auth.spinlio.com",
         "https://dev-jxcml1qpmbgabh6v.us.auth0.com",
+        process.env.REACT_APP_SUPABASE_URL,
+        "*"
       ],
       imgSrc: [
         "'self'",
-        "data:",
-        "blob:",
-        "https://*.shapediver.com",
-        "https://viewer.shapediver.com",
-        "https://res.cloudinary.com",
-        "https://*.cloudinary.com",
-        "https://*.hubspot.com",
-        "https://forms-na1.hsforms.com",
-        "https://*.google-analytics.com",
-        "https://*.googletagmanager.com",
-        "https://viewer.shapediver.com",
-        "https://viewer.shapediver.com"  // Added as requested
-      ],
+        "*",
+      ].filter(Boolean),
       scriptSrc: [
         "'self'", 
         "'unsafe-inline'", 
         "'unsafe-eval'",
-        "https://js.hsforms.net",
-        "https://*.hubspot.com",
-        "https://*.hs-scripts.com",
-        "https://*.hs-analytics.net",
-        "https://*.usemessages.com",
-        "https://static.klaviyo.com",
-        "https://*.klaviyo.com",
-        "https://static-tracking.klaviyo.com",
-        "https://*.hsforms.com", 
-        "https://*.hubspot.com",
-        "https://fonts.gstatic.com",
-        "https://*.googletagmanager.com",
-        "https://www.google-analytics.com",
-        "https://*.auth0.com",
-        "https://static.cloudflareinsights.com"
+        "http://localhost:3003",
+        "https://api.spinlio.com",
+        "blob:",
+        "*"
       ],
       styleSrc: [
         "'self'", 
         "'unsafe-inline'",
-        "https://*.hubspot.com",
-        "https://static.klaviyo.com",
-        "https://*.klaviyo.com"
+        "http://localhost:3003",
+        "https://api.spinlio.com",
+        "*"
       ],
       fontSrc: [
         "'self'", 
         "data:", 
-        "https://fonts.gstatic.com",
-        "https://fonts.googleapis.com",
-        "https://*.hubspot.com",
-        "https://static.klaviyo.com",
-        "https://*.klaviyo.com"
+        "http://localhost:3003",
+        "https://api.spinlio.com",
+        "*"
       ],
-      objectSrc: ["'none'"],
-      mediaSrc: ["'self'", "https://res.cloudinary.com"],
-      manifestSrc: ["'self'"],
       workerSrc: [
         "'self'",
         "blob:",
-        "https://*.spinlio.com"  // Add this
+        "http://localhost:3003",
+        "https://api.spinlio.com",
+        "*"
       ],
-      "apple-mobile-web-app-capable": ["'self'"],
-      "apple-mobile-web-app-status-bar-style": ["'self'"],
-      // Add cache-control headers
-      'Cache-Control': [
-        'public',
-        'max-age=31536000',
-        'immutable'
+      frameSrc: [
+        "'self'",
+        "http://localhost:3003",
+        "https://api.spinlio.com",
+        "*"
       ]
     }
-  },
-  crossOriginResourcePolicy: { policy: "cross-origin" },
-  crossOriginEmbedderPolicy: false
+  } : false
 }));
 
 // Instead, add these as regular headers
@@ -274,10 +277,14 @@ app.use((req, res, next) => {
   next();
 });
 
-// Simple catch-all route that serves index.html
-// Simple catch-all route that serves index.html
+// Add before the catch-all route
+app.use('/api', (req, res, next) => {
+  // Forward API requests to the backend
+  next();
+});
+
+// Then your existing catch-all route
 app.get('*', (req, res) => {
-  // Allow direct access to these routes
   const allowedRoutes = ['/', '/about', '/vulz', '/supplier', '/configurator', '/contact'];
   
   // Log the incoming request

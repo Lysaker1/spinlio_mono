@@ -5,6 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 import { RequestHandler } from 'express-serve-static-core';
 import { auth } from 'express-oauth2-jwt-bearer';
+import crypto from 'crypto';
 
 dotenv.config();
 
@@ -43,21 +44,41 @@ const supabase = createClient(
 
 // Middleware
 app.use(limiter);
+
+// Move these to the top, right after imports and before routes
+const jwtCheck = auth({
+  audience: process.env.AUTH0_AUDIENCE,
+  issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
+  tokenSigningAlg: 'RS256'
+});
+
+// Move CORS before JWT check
 app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'http://localhost:3003',
-    'https://design.spinlio.com',
-    'https://spinlio.com',
-    'https://configurator.spinlio.com',
-    'https://api.spinlio.com'
-  ],
+  origin: process.env.NODE_ENV === 'production'
+    ? [
+        'https://design.spinlio.com',
+        'https://spinlio.com',
+        'https://configurator.spinlio.com',
+        'https://api.spinlio.com',
+        'https://auth.spinlio.com'
+      ]
+    : [
+        'http://localhost:3000',
+        'http://localhost:3001',
+        'http://localhost:3003'
+      ],
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 200
 }));
-app.use(express.json());
+
+// Then the JWT checks
+app.use('/api/designs', jwtCheck);
+app.use('/api/items', jwtCheck);
+
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 // Add this after app initialization
 app.set('trust proxy', 1);
@@ -176,117 +197,264 @@ app.delete('/api/items/:id', (async (req: Request, res: Response) => {
   }
 }) as RequestHandler);
 
-// Add the new design endpoints
-app.get('/api/designs/:userId', (async (req: Request, res: Response) => {
+// Save design endpoint
+app.post('/api/designs', (async (req: Request, res: Response) => {
   try {
-    console.log('GET /api/designs/:userId - Request params:', req.params);
+    const design = req.body;
+    console.log('Received design name:', design.name);
     
-    const { data, error } = await supabase
-      .from('saved_designs')
-      .select('*')
-      .eq('user_id', req.params.userId)
-      .order('created_at', { ascending: false });
+    const designId = crypto.randomUUID();
+    let thumbnailFilename = null;
 
-    console.log('Database response:', { data, error });
+    console.log('Design save flow:', {
+      designId,
+      host: req.get('host'),
+      protocol: req.protocol,
+      hasImage: design.thumbnail_url?.startsWith('data:image')
+    });
 
-    if (error) {
-      console.error('Database error:', error);
-      throw error;
+    // Handle screenshot if provided
+    if (design.thumbnail_url?.startsWith('data:image')) {
+      thumbnailFilename = `${designId}.png`;
+      
+      try {
+        // Convert base64 to buffer more safely
+        const base64Data = design.thumbnail_url.split(',')[1]; // Remove data:image/png;base64,
+        const imageBuffer = Buffer.from(base64Data, 'base64');
+        
+        console.log('Uploading image, size:', imageBuffer.length);
+        
+        // Save screenshot to storage with increased timeout
+        const { error: uploadError } = await supabase.storage
+          .from('design-thumbnail')
+          .upload(thumbnailFilename, imageBuffer, {
+            contentType: 'image/png',
+            upsert: true,
+            duplex: 'half'
+          });
+
+        if (uploadError) {
+          console.error('Screenshot upload failed:', uploadError);
+          // Continue without thumbnail rather than failing completely
+          thumbnailFilename = null;
+        } else {
+          console.log('Thumbnail saved:', {
+            filename: thumbnailFilename,
+            size: imageBuffer.length,
+            storageBucket: 'design-thumbnail'
+          });
+        }
+      } catch (imgError) {
+        console.error('Image processing error:', imgError);
+        // Continue without thumbnail
+        thumbnailFilename = null;
+      }
     }
 
-    res.json(data || []);
+    const thumbnailUrl = thumbnailFilename 
+      ? `${process.env.NODE_ENV === 'production' ? 'https' : req.protocol}://${req.get('host')}/api/thumbnail/${thumbnailFilename}`
+      : null;
+
+    console.log('Final thumbnail URL:', {
+      filename: thumbnailFilename,
+      fullUrl: thumbnailUrl,
+      host: req.get('host')
+    });
+
+    // Save design with thumbnail reference
+    const { data, error } = await supabase
+      .from('saved_designs')
+      .insert({
+        ...design,
+        id: designId,
+        thumbnail_url: thumbnailUrl,
+        created_at: new Date().toISOString()
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    
+    console.log('Design saved successfully:', designId);
+    res.status(201).json(data);
+  } catch (error: any) {
+    console.error('Save design error:', error);
+    res.status(500).json({ error: error.message });
+  }
+}) as RequestHandler);
+
+// Get designs endpoint
+app.get('/api/designs/:userId', async (req: Request, res: Response) => {
+  try {
+    const { data: designs, error } = await supabase
+      .from('saved_designs')
+      .select('*')
+      .eq('user_id', req.params.userId);
+
+    if (error) throw error;
+
+    // Transform the designs to include full thumbnail URLs
+    const transformedDesigns = designs.map(design => ({
+      ...design,
+      thumbnail_url: design.thumbnail_url || null
+    }));
+
+    res.json(transformedDesigns);
   } catch (error: any) {
     console.error('Error fetching designs:', error);
     res.status(500).json({ error: error.message });
   }
-}) as RequestHandler);
+});
 
-app.post('/api/designs', (async (req: Request, res: Response) => {
+// Get thumbnail endpoint
+app.get('/api/thumbnail/:filename', (async (req: Request, res: Response) => {
   try {
-    // Validate required fields
-    const { user_id, name, description, parameters, thumbnail_url, configurator_type } = req.body;
-    
-    if (!user_id || !name || !parameters || !configurator_type) {
-      return res.status(400).json({ 
-        error: 'Missing required fields',
-        required: ['user_id', 'name', 'parameters', 'configurator_type']
-      });
-    }
-
-    console.log('Received design data:', req.body);
-
-    const { data, error } = await supabase
-      .from('saved_designs')
-      .insert([{ 
-        user_id,
-        name,
-        description,
-        parameters,
-        thumbnail_url,
-        configurator_type
-      }])
-      .select()
-      .single();
+    const { data, error } = await supabase.storage
+      .from('design-thumbnail')
+      .download(req.params.filename);
 
     if (error) {
-      console.error('Database error:', error);
-      throw error;
+      console.error('Thumbnail fetch error:', error);
+      return res.status(404).json({ error: 'Thumbnail not found' });
     }
-
-    if (!data) {
-      throw new Error('Failed to create design');
-    }
-
-    res.status(201).json(data);
+    
+    const buffer = await data.arrayBuffer();
+    res.set({
+      'Content-Type': 'image/png',
+      'Cache-Control': 'public, max-age=31536000'
+    });
+    res.send(Buffer.from(buffer));
   } catch (error: any) {
-    console.error('Error saving design:', error);
-    res.status(500).json({ error: error.message });
+    console.error('Thumbnail error:', error);
+    res.status(404).json({ error: 'Thumbnail not found' });
   }
 }) as RequestHandler);
 
-// Get all designs (for debugging)
-app.get('/api/designs', (async (req: Request, res: Response) => {
+// Add this new endpoint after the existing ones
+app.patch('/api/fix-thumbnails', async (req: Request, res: Response) => {
   try {
-    const { data, error } = await supabase
-      .from('saved_designs')
-      .select('*')
-      .order('created_at', { ascending: false });
+    // First get all files from storage
+    const { data: storageFiles, error: storageError } = await supabase
+      .storage
+      .from('design-thumbnail')
+      .list();
 
+    if (storageError) throw storageError;
+
+    // Get all designs
+    const { data: designs, error: designsError } = await supabase
+      .from('saved_designs')
+      .select('id, name, thumbnail_url');
+
+    if (designsError) throw designsError;
+
+    const updates = [];
+    const orphanedFiles = [];
+
+    // Process storage files
+    for (const file of storageFiles || []) {
+      if (!file.name.endsWith('.png')) continue;
+      
+      // Try to find matching design by filename without .png
+      const baseFilename = file.name.replace('.png', '');
+      const matchingDesign = designs.find(d => 
+        d.id === baseFilename || 
+        (d.thumbnail_url && d.thumbnail_url.includes(baseFilename))
+      );
+
+      if (matchingDesign) {
+        // Update design if thumbnail_url doesn't match
+        if (matchingDesign.thumbnail_url !== file.name) {
+          updates.push({
+            id: matchingDesign.id,
+            thumbnail_url: file.name
+          });
+        }
+      } else {
+        // Track orphaned files
+        orphanedFiles.push(file.name);
+      }
+    }
+
+    // Perform updates
+    let updateCount = 0;
+    for (const update of updates) {
+      const { error: updateError } = await supabase
+        .from('saved_designs')
+        .update({ thumbnail_url: update.thumbnail_url })
+        .eq('id', update.id);
+
+      if (updateError) throw updateError;
+      updateCount++;
+    }
+
+    res.json({ 
+      message: 'Thumbnails fix completed',
+      updatedDesigns: updateCount,
+      orphanedFiles,
+      totalDesigns: designs.length,
+      totalStorageFiles: storageFiles.length
+    });
+  } catch (error: any) {
+    console.error('Error fixing thumbnails:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/fix-thumbnail-urls', async (req: Request, res: Response) => {
+  try {
+    const { data: designs, error } = await supabase
+      .from('saved_designs')
+      .select('id, thumbnail_url');
+    
     if (error) throw error;
-    res.json(data);
+
+    const updates = designs
+      .filter(d => d.thumbnail_url && !d.thumbnail_url.startsWith('http'))
+      .map(d => ({
+        id: d.id,
+        thumbnail_url: `${req.protocol}://${req.get('host')}/api/thumbnail/${d.thumbnail_url}`
+      }));
+
+    for (const update of updates) {
+      await supabase
+        .from('saved_designs')
+        .update({ thumbnail_url: update.thumbnail_url })
+        .eq('id', update.id);
+    }
+
+    res.json({ 
+      message: 'Thumbnail URLs updated',
+      updatedCount: updates.length 
+    });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
-}) as RequestHandler);
-
-// Update the JWT check configuration
-const jwtCheck = auth({
-  audience: process.env.AUTH0_AUDIENCE,  // Use the single audience variable
-  issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
-  tokenSigningAlg: 'RS256'
 });
 
-// Apply JWT check to protected routes only
-app.use('/api/designs', jwtCheck);
-app.use('/api/items', jwtCheck);
-
-app.use((req, res, next) => {
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('X-Frame-Options', 'DENY');
-  res.setHeader('X-XSS-Protection', '1; mode=block');
-  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-  next();
-});
+// // Any catch-all or error handling middleware should be last
+// app.use((req, res, next) => {
+//   // Allow everything
+//   res.setHeader('Access-Control-Allow-Origin', '*');
+//   res.setHeader('Access-Control-Allow-Methods', '*');
+//   res.setHeader('Access-Control-Allow-Headers', '*');
+//   next();
+// });
 
 app.use((err: any, req: Request, res: Response, next: any) => {
   console.error('Unhandled error:', err);
-  res.status(500).json({ 
+  
+  // Set CORS headers even for errors
+  res.header('Access-Control-Allow-Origin', req.headers.origin);
+  res.header('Access-Control-Allow-Credentials', 'true');
+  
+  res.status(err.status || 500).json({ 
     error: 'Internal server error',
     message: process.env.NODE_ENV === 'development' ? err.message : undefined
   });
 });
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT_API || 3003;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

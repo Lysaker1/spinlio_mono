@@ -1,18 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { DesignStorageService } from '../../services/designStorage';
-import { SavedDesign } from '../../types/SavedDesign';
+import { SavedDesign, ConfiguratorType } from '../../types/SavedDesign';
 import './SaveDesignButton.css';
 import { AuthenticatedFeature } from '../AuthenticatedFeature/AuthenticatedFeature';
+import { IViewportApi } from '@shapediver/viewer';
 
 interface SaveDesignButtonProps {
   getCurrentParameters: () => Record<string, any>;
-  configuratorType: 'default' | 'vulz';
+  configuratorType: ConfiguratorType;
+  viewport?: IViewportApi | null;
 }
 
 export const SaveDesignButton: React.FC<SaveDesignButtonProps> = ({ 
   getCurrentParameters,
-  configuratorType 
+  configuratorType,
+  viewport 
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [designName, setDesignName] = useState('');
@@ -52,43 +55,65 @@ export const SaveDesignButton: React.FC<SaveDesignButtonProps> = ({
     setIsModalOpen(true);
   };
 
+  const captureScreenshot = async (): Promise<string> => {
+    if (!viewport) {
+      console.warn('Viewport not available for screenshot');
+      return '';
+    }
+
+    try {
+      // Take screenshot and ensure it's base64 format
+      const screenshotData = viewport.getScreenshot();
+      if (!screenshotData.startsWith('data:image')) {
+        console.error('Invalid screenshot format:', screenshotData.substring(0, 50));
+        return '';
+      }
+      return screenshotData;
+    } catch (error) {
+      console.error('Error capturing screenshot:', error);
+      return '';
+    }
+  };
+
   const handleSave = async () => {
-    if (!user?.sub) {
-      console.log('No user logged in, redirecting to login...');
-      alert('Please log in to save your design');
+    if (!user?.sub || !designName.trim()) {
+      alert('Please log in and enter a design name to save your design');
       loginWithRedirect();
       return;
     }
 
-    if (!designName.trim()) {
-      console.log('No design name entered');
-      alert('Please enter a design name');
-      return;
-    }
-
     setIsSaving(true);
-    
     try {
+      console.log('1. Getting parameters...');
       const parameters = getCurrentParameters();
-      console.log('Current parameters:', parameters);
-
+      
+      console.log('2. Capturing screenshot...');
+      const screenshotData = await captureScreenshot();
+      if (!screenshotData) {
+        throw new Error('Failed to capture screenshot');
+      }
+      console.log('Screenshot data length:', screenshotData.length);
+      
+      console.log('3. Getting auth token...');
       const token = await getAccessTokenSilently();
+      
       const design: Omit<SavedDesign, 'id' | 'created_at'> = {
         name: designName,
         user_id: user.sub,
         description: `${configuratorType} bike configuration`,
         parameters,
-        thumbnail_url: 'https://example.com/thumbnail.jpg',
-        configurator_type: configuratorType
+        configurator_type: configuratorType as ConfiguratorType,
+        thumbnail_url: screenshotData
       };
-
+      
+      console.log('4. Saving design...');
       const savedDesign = await DesignStorageService.saveDesign(design, token);
-      console.log('Design saved successfully:', savedDesign);
-      alert('Design saved successfully!');
+      console.log('5. Design saved:', savedDesign);
+      
       setIsModalOpen(false);
       setDesignName('');
     } catch (error) {
-      console.error('Error saving design:', error);
+      console.error('Save error:', error);
       alert('Failed to save design. Please try again.');
     } finally {
       setIsSaving(false);

@@ -6,7 +6,7 @@ export interface SavedDesign {
   name: string;
   description?: string;
   parameters: Record<string, unknown>;
-  thumbnail_url?: string;
+  thumbnail_url: string | null | undefined;
   created_at: string;
   configurator_type: ConfiguratorType;
 } 

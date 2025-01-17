@@ -197,6 +197,7 @@ app.use((req, res, next) => {
   next();
 });
 
+
 // Add preload headers for critical resources
 app.use((req, res, next) => {
   if (req.path === '/') {

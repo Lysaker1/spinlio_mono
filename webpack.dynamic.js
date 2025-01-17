@@ -61,11 +61,11 @@ module.exports = (env) => {
         https://static.klaviyo.com
         https://*.klaviyo.com;
       img-src 'self' data: blob:
-        https://static.klaviyo.com
-        https://*.klaviyo.com
-        https://res.cloudinary.com
-        https://*.cloudinary.com
-
+        http://localhost:3003
+        https://api.spinlio.com
+        https://*.spinlio.com
+        https://***REMOVED***.supabase.co
+        *;
     `.replace(/\s+/g, ' ')
   }
 
@@ -304,7 +304,7 @@ module.exports = (env) => {
       headers: {
         ...cspHeaders,
         "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
         "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization"
       },
       proxy: [
@@ -316,7 +316,7 @@ module.exports = (env) => {
         }
       ],
       devMiddleware: {
-        writeToDisk: false, // Change to false
+        writeToDisk: false,
       },
       watchFiles: {
         paths: ['src/**/*'],

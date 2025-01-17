@@ -11,14 +11,15 @@ const root = ReactDOM.createRoot(document.getElementById('root')!);
 console.log('Environment Check:', {
   nodeEnv: process.env.NODE_ENV,
   apiUrl,
-  auth0Domain: "dev-jxcml1qpmbgabh6v.us.auth0.com",
+  auth0Domain: "auth.spinlio.com",
+  auth0DomainFallback: "dev-jxcml1qpmbgabh6v.us.auth0.com", // Keeping for reference
   auth0ClientId: "buzvq3JLo9qwHqQusnlkqWkldLKMQjAu"
 });
 
 root.render(
   <React.StrictMode>
     <Auth0Provider
-      domain="dev-jxcml1qpmbgabh6v.us.auth0.com"
+      domain="auth.spinlio.com"
       clientId="buzvq3JLo9qwHqQusnlkqWkldLKMQjAu"
       authorizationParams={{
         redirect_uri: window.location.origin,

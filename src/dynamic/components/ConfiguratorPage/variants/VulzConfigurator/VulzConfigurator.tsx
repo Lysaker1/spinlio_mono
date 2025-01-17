@@ -92,6 +92,7 @@ const VulzConfigurator: React.FC = () => {
           <SaveDesignButton 
             getCurrentParameters={() => session?.parameterValues || {}}
             configuratorType={CONFIGURATOR_TYPES.VULZ}
+            viewport={viewport}
           />
           <ShareButton 
             session={session} 

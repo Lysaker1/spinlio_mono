@@ -103,7 +103,7 @@ app.use(helmet({
         "https://auth.spinlio.com",
         "https://*.auth0.com",
         "https://dev-jxcml1qpmbgabh6v.us.auth0.com",
-        "https://auth.spinlio.com"
+        "https://auth.spinlio.com",
         "https://api.spinlio.com",
         "http://localhost:3003",
         "https://*.supabase.co",

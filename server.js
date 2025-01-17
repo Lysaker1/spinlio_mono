@@ -62,9 +62,12 @@ app.use(cors({
 app.use(helmet({
   contentSecurityPolicy: process.env.NODE_ENV === 'production' ? {
     directives: {
-      defaultSrc: ["'self'", "http://localhost:3003", "https://api.spinlio.com"],
+      defaultSrc: ["'self'", "blob:", "data:", "https:", "wss:", "http://localhost:3003", "https://api.spinlio.com"],
       connectSrc: [
         "'self'", 
+        "blob:",
+        "https://*.shapediver.com", 
+        "wss://*.shapediver.com",
         "http://localhost:3003",
         "http://localhost:3003/*",
         "http://localhost:3003/api/*",
@@ -126,15 +129,18 @@ app.use(helmet({
       ],
       imgSrc: [
         "'self'",
+        "blob:",
+        "data:",
+        "https:",
         "*",
       ].filter(Boolean),
       scriptSrc: [
         "'self'", 
         "'unsafe-inline'", 
         "'unsafe-eval'",
-        "http://localhost:3003",
-        "https://api.spinlio.com",
         "blob:",
+        "https://*.shapediver.com",
+        "https://api.spinlio.com",
         "*"
       ],
       styleSrc: [

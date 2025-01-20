@@ -19,8 +19,6 @@
   margin-bottom: 0.75rem;
 }
 
-
-
 /* Currently selected color display label */
 .selected-color-label {
   /* Semi-transparent white text */
@@ -115,6 +113,55 @@
   text-align: center;
 }
 
+.rainbow-gradient {
+  background: linear-gradient(
+    135deg,
+    #ff0000,
+    #ff8800,
+    #ffee00,
+    #4de94c,
+    #3783ff,
+    #4815aa,
+    #ff00ff
+  );
+  animation: rainbow-spin 8s linear infinite;
+  background-size: 200% 200%;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.4) !important;
+}
+
+@keyframes rainbow-spin {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 200% 200%;
+  }
+}
+
+.custom-color-picker {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}
+.custom-color-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.custom-color-picker input[type="color"] {
+  width: 100%;
+  height: 40px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
 /* Mobile-specific adjustments */
 @media screen and (max-width: 768px) {
   /* Mobile card styling */
@@ -133,6 +180,66 @@
     overflow: hidden;
     background: transparent;
     padding: 0.1rem 0.2rem 0.1rem 0.2rem; /* top right bottom left */
-
   }
+}
+
+.color-wheel-input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  background: linear-gradient(
+    45deg,
+    red,
+    orange,
+    yellow,
+    green,
+    blue,
+    indigo,
+    violet
+  );
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease;
+}
+
+.color-wheel-input::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.color-wheel-input::-webkit-color-swatch {
+  border: none;
+  border-radius: 50%;
+}
+
+.color-wheel-input::-moz-color-swatch {
+  border: none;
+  border-radius: 50%;
+}
+
+.color-wheel-input:hover {
+  transform: scale(1.1);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.color-wheel-label {
+  position: relative;
+  display: block;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+}
+
+.color-wheel-input {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  cursor: pointer;
 }

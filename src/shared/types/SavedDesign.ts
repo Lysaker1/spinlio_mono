@@ -2,11 +2,17 @@ export type ConfiguratorType = 'default' | 'vulz';
 
 export interface SavedDesign {
   id: string;
-  user_id: string;
   name: string;
-  description?: string;
-  parameters: Record<string, unknown>;
-  thumbnail_url: string | null | undefined;
+  user_id: string;
+  description: string;
+  parameters: Record<string, any>;
+  configurator_type: 'default' | 'vulz';
+  thumbnail_url: string | null;
   created_at: string;
-  configurator_type: ConfiguratorType;
-} 
+  is_deleted?: boolean;
+}
+
+// Add a type for creating a new design
+export type NewDesign = Omit<SavedDesign, 'id' | 'created_at'> & {
+  thumbnail_url?: string | null;
+}; 

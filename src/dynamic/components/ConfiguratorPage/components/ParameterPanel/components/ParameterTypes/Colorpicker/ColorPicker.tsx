@@ -1,5 +1,5 @@
 // Import React library for JSX and component functionality
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 // Import type definition for parameter configuration
 import { ParameterDefinition } from '../../../types';
 // Import hook to detect mobile screen sizes
@@ -11,53 +11,97 @@ import './ColorPicker.css';
 
 // Define props interface for ColorPicker component
 interface ColorPickerProps {
-  definition: ParameterDefinition;  // Parameter configuration object
-  value: string;                    // Currently selected color value
-  onChange: (value: any, definition: ParameterDefinition) => void; // Handler for color changes
+  definition: ParameterDefinition;
+  value: string;
+  onChange: (value: any, definition: ParameterDefinition) => void;
+  showPalette?: boolean;
 }
 
-// Define ColorPicker component with TypeScript typing
 export const ColorPicker: React.FC<ColorPickerProps> = ({
   definition,
-  value,
+  value = '0x000000ff',
   onChange,
+  showPalette = false
 }) => {
-  // Check if viewport is mobile-sized using media query
+  const [lastCustomColor, setLastCustomColor] = useState<string | null>(null);
   const isMobile = useMediaQuery('(max-width: 768px)');
   
-  // Changed to show all colors instead of limiting to 8
-  const availableColors = Object.entries(colorPalette)
-    .map(([value, color]) => ({
-      value,
-      hex: color.hex,
-      label: color.label
-    }));
+  // Determine if this is the frame color parameter
+  const isFrameColor = definition.name.toLowerCase().includes('frame');
+  const showColorWheel = !isFrameColor;
+
+  // Handle value formatting based on parameter type
+  const normalizedValue = isFrameColor 
+    ? value // Keep numeric value for frame color
+    : (value && value.startsWith('0x'))
+      ? '#' + value.substring(2, 8)
+      : value || '#000000';
+
+  const handleColorChange = (newColor: string, isCustomColor: boolean = false) => {
+    if (isFrameColor) {
+      // For frame color, pass the numeric value directly
+      onChange(newColor, definition);
+    } else {
+      // For wheel color, handle hex values
+      const shapeDiverColor = newColor.startsWith('#')
+        ? '0x' + newColor.substring(1) + 'ff'
+        : newColor;
+      
+      if (isCustomColor) {
+        setLastCustomColor(newColor);
+      }
+      
+      onChange(shapeDiverColor, definition);
+    }
+  };
+
+  const availableColors = Object.entries(colorPalette).map(([value, color]) => ({
+    value: isFrameColor ? value : color.hex,
+    hex: color.hex,
+    label: color.label
+  }));
 
   return (
-    // Main container with conditional mobile class
-    <div className={`parameter-card ${isMobile ? 'mobile' : ''}`}>
-      {/* Header section showing parameter name */}
+    <div className="parameter-card">
       <div className="parameter-header">
         <span className="parameter-label">{definition.name}</span>
       </div>
 
-      {/* Grid of color options */}
       <div className="color-options-row">
-        {/* Map through available colors to create color buttons */}
         {availableColors.map((color) => (
           <button
             key={color.value}
-            className={`color-option ${value === color.value ? 'selected' : ''}`}
-            onClick={() => onChange(color.value, definition)}
+            className={`color-option ${normalizedValue === color.value ? 'selected' : ''}`}
+            onClick={() => handleColorChange(color.value)}
             title={color.label}
           >
-            {/* Color preview dot */}
-            <div 
-              className="color-dot"
-              style={{ backgroundColor: color.hex }}
-            />
+            <div className="color-dot" style={{ backgroundColor: color.hex }} />
           </button>
         ))}
+        
+        {showColorWheel && (
+          <div className="color-option">
+            <label className="color-wheel-label">
+              <div className="color-dot rainbow-gradient" />
+              <input
+                type="color"
+                className="color-wheel-input"
+                value={normalizedValue}
+                onChange={(e) => handleColorChange(e.target.value, true)}
+              />
+            </label>
+          </div>
+        )}
+
+        {lastCustomColor && showColorWheel && (
+          <button
+            className={`color-option ${normalizedValue === lastCustomColor ? 'selected' : ''}`}
+            onClick={() => handleColorChange(lastCustomColor)}
+            title="Last Used Color"
+          >
+            <div className="color-dot" style={{ backgroundColor: lastCustomColor }} />
+          </button>
+        )}
       </div>
     </div>
   );

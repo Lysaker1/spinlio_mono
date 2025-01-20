@@ -18,19 +18,22 @@ export const MyDesigns: React.FC<MyDesignsProps> = ({ onSelect, currentConfigura
   const [newName, setNewName] = useState('');
   const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const navigate = useNavigate();
+  const [deleteConfirmation, setDeleteConfirmation] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchDesigns = async () => {
       if (user?.sub) {
         try {
           const token = await getAccessTokenSilently();
+          console.log('Auth Token:', token);
           const fetchedDesigns = await DesignStorageService.getDesignsByUser(user.sub, token);
           
-          // Debug logging
-          console.log('Fetched designs:', fetchedDesigns);
-          console.log('Designs with thumbnails:', fetchedDesigns.filter(d => d.thumbnail_url));
+          // Sort designs by date (newest first)
+          const sortedDesigns = fetchedDesigns.sort((a, b) => {
+            return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+          });
           
-          setDesigns(fetchedDesigns);
+          setDesigns(sortedDesigns);
         } catch (error) {
           console.error('Error fetching designs:', error);
         }
@@ -73,15 +76,54 @@ export const MyDesigns: React.FC<MyDesignsProps> = ({ onSelect, currentConfigura
     }
   };
 
-  const handleDuplicate = (design: SavedDesign) => {
-    // Duplicate logic placeholder
-    console.log('Duplicating design', design.id);
+  const handleDuplicate = async (design: SavedDesign) => {
+    try {
+      const token = await getAccessTokenSilently();
+      const duplicatedDesign = await DesignStorageService.duplicateDesign(design, token);
+      
+      setDesigns(prev => {
+        const index = prev.findIndex(d => d.id === design.id);
+        const newDesigns = [...prev];
+        newDesigns.splice(index + 1, 0, duplicatedDesign);
+        return newDesigns;
+      });
+      
+      setActiveMenu(null);
+    } catch (error) {
+      console.error('Error duplicating design:', error);
+    }
   };
 
-  const handleDelete = (designId: string) => {
-    // Delete logic placeholder
-    console.log('Deleting design', designId);
+  const handleDeleteClick = (designId: string) => {
+    setActiveMenu(null); // Close the three-dot menu
+    setDeleteConfirmation(designId);
   };
+
+  const handleDeleteConfirm = async (designId: string) => {
+    try {
+      const token = await getAccessTokenSilently();
+      await DesignStorageService.deleteDesign(designId, token);
+      
+      // Remove from local state after successful deletion
+      setDesigns(prev => prev.filter(d => d.id !== designId));
+      setDeleteConfirmation(null);
+    } catch (error) {
+      console.error('Error deleting design:', error);
+    }
+  };
+
+  const DeleteConfirmation: React.FC<{
+    onConfirm: () => void;
+    onCancel: () => void;
+  }> = ({ onConfirm, onCancel }) => (
+    <div className="delete-confirmation">
+      <p>Are you sure you want to delete this design?</p>
+      <div className="delete-actions">
+        <button onClick={onConfirm}>Yes</button>
+        <button onClick={onCancel}>No</button>
+      </div>
+    </div>
+  );
 
   return (
     <AuthenticatedFeature>
@@ -130,9 +172,14 @@ export const MyDesigns: React.FC<MyDesignsProps> = ({ onSelect, currentConfigura
                     className="design-menu"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <button onClick={() => setEditingDesign(design)}>Rename</button>
+                    <button onClick={() => {
+                      setActiveMenu(null);  // Close the menu first
+                      setEditingDesign(design);  // Then open rename modal
+                    }}>
+                      Rename
+                    </button>
                     <button onClick={() => handleDuplicate(design)}>Duplicate</button>
-                    <button onClick={() => handleDelete(design.id)}>Delete</button>
+                    <button onClick={() => handleDeleteClick(design.id)}>Delete</button>
                   </div>
                 )}
 
@@ -156,6 +203,22 @@ export const MyDesigns: React.FC<MyDesignsProps> = ({ onSelect, currentConfigura
                       }}>
                         Cancel
                       </button>
+                    </div>
+                  </div>
+                )}
+
+                {deleteConfirmation === design.id && (
+                  <div
+                    className="delete-confirmation"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <p>Are you sure you want to delete this design?</p>
+                    <div className="delete-actions">
+                      <button onClick={() => handleDeleteConfirm(design.id)}>Yes</button>
+                      <button onClick={() => {
+                        setDeleteConfirmation(null);
+                        setActiveMenu(design.id); // Return to main menu if canceled
+                      }}>No</button>
                     </div>
                   </div>
                 )}

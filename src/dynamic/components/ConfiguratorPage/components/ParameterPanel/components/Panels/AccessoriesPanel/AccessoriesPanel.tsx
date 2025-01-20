@@ -60,6 +60,9 @@ export const AccessoriesPanel: React.FC<AccessoriesPanelProps> = (props) => {
     {
       filter: (param: ParameterDefinition) =>
         param.category === 'accessories',
+      initialVisibility: {
+        'Fittings': true  // Set Fittings to be open by default
+      },
       sortSubCategories: (a: string, b: string) => {
         const indexA = subCategoryOrder.indexOf(a);
         const indexB = subCategoryOrder.indexOf(b);

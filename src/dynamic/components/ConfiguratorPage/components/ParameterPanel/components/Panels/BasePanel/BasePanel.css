@@ -268,12 +268,15 @@
   overflow: hidden;
   opacity: 0;
   transition: max-height 0.6s ease, opacity 0.6s ease;
+  position: relative;
 }
 
 .category-items.open {
-  overflow: hidden;
-  max-height: 1000px;
+  overflow: visible;
+  max-height: none;
   width: 100%;
   opacity: 1;
   min-height: 135px;
+  padding-bottom: 5px;
+  z-index: 1;
 }

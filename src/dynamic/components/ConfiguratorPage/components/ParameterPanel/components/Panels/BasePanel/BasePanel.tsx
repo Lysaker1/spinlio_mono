@@ -186,6 +186,22 @@ export const BasePanel: React.FC<BasePanelProps> = ({
                     onChange={onParameterChange}
                 />
             );
+        case 'colorWithPalette':
+            return (
+                <ColorPicker
+                    definition={param}
+                    value={value}
+                    onChange={(newValue) => {
+                        // If it's a palette color, it will be in the format '#RRGGBB'
+                        // Convert to ShapeDiver format '0xRRGGBBff'
+                        const shapeDiverValue = newValue.startsWith('#') 
+                            ? '0x' + newValue.substring(1) + 'ff'
+                            : newValue;
+                        onParameterChange(shapeDiverValue, param);
+                    }}
+                    showPalette={true}
+                />
+            );
         default:
             console.warn(`Unknown parameter type: ${param.type} for parameter ${param.name}`);
             return null;

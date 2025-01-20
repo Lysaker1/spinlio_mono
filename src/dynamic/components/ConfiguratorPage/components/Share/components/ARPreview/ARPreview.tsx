@@ -19,10 +19,18 @@ const ARPreview: React.FC<ARPreviewProps> = ({ onBack, viewport }) => {
             if (viewport.viewableInAR()) {
                 await viewport.viewInAR();
             } else {
-                const qr = await viewport.createArSessionLink(undefined, true);
-                setQrCodeUrl(qr);
-                localStorage.setItem('arQrCodeUrl', qr);
-                setShowQRModal(true);
+                try {
+                    const qr = await viewport.createArSessionLink(undefined, true);
+                    if (!qr) {
+                        throw new Error('Failed to generate QR code');
+                    }
+                    setQrCodeUrl(qr);
+                    localStorage.setItem('arQrCodeUrl', qr);
+                    setShowQRModal(true);
+                } catch (conversionError) {
+                    console.error('Error converting model:', conversionError);
+                    throw new Error('Unable to prepare model for AR view');
+                }
             }
         } catch (error) {
             console.error('Error in AR view:', error);

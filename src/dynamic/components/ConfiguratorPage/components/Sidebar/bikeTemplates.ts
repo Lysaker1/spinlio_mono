@@ -11,38 +11,7 @@ export interface BikeTemplate {
   export const MODEL_ID = '9d6043a1-538e-4c70-8ff7-977224ec7928';
 
   // New Vulz parameters based on parameter definition v6
-export const VulzParameters = {
-  // Frame Geometry
-  "eea4374e-a513-4f61-924a-f8175351fa8b": "560",  // Stack
-  "815b0eaf-cd38-4638-8bde-5f6ac27739d0": "444",  // Chainstay
-  "beff3154-f6bd-494e-998b-13f9660e9506": "597",  // Reach
-  "64ecfdab-39bb-4d5c-a11d-b98690404bf9": "548",  // Seat tube length
-  "09aa3a63-8d46-4b67-b87b-b4b869e5befd": "74.3", // Seat tube angle
-  "98f0a457-b4e5-44ea-8e55-8577941d49ad": "72.0", // Head tube angle
-  
-  // Frame Details
-  "c4d4c978-5b58-49ce-a567-739894dc5d36": "40",   // Bottom bracket drop
-  "4ec438ea-a490-434b-82ea-88f84f67f6b7": "38",   // Fork offset
-  "fbb5d1c5-9ede-49e3-8d68-5b5a7d390ce1": "25.91", // Fork length
-  
-  
-  
-  // Component Selection
-  "03c193b3-bbc9-491b-b4d5-1a2b48a4e0d1": "1",    // Handlebar type
-  "62738150-ac17-418d-81ab-2876c45a413e": "2",    // Wheel type
-  "ac762528-d92e-4d5a-8c48-e364432e61e9": "41",   // Tire width
-  
-  // Visual Effects
-  "74a9482f-e1bb-4b5e-9dff-a182a2b738b4": "1.0",  // Metallic finish
-  "251d59ff-4c5d-4a33-94bb-31fafb7df894": "0.8",  // Gloss level
-  
-  // Default settings
-  "7088e5a1-f07f-49c3-b1f6-98e74ae3734c": "false", // Show measurements
-  "c01258ac-67a5-4ab2-968e-e368f3391b63": "true",  // Show bike
-  
-  // Additional Vulz-specific parameters
-  "8620773c-238b-4627-ba8e-2d1c0995b089": "VULZ Custom", // Bike name
-};
+export const VulzParameters = {};
 
   export const CanyonParameters = {
     "7088e5a1-f07f-49c3-b1f6-98e74ae3734c": "false",
@@ -284,9 +253,9 @@ export const VulzParameters = {
   
   export const bikeTemplates: BikeTemplate[] = [
     {
-      id: 'vulz_road',
-      image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/Screenshot_2025-01-13_at_20.33.05_adrmtv.png',
-      name: 'VULZ Road',
+      id: 'vulz_e_gravel',
+      image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/Screenshot_2025-01-20_at_12.56.51_edoxbl.png',
+      name: 'VULZ E-Gravel',
       modelStateId: '9d74c500-e310-45bc-8c63-6dd2ee132cc6',
       parameters: VulzParameters,
       type: 'vulz'

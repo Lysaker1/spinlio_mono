@@ -1,7 +1,7 @@
 import { getApiUrl } from '../config/api';
 import { DesignStorageService } from './designStorage';
 import { CONFIGURATOR_TYPES } from '../constants/configuratorTypes';
-import { SavedDesign } from '@shared/types/SavedDesign';
+import { SavedDesign, NewDesign } from '../types/SavedDesign';
 import { ErrorService } from './errorService';
 import { ApiResponse, SaveDesignResponse } from '../types/api';
 
@@ -41,7 +41,7 @@ export const AuthService = {
 
   testDesignsAPI: async (token: string, userId: string): Promise<SaveDesignResponse> => {
     try {
-      const testDesign: Omit<SavedDesign, 'id' | 'created_at'> = {
+      const testDesign: Omit<SavedDesign, 'id' | 'created_at' | 'thumbnail_url'> = {
         user_id: userId,
         name: "Test Design",
         description: "Testing API",
@@ -49,7 +49,7 @@ export const AuthService = {
         configurator_type: CONFIGURATOR_TYPES.DEFAULT
       };
       
-      const result = await DesignStorageService.saveDesign(testDesign, token);
+      const result = await DesignStorageService.saveDesign(testDesign as NewDesign, token);
       return { success: true, data: result };
     } catch (error) {
       const errorDetails = await ErrorService.handleError(error, 'AuthService.testDesignsAPI');

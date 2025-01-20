@@ -124,9 +124,8 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
             // Only include valid creation properties
             branding: {
               backgroundColor: 'transparent',
-              spinnerPositioning: SPINNER_POSITIONING.BOTTOM_LEFT,
+              spinnerPositioning: SPINNER_POSITIONING.CENTER,
               busyModeSpinner: LOADING_GIF_URL,
-              busyModeDisplay: BUSY_MODE_DISPLAY.SPINNER,
             }
           });
 
@@ -292,19 +291,36 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
   // Handler for AR view functionality
   const handleARView = useCallback(async () => {
     if (viewportRef.current) {
-      // Show busy indicator
-      const token = viewportRef.current.addFlag(FLAG_TYPE.BUSY_MODE);
-      if (viewportRef.current.viewableInAR()) {
-        // Launch AR view if supported
-        await viewportRef.current.viewInAR();
-      } else {
-        // Show QR code for AR viewing
-        const qr = await viewportRef.current.createArSessionLink(undefined, true);
-        setQrCodeUrl(qr);
-        setShowQrModal(true);
-      }
-      // Remove busy indicator
-      viewportRef.current.removeFlag(token);
+        try {
+            const token = viewportRef.current.addFlag(FLAG_TYPE.BUSY_MODE);
+            
+            if (viewportRef.current.viewableInAR()) {
+                await viewportRef.current.viewInAR();
+            } else {
+                // Add retry logic
+                let retryCount = 0;
+                const maxRetries = 3;
+                
+                while (retryCount < maxRetries) {
+                    try {
+                        const qr = await viewportRef.current.createArSessionLink(undefined, true);
+                        if (qr) {
+                            setQrCodeUrl(qr);
+                            setShowQrModal(true);
+                            break;
+                        }
+                    } catch (e) {
+                        retryCount++;
+                        if (retryCount === maxRetries) throw e;
+                        await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1s between retries
+                    }
+                }
+            }
+            viewportRef.current.removeFlag(token);
+        } catch (error) {
+            console.error('AR view error:', error);
+            // Add user feedback
+        }
     }
   }, [viewportRef.current]);
 

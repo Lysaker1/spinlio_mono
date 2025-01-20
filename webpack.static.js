@@ -89,6 +89,12 @@ module.exports = (env) => {
           ...envKeys,
         }
       }),
+      new webpack.DefinePlugin({
+        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+        'process.env.REACT_APP_AUTH0_DOMAIN': JSON.stringify(process.env.REACT_APP_AUTH0_DOMAIN),
+        'process.env.REACT_APP_AUTH0_CLIENT_ID': JSON.stringify(process.env.REACT_APP_AUTH0_CLIENT_ID),
+        'process.env.REACT_APP_AUTH0_AUDIENCE': JSON.stringify(process.env.REACT_APP_AUTH0_AUDIENCE)
+      }),
       new CopyWebpackPlugin({
         patterns: [
           // Copy background image from shared assets

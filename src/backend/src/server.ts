@@ -47,34 +47,43 @@ app.use(limiter);
 
 // Move these to the top, right after imports and before routes
 const jwtCheck = auth({
-  audience: process.env.AUTH0_AUDIENCE,
-  issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
+  audience: process.env.AUTH0_AUDIENCE || 'http://localhost:3003',
+  issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL || 'https://auth.spinlio.com',
   tokenSigningAlg: 'RS256'
 });
 
 // Move CORS before JWT check
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production'
-    ? [
-        'https://design.spinlio.com',
-        'https://spinlio.com',
-        'https://configurator.spinlio.com',
-        'https://api.spinlio.com',
-        'https://auth.spinlio.com'
-      ]
-    : [
-        'http://localhost:3000',
-        'http://localhost:3001',
-        'http://localhost:3003'
-      ],
+  origin: [
+    ...(process.env.NODE_ENV === 'production' 
+      ? [
+          'https://design.spinlio.com',
+          'https://spinlio.com',
+          'https://configurator.spinlio.com',
+          'https://api.spinlio.com',
+        ]
+      : [
+          'http://localhost:3000',
+          'http://localhost:3001',
+          'http://localhost:3003',
+        ]
+    ),
+    'https://dev-jxcml1qpmbgabh6v.us.auth0.com',
+    'https://auth.spinlio.com'
+
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Authorization'],
   optionsSuccessStatus: 200
 }));
 
 // Then the JWT checks
-app.use('/api/designs', jwtCheck);
+app.use('/api/designs', (req, res, next) => {
+  console.log('Auth header:', req.headers.authorization);
+  next();
+}, jwtCheck);
 app.use('/api/items', jwtCheck);
 
 app.use(express.json({ limit: '10mb' }));
@@ -286,23 +295,17 @@ app.post('/api/designs', (async (req: Request, res: Response) => {
 // Get designs endpoint
 app.get('/api/designs/:userId', async (req: Request, res: Response) => {
   try {
-    const { data: designs, error } = await supabase
+    const { userId } = req.params;
+    const { data, error } = await supabase
       .from('saved_designs')
       .select('*')
-      .eq('user_id', req.params.userId);
+      .eq('user_id', userId);
 
     if (error) throw error;
-
-    // Transform the designs to include full thumbnail URLs
-    const transformedDesigns = designs.map(design => ({
-      ...design,
-      thumbnail_url: design.thumbnail_url || null
-    }));
-
-    res.json(transformedDesigns);
-  } catch (error: any) {
+    res.json(data);
+  } catch (error) {
     console.error('Error fetching designs:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Failed to fetch designs' });
   }
 });
 
@@ -460,6 +463,42 @@ app.use((err: any, req: Request, res: Response, next: any) => {
     error: 'Internal server error',
     message: process.env.NODE_ENV === 'development' ? err.message : undefined
   });
+});
+
+app.patch('/api/designs/:id', async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const updates = req.body;
+    
+    const { error } = await supabase
+      .from('saved_designs')
+      .update(updates)
+      .eq('id', id);
+
+    if (error) throw error;
+    res.status(200).json({ message: 'Design updated successfully' });
+  } catch (error) {
+    console.error('Error updating design:', error);
+    res.status(500).json({ error: 'Failed to update design' });
+  }
+});
+
+app.delete('/api/designs/:id', async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    
+    // Delete the design from the database
+    const { error } = await supabase
+      .from('saved_designs')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+    res.status(204).send();
+  } catch (error) {
+    console.error('Error deleting design:', error);
+    res.status(500).json({ error: 'Failed to delete design' });
+  }
 });
 
 const PORT = process.env.PORT|| 3003;

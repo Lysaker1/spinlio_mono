@@ -155,6 +155,7 @@ app.use(helmet({
         "data:", 
         "http://localhost:3003",
         "https://api.spinlio.com",
+        "https://fonts.gstatic.com",
         "*"
       ],
       workerSrc: [
@@ -209,7 +210,7 @@ app.use((req, res, next) => {
   if (req.path === '/') {
     res.setHeader('Link', [
       // Only preload critical resources
-      '<https://res.cloudinary.com/da8qnqmmh/image/upload/v1730794027/back3back_oye0ev.jpg>; rel=preload; as=image',
+      '<https://res.cloudinary.com/da8qnqmmh/image/upload/back4bazaar.jpg>; rel=preload; as=image',
       '</framework.bundle.js>; rel=preload; as=script',
       '</shapediver.bundle.js>; rel=prefetch; as=script'  // Use prefetch for non-critical
     ].join(','));

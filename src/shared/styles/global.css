@@ -3,10 +3,10 @@ body {
   font-family: 'Roboto', sans-serif;
   min-height: 100vh;
   overflow-y: auto;
-  /* Use relative path to the image in shared assets */
-  background-image: url('https://res.cloudinary.com/da8qnqmmh/image/upload/v1730794027/back3back_oye0ev.jpg');
-  background-size: cover;
-  background-position: center;
+  /* Adjust background image zoom and position here */
+  background-image: url('https://res.cloudinary.com/da8qnqmmh/image/upload/back4bazaar.jpg');
+  background-size: 140%;  /* Zoom level */
+  background-position: center 75%;  /* Position: horizontal vertical */
   background-repeat: no-repeat;
   background-attachment: fixed;
 }

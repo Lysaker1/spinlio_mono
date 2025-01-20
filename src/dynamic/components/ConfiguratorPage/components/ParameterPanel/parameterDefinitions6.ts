@@ -37,17 +37,17 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "max": 75,
     "unit": "mm"
   },
-  {
-    "id": "c4d4c978-5b58-49ce-a567-739894dc5d36",
-    "name": "Front Width",
-    "value": "50",
-    "category": "tubing",
-    "subCategory": "Top Tube",
-    "type": "slider",
-    "min": 30,
-    "max": 50,
-    "unit": "mm"
-  },
+  // {
+  //   "id": "c4d4c978-5b58-49ce-a567-739894dc5d36",
+  //   "name": "Front Width", 
+  //   "value": "50",
+  //   "category": "tubing",
+  //   "subCategory": "Top Tube",
+  //   "type": "slider",
+  //   "min": 30,
+  //   "max": 50,
+  //   "unit": "mm"
+  // },
   {
     "id": "2faf7e7c-fb60-47d8-8053-c02e26afd068",
     "name": "Rake Offset",
@@ -543,7 +543,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   // },
   {
     "id": "f0f25a06-82aa-4584-b4ab-2f39c4e71651",
-    "name": "Rear Width",
+    "name": "Width",
     "subCategory": "Top Tube",
     "category": "tubing",
     "type": "slider",
@@ -618,7 +618,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "subCategory": "Wheels",
     "value": "0x262626ff",
     "category": "accessories",
-    "type": "color"
+    "type": "colorWithPalette"
   },
   {
     "id": "a4fa915b-bbc1-47d4-8f55-5b4d71e12400",
@@ -853,7 +853,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   {
     "id": "48c92029-20cb-4a4a-a92d-4e367075d8bf",
     "name": "Email Body for Client",
-    "value": "Hey! Thanks for using Spinlio! We have attached the 3D file of your custom bike, she’s a beauty! If you have any thoughts on how we can improve Spinlio or features you’d love to see, please reach out—we’d love to hear from you. Your feedback helps us make Spinlio better for everyone. All the best, Jack & Markus - The Spinlio Team",
+    "value": "Hey! Thanks for using Spinlio! We have attached the 3D file of your custom bike, she's a beauty! If you have any thoughts on how we can improve Spinlio or features you'd love to see, please reach out—we'd love to hear from you. Your feedback helps us make Spinlio better for everyone. All the best, Jack & Markus - The Spinlio Team",
     "category": "other",
     "type": "text"
   },
@@ -897,7 +897,6 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "value": "a399a762-ba8d-46b8-a66a-562c884845f4",
     "type": "logoUpload",
     "configuratorTypes": ["vulz"]
-
   },
   {
     "id": "23369373-f2f8-404b-9577-e48a24d39f83",

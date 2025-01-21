@@ -124,6 +124,8 @@ app.use(helmet({
         "https://*.auth0.com",
         "https://auth.spinlio.com",
         "https://dev-jxcml1qpmbgabh6v.us.auth0.com",
+        "http://localhost:3003",
+        "https://api.spinlio.com",
         process.env.REACT_APP_SUPABASE_URL,
         "*"
       ],
@@ -161,12 +163,6 @@ app.use(helmet({
       workerSrc: [
         "'self'",
         "blob:",
-        "http://localhost:3003",
-        "https://api.spinlio.com",
-        "*"
-      ],
-      frameSrc: [
-        "'self'",
         "http://localhost:3003",
         "https://api.spinlio.com",
         "*"

@@ -11,7 +11,7 @@ const LoginContainer = styled.div`
   background: rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(8px);
   border-radius: 12px;
-  border: 1px solid rgba(56, 189, 248, 0.2);
+  border: 1px solid black;
 `;
 
 const LoginText = styled.p`

@@ -25,6 +25,8 @@ import { SaveDesignButton } from '../../../shared/components/SaveDesignButton/Sa
 import { DesignStorageService } from '@shared/services/designStorage';
 import { MyDesigns } from '../../../shared/components/MyDesigns/MyDesigns';
 import { CONFIGURATOR_TYPES } from '../../../shared/constants/configuratorTypes';
+import { BuyButton } from '../../../shared/components/BuyButton/BuyButton';
+import { STRIPE_PRODUCTS } from '@shared/constants/stripeProducts';
 
 
 // Main configurator component definition
@@ -189,8 +191,11 @@ const ConfiguratorPage: React.FC = () => {
           />
         </Sidebar>
         
-        {/* Share button container */}
+        {/* Top right buttons container */}
         <div className="top-right-buttons">
+          <BuyButton 
+            isVulz={false}
+          />
           <SaveDesignButton 
             getCurrentParameters={() => session?.parameterValues || {}}
             configuratorType={CONFIGURATOR_TYPES.DEFAULT}

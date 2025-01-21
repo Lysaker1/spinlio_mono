@@ -12,6 +12,8 @@ import MobileWarning from '../../../shared/components/MobileWarning/MobileWarnin
 import { Toaster } from 'react-hot-toast';
 import { Notifications } from '@mantine/notifications';
 import { MyDesigns } from '@shared/components/MyDesigns/MyDesigns';
+import { Success } from '@shared/components/CheckoutResult/Success';
+import { Cancel } from '@shared/components/CheckoutResult/Cancel';
 
 // Don't load the big 3D page right away - wait until we need it
 const ConfiguratorPage = lazy(() => 
@@ -104,6 +106,22 @@ const AppContent: React.FC = () => {
           />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactUsPage />} />
+          <Route 
+            path="/success" 
+            element={
+              <React.Suspense fallback={<div className="loading-placeholder" />}>
+                <Success />
+              </React.Suspense>
+            } 
+          />
+          <Route 
+            path="/cancel" 
+            element={
+              <React.Suspense fallback={<div className="loading-placeholder" />}>
+                <Cancel />
+              </React.Suspense>
+            } 
+          />
           <Route path="/callback" element={<Navigate to="/" replace />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

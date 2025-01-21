@@ -28,6 +28,7 @@
   transform: translateZ(0);
   isolation: isolate;
   padding: 0.75rem 1.5rem;
+  pointer-events: auto;
 }
 
 .logo {
@@ -39,9 +40,12 @@
   text-decoration: none;
   margin-left: 0.7rem;
   cursor: pointer;
+  pointer-events: auto;
+
 }
 
 .nav-links {
+
   display: flex;
   align-items: center;
   gap: 1rem;

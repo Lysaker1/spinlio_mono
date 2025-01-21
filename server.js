@@ -46,6 +46,10 @@ app.use(cors({
       'https://api.spinlio.com/*',
       'https://api.spinlio.com/api/*',
       'https://api.spinlio.com/api/thumbnail/*',
+      'https://buy.stripe.com/*',
+      'https://js.stripe.com/*',
+      'https://js.stripe.com/v3/',
+      'https://js.stripe.com/v3/buy-button.js',
 
 
     ];
@@ -86,6 +90,8 @@ app.use(helmet({
         "wss://*.shapediver.com",
         "blob:",
         "https://*.hubspot.com", 
+        "https://js.stripe.com",
+        "https://js.stripe.com/v3/buy-button.js",
         "https://*.hsforms.com",
         "https://spinlio.com",
         "https://design.spinlio.com",
@@ -121,7 +127,10 @@ app.use(helmet({
         "https://*.hsforms.com", 
         "https://*.hubspot.com",
         "https://www.herokucdn.com",
-        "https://*.auth0.com",
+        "https://js.stripe.com",
+        "https://js.stripe.com/v3/buy-button.js",
+        "https://buy.stripe.com",
+        "https://*.auth0.com", 
         "https://auth.spinlio.com",
         "https://dev-jxcml1qpmbgabh6v.us.auth0.com",
         "http://localhost:3003",
@@ -133,7 +142,10 @@ app.use(helmet({
         "'self'",
         "blob:",
         "data:",
-        "https:",
+        "https:", 
+        "https://js.stripe.com",
+        "https://js.stripe.com/v3/buy-button.js",
+        "https://buy.stripe.com",
         "*",
       ].filter(Boolean),
       scriptSrc: [
@@ -143,6 +155,18 @@ app.use(helmet({
         "blob:",
         "https://*.shapediver.com",
         "https://api.spinlio.com",
+        "https://static.klaviyo.com",
+        "https://www.googletagmanager.com",
+        "https://*.klaviyo.com",
+        "https://*.hsforms.com",
+        "https://*.hubspot.com",
+        "https://*.auth0.com",
+        "https://js.hsforms.net",
+        "https://js.stripe.com",
+        "https://js.stripe.com/*",
+        "https://*.stripe.com",
+        "https://buy.stripe.com",
+        "https://buy.stripe.com/*",
         "*"
       ],
       styleSrc: [
@@ -150,6 +174,8 @@ app.use(helmet({
         "'unsafe-inline'",
         "http://localhost:3003",
         "https://api.spinlio.com",
+        "https://js.stripe.com",
+        "https://buy.stripe.com",
         "*"
       ],
       fontSrc: [
@@ -158,6 +184,7 @@ app.use(helmet({
         "http://localhost:3003",
         "https://api.spinlio.com",
         "https://fonts.gstatic.com",
+        "https://js.stripe.com",
         "*"
       ],
       workerSrc: [
@@ -197,6 +224,7 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.path} - Origin: ${req.headers.origin}`);
   console.log(`${req.method} ${req.path} - Hostname: ${req.hostname}`);
+  console.log('CSP Header:', res.getHeader('Content-Security-Policy'));
   next();
 });
 

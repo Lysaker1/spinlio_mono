@@ -6,6 +6,8 @@ import dotenv from 'dotenv';
 import { RequestHandler } from 'express-serve-static-core';
 import { auth } from 'express-oauth2-jwt-bearer';
 import crypto from 'crypto';
+import Stripe from 'stripe';
+
 
 dotenv.config();
 
@@ -13,7 +15,9 @@ const requiredEnvVars = [
     'SUPABASE_URL',
     'SUPABASE_ANON_KEY',
     'AUTH0_AUDIENCE',  // Just use a single audience variable
-    'AUTH0_ISSUER_BASE_URL'
+    'AUTH0_ISSUER_BASE_URL',
+    'STRIPE_SECRET_KEY',
+    'FRONTEND_URL'
 ];
 
 // Validate required env vars
@@ -22,6 +26,8 @@ requiredEnvVars.forEach(varName => {
     throw new Error(`Missing required environment variable: ${varName}`);
   }
 });
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 const app = express();
 
@@ -440,6 +446,65 @@ app.post('/api/fix-thumbnail-urls', async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
+  }
+});
+
+// Stripe payment routes
+app.post('/api/create-checkout-session', async (req: Request, res: Response) => {
+  try {
+    const { productId, price, productName } = req.body;
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: productName,
+            },
+            unit_amount: price * 100, // Stripe uses cents
+          },
+          quantity: 1,
+        },
+      ],
+      mode: 'payment',
+      success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.FRONTEND_URL}/cancel`,
+      metadata: {
+        productId,
+      },
+    });
+
+    res.json({ url: session.url });
+  } catch (error: any) {
+    console.error('Stripe session error:', error);
+    res.status(500).json({ error: 'Error creating checkout session' });
+  }
+});
+
+// Optional: Add webhook handling for successful payments
+app.post('/api/webhook', express.raw({type: 'application/json'}), async (req: Request, res: Response) => {
+  const sig = req.headers['stripe-signature'];
+
+  try {
+    const event = stripe.webhooks.constructEvent(
+      req.body,
+      sig!,
+      process.env.STRIPE_WEBHOOK_SECRET!
+    );
+
+    if (event.type === 'checkout.session.completed') {
+      const session = event.data.object;
+      // Handle successful payment
+      console.log('Payment successful:', session);
+    }
+
+    res.json({ received: true });
+  } catch (err: unknown) {
+    console.error('Webhook error:', err);
+    const error = err as Error;  // Type assertion
+    res.status(400).send(`Webhook Error: ${error.message}`);
   }
 });
 

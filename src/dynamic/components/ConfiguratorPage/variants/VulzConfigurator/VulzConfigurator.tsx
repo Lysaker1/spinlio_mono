@@ -12,6 +12,7 @@ import { CONFIGURATOR_TYPES } from '@shared/constants/configuratorTypes';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import { BikeTemplate } from '../../components/Sidebar/Sidebar';
 import { MyDesigns } from '@shared/components/MyDesigns/MyDesigns';
+import { BuyButton } from '@shared/components/BuyButton/BuyButton';
 
 const VulzConfigurator: React.FC = () => {
   const { isAuthenticated } = useAuth0();
@@ -89,10 +90,14 @@ const VulzConfigurator: React.FC = () => {
         </Sidebar>
 
         <div className="top-right-buttons">
+          <BuyButton isVulz={true} />
           <SaveDesignButton 
             getCurrentParameters={() => session?.parameterValues || {}}
             configuratorType={CONFIGURATOR_TYPES.VULZ}
             viewport={viewport}
+            onMenuOpen={setIsShareMenuOpen}
+            onMenuHeightChange={setShareMenuHeight}
+            session={session}
           />
           <ShareButton 
             session={session} 

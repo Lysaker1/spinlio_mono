@@ -16,20 +16,21 @@
     "node": "18.x"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.39.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-oauth2-jwt-bearer": "^1.6.0",
     "express-rate-limit": "^7.1.5",
-    "@supabase/supabase-js": "^2.39.3",
-    "pg": "^8.13.1"
+    "pg": "^8.13.1",
+    "stripe": "^17.5.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/pg": "^8.11.10",
+    "nodemon": "^3.1.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.7.2",
-    "nodemon": "^3.1.0"
+    "typescript": "^5.7.2"
   }
 }

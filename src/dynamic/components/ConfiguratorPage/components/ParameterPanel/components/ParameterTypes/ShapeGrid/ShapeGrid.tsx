@@ -13,6 +13,7 @@ interface ShapeGridProps {
 interface IconType {
   type?: string;
   src?: string;
+  icon?: ReactElement;
 }
 
 export const ShapeGrid = ({
@@ -27,7 +28,16 @@ export const ShapeGrid = ({
 
     if (!icon) return null;
 
-    // Check if icon is an image type
+    // Handle new SVG icon type
+    if (typeof icon === 'object' && 'type' in icon && icon.type === 'svg' && 'icon' in icon) {
+      return (
+        <div className="shape-icon">
+          {icon.icon}
+        </div>
+      );
+    }
+
+    // Handle image type icons
     if (typeof icon === 'object' && 'type' in icon && icon.type === 'image' && 'src' in icon) {
       const isMount = definition.name.toLowerCase().includes('mount');
       const isDropout = definition.name.toLowerCase().includes('drop out');
@@ -44,7 +54,7 @@ export const ShapeGrid = ({
       );
     }
 
-    // Handle SVG icons (original behavior)
+    // Handle direct SVG icons (original behavior)
     return (
       <div className="shape-icon">
         {icon as ReactElement}

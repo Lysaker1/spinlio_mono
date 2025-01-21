@@ -195,6 +195,9 @@ const ConfiguratorPage: React.FC = () => {
             getCurrentParameters={() => session?.parameterValues || {}}
             configuratorType={CONFIGURATOR_TYPES.DEFAULT}
             viewport={viewport}
+            onMenuOpen={setIsShareMenuOpen}
+            onMenuHeightChange={setShareMenuHeight}
+            session={session}
           />
           <ShareButton 
             session={session} 

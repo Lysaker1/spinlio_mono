@@ -4,18 +4,22 @@ import { DesignStorageService } from '../../services/designStorage';
 import { SavedDesign, ConfiguratorType } from '../../types/SavedDesign';
 import './SaveDesignButton.css';
 import { AuthenticatedFeature } from '../AuthenticatedFeature/AuthenticatedFeature';
-import { IViewportApi } from '@shapediver/viewer';
+import { ISessionApi, IViewportApi } from '@shapediver/viewer';
 
 interface SaveDesignButtonProps {
   getCurrentParameters: () => Record<string, any>;
   configuratorType: ConfiguratorType;
   viewport?: IViewportApi | null;
+  session?: ISessionApi | null;
+  onMenuOpen: (isOpen: boolean) => void;
+  onMenuHeightChange?: (height: number) => void;
 }
 
 export const SaveDesignButton: React.FC<SaveDesignButtonProps> = ({ 
   getCurrentParameters,
   configuratorType,
-  viewport 
+  viewport,
+  onMenuHeightChange
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [designName, setDesignName] = useState('');
@@ -49,6 +53,18 @@ export const SaveDesignButton: React.FC<SaveDesignButtonProps> = ({
       window.removeEventListener('mousedown', handleClickOutside, true);
     };
   }, [isModalOpen]);
+
+  useEffect(() => {
+    if (menuRef.current && isModalOpen) {
+      const height = menuRef.current.getBoundingClientRect().height;
+      const heightInVh = (height / window.innerHeight) * 100;
+      document.documentElement.style.setProperty('--save-menu-height', `${heightInVh}vh`);
+      onMenuHeightChange?.(Math.max(15, heightInVh));
+    } else {
+      document.documentElement.style.setProperty('--save-menu-height', '0px');
+      onMenuHeightChange?.(0);
+    }
+  }, [isModalOpen, onMenuHeightChange]);
 
   const handleButtonClick = () => {
     console.log('Save button clicked');
@@ -141,7 +157,7 @@ export const SaveDesignButton: React.FC<SaveDesignButtonProps> = ({
         </div>
       }
     >
-      <div className="save-container">
+      <div className={`save-container ${isModalOpen ? 'menu-open' : ''}`}>
         <div className="save-button-container">
           <button
             ref={buttonRef}

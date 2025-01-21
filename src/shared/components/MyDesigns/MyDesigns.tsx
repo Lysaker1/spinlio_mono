@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useNavigate } from 'react-router-dom';
 import { DesignStorageService } from '../../services/designStorage';
@@ -10,6 +10,112 @@ interface MyDesignsProps {
   onSelect: (parameters: Record<string, any>) => void;
   currentConfiguratorType: 'default' | 'vulz';
 }
+
+interface DesignMenuProps {
+  designId: string;
+  cardRef: React.RefObject<HTMLDivElement>;
+  onClose: () => void;
+  onRename: () => void;
+  onDuplicate: () => void;
+  onDelete: () => void;
+}
+
+const DesignMenu: React.FC<DesignMenuProps> = ({
+  designId,
+  cardRef,
+  onClose,
+  onRename,
+  onDuplicate,
+  onDelete
+}) => {
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [position, setPosition] = useState({ top: 0, left: 0 });
+
+  const updatePosition = useCallback(() => {
+    if (cardRef.current && menuRef.current) {
+      const cardRect = cardRef.current.getBoundingClientRect();
+      const menuRect = menuRef.current.getBoundingClientRect();
+      
+      // Calculate centered position
+      let left = cardRect.left + (cardRect.width - menuRect.width) / 2;
+      let top = cardRect.top + (cardRect.height - menuRect.height) / 2;
+      
+      // Adjust if menu goes outside viewport
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      
+      // Prevent right overflow
+      if (left + menuRect.width > viewportWidth) {
+        left = viewportWidth - menuRect.width - 16; // 16px padding from viewport edge
+      }
+      
+      // Prevent left overflow
+      if (left < 16) {
+        left = 16;
+      }
+      
+      // Prevent bottom overflow
+      if (top + menuRect.height > viewportHeight) {
+        top = viewportHeight - menuRect.height - 16;
+      }
+      
+      // Prevent top overflow
+      if (top < 16) {
+        top = 16;
+      }
+      
+      setPosition({ top, left });
+    }
+  }, [cardRef]);
+
+  // Update position on mount and window resize
+  useEffect(() => {
+    updatePosition();
+    window.addEventListener('resize', updatePosition);
+    return () => window.removeEventListener('resize', updatePosition);
+  }, [updatePosition]);
+
+  // Handle click outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // Check if click is on the configurator canvas
+      const isConfiguratorClick = (event.target as Element)?.closest('#configurator-container');
+      
+      if (menuRef.current && 
+          !menuRef.current.contains(event.target as Node) && 
+          cardRef.current && 
+          !cardRef.current.contains(event.target as Node) ||
+          isConfiguratorClick) {
+        onClose();
+      }
+    };
+
+    // Use capture phase to ensure we get the event before ConfiguratorComponent
+    document.addEventListener('mousedown', handleClickOutside, true);
+    return () => document.removeEventListener('mousedown', handleClickOutside, true);
+  }, [onClose, cardRef]);
+
+  const handleRename = () => {
+    onRename();
+    onClose(); // Close menu after rename action
+  };
+
+  return (
+    <div 
+      ref={menuRef}
+      className="design-menu"
+      style={{ 
+        top: `${position.top}px`, 
+        left: `${position.left}px`,
+        position: 'fixed' // Change to fixed positioning
+      }}
+    >
+      <button onClick={handleRename}>Rename</button>
+      <button onClick={onDuplicate}>Duplicate</button>
+      <button onClick={onDelete} className="delete">Delete</button>
+    </div>
+  );
+};
 
 export const MyDesigns: React.FC<MyDesignsProps> = ({ onSelect, currentConfiguratorType }) => {
   const [designs, setDesigns] = useState<SavedDesign[]>([]);
@@ -168,19 +274,23 @@ export const MyDesigns: React.FC<MyDesignsProps> = ({ onSelect, currentConfigura
                 </button>
 
                 {isMenuOpen && (
-                  <div
-                    className="design-menu"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <button onClick={() => {
-                      setActiveMenu(null);  // Close the menu first
-                      setEditingDesign(design);  // Then open rename modal
-                    }}>
-                      Rename
-                    </button>
-                    <button onClick={() => handleDuplicate(design)}>Duplicate</button>
-                    <button onClick={() => handleDeleteClick(design.id)}>Delete</button>
-                  </div>
+                  <DesignMenu
+                    designId={design.id}
+                    cardRef={React.createRef<HTMLDivElement>()}
+                    onClose={() => setActiveMenu(null)}
+                    onRename={() => {
+                      setActiveMenu(null);
+                      setEditingDesign(design);
+                    }}
+                    onDuplicate={() => {
+                      setActiveMenu(null);
+                      handleDuplicate(design);
+                    }}
+                    onDelete={() => {
+                      setActiveMenu(null);
+                      handleDeleteClick(design.id);
+                    }}
+                  />
                 )}
 
                 {isEditing && (

@@ -4,7 +4,6 @@
     pointer-events: all;
     height: 3.5rem;
     position: relative;
-    z-index: 1;
 }
 
 .share-button-container {

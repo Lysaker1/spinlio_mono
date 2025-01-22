@@ -38,6 +38,7 @@ const ShareMenu: React.FC<ShareMenuProps> = ({ onClose, session, viewport,isMenu
       {activeView === 'main' && (
         <>
           <h3 className="share-title">Share this bike</h3>
+          <button className="close-button" onClick={onClose}>×</button>
           <div className="share-options">
             <div className="share-option-button-container-ar">
               <button

@@ -33,7 +33,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   render() {
     if (this.state.hasError && this.state.error) {  // Check for both
       return this.props.fallback || (
-        <div style={{ padding: '20px', textAlign: 'center' }}>
+        <div style={{ padding: '80px', textAlign: 'center' }}>
           <h1>Something went wrong</h1>
           <p>Please try refreshing the page</p>
           {process.env.NODE_ENV !== 'production' && (

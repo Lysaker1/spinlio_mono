@@ -26,8 +26,6 @@ import { DesignStorageService } from '@shared/services/designStorage';
 import { MyDesigns } from '../../../shared/components/MyDesigns/MyDesigns';
 import { CONFIGURATOR_TYPES } from '../../../shared/constants/configuratorTypes';
 import { BuyButton } from '../../../shared/components/BuyButton/BuyButton';
-import { STRIPE_PRODUCTS } from '@shared/constants/stripeProducts';
-
 
 // Main configurator component definition
 const ConfiguratorPage: React.FC = () => {

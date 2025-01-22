@@ -52,6 +52,9 @@ const VulzConfigurator: React.FC = () => {
     }
   }, [session, viewport]);
 
+  const LOADING_GIF_URL = 'https://res.cloudinary.com/da8qnqmmh/image/upload/e_bgremoval/WhatsApp_GIF_2025-01-15_at_12.36.33_tupvgo.gif';
+
+
   const handlePrefabSelect = useCallback(async (template: BikeTemplate) => {
     if (!session || !viewport) return;
 
@@ -109,13 +112,23 @@ const VulzConfigurator: React.FC = () => {
 
         <div className="configurator-content">
           <div className="viewer-container">
-            <ShapeDiverViewer
-              session={session}
-              setSession={setSession}
-              setViewport={setViewport}
-              isLoading={isLoading}
-              ticket={configuratorConfigs.vulz.ticket}
-            />
+            <Suspense fallback={
+              <div className="viewer-container">
+                <img 
+                  src={LOADING_GIF_URL} 
+                  alt="Loading" 
+                  className="loading-gif"
+                />
+              </div>
+            }>
+              <ShapeDiverViewer
+                session={session}
+                setSession={setSession}
+                setViewport={setViewport}
+                isLoading={isLoading}
+                ticket={configuratorConfigs.vulz.ticket}
+              />
+            </Suspense>
           </div>
 
           <div className={`parameter-panel-container ${isShareMenuOpen ? 'share-open' : ''}`}>

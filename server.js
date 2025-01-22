@@ -26,7 +26,19 @@ const limiter = rateLimit({
   }
 });
 
-
+// Add this middleware before your CORS configuration (around line 31)
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'https://design.spinlio.com');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
 
 // CORS configuration with your specific origins
 app.use(cors({
@@ -53,12 +65,15 @@ app.use(cors({
 
 
     ];
-    if (!origin) return callback(null, true);
-    callback(null, allowedOrigins.includes(origin));
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   exposedHeaders: ['Cross-Origin-Resource-Policy', 'Cross-Origin-Embedder-Policy']
 }));
 
@@ -94,6 +109,9 @@ app.use(helmet({
         "https://js.stripe.com/v3/buy-button.js",
         "https://*.hsforms.com",
         "https://spinlio.com",
+        "https://auth.spinlio.com",
+        "https://*.auth0.com",
+        "https://dev-jxcml1qpmbgabh6v.us.auth0.com",
         "https://design.spinlio.com",
         "https://configurator.spinlio.com",
         "https://contact.spinlio.com",

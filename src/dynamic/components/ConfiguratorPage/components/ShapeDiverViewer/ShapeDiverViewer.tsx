@@ -288,6 +288,35 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
     };
   }, [setSession, setViewport, canvasRef.current, ticket]);
 
+  useEffect(() => {
+    // Wait for the container to have proper dimensions
+    const checkDimensions = () => {
+      const container = document.querySelector('.viewer-container');
+      if (container) {
+        const { width, height } = container.getBoundingClientRect();
+        console.log('Viewer dimensions:', { width, height });
+        
+        if (width > 0 && height > 0) {
+          // Container has proper dimensions, initialize viewer
+          return true;
+        }
+      }
+      return false;
+    };
+
+    // Check dimensions with a small delay to ensure DOM is ready
+    const initTimer = setTimeout(() => {
+      if (checkDimensions()) {
+        // Your existing initialization code runs here
+        console.log('Container ready for WebGL initialization');
+      } else {
+        console.warn('Container not ready, might see WebGL warnings');
+      }
+    }, 100);
+
+    return () => clearTimeout(initTimer);
+  }, []);
+
   // Handler for AR view functionality
   const handleARView = useCallback(async () => {
     if (viewportRef.current) {

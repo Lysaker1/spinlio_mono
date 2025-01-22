@@ -26,31 +26,15 @@ const limiter = rateLimit({
   }
 });
 
-app.use(cors({
-  origin: 'https://design.spinlio.com',  // Be specific instead of using callback
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  exposedHeaders: ['Cross-Origin-Resource-Policy', 'Cross-Origin-Embedder-Policy']
-}));
-
-// Then add the custom headers middleware AFTER cors
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'https://design.spinlio.com');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  next();
-});
-
 // CORS configuration with your specific origins
 app.use(cors({
   origin: (origin, callback) => {
     const allowedOrigins = [
       'http://localhost:3000',
       'http://localhost:3001',
+      'http://localhost:3003',
       'https://spinlio.com',
-      'https://configurator.spinlio.com',
+      'https://configurator.spinlio.com', 
       'https://contact.spinlio.com',
       'https://www.herokucdn.com',
       'https://viewer.shapediver.com',
@@ -66,16 +50,16 @@ app.use(cors({
       'https://js.stripe.com/v3/',
       'https://js.stripe.com/v3/buy-button.js',
 
-
     ];
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
+      console.log('Blocked origin:', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   exposedHeaders: ['Cross-Origin-Resource-Policy', 'Cross-Origin-Embedder-Policy']
 }));

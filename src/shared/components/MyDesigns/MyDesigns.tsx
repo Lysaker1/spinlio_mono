@@ -5,6 +5,7 @@ import { DesignStorageService } from '../../services/designStorage';
 import { SavedDesign } from '../../types/SavedDesign';
 import './MyDesigns.css';
 import { AuthenticatedFeature } from '../../components/AuthenticatedFeature/AuthenticatedFeature';
+import { IconCheck, IconX } from '@tabler/icons-react';
 
 interface MyDesignsProps {
   onSelect: (parameters: Record<string, any>) => void;
@@ -104,11 +105,6 @@ const DesignMenu: React.FC<DesignMenuProps> = ({
     <div 
       ref={menuRef}
       className="design-menu"
-      style={{ 
-        top: `${position.top}px`, 
-        left: `${position.left}px`,
-        position: 'fixed' // Change to fixed positioning
-      }}
     >
       <button onClick={handleRename}>Rename</button>
       <button onClick={onDuplicate}>Duplicate</button>
@@ -125,11 +121,32 @@ export const MyDesigns: React.FC<MyDesignsProps> = ({ onSelect, currentConfigura
   const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const navigate = useNavigate();
   const [deleteConfirmation, setDeleteConfirmation] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const clickedCard = target.closest('.design-card');
+      
+      if (activeMenu && (
+        // Lukk hvis klikket er utenfor alle kort
+        !clickedCard || 
+        // Eller hvis klikket er på et annet kort enn det aktive
+        (clickedCard && clickedCard.getAttribute('key') !== activeMenu)
+      )) {
+        setActiveMenu(null);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [activeMenu]);
 
   useEffect(() => {
     const fetchDesigns = async () => {
       if (user?.sub) {
         try {
+          setIsLoading(true);
           const token = await getAccessTokenSilently();
           console.log('Auth Token:', token);
           const fetchedDesigns = await DesignStorageService.getDesignsByUser(user.sub, token);
@@ -140,8 +157,10 @@ export const MyDesigns: React.FC<MyDesignsProps> = ({ onSelect, currentConfigura
           });
           
           setDesigns(sortedDesigns);
+          setIsLoading(false);
         } catch (error) {
           console.error('Error fetching designs:', error);
+          setIsLoading(false);
         }
       }
     };
@@ -235,9 +254,18 @@ export const MyDesigns: React.FC<MyDesignsProps> = ({ onSelect, currentConfigura
     <AuthenticatedFeature>
       <div className="designs-container">
         <div className="designs-grid">
-          {designs.map((design) => {
-            const isEditing = editingDesign?.id === design.id;
-            const isMenuOpen = activeMenu === design.id;
+          {isLoading ? (
+            <div className="designs-loading">
+              <img 
+                src="https://res.cloudinary.com/da8qnqmmh/image/upload/e_bgremoval/WhatsApp_GIF_2025-01-15_at_12.36.33_tupvgo.gif"
+                alt="Loading designs"
+                className="loading-gif"
+              />
+            </div>
+          ) : (
+            designs.map((design) => {
+              const isEditing = editingDesign?.id === design.id;
+              const isMenuOpen = activeMenu === design.id;
 
             return (
               <div 
@@ -305,13 +333,13 @@ export const MyDesigns: React.FC<MyDesignsProps> = ({ onSelect, currentConfigura
                       placeholder="New design name"
                     />
                     <div className="rename-actions">
-                      <button onClick={() => handleRename(design.id)}>Save</button>
+                      <button onClick={() => handleRename(design.id)}><IconCheck stroke='1' size={20}/></button>
                       <button onClick={() => {
                         setEditingDesign(null);
                         setActiveMenu(null);
                         setNewName('');
                       }}>
-                        Cancel
+                        <IconX stroke='1' size={20} />
                       </button>
                     </div>
                   </div>
@@ -334,7 +362,7 @@ export const MyDesigns: React.FC<MyDesignsProps> = ({ onSelect, currentConfigura
                 )}
               </div>
             );
-          })}
+          }))}
         </div>
       </div>
     </AuthenticatedFeature>

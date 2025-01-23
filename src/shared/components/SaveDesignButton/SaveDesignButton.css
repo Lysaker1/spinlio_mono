@@ -19,6 +19,12 @@
     width: 100%;
 }
 
+/* Add this style for save button when menu is open */
+.save-container.menu-open .save-button {
+  background: #000000;
+  color: white;
+  font-weight: 700;
+}
 .save-button {
     display: flex;
     align-items: center;
@@ -72,7 +78,7 @@
   animation: menuAppear 0.5s ease;
   border: 1px solid #6a6a6a;
   position: fixed;
-  top: 10px;
+  top: 75px;
   right: 2vh;
   z-index: 1003;
   padding: 1.5rem;
@@ -139,8 +145,3 @@
     border-radius: 1rem;
   }
 }
-
-/* Ensure the button is hidden when menu is open */
-.save-container.menu-open .save-button {
-  opacity: 0;
-} 

@@ -73,37 +73,39 @@
 
   position: fixed;
   bottom: 2vh;
-  right: 3vh;
+  right: 2vh;
   width: 22em; /* Match the width from viewer container */
   height: 85vh; /* Increased from 35vh to 45vh */
-  margin-top: 10vh; /* Add top padding to avoid share button */
+  margin-top: calc(2rem + 5vh); /* Add top padding to avoid share button */
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   z-index: 100;
+  transition: transform 0.5s ease;
 }
 
 .top-right-buttons {
   position: fixed;
-  top: 1.5rem;
+  top: 22px;
   right: 2vh;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 1rem;
+  gap: 0.5rem;
   z-index: 1002;
   pointer-events: none;
+  height: 2rem;
 }
 
 /* When share menu is open, adjust panel position */
 .parameter-panel-container.share-open {
-  transform: translateY(calc(var(--share-menu-height, 0px) - 5vh));
+  transform: translateY(calc(var(--share-menu-height, 0px) - 4em));
   transition: transform 0.5s ease;
 }
 
 /* When save menu is open, adjust panel position */
 .parameter-panel-container.save-open {
-  transform: translateY(calc(var(--save-menu-height, 0px) - 5vh));
+  transform: translateY(calc(var(--save-menu-height, 0px) - 2em));
   transition: transform 0.5s ease;
 }
 

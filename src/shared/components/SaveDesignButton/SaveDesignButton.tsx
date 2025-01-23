@@ -19,6 +19,7 @@ export const SaveDesignButton: React.FC<SaveDesignButtonProps> = ({
   getCurrentParameters,
   configuratorType,
   viewport,
+  onMenuOpen,
   onMenuHeightChange
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,6 +29,15 @@ export const SaveDesignButton: React.FC<SaveDesignButtonProps> = ({
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    onMenuOpen(isModalOpen);
+    if (isModalOpen) {
+      onMenuHeightChange?.(15);
+    } else {
+      onMenuHeightChange?.(0);
+    }
+  }, [isModalOpen, onMenuOpen, onMenuHeightChange]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

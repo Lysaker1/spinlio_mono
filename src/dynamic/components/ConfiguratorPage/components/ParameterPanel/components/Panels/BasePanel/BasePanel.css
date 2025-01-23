@@ -249,7 +249,7 @@
 
 .sub-category-title-active {
   font-size: .9rem;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.8);
   color: #fff;
   margin-bottom: 0.5rem;
   border-radius: 2rem;

@@ -6,7 +6,7 @@
   animation: menuAppear 0.5s ease;
   border: 1px solid #6a6a6a;
   position: fixed;
-  top: 10px;  /* Align with share button */
+  top: var(--header-height, 75px);
   right: 2vh; /* Align with share button */
   z-index: 1001;
   padding: 1.5rem;
@@ -26,7 +26,9 @@
 
 /* Ensure the button is hidden when menu is open */
 .share-container.menu-open .share-button {
-  opacity: 0;
+  background: #000000;
+  color: white;
+  font-weight: 700;
 }
 
 /* Scrollbar styles */

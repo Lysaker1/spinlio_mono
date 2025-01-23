@@ -47,7 +47,9 @@ const ConfiguratorPage: React.FC = () => {
   const [showDimensions, setShowDimensions] = useState(false);
   const [isShareMenuOpen, setIsShareMenuOpen] = useState(false);
   const [shareMenuHeight, setShareMenuHeight] = useState<number>(15);
-  
+  const [isSaveMenuOpen, setIsSaveMenuOpen] = useState(false);
+  const [saveMenuHeight, setSaveMenuHeight] = useState<number>(15);
+
   // Reference to track component mount state
   const isMounted = useRef(true);
 
@@ -198,8 +200,8 @@ const ConfiguratorPage: React.FC = () => {
             getCurrentParameters={() => session?.parameterValues || {}}
             configuratorType={CONFIGURATOR_TYPES.DEFAULT}
             viewport={viewport}
-            onMenuOpen={setIsShareMenuOpen}
-            onMenuHeightChange={setShareMenuHeight}
+            onMenuOpen={setIsSaveMenuOpen}
+            onMenuHeightChange={setSaveMenuHeight}
             session={session}
           />
           <ShareButton 
@@ -225,7 +227,7 @@ const ConfiguratorPage: React.FC = () => {
           </div>
           
           {/* Parameter panel container */}
-          <div className={`parameter-panel-container ${isShareMenuOpen ? 'share-open' : ''}`}>
+          <div className={`parameter-panel-container ${isShareMenuOpen && 'share-open'} ${isSaveMenuOpen && 'save-open'}`}>
             <Suspense fallback={null}>
               <ParameterPanel
                   key={JSON.stringify(session?.parameterValues)}

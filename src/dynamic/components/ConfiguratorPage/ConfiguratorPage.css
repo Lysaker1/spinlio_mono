@@ -91,7 +91,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 0.8rem;
+  gap: 0.5rem;
   z-index: 1002;
   pointer-events: none;
   height: 2rem;
@@ -99,7 +99,7 @@
 
 /* When share menu is open, adjust panel position */
 .parameter-panel-container.share-open {
-  transform: translateY(calc(var(--share-menu-height, 0px) - 2em));
+  transform: translateY(calc(var(--share-menu-height, 0px) - 4em));
   transition: transform 0.5s ease;
 }
 

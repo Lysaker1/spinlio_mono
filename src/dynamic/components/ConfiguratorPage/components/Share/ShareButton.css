@@ -4,7 +4,6 @@
     pointer-events: all;
     height: 3.5rem;
     position: relative;
-    z-index: 1;
 }
 
 .share-button-container {
@@ -67,9 +66,15 @@
     from {
         opacity: 0;
         transform: scale(0.95);
+        background: #000000;
+        color: white;
+        font-weight: 700;
     }
     to {
         opacity: 1;
         transform: scale(1);
+        background: #000000;
+        color: white; 
+        font-weight: 700;
     }
 }

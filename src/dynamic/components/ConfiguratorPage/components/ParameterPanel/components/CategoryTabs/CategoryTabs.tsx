@@ -3,35 +3,45 @@ import React from 'react';
 // Import styles for the category tabs
 import './CategoryTabs.css';
 
-// Define the possible tab types as a union type for type safety
-export type TabType = 'tubing' | 'geometry' | 'accessories';
+// Update TabType to include furniture categories
+export type TabType = 'tubing' | 'geometry' | 'accessories' | 'sizing' | 'material';
 
-// Define the default tabs configuration with labels
-const DEFAULT_TABS: Tab[] = [
+// Define the shape of a tab
+interface Tab {
+  id: TabType;
+  label: string;
+}
+
+// Define bike-specific tabs
+const BIKE_TABS: Tab[] = [
   { id: 'tubing', label: 'Tubing' },
   { id: 'geometry', label: 'Geometry' },
   { id: 'accessories', label: 'Parts' },
 ] as const;
 
-// Define the shape of a single tab object
-interface Tab {
-  id: TabType;  // Must be one of the TabType values
-  label: string; // The text shown on the tab
-}
+// Define furniture-specific tabs
+const FURNITURE_TABS: Tab[] = [
+  { id: 'sizing', label: 'General Sizing' },
+  { id: 'material', label: 'Material' },
+] as const;
 
-// Define the props that can be passed to CategoryTabs component
+// Update props interface to include configurator type
 interface CategoryTabsProps {
-  activeTab: TabType;     // Currently selected tab
-  onTabChange: (tab: TabType) => void;  // Function to call when tab changes
-  tabs?: Tab[];           // Optional custom tabs array, uses DEFAULT_TABS if not provided
+  activeTab: TabType;
+  onTabChange: (tab: TabType) => void;
+  configuratorType?: 'default' | 'vulz' | 'stepthru' | 'bookshelf' | 'table' | 'sofa';
 }
 
 // Main CategoryTabs component that renders a row of selectable tabs
 export const CategoryTabs: React.FC<CategoryTabsProps> = ({
   activeTab,
   onTabChange,
-  tabs = DEFAULT_TABS
+  configuratorType = 'bike'
 }) => {
+  // Select appropriate tabs based on configurator type
+  const tabs = ['bookshelf', 'sofa', 'table'].includes(configuratorType) ? FURNITURE_TABS : BIKE_TABS;
+
+
   // Handler function that calls onTabChange when a tab is clicked
   const handleTabClick = (tabId: TabType) => {
     onTabChange(tabId);

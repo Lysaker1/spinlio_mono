@@ -9,7 +9,7 @@ import { IconCheck, IconX } from '@tabler/icons-react';
 
 interface MyDesignsProps {
   onSelect: (parameters: Record<string, any>) => void;
-  currentConfiguratorType: 'default' | 'vulz';
+  currentConfiguratorType: 'default' | 'vulz' | 'stepthru' | 'bookshelf' | 'table' | 'sofa';
 }
 
 interface DesignMenuProps {

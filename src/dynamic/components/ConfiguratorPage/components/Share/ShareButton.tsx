@@ -18,15 +18,15 @@ const ShareButton: React.FC<ShareButtonProps> = ({ session, viewport, onMenuOpen
   const containerRef = useRef<HTMLDivElement>(null);
   const [isRequestInProgress, setIsRequestInProgress] = useState(false);
 
-  useEffect(() => {
-    onMenuOpen(isMenuOpen);
-    console.log('Menu state changed:', isMenuOpen);
-  }, [isMenuOpen, onMenuOpen]);
+  // Only notify parent when menu state actually changes
+  const handleMenuToggle = useCallback((newState: boolean) => {
+    setIsMenuOpen(newState);
+    onMenuOpen(newState);
+  }, [onMenuOpen]);
 
-  const handleClick = () => {
-    console.log('Share button clicked');
-    setIsMenuOpen(!isMenuOpen);
-  };
+  const handleClick = useCallback(() => {
+    handleMenuToggle(!isMenuOpen);
+  }, [isMenuOpen, handleMenuToggle]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

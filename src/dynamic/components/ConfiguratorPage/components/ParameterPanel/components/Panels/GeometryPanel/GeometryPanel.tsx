@@ -16,7 +16,8 @@ export const GeometryPanel: React.FC<GeometryPanelProps> = (props) => {
     'Top Tube',        // Length
     'Seat Tube',       // Length, Angle, Width
     'Head Tube',       // Angle, Length, Width
-    'Rear Triangle'    // Chain Stay Length, Seat Stay Angle, Bottom Bracket Drop
+    'Rear Triangle',    // Chain Stay Length, Seat Stay Angle, Bottom Bracket Drop
+    'Head Tube'        // Angle, Length, Width
   ];
 
   // Define parameter order within each subCategory
@@ -33,7 +34,8 @@ export const GeometryPanel: React.FC<GeometryPanelProps> = (props) => {
         param.category === 'geometry',
       // Add initial visibility state for subcategories
       initialVisibility: {
-        'Top Tube': true  // Set Top Tube to be open by default
+        'Top Tube': true,  // Try Top Tube first
+        'Seat Tube': !props.parameters.some(p => p.subCategory === 'Top Tube')  // Set Seat Tube if Top Tube doesn't exist
       },
       sortSubCategories: (a: string, b: string) => {
         // Get indices from the order array

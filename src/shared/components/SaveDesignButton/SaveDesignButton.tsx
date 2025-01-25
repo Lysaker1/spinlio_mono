@@ -1,26 +1,29 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { DesignStorageService } from '../../services/designStorage';
-import { SavedDesign, ConfiguratorType } from '../../types/SavedDesign';
+import { SavedDesign } from '../../types/SavedDesign';
 import './SaveDesignButton.css';
 import { AuthenticatedFeature } from '../AuthenticatedFeature/AuthenticatedFeature';
 import { ISessionApi, IViewportApi } from '@shapediver/viewer';
+import { ConfiguratorType } from '../../../dynamic/components/ConfiguratorPage/config/configuratorConfig';
 
 interface SaveDesignButtonProps {
   getCurrentParameters: () => Record<string, any>;
   configuratorType: ConfiguratorType;
-  viewport?: IViewportApi | null;
-  session?: ISessionApi | null;
+  viewport: IViewportApi | null;
+  session: ISessionApi | null;
   onMenuOpen: (isOpen: boolean) => void;
-  onMenuHeightChange?: (height: number) => void;
+  onMenuHeightChange: (height: number) => void;
 }
+
 
 export const SaveDesignButton: React.FC<SaveDesignButtonProps> = ({
   getCurrentParameters,
   configuratorType,
   viewport,
   onMenuOpen,
-  onMenuHeightChange
+  onMenuHeightChange,
+  session
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [designName, setDesignName] = useState('');
@@ -30,14 +33,16 @@ export const SaveDesignButton: React.FC<SaveDesignButtonProps> = ({
   const buttonRef = useRef<HTMLButtonElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Memoize the menu state change callback
+  const handleMenuStateChange = useCallback((isOpen: boolean) => {
+    onMenuOpen(isOpen);
+    onMenuHeightChange(isOpen ? 15 : 0);
+  }, [onMenuOpen, onMenuHeightChange]);
+
+  // Update the useEffect to use the memoized callback
   useEffect(() => {
-    onMenuOpen(isModalOpen);
-    if (isModalOpen) {
-      onMenuHeightChange?.(15);
-    } else {
-      onMenuHeightChange?.(0);
-    }
-  }, [isModalOpen, onMenuOpen, onMenuHeightChange]);
+    handleMenuStateChange(isModalOpen);
+  }, [isModalOpen, handleMenuStateChange]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

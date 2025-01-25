@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { MyDesigns } from '@shared/components/MyDesigns/MyDesigns';
 import './Sidebar.css';
-import { ISessionApi } from '@shapediver/viewer';
+import { ISessionApi, IViewportApi } from '@shapediver/viewer';
 import { bikeTemplates } from './bikeTemplates';
 import { useNavigate } from 'react-router-dom';
+import { ConfiguratorType } from '@shared/types/SavedDesign';
 
 // Define BikeTemplate interface
 export interface BikeTemplate {
@@ -12,14 +13,17 @@ export interface BikeTemplate {
   name: string;
   modelStateId: string;
   parameters: Record<string, string>;
-  type: 'vulz' | 'default';
+  type: ConfiguratorType;
 }
 
 interface SidebarProps {
   onTemplateSelect: (template: BikeTemplate) => void;
   onDesignSelect: (parameters: Record<string, any>) => void;
   session: ISessionApi | null;
-  configuratorType: 'vulz' | 'default';
+  setSession: (session: ISessionApi | null) => void;
+  viewport: IViewportApi | null;
+  setViewport: (viewport: IViewportApi | null) => void;
+  configuratorType: 'vulz' | 'default' | 'stepthru' | 'bookshelf' | 'table' | 'sofa';
   children?: React.ReactNode; // Add children prop
 }
 
@@ -27,6 +31,9 @@ const Sidebar: React.FC<SidebarProps> = ({
   onTemplateSelect, 
   onDesignSelect,
   session,
+  setSession,
+  viewport,
+  setViewport,
   configuratorType,
   children
 }) => {
@@ -51,13 +58,22 @@ const Sidebar: React.FC<SidebarProps> = ({
     e.stopPropagation();
     
     if (template.type !== configuratorType) {
-      // Redirect to appropriate configurator
+      // First, cleanup existing session
+      if (session) {
+        session.close();
+        setSession(null);
+      }
+      if (viewport) {
+        viewport.close();
+        setViewport(null);
+      }
+      
+      // Then navigate
       const path = template.type === 'vulz' ? '/vulz' : '/';
       navigate(path, {
         state: { designParameters: template.parameters }
       });
     } else {
-      // Same configurator type, just apply the template
       onTemplateSelect(template);
     }
     

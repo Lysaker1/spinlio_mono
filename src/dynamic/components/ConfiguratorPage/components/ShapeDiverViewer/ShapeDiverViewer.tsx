@@ -42,6 +42,7 @@ interface ShapeDiverViewerProps {
   setViewport: React.Dispatch<React.SetStateAction<IViewportApi | null>>;
   isLoading: boolean;
   ticket?: string;
+  isTransitioning?: boolean;
 }
 
 // Extend Window interface to include THREE property
@@ -72,17 +73,16 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
   setSession,
   setViewport,
   isLoading: externalLoading,
-  ticket = 'fb56400eb88a6e3af0896d90b87ee69881c284ada493a0cc22023c7843443a1129d8e0ec8df7d6489976bae37c94b54c5fd1296134de1ea5bc52fb4fa92affa89e0c32f4e85ee71361521013e796a7679834f130144f49449a6b9d0fe2a2997b3eb1921ca2e614-3c83fa0e441a5e2c873f2b3f1cd9d237'
+  ticket = 'fb56400eb88a6e3af0896d90b87ee69881c284ada493a0cc22023c7843443a1129d8e0ec8df7d6489976bae37c94b54c5fd1296134de1ea5bc52fb4fa92affa89e0c32f4e85ee71361521013e796a7679834f130144f49449a6b9d0fe2a2997b3eb1921ca2e614-3c83fa0e441a5e2c873f2b3f1cd9d237',
+  isTransitioning = false
 }) => {
-  // Refs for canvas and ShapeDiver APIs
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const viewportRef = useRef<IViewportApi | null>(null);
-  const sessionRef = useRef<ISessionApi | null>(null);
-  
-  // State for QR code and loading status
+  const initializationInProgress = useRef(false);
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
   const [showQrModal, setShowQrModal] = useState(false);
   const [internalLoading, setInternalLoading] = useState(true);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const viewportRef = useRef<IViewportApi | null>(null);
+  const sessionRef = useRef<ISessionApi | null>(null);
 
   // Combine both loading states
   const isLoading = externalLoading || internalLoading;
@@ -90,203 +90,240 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
   useEffect(() => {
     let isActive = true;
 
-    const initShapeDiver = async () => {
-      console.log('ShapeDiverViewer: Initializing...');
-
-      if (!canvasRef.current || !isActive) {
-        console.log('ShapeDiverViewer: Initialization aborted - canvas not ready or component inactive');
-        return;
+    const cleanup = async () => {
+      if (sessionRef.current) {
+        await sessionRef.current.close();
+        sessionRef.current = null;
+        setSession(null);
       }
+      if (viewportRef.current) {
+        await viewportRef.current.close();
+        viewportRef.current = null;
+        setViewport(null);
+      }
+      initializationInProgress.current = false;
+    };
 
+    // If transitioning or already initializing, cleanup
+    if (isTransitioning || initializationInProgress.current) {
+      cleanup();
+      return;
+    }
+
+    const initShapeDiver = async () => {
       try {
-        console.log('ShapeDiverViewer: Loading dependencies...');
-        const { createViewport, createSession } = await loadShapeDiver();
-        console.log('ShapeDiverViewer: Dependencies loaded successfully');
+        initializationInProgress.current = true;
+        console.log('ShapeDiverViewer: Initializing...');
 
-        // Cleanup existing viewport and session
-        if (viewportRef.current && isActive) {
-          console.log('Closing existing viewport...');
-          viewportRef.current.close();
-          viewportRef.current = null;
-        }
-        if (sessionRef.current && isActive) {
-          console.log('Closing existing session...');
-          sessionRef.current.close();
-          sessionRef.current = null;
-          setSession(null);
+        if (!canvasRef.current || !isActive) {
+          console.log('ShapeDiverViewer: Initialization aborted - canvas not ready or component inactive');
+          return;
         }
 
         try {
-          console.log('Creating viewport...');
-          const newViewport = await createViewport({
-            canvas: canvasRef.current,
-            visibility: VISIBILITY_MODE.MANUAL,
-            // Only include valid creation properties
-            branding: {
-              backgroundColor: 'transparent',
-              spinnerPositioning: SPINNER_POSITIONING.CENTER,
-              busyModeSpinner: LOADING_GIF_URL,
-            }
-          });
+          console.log('ShapeDiverViewer: Loading dependencies...');
+          const { createViewport, createSession } = await loadShapeDiver();
+          console.log('ShapeDiverViewer: Dependencies loaded successfully');
 
-          // Set maximum rendering size after creation
-          newViewport.maximumRenderingSize = isMobile ? {
-            width: 1024,  // Reduced from 1280
-            height: 576   // Reduced from 720
-          } : {
-            width: 1920,
-            height: 1080
-          };
+          // Cleanup existing viewport and session
+          if (viewportRef.current && isActive) {
+            console.log('Closing existing viewport...');
+            viewportRef.current.close();
+            viewportRef.current = null;
+          }
+          if (sessionRef.current && isActive) {
+            console.log('Closing existing session...');
+            sessionRef.current.close();
+            sessionRef.current = null;
+            setSession(null);
+          }
 
-          // Add rendering callback for memory management
-          newViewport.preRenderingCallback = (renderer: WebGLRenderer) => {
-            if (renderer.info && isMobile) {
-              console.log('Memory:', renderer.info.memory);
-              if (renderer.info.memory.geometries > 1000 || 
-                  renderer.info.memory.textures > 100) {
-                renderer.dispose();
+          try {
+            console.log('Creating viewport...');
+            const newViewport = await createViewport({
+              canvas: canvasRef.current,
+              visibility: VISIBILITY_MODE.MANUAL,
+              // Only include valid creation properties
+              branding: {
+                backgroundColor: 'transparent',
+                spinnerPositioning: SPINNER_POSITIONING.CENTER,
+                busyModeSpinner: LOADING_GIF_URL,
+              }
+            });
+
+            // Set maximum rendering size after creation
+            newViewport.maximumRenderingSize = isMobile ? {
+              width: 1024,  // Reduced from 1280
+              height: 576   // Reduced from 720
+            } : {
+              width: 1920,
+              height: 1080
+            };
+
+            // Add rendering callback for memory management
+            newViewport.preRenderingCallback = (renderer: WebGLRenderer) => {
+              if (renderer.info && isMobile) {
+                const { geometries, textures } = renderer.info.memory;
+                // More granular memory management
+                if (geometries > 800 || textures > 80) {
+                  console.warn('Memory threshold reached:', { geometries, textures });
+                  renderer.dispose();
+                  // Force garbage collection if available
+                  if (window.gc) window.gc();
+                }
+              }
+            };
+
+            // Configure camera for mobile
+            if (newViewport.camera) {
+              if (isMobile) {
+                newViewport.camera.enablePan = false;
+                newViewport.camera.zoomSpeed = 0.8;
+                newViewport.camera.rotationSpeed = 0.5;
+                newViewport.camera.damping = 0.2;
+                newViewport.camera.zoomRestriction = {
+                  minDistance: 2,
+                  maxDistance: 8
+                };
+              }
+
+              await newViewport.camera.set(
+                [0, 0, isMobile ? 10 : 3],
+                [0, 0, 0],
+                { duration: 0 },
+              );
+              
+              // Use your existing logCameraDetails function
+              if (typeof logCameraDetails === 'function') {
+                logCameraDetails(newViewport.camera, 'Initial Camera Setup');
               }
             }
-          };
 
-          // Configure camera for mobile
-          if (newViewport.camera) {
-            if (isMobile) {
-              newViewport.camera.enablePan = false;
-              newViewport.camera.zoomSpeed = 0.8;
-              newViewport.camera.rotationSpeed = 0.5;
-              newViewport.camera.damping = 0.2;
-              newViewport.camera.zoomRestriction = {
-                minDistance: 2,
-                maxDistance: 8
-              };
+            // Add context loss handling using canvas events
+            const handleContextLoss = () => {
+              console.log('WebGL context lost');
+              setInternalLoading(true);
+              // Pause rendering and show loading state
+              newViewport.pauseRendering();
+            };
+
+            const handleContextRestore = () => {
+              console.log('WebGL context restored');
+              // Resume rendering and hide loading state
+              newViewport.continueRendering();
+              newViewport.render();
+              setInternalLoading(false);
+            };
+
+            canvasRef.current?.addEventListener('webglcontextlost', handleContextLoss);
+            canvasRef.current?.addEventListener('webglcontextrestored', handleContextRestore);
+
+            if (!isActive) {
+              newViewport.close();
+              return;
             }
 
-            await newViewport.camera.set(
-              [0, 0, isMobile ? 10 : 3],
-              [0, 0, 0],
-              { duration: 0 }
-            );
+            // Store viewport reference
+            viewportRef.current = newViewport;
+            setViewport(newViewport);
+
+            // Create new ShapeDiver session
+            const newSession = await createSession({
+              ticket: ticket,
+              modelViewUrl: 'https://sdr8euc1.eu-central-1.shapediver.com',
+              loadOutputs: true,
+              waitForOutputs: true,
+              allowOutputLoading: true,
+              loadSdtf: true
+            }).catch(error => {
+              console.error('Session creation failed:', error);
+              setInternalLoading(false);
+              throw error;
+            });
+
+            // Add retry logic for session customization
+            let retryCount = 0;
+            const maxRetries = 3;
             
-            // Use your existing logCameraDetails function
-            if (typeof logCameraDetails === 'function') {
-              logCameraDetails(newViewport.camera, 'Initial Camera Setup');
+            while (retryCount < maxRetries) {
+              try {
+                await newSession.customize();
+                break;
+              } catch (error) {
+                retryCount++;
+                if (retryCount === maxRetries) {
+                  console.error('Failed to customize session after retries:', error);
+                  throw error;
+                }
+                await new Promise(resolve => setTimeout(resolve, 1000));
+              }
+            }
+
+            // Check if component is still mounted
+            if (!isActive) {
+              newSession.close();
+              return;
+            }
+
+            // Store session reference
+            sessionRef.current = newSession;
+            setSession(newSession);
+
+            console.log('Session customized, parameters ready');
+
+            // Update viewport with session node
+            if (newSession.node && isActive) {
+              console.log('ShapeDiverViewer: Updating viewport with session node...');
+              await newViewport.updateNode(newSession.node);
+              newViewport.update();
+              newViewport.render();
+              newViewport.show = true;
+              setInternalLoading(false);
+              console.log('ShapeDiverViewer: Initialization completed successfully');
+            }
+
+            setInternalLoading(false); // Set to false when initialization completes
+
+            return () => {
+              isActive = false;
+              canvasRef.current?.removeEventListener('webglcontextlost', handleContextLoss);
+              canvasRef.current?.removeEventListener('webglcontextrestored', handleContextRestore);
+              if (viewportRef.current) {
+                viewportRef.current.close();
+                viewportRef.current = null;
+              }
+              if (sessionRef.current) {
+                sessionRef.current.close();
+                sessionRef.current = null;
+                setSession(null);
+              }
+            };
+
+          } catch (error) {
+            console.error('Error initializing ShapeDiver:', error);
+            if (isActive) {
+              setInternalLoading(false);
             }
           }
-
-          // Add context loss handling using canvas events
-          const handleContextLoss = () => {
-            console.log('WebGL context lost');
-            setInternalLoading(true);
-            // Pause rendering and show loading state
-            newViewport.pauseRendering();
-          };
-
-          const handleContextRestore = () => {
-            console.log('WebGL context restored');
-            // Resume rendering and hide loading state
-            newViewport.continueRendering();
-            newViewport.render();
-            setInternalLoading(false);
-          };
-
-          canvasRef.current?.addEventListener('webglcontextlost', handleContextLoss);
-          canvasRef.current?.addEventListener('webglcontextrestored', handleContextRestore);
-
-          if (!isActive) {
-            newViewport.close();
-            return;
-          }
-
-          // Store viewport reference
-          viewportRef.current = newViewport;
-          setViewport(newViewport);
-
-          // Create new ShapeDiver session
-          const newSession = await createSession({
-            ticket: ticket,
-            modelViewUrl: 'https://sdr8euc1.eu-central-1.shapediver.com',
-            loadOutputs: true,
-            waitForOutputs: true,
-            allowOutputLoading: true,
-            loadSdtf: true
-          });
-
-          // Check if component is still mounted
-          if (!isActive) {
-            newSession.close();
-            return;
-          }
-
-          // Store session reference
-          sessionRef.current = newSession;
-          setSession(newSession);
-
-          // Customize session
-          await newSession.customize();
-
-          console.log('Session customized, parameters ready');
-
-          // Update viewport with session node
-          if (newSession.node && isActive) {
-            console.log('ShapeDiverViewer: Updating viewport with session node...');
-            await newViewport.updateNode(newSession.node);
-            newViewport.update();
-            newViewport.render();
-            newViewport.show = true;
-            setInternalLoading(false);
-            console.log('ShapeDiverViewer: Initialization completed successfully');
-          }
-
-          setInternalLoading(false); // Set to false when initialization completes
-
-          return () => {
-            isActive = false;
-            canvasRef.current?.removeEventListener('webglcontextlost', handleContextLoss);
-            canvasRef.current?.removeEventListener('webglcontextrestored', handleContextRestore);
-            if (viewportRef.current) {
-              viewportRef.current.close();
-              viewportRef.current = null;
-            }
-            if (sessionRef.current) {
-              sessionRef.current.close();
-              sessionRef.current = null;
-              setSession(null);
-            }
-          };
-
         } catch (error) {
-          console.error('Error initializing ShapeDiver:', error);
+          console.error('ShapeDiverViewer initialization failed:', error);
           if (isActive) {
             setInternalLoading(false);
           }
         }
       } catch (error) {
-        console.error('ShapeDiverViewer initialization failed:', error);
-        if (isActive) {
-          setInternalLoading(false);
-        }
+        console.error('ShapeDiver initialization error:', error);
+        await cleanup();
       }
     };
 
-    // Start initialization
     initShapeDiver();
 
-    // Cleanup function
     return () => {
       isActive = false;
-      console.log('Cleaning up...');
-      if (sessionRef.current) {
-        sessionRef.current.close();
-        sessionRef.current = null;
-        setSession(null);
-      }
-      if (viewportRef.current) {
-        viewportRef.current.close();
-        viewportRef.current = null;
-      }
+      cleanup();
     };
-  }, [setSession, setViewport, canvasRef.current, ticket]);
+  }, [ticket, isTransitioning]);
 
   useEffect(() => {
     // Wait for the container to have proper dimensions
@@ -365,6 +402,13 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
       <Modal opened={showQrModal} onClose={() => setShowQrModal(false)} title="AR QR Code">
         {qrCodeUrl && <img src={qrCodeUrl} alt="AR QR Code" style={{ width: '100%' }} />}
       </Modal>
+      {(internalLoading || externalLoading) && (
+        <Overlay blur={2}>
+          <div className="loading-indicator">
+            Loading 3D Model...
+          </div>
+        </Overlay>
+      )}
     </Box>
   );
 };

@@ -190,6 +190,7 @@ app.use(helmet({
         "https://api.spinlio.com",
         "https://fonts.gstatic.com",
         "https://js.stripe.com",
+        "https://fonts.gstatic.com/*",
         "*"
       ],
       workerSrc: [

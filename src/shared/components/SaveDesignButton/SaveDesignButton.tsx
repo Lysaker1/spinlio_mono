@@ -24,6 +24,7 @@ export const SaveDesignButton: React.FC<SaveDesignButtonProps> = ({
   onMenuOpen,
   onMenuHeightChange,
   session
+
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [designName, setDesignName] = useState('');
@@ -43,6 +44,15 @@ export const SaveDesignButton: React.FC<SaveDesignButtonProps> = ({
   useEffect(() => {
     handleMenuStateChange(isModalOpen);
   }, [isModalOpen, handleMenuStateChange]);
+
+  useEffect(() => {
+    onMenuOpen(isModalOpen);
+    if (isModalOpen) {
+      onMenuHeightChange?.(15);
+    } else {
+      onMenuHeightChange?.(0);
+    }
+  }, [isModalOpen, onMenuOpen, onMenuHeightChange]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

@@ -10,8 +10,9 @@ import { MyDesigns } from '@shared/components/MyDesigns/MyDesigns';
 import { BuyButton } from '@shared/components/BuyButton/BuyButton';
 import { useConfiguratorState } from '@shared/hooks/useConfiguratorState';
 import { configuratorConfigs } from '../../config/configuratorConfig';
+import { parameterDefinitions } from '../../components/ParameterPanel/parameterDefinitionsTable';
 
-const VulzConfigurator: React.FC = () => {
+const TableConfigurator: React.FC = () => {
   const {
     session,
     viewport,
@@ -30,7 +31,7 @@ const VulzConfigurator: React.FC = () => {
     setIsSaveMenuOpen,
     setSaveMenuHeight,
     isAuthenticated,
-  } = useConfiguratorState(CONFIGURATOR_TYPES.VULZ);
+  } = useConfiguratorState(CONFIGURATOR_TYPES.TABLE);
 
   const LOADING_GIF_URL = 'https://res.cloudinary.com/da8qnqmmh/image/upload/e_bgremoval/WhatsApp_GIF_2025-01-15_at_12.36.33_tupvgo.gif';
 
@@ -38,7 +39,7 @@ const VulzConfigurator: React.FC = () => {
     <ErrorBoundary>
       <div className="configurator-page">
         <Sidebar
-          configuratorType={CONFIGURATOR_TYPES.VULZ}
+          configuratorType={CONFIGURATOR_TYPES.TABLE}
           onTemplateSelect={handleDesignSelect}
           onDesignSelect={handleDesignSelect}
           session={session}
@@ -49,16 +50,16 @@ const VulzConfigurator: React.FC = () => {
           {isAuthenticated && (
             <MyDesigns 
               onSelect={handleDesignSelect}
-              currentConfiguratorType={CONFIGURATOR_TYPES.VULZ}
+              currentConfiguratorType={CONFIGURATOR_TYPES.TABLE}
             />
           )}
         </Sidebar>
 
         <div className="top-right-buttons">
-          <BuyButton configuratorType={CONFIGURATOR_TYPES.VULZ} />
+          <BuyButton configuratorType={CONFIGURATOR_TYPES.TABLE} />
           <SaveDesignButton 
             getCurrentParameters={() => session?.parameterValues || {}}
-            configuratorType={CONFIGURATOR_TYPES.VULZ}
+            configuratorType={CONFIGURATOR_TYPES.TABLE}
             viewport={viewport}
             onMenuOpen={setIsSaveMenuOpen}
             onMenuHeightChange={setSaveMenuHeight}
@@ -89,7 +90,7 @@ const VulzConfigurator: React.FC = () => {
                 setViewport={setViewport}
                 isLoading={isLoading}
                 isTransitioning={isTransitioning}
-                ticket={configuratorConfigs.vulz.ticket}
+                ticket={configuratorConfigs.table.ticket}
               />
             </Suspense>
           </div>
@@ -99,7 +100,7 @@ const VulzConfigurator: React.FC = () => {
               selectedComponent={selectedComponent}
               session={session}
               viewport={viewport}
-              configuratorType={CONFIGURATOR_TYPES.VULZ}
+              configuratorType={CONFIGURATOR_TYPES.TABLE}
             />
           </div>
         </div>
@@ -108,4 +109,4 @@ const VulzConfigurator: React.FC = () => {
   );
 };
 
-export default VulzConfigurator;
+export default TableConfigurator; 

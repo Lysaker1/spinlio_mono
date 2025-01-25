@@ -39,7 +39,7 @@ describe('Parameter Comparison Analysis', () => {
     // Read and parse the external JSON file
     const externalJson = JSON.parse(
       fs.readFileSync(
-        path.join(__dirname, '../__fixtures__/bike-o1-r09-v22.json'),
+        path.join(__dirname, '../__fixtures__/stepthru.json'),
         'utf8'
       )
     ) as ExternalConfig;

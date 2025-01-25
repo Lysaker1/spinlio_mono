@@ -4,7 +4,7 @@ export interface BikeTemplate {
     name: string;
     modelStateId: string;
     parameters: Record<string, string>;
-    type: 'vulz' | 'default';
+    type: 'vulz' | 'default' | 'stepthru' | 'bookshelf' | 'table' | 'sofa';
   }
   
   // The model ID from your parameters

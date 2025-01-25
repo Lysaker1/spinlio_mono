@@ -51,6 +51,7 @@ const ConfiguratorPage: React.FC = () => {
   const [saveMenuHeight, setSaveMenuHeight] = useState<number>(15);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
+
   // Reference to track component mount state
   const isMounted = useRef(true);
 

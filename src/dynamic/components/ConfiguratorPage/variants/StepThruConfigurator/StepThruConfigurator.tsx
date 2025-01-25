@@ -1,4 +1,5 @@
 import React, { Suspense } from 'react';
+import { useLocation } from 'react-router-dom';
 import { CONFIGURATOR_TYPES } from '@shared/constants/configuratorTypes';
 import ErrorBoundary from '@shared/components/ErrorBoundary/ErrorBoundary';
 import { ParameterPanel } from '../../components/ParameterPanel';
@@ -11,7 +12,7 @@ import { BuyButton } from '@shared/components/BuyButton/BuyButton';
 import { useConfiguratorState } from '@shared/hooks/useConfiguratorState';
 import { configuratorConfigs } from '../../config/configuratorConfig';
 
-const VulzConfigurator: React.FC = () => {
+const StepThruConfigurator: React.FC = () => {
   const {
     session,
     viewport,
@@ -29,8 +30,10 @@ const VulzConfigurator: React.FC = () => {
     setShareMenuHeight,
     setIsSaveMenuOpen,
     setSaveMenuHeight,
+    setSelectedComponent,
     isAuthenticated,
-  } = useConfiguratorState(CONFIGURATOR_TYPES.VULZ);
+    ticket,
+  } = useConfiguratorState(CONFIGURATOR_TYPES.STEPTHRU);
 
   const LOADING_GIF_URL = 'https://res.cloudinary.com/da8qnqmmh/image/upload/e_bgremoval/WhatsApp_GIF_2025-01-15_at_12.36.33_tupvgo.gif';
 
@@ -38,27 +41,29 @@ const VulzConfigurator: React.FC = () => {
     <ErrorBoundary>
       <div className="configurator-page">
         <Sidebar
-          configuratorType={CONFIGURATOR_TYPES.VULZ}
+          configuratorType={CONFIGURATOR_TYPES.STEPTHRU}
           onTemplateSelect={handleDesignSelect}
           onDesignSelect={handleDesignSelect}
           session={session}
           setSession={setSession}
           viewport={viewport}
           setViewport={setViewport}
-        >
+          >
           {isAuthenticated && (
             <MyDesigns 
               onSelect={handleDesignSelect}
-              currentConfiguratorType={CONFIGURATOR_TYPES.VULZ}
+              currentConfiguratorType={CONFIGURATOR_TYPES.STEPTHRU}
             />
           )}
         </Sidebar>
 
         <div className="top-right-buttons">
-          <BuyButton configuratorType={CONFIGURATOR_TYPES.VULZ} />
+          <BuyButton
+            configuratorType={CONFIGURATOR_TYPES.STEPTHRU}
+          />
           <SaveDesignButton 
             getCurrentParameters={() => session?.parameterValues || {}}
-            configuratorType={CONFIGURATOR_TYPES.VULZ}
+            configuratorType={CONFIGURATOR_TYPES.STEPTHRU}
             viewport={viewport}
             onMenuOpen={setIsSaveMenuOpen}
             onMenuHeightChange={setSaveMenuHeight}
@@ -89,7 +94,7 @@ const VulzConfigurator: React.FC = () => {
                 setViewport={setViewport}
                 isLoading={isLoading}
                 isTransitioning={isTransitioning}
-                ticket={configuratorConfigs.vulz.ticket}
+                ticket={configuratorConfigs.stepthru.ticket}
               />
             </Suspense>
           </div>
@@ -99,7 +104,7 @@ const VulzConfigurator: React.FC = () => {
               selectedComponent={selectedComponent}
               session={session}
               viewport={viewport}
-              configuratorType={CONFIGURATOR_TYPES.VULZ}
+              configuratorType={CONFIGURATOR_TYPES.STEPTHRU}
             />
           </div>
         </div>
@@ -108,4 +113,4 @@ const VulzConfigurator: React.FC = () => {
   );
 };
 
-export default VulzConfigurator;
+export default StepThruConfigurator;

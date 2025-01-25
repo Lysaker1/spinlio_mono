@@ -41,12 +41,31 @@ const VulzConfigurator = lazy(() =>
   }))
 );
 
+const StepThruConfigurator = lazy(() => 
+  import('../ConfiguratorPage/variants/StepThruConfigurator/StepThruConfigurator')
+);
+
+const BookshelfConfigurator = lazy(() => 
+  import('../ConfiguratorPage/variants/BookshelfConfigurator/BookshelfConfigurator')
+);
+
+const SofaConfigurator = lazy(() => 
+  import('../ConfiguratorPage/variants/SofaConfigurator/SofaConfigurator')
+);
+
+const TableConfigurator = lazy(() => 
+  import('../ConfiguratorPage/variants/TableConfigurator/TableConfigurator')
+);
+
 const AppContent: React.FC = () => {
   const location = useLocation();
   const isMobile = window.innerWidth <= 768;
   const isConfiguratorRoute = location.pathname === '/' || 
                              location.pathname.includes('/configurator') ||
-                             location.pathname.includes('/vulz');  // Add vulz to check
+                             location.pathname.includes('/vulz') ||
+                             location.pathname.includes('/bookshelf') ||
+                             location.pathname.includes('/sofa') ||
+                             location.pathname.includes('/table');
 
   useEffect(() => {
     pageView(location.pathname + location.search);
@@ -101,6 +120,38 @@ const AppContent: React.FC = () => {
             element={
               <React.Suspense fallback={<div className="loading-placeholder" />}>
                 <VulzConfigurator />
+              </React.Suspense>
+            } 
+          />
+          <Route 
+            path="/vulz/stepthru" 
+            element={
+              <React.Suspense fallback={<div className="loading-placeholder" />}>
+                <StepThruConfigurator />
+              </React.Suspense>
+            } 
+          />
+          <Route 
+            path="/bookshelf" 
+            element={
+              <React.Suspense fallback={<div className="loading-placeholder" />}>
+                <BookshelfConfigurator />
+              </React.Suspense>
+            } 
+          />
+          <Route 
+            path="/sofa" 
+            element={
+              <React.Suspense fallback={<div className="loading-placeholder" />}>
+                <SofaConfigurator />
+              </React.Suspense>
+            } 
+          />
+          <Route 
+            path="/table" 
+            element={
+              <React.Suspense fallback={<div className="loading-placeholder" />}>
+                <TableConfigurator />
               </React.Suspense>
             } 
           />

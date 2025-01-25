@@ -1,5 +1,6 @@
 // Import required interfaces from ShapeDiver viewer library
 import { ISessionApi, IViewportApi } from '@shapediver/viewer';
+import { ConfiguratorType } from '@shared/types/SavedDesign';
 
 // Interface defining props passed to the ParameterPanel component
 export interface ParameterPanelProps {
@@ -9,7 +10,7 @@ export interface ParameterPanelProps {
   session: ISessionApi | null;
   // ShapeDiver viewport API instance, can be null if not initialized
   viewport: IViewportApi | null;
-  configuratorType?: 'default' | 'vulz' | 'electric'; // Add this line
+  configuratorType: 'default' | 'vulz' | 'stepthru' | 'bookshelf' | 'table' | 'sofa'; // Add this line
 
 }
 
@@ -22,11 +23,11 @@ export interface ParameterDefinition {
     // Type of input control to display for this parameter
     type: 'slider' | 'dropdown' | 'boolean' | 'color' | 'colorWithPalette' | 'text' | 'checkbox' | 'graphmapper' | 'fileinput' | 'grid' | 'logoUpload';
     // Category the parameter belongs to for organizational purposes
-    category: 'geometry' | 'surface' | 'hardware' | 'tubing' |'accessories' | 'client information' | 'other'| 'visual';
+    category: 'geometry' | 'surface' | 'hardware' | 'tubing' |'accessories' | 'client information' | 'other'| 'visual'|  'sizing' | 'material';
     // Current value of the parameter as a string
     value: string;
     // Optional minimum value for numeric parameters
-    configuratorTypes?: ('default' | 'vulz' | 'electric')[]; // Add this instead of tags
+    configuratorTypes?: ConfiguratorType[]; // Add this instead of tags
     // Optional sub-category for the parameter
     subCategory?: string;
 
@@ -45,4 +46,5 @@ export interface ParameterDefinition {
       value: string;
     }>;
     disabled?: boolean;
+    step?: number;
   }

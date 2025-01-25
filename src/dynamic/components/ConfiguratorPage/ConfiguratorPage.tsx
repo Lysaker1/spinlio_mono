@@ -49,6 +49,8 @@ const ConfiguratorPage: React.FC = () => {
   const [shareMenuHeight, setShareMenuHeight] = useState<number>(15);
   const [isSaveMenuOpen, setIsSaveMenuOpen] = useState(false);
   const [saveMenuHeight, setSaveMenuHeight] = useState<number>(15);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
 
   // Reference to track component mount state
   const isMounted = useRef(true);
@@ -174,6 +176,21 @@ const ConfiguratorPage: React.FC = () => {
     }
   }, [session, viewport, location.state]);
 
+  useEffect(() => {
+    if (isTransitioning) {
+      return () => {
+        if (session) {
+          session.close();
+          setSession(null);
+        }
+        if (viewport) {
+          viewport.close();
+          setViewport(null);
+        }
+      };
+    }
+  }, [isTransitioning, session, viewport]);
+
   // Component render
   return (
     // Wrap entire component in error boundary
@@ -183,6 +200,9 @@ const ConfiguratorPage: React.FC = () => {
           onTemplateSelect={handleTemplateSelect}
           onDesignSelect={handleDesignSelect}
           session={session}
+          setSession={setSession}
+          viewport={viewport}
+          setViewport={setViewport}
           configuratorType="default"
         >
           <MyDesigns 
@@ -194,7 +214,7 @@ const ConfiguratorPage: React.FC = () => {
         {/* Top right buttons container */}
         <div className="top-right-buttons">
           <BuyButton 
-            isVulz={false}
+            configuratorType={CONFIGURATOR_TYPES.DEFAULT}
           />
           <SaveDesignButton 
             getCurrentParameters={() => session?.parameterValues || {}}
@@ -222,6 +242,8 @@ const ConfiguratorPage: React.FC = () => {
                 setSession={setSession}
                 setViewport={setViewport} 
                 isLoading={isLoading}
+                isTransitioning={isTransitioning}
+
               />
             </Suspense>
           </div>
@@ -234,6 +256,7 @@ const ConfiguratorPage: React.FC = () => {
                   selectedComponent={selectedComponent}
                 session={session}
                 viewport={viewport}
+                configuratorType={CONFIGURATOR_TYPES.DEFAULT}
               />
             </Suspense>
           </div>

@@ -6,12 +6,19 @@ import { debounce } from 'lodash';
 import { GeometryPanel } from './components/Panels/GeometryPanel';
 import { TubingPanel } from './components/Panels/TubingPanel';
 import { AccessoriesPanel } from './components/Panels/AccessoriesPanel';
+import { SizingPanel } from './components/Panels/SizingPanel/SizingPanel';
+import { MaterialPanel } from './components/Panels/MaterialPanel/MaterialPanel';
 // Import TypeScript interfaces and types
 import { ParameterDefinition, ParameterPanelProps } from './types';
 // Import component styles
 import './ParameterPanel.css';
 // Import parameter configuration data
-import { parameterDefinitions } from './parameterDefinitions6';
+import { parameterDefinitions as parameterDefinitionsBike } from './parameterDefinitions6';
+import { parameterDefinitions as parameterDefinitionsFurniture } from './parameterDefinitionsFurniture';
+import { parameterDefinitions as parameterDefinitionsTable } from './parameterDefinitionsTable';
+import { parameterDefinitions as parameterDefinitionsSofa } from './parameterDefinitionsSofa';
+import { parameterDefinitions as parameterDefinitionsST } from './parameterDefinitionsST';
+
 // Import hook to detect mobile screen size
 import { useMediaQuery } from '@mantine/hooks';
 // Import navigation tabs component
@@ -33,8 +40,19 @@ export const ParameterPanel: React.FC<ParameterPanelProps> = ({
   viewport,
   configuratorType = 'default'
 }) => {
-  const [activeTab, setActiveTab] = useState<TabType>('tubing');
-  const [parameterValues, setParameterValues] = useState<{ [id: string]: string }>({});
+  const getDefaultTab = () => {
+    switch (configuratorType) {
+      case 'sofa':
+      case 'table':
+      case 'bookshelf':
+        return 'material';
+      default:
+        return 'tubing';
+    }
+  };
+
+  const [activeTab, setActiveTab] = useState(getDefaultTab());
+  const [parameterValues, setParameterValues] = useState<Record<string, string>>({});
   const isMobile = useMediaQuery('(max-width: 768px)');
 
   const prevParamValuesRef = useRef<any>(null);
@@ -93,50 +111,90 @@ export const ParameterPanel: React.FC<ParameterPanelProps> = ({
 
   // Get filtered parameters for current tab
   const getCurrentParameters = () => {
-    const filteredByType = parameterDefinitions.filter(param => 
-      !param.configuratorTypes || 
-      param.configuratorTypes.includes(configuratorType)
-    );
-    return filteredByType.filter(p => p.category === activeTab);
+    let definitions;
+    switch (configuratorType) {
+      case 'bookshelf':
+        definitions = parameterDefinitionsFurniture;
+        break;
+      case 'table':
+        definitions = parameterDefinitionsTable;
+        break;
+      case 'sofa':
+        definitions = parameterDefinitionsSofa;
+        break;
+      case 'stepthru':
+        definitions = parameterDefinitionsST;
+        break;
+      default:
+        definitions = parameterDefinitionsBike;
+    }
+
+    return definitions
+      .filter((p: ParameterDefinition) => {
+        // First filter by category
+        if (p.category !== activeTab) return false;
+
+        // Then filter by configurator type
+        if (p.configuratorTypes) {
+          // If configuratorTypes is specified, parameter must match current type
+          return p.configuratorTypes.includes(configuratorType);
+        }
+        // If no configuratorTypes specified, show for all bikes
+        return true;
+      });
   };
 
   if (!session) return null;
+
+  const renderPanel = () => {
+    if (['bookshelf', 'table', 'sofa'].includes(configuratorType)) {
+      return {
+        'sizing': (
+          <SizingPanel
+            parameters={getCurrentParameters()}
+            parameterValues={parameterValues}
+            onParameterChange={handleParameterChange}
+            isActive={true}
+            configuratorType={configuratorType}
+          />
+        ),
+        'material': (
+          <MaterialPanel
+            parameters={getCurrentParameters()}
+            parameterValues={parameterValues}
+            onParameterChange={handleParameterChange}
+            isActive={true}
+            configuratorType={configuratorType}
+          />
+        )
+      }[activeTab];
+    }
+
+    return {
+      'tubing': <TubingPanel {...commonPanelProps} />,
+      'geometry': <GeometryPanel {...commonPanelProps} />,
+      'accessories': <AccessoriesPanel {...commonPanelProps} />
+    }[activeTab];
+  };
+
+  const commonPanelProps = {
+    parameters: getCurrentParameters(),
+    parameterValues,
+    onParameterChange: handleParameterChange,
+    isActive: true
+  };
 
   return (
     <div className={`parameter-panel ${isMobile ? 'mobile' : ''}`}>
       <div className="category-navigation">
         <CategoryTabs 
-          activeTab={activeTab} 
+          activeTab={activeTab as TabType} 
           onTabChange={setActiveTab}
+          configuratorType={configuratorType}
         />
       </div>
       <div className="panel-content">
-        {{
-          'tubing': (
-            <TubingPanel
-              parameters={getCurrentParameters()}
-              parameterValues={parameterValues}
-              onParameterChange={handleParameterChange}
-              isActive={true}
-            />
-          ),
-          'geometry': (
-            <GeometryPanel
-              parameters={getCurrentParameters()}
-              parameterValues={parameterValues}
-              onParameterChange={handleParameterChange}
-              isActive={true}
-            />
-          ),
-          'accessories': (
-            <AccessoriesPanel
-              parameters={getCurrentParameters()}
-              parameterValues={parameterValues}
-              onParameterChange={handleParameterChange}
-              isActive={true}
-            />
-          )
-        }[activeTab]}
+        {renderPanel()}
       </div>
     </div>
   );

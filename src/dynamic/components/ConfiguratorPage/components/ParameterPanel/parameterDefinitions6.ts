@@ -9,6 +9,20 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "type": "text"
   },
   {
+    "id": "83912dec-4ac3-4813-84a9-e9f8316536d8",
+    "name": "X axis for front TIRE",
+    "value": "58",
+    "category": "other",
+    "type": "text"
+  },
+  {
+    "id": "3577beb2-7946-4e3f-9549-9d43be77f27c",
+    "name": "Boolean Toggle",
+    "value": "true",
+    "category": "other",
+    "type": "text"
+  },
+  {
     "id": "eea4374e-a513-4f61-924a-f8175351fa8b",
     "name": "Stack Height",
     "category": "geometry",
@@ -19,13 +33,13 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "max": 600,
     "unit": "mm"
   },
-  // {
-  //   "id": "15c239d7-8130-41d2-8470-342335fcfb5f",
-  //   "name": "X-Fork Crown Height",
-  //   "value": "20",
-  //   "category": "other",
-  //   "type": "text"
-  // },
+  {
+    "id": "15c239d7-8130-41d2-8470-342335fcfb5f",
+    "name": "X-Fork Crown Height",
+    "value": "20",
+    "category": "other",
+    "type": "text"
+  },
   {
     "id": "d1f726c0-fb21-4f15-8f11-06ba73e0f3a9",
     "name": "Bottom Bracket Drop",
@@ -37,21 +51,10 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "max": 75,
     "unit": "mm"
   },
-  // {
-  //   "id": "c4d4c978-5b58-49ce-a567-739894dc5d36",
-  //   "name": "Front Width", 
-  //   "value": "50",
-  //   "category": "tubing",
-  //   "subCategory": "Top Tube",
-  //   "type": "slider",
-  //   "min": 30,
-  //   "max": 50,
-  //   "unit": "mm"
-  // },
   {
-    "id": "2faf7e7c-fb60-47d8-8053-c02e26afd068",
-    "name": "Rake Offset",
-    "value": "44",
+    "id": "c4d4c978-5b58-49ce-a567-739894dc5d36",
+    "name": "Rear Width",
+    "value": "48",
     "category": "other",
     "type": "text"
   },
@@ -74,11 +77,32 @@ export const parameterDefinitions: ParameterDefinition[] = [
     ]
   },
   {
+    "id": "815b0eaf-cd38-4638-8bde-5f6ac27739d0",
+    "name": "Chain Stay Length",
+    "subCategory": "Rear Triangle",
+    "category": "geometry",
+    "type": "slider",
+    "value": "460",
+    "min": 420,
+    "max": 450,
+    "unit": "mm"
+  },
+  {
+    "id": "beff3154-f6bd-494e-998b-13f9660e9506",
+    "name": "Length",
+    "category": "geometry",
+    "subCategory": "Seat Tube",
+    "type": "slider",
+    "value": "483",
+    "min": 500,
+    "max": 620,
+    "unit": "mm"
+  },
+  {
     "id": "6eac979f-e146-4021-8439-0cf495cf0431",
     "name": "Size",
     "category": "accessories",
     "type": "dropdown",
-    "tag": "man",
     "subCategory": "Wheels",
     "value": "1",
     "options": [
@@ -90,42 +114,6 @@ export const parameterDefinitions: ParameterDefinition[] = [
         "label": "700",
         "value": "1"
       }
-    ]
-  },
-  {
-    "id": "815b0eaf-cd38-4638-8bde-5f6ac27739d0",
-    "name": "Chain Stay Length",
-    "subCategory": "Rear Triangle",
-    "category": "geometry",
-    "type": "slider",
-    "value": "426",
-    "min": 420,
-    "max": 450,
-    "unit": "mm"
-  },
-  {
-    "id": "beff3154-f6bd-494e-998b-13f9660e9506",
-    "name": "Length",
-    "category": "geometry",
-    "subCategory": "Seat Tube",
-    "type": "slider",
-    "value": "531",
-    "min": 500,
-    "max": 620,
-    "unit": "mm"
-  },
-  {
-    "id": "98f0a457-b4e5-44ea-8e55-8577941d49ad",
-    "name": "Angle",
-    "category": "geometry",
-    "subCategory": "Head Tube",
-    "type": "slider",
-    "value": "72.0",
-    "min": 72,
-    "max": 74,
-    "unit": "°",
-    "configuratorTypes": [
-      "vulz"
     ]
   },
   {
@@ -157,12 +145,28 @@ export const parameterDefinitions: ParameterDefinition[] = [
     ]
   },
   {
+    "id": "98f0a457-b4e5-44ea-8e55-8577941d49ad",
+    "name": "Angle",
+    "category": "geometry",
+    "subCategory": "Head Tube",
+    "type": "slider",
+    "value": "70.0",
+    "min": 72,
+    "max": 74,
+    "unit": "°",
+    "configuratorTypes": [
+      "vulz",
+      "stepthru"
+    
+    ]
+  },
+  {
     "id": "09aa3a63-8d46-4b67-b87b-b4b869e5befd",
     "name": "Angle",
     "category": "geometry",
     "subCategory": "Seat Tube",
     "type": "slider",
-    "value": "74.3",
+    "value": "72.5",
     "min": 72.5,
     "max": 75,
     "unit": "°"
@@ -216,9 +220,15 @@ export const parameterDefinitions: ParameterDefinition[] = [
   {
     "id": "3902e965-6a81-4d91-a8c0-e65209a882a3",
     "name": "Height",
-    "value": "0",
-    "category": "other",
-    "type": "text"
+    "category": "tubing",
+    "subCategory": "Top Tube",
+    "type": "slider",
+    "value": "-6",
+    "min": 0,
+    "max": 60,
+    "configuratorTypes": [
+      "vulz"
+    ]
   },
   {
     "id": "7dc55512-0324-4e59-8686-2c97488645ca",
@@ -254,7 +264,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "category": "accessories",
     "subCategory": "Water Bottle",
     "type": "slider",
-    "value": "0.47",
+    "value": "0.73",
     "min": 0,
     "max": 1
   },
@@ -264,7 +274,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "subCategory": "Water Bottle",
     "category": "accessories",
     "type": "dropdown",
-    "value": "0",
+    "value": "1",
     "options": [
       {
         "label": "Yes",
@@ -274,32 +284,6 @@ export const parameterDefinitions: ParameterDefinition[] = [
         "label": "No",
         "value": "1"
       }
-    ]
-  },
-  {
-    "id": "2faf7e7c-fb60-47d8-8053-c02e26afd068",
-    "name": "Rake Offset",
-    "category": "accessories",
-    "subCategory": "Fork",
-    "type": "slider",
-    "value": "44", // Default value within the range
-    "min": 20,
-    "max": 60,
-    "configuratorTypes": [
-      "vulz"
-    ]
-  },
-  {
-    "id": "3902e965-6a81-4d91-a8c0-e65209a882a3",
-    "name": "Standover Height",
-    "category": "tubing",
-    "subCategory": "Top Tube",
-    "type": "slider",
-    "value": "0", // Default value within the range
-    "min": 0,
-    "max": 60,
-    "configuratorTypes": [
-      "vulz"
     ]
   },
   {
@@ -329,12 +313,13 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "subCategory": "Seat Tube",
     "category": "geometry",
     "type": "slider",
-    "value": "40",
+    "value": "35",
     "min": 28,
     "max": 40,
     "unit": "mm",
     "configuratorTypes": [
-      "vulz"
+      "vulz",
+      "stepthru"
     ]
   },
   {
@@ -350,7 +335,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "subCategory": "Down Tube",
     "category": "tubing",
     "type": "slider",
-    "value": "50",
+    "value": "38",
     "min": 30,
     "max": 50,
     "unit": "mm",
@@ -396,23 +381,23 @@ export const parameterDefinitions: ParameterDefinition[] = [
     ]
   },
   {
-    "id": "39881cea-9d0d-4879-99ee-6ed1d4c0574d",
-    "name": "HandleBar Colour",
-    "value": "0x363636ff",
-    "category": "other",
-    "type": "text"
-  },
-  {
-    "id": "74a9482f-e1bb-4b5e-9dff-a182a2b738b4",
-    "name": "HandleBar Metallic Factor",
-    "value": "0.5",
-    "category": "other",
-    "type": "text"
-  },
-  {
-    "id": "5e968ba8-d256-4e2d-931a-bd64bf139ae5",
+    "id": "cc667ffa-3487-46e8-8b36-48ae1cd78efa",
     "name": "Width",
     "value": "0",
+    "category": "other",
+    "type": "text"
+  },
+  {
+    "id": "39881cea-9d0d-4879-99ee-6ed1d4c0574d",
+    "name": "HandleBar Colour",
+    "value": "0x292424ff",
+    "category": "other",
+    "type": "text"
+  },
+  {
+    "id": "2c3b8027-a4d7-42e2-afb8-264417ee9655",
+    "name": "Number Slider",
+    "value": "0.9",
     "category": "other",
     "type": "text"
   },
@@ -449,16 +434,62 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "type": "text"
   },
   {
-    "id": "251d59ff-4c5d-4a33-94bb-31fafb7df894",
-    "name": "Crank Metallic Factor",
-    "value": "0.4",
+    "id": "28506066-d464-4837-8f7c-99d6147df434",
+    "name": "Pipe Reinforcement radius",
+    "value": "12.5",
     "category": "other",
     "type": "text"
   },
   {
-    "id": "c0a88d51-ae73-40f8-bc5d-97ccb3e605d0",
-    "name": "Crank Roughness Factor",
-    "value": "0.6",
+    "id": "cf01eb63-7d21-4c67-b27e-23f658b7140a",
+    "name": "Battery Cover Location",
+    "value": "0.406",
+    "category": "other",
+    "type": "text"
+  },
+  {
+    "id": "b6860af0-0da7-4c0e-9a4c-4e15dc378537",
+    "name": "Battery Cover Length",
+    "value": "0.352",
+    "category": "other",
+    "type": "text"
+  },
+  {
+    "id": "15f903e5-2943-4bd9-8f50-581e26f9b7fb",
+    "name": "DownTube/HeadTube",
+    "value": "0.55",
+    "category": "other",
+    "type": "text"
+  },
+  {
+    "id": "c67853c5-b724-4bfb-bb0a-f12a58aa34ee",
+    "name": "y axis scale FORK",
+    "value": "0.800",
+    "category": "other",
+    "type": "text"
+  },
+  {
+    "id": "fb34be77-f67f-4ee9-989e-c8baf24eacf1",
+    "name": "Disc Brake Mount",
+    "subCategory": "Fittings",
+    "category": "accessories",
+    "type": "grid",
+    "value": "0",
+    "options": [
+      {
+        "label": "Post Mount",
+        "value": "0"
+      },
+      {
+        "label": "Flat Mount",
+        "value": "1"
+      }
+    ]
+  },
+  {
+    "id": "593f670d-a770-4d37-84e8-f34aabdecb17",
+    "name": "Number Slider",
+    "value": "22",
     "category": "other",
     "type": "text"
   },
@@ -481,24 +512,6 @@ export const parameterDefinitions: ParameterDefinition[] = [
     ]
   },
   {
-    "id": "fb34be77-f67f-4ee9-989e-c8baf24eacf1",
-    "name": "Disc Brake Mount",
-    "subCategory": "Fittings",
-    "category": "accessories",
-    "type": "grid",
-    "value": "1",
-    "options": [
-      {
-        "label": "Post Mount",
-        "value": "0"
-      },
-      {
-        "label": "Flat Mount",
-        "value": "1"
-      }
-    ]
-  },
-  {
     "id": "6c895932-e37c-4815-88ef-9bc7ef8520b0",
     "name": "X-MatchSeatStay&TopTube",
     "value": "false",
@@ -511,13 +524,21 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "subCategory": "Rear Triangle",
     "category": "geometry",
     "type": "slider",
-    "value": "47",
+    "value": "46.4",
     "min": 45,
     "max": 75,
     "unit": "°",
     "configuratorTypes": [
-      "vulz"
+      "vulz",
+      "stepthru"
     ]
+  },
+  {
+    "id": "a25bcbe9-c9d0-4411-b856-93f2ba18b928",
+    "name": "Number Slider",
+    "value": "-29",
+    "category": "other",
+    "type": "text"
   },
   {
     "id": "fbb5d1c5-9ede-49e3-8d68-5b5a7d390ce1",
@@ -525,25 +546,21 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "subCategory": "Fork",
     "category": "accessories",
     "type": "slider",
-    "value": "35.00",
+    "value": "24.00",
     "min": 20,
     "max": 35,
     "unit": "mm"
   },
-  // {
-  //   "id": "a250e630-2572-402a-af6e-e36136793a42",
-  //   "name": "X-Fork width at axel",
-  //   "subCategory": "Fork",
-  //   "category": "accessories",
-  //   "type": "slider",
-  //   "value": "9.7",
-  //   "min": 8,
-  //   "max": 20,
-  //   "unit": "mm"
-  // },
+  {
+    "id": "a250e630-2572-402a-af6e-e36136793a42",
+    "name": "X-Fork width at axel",
+    "value": "9.7",
+    "category": "other",
+    "type": "text"
+  },
   {
     "id": "f0f25a06-82aa-4584-b4ab-2f39c4e71651",
-    "name": "Width",
+    "name": "Front Width",
     "subCategory": "Top Tube",
     "category": "tubing",
     "type": "slider",
@@ -552,22 +569,13 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "max": 40,
     "unit": "mm"
   },
-
-
-  {
-    "id": "734e8f5c-4006-47e6-b84f-61df7fb0dde2",
-    "name": "TopTube CurvePoints",
-    "value": "0,0;0.1,0.4;0.4,0.8;1,1",
-    "category": "other",
-    "type": "text"
-  },
   {
     "id": "7920797e-f807-4b15-b964-d97d9a9d58a2",
     "name": "Width",
     "subCategory": "Wheels",
     "category": "accessories",
     "type": "dropdown",
-    "value": "1",
+    "value": "7",
     "options": [
       {
         "label": "23C",
@@ -578,19 +586,25 @@ export const parameterDefinitions: ParameterDefinition[] = [
         "value": "1"
       }
     ],
-    "tag": "man"
   },
   {
-    "id": "cb15151e-0bb2-4895-b40d-3184fe772fe1",
-    "name": "Derailer Color",
-    "value": "0xa6a6a6ff",
+    "id": "734e8f5c-4006-47e6-b84f-61df7fb0dde2",
+    "name": "TopTube CurvePoints",
+    "value": "0,0;0.1,0.4;0.4,0.8;1,1",
     "category": "other",
     "type": "text"
   },
   {
-    "id": "94f3a489-2284-42b9-875d-554a28bfd7c2",
-    "name": "Rim Roughness Factor",
-    "value": "0.0",
+    "id": "b41d6573-f719-446b-b463-67046c93097f",
+    "name": "Colour Swatch",
+    "value": "0x333333ff",
+    "category": "other",
+    "type": "text"
+  },
+  {
+    "id": "cb15151e-0bb2-4895-b40d-3184fe772fe1",
+    "name": "Derailer Color",
+    "value": "0xe0e0e0ff",
     "category": "other",
     "type": "text"
   },
@@ -613,19 +627,19 @@ export const parameterDefinitions: ParameterDefinition[] = [
     ]
   },
   {
+    "id": "214ed92c-846b-4f8a-a12e-1fb437e58d5c",
+    "name": "Number Slider",
+    "value": "10",
+    "category": "other",
+    "type": "text"
+  },
+  {
     "id": "7b5d938d-b964-4f31-bd97-e36008869962",
     "name": "Color",
     "subCategory": "Wheels",
     "value": "0x262626ff",
     "category": "accessories",
     "type": "colorWithPalette"
-  },
-  {
-    "id": "a4fa915b-bbc1-47d4-8f55-5b4d71e12400",
-    "name": "Rim Roughness Factor",
-    "value": "0.0",
-    "category": "other",
-    "type": "text"
   },
   {
     "id": "7935dece-7133-4678-a77e-a3dd54c8e114",
@@ -636,7 +650,6 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "value": "21",
     "min": 10,
     "max": 50,
-    "tag": "man",
     "unit": "mm"
   },
   {
@@ -672,9 +685,37 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "value": "your name"
   },
   {
+    "id": "97090b76-9451-44de-b9d8-1dc6056ee751",
+    "name": "Number Slider",
+    "value": "1.26",
+    "category": "other",
+    "type": "text"
+  },
+  {
     "id": "3412035c-c0e0-4a92-9ab8-e8085c434195",
     "name": "X-Frame texture Size",
     "value": "806",
+    "category": "other",
+    "type": "text"
+  },
+  {
+    "id": "e593174a-549d-468a-92ab-28029f9b4ad0",
+    "name": "Number Slider",
+    "value": "15",
+    "category": "other",
+    "type": "text"
+  },
+  {
+    "id": "b4a6298a-e0d9-4d7d-bdf8-51db53a813f1",
+    "name": "SeatStay seatside Diameter",
+    "value": "24",
+    "category": "other",
+    "type": "text"
+  },
+  {
+    "id": "93d72eca-25cc-4eb1-8a95-16ee449dd01d",
+    "name": "SeatStay thickness",
+    "value": "12",
     "category": "other",
     "type": "text"
   },
@@ -713,58 +754,9 @@ export const parameterDefinitions: ParameterDefinition[] = [
     ]
   },
   {
-    "id": "b4a6298a-e0d9-4d7d-bdf8-51db53a813f1",
-    "name": "SeatStay seatside Diameter",
-    "value": "24",
-    "category": "other",
-    "type": "text"
-  },
-  {
-    "id": "93d72eca-25cc-4eb1-8a95-16ee449dd01d",
-    "name": "SeatStay thickness",
-    "value": "12",
-    "category": "other",
-    "type": "text"
-  },
-  {
-    "id": "278842f7-3407-4521-bc20-ee46abf7a298",
-    "name": "ChainStay Crankside Diameter",
-    "value": "24",
-    "category": "other",
-    "type": "text"
-  },
-  {
-    "id": "3672f35e-3592-4a50-bd73-14ab6def8e96",
-    "name": "ChainStay thickness",
-    "value": "16",
-    "category": "other",
-    "type": "text"
-  },
-  {
     "id": "7a55821d-3981-4eb8-9a4c-26b7e275e56c",
     "name": "TopTube DiameterPoints",
-    "value": "0,0;0.8,0;1,1",
-    "category": "other",
-    "type": "text"
-  },
-  {
-    "id": "d40a0688-0501-4f4a-8e32-fb9ef4a6565b",
-    "name": "Input custom pipe shape",
-    "value": "true",
-    "category": "other",
-    "type": "text"
-  },
-  {
-    "id": "46a7cae5-c553-4bf8-bb58-3b402b06f1c8",
-    "name": "DownTube width",
-    "value": "79",
-    "category": "other",
-    "type": "text"
-  },
-  {
-    "id": "c720c466-f77d-43d2-bebe-26edc370a650",
-    "name": "Import DownTube Frame Curve",
-    "value": "",
+    "value": "0,0;1,1",
     "category": "other",
     "type": "text"
   },
@@ -788,12 +780,12 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "subCategory": "Frame",
     "category": "tubing",
     "type": "color",
-    "value": "1"
+    "value": "3"
   },
   {
     "id": "206889f8-8ef2-4f95-ac06-34486923c73e",
     "name": "Tube color texture",
-    "value": "",
+    "value": "https://thumbs.dreamstime.com/b/diagonal-stripes-pattern-vector-seamless-striped-texture-abstract-monochrome-geometric-background-thin-slanted-lines-black-104236907.jpg",
     "category": "other",
     "type": "text"
   },
@@ -832,14 +824,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   {
     "id": "c1ed3412-a8ca-4b21-ba9d-cd16ac8a7021",
     "name": "HandleBar Colour",
-    "value": "0x363636ff",
-    "category": "other",
-    "type": "text"
-  },
-  {
-    "id": "2c1f868d-5b6f-4eb0-8e59-4ef5e52e2f8c",
-    "name": "HandleGrip Roughness Factor",
-    "value": "1.0",
+    "value": "0x000000ff",
     "category": "other",
     "type": "text"
   },
@@ -853,7 +838,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   {
     "id": "48c92029-20cb-4a4a-a92d-4e367075d8bf",
     "name": "Email Body for Client",
-    "value": "Hey! Thanks for using Spinlio! We have attached the 3D file of your custom bike, she's a beauty! If you have any thoughts on how we can improve Spinlio or features you'd love to see, please reach out—we'd love to hear from you. Your feedback helps us make Spinlio better for everyone. All the best, Jack & Markus - The Spinlio Team",
+    "value": "Hey,\n\nThanks for using Spinlio! We’ve attached the 3D file of your custom bike, she’s a beaut! \n\nIf you have any thoughts on how we can improve Spinlio or features you’d love to see, please reach out—we’d love to hear from you. Your feedback helps us make Spinlio better for everyone.\n\nAll the best,\nJack & Markus\nThe Spinlio Team",
     "category": "other",
     "type": "text"
   },
@@ -879,35 +864,92 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "type": "text"
   },
   {
-    "id": "91f05499-a206-4c8e-94f6-963cc7b70d39",
-    "name": "Logo Size",
-    "subCategory": "Frame",
-    "category": "tubing",
-    "type": "slider",
-    "value": "0.7",
-    "min": 0,
-    "max": 1,
-    "configuratorTypes": ["vulz"]
+    "id": "10019dde-35c8-4c62-a58b-5cc224ac1b6e",
+    "name": "Show HeadTube Logo",
+    "value": "false",
+    "category": "other",
+    "type": "text"
   },
   {
     "id": "1bd1f334-5a33-43d5-bae5-fe44fae61cda",
-    "name": "Logo Upload",
+    "name": "Import DownTube logo(png)",
     "subCategory": "Frame",
     "category": "tubing",
-    "value": "a399a762-ba8d-46b8-a66a-562c884845f4",
+    "value": "",
     "type": "logoUpload",
-    "configuratorTypes": ["vulz"]
+    "configuratorTypes": [
+      "vulz",
+      "stepthru"
+    ]
   },
   {
-    "id": "23369373-f2f8-404b-9577-e48a24d39f83",
-    "name": "Logo Position",
-    "subCategory": "Frame",
-    "category": "tubing",
+    "id": "373e9914-d7dd-40c2-9965-f296790dd30c",
+    "name": "Colour Swatch",
+    "value": "0x171717ff",
+    "category": "other",
+    "type": "text"
+  },
+  {
+    "id": "702dac9d-29a0-4ca4-b8ea-05286896fe23",
+    "name": "Colour Swatch",
+    "value": "0x333333ff",
+    "category": "other",
+    "type": "text"
+  },
+  {
+    "id": "83912dec-4ac3-4813-84a9-e9f8316536d8",
+    "name": "X axis for front TIRE",
+    "value": "0.8",
+    "category": "accessories",
+    "subCategory": "Fork",
     "type": "slider",
-    "value": "0.9",
     "min": 0,
     "max": 1,
-    "configuratorTypes": ["vulz"]
-
+    "configuratorTypes": ["stepthru"]
+  },
+  {
+    "id": "cf01eb63-7d21-4c67-b27e-23f658b7140a",
+    "name": "Battery Cover Location",
+    "category": "accessories",
+    "subCategory": "Battery",
+    "type": "slider",
+    "value": "0.4",
+    "min": 0.1,
+    "max": 0.5,
+    "configuratorTypes": ["stepthru"]
+  },
+  {
+    "id": "b6860af0-0da7-4c0e-9a4c-4e15dc378537", 
+    "name": "Battery Cover Length",
+    "category": "accessories",
+    "subCategory": "Battery",
+    "type": "slider",
+    "value": "0.35",
+    "min": 0.1,
+    "max": 0.4,
+    "configuratorTypes": ["stepthru"]
+  },
+  {
+    "id": "15f903e5-2943-4bd9-8f50-581e26f9b7fb",
+    "name": "DownTube/HeadTube",
+    "category": "accessories", 
+    "subCategory": "Battery",
+    "type": "slider",
+    "value": "0.5",
+    "min": 0,
+    "max": 1,
+    "configuratorTypes": ["stepthru"]
+  },
+  {
+    "id": "c67853c5-b724-4bfb-bb0a-f12a58aa34ee",
+    "name": "y axis scale FORK",
+    "category": "accessories",
+    "subCategory": "Fork",
+    "type": "slider", 
+    "value": "0.8",
+    "min": 0,
+    "max": 1,
+    "configuratorTypes": ["stepthru"]
   }
+
 ];

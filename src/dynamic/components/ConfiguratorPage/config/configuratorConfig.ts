@@ -19,7 +19,7 @@ export const configuratorConfigs: Record<ConfiguratorType, ConfiguratorConfig> =
   },
   stepthru: {
     ticket: '6b9c62a57b1d24dcc956f2b3733e7db753fbf961c86514338ac15873315ff081e9a3256a78ec7c03fc1a4f2de17cda33187e31b382e85dce84819896f14b62ee2bc39de188a31aae85b7e0d82f50436343d89ffda094683663a7eea2b9789f267fa6a853f7f559-5faea00e7f3b3a3665292bfa121a2f1c',
-    modelId: '9e09bfba-141f-4c01-83b2-68f879e5657d',
+    modelId: '9e104901-9480-4aaf-913a-fd34ee379ab6',
     parameterTags: ['stepthru']
   },
   bookshelf: {

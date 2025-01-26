@@ -360,7 +360,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   {
     "id": "ea2fe86c-71b3-459e-8bd3-e056db0b5e8d",
     "name": "Seat Colour",
-    "value": "0x181818ff",
+    "value": "0x262626ff",
     "category": "accessories",
     "subCategory": "Colors",
     "type": "color",
@@ -374,6 +374,18 @@ export const parameterDefinitions: ParameterDefinition[] = [
   //   "type": "text",
   //   "configuratorTypes": ["stepthru"]
   // },
+  {
+    "id": "ddfb0d82-db25-4cf7-9a76-679506641ed5",
+    "name": "Rear Tyre clearence",
+    "value": "20",
+    "category": "geometry",
+    "subCategory": "Rear Triangle", 
+    "type": "slider",
+    "min": 0,
+    "max": 30,
+    "unit": "mm",
+    "configuratorTypes": ["stepthru"]
+  },
   {
     "id": "cf01eb63-7d21-4c67-b27e-23f658b7140a",
     "name": "Battery Cover Location",
@@ -614,6 +626,15 @@ export const parameterDefinitions: ParameterDefinition[] = [
   //   "configuratorTypes": ["stepthru"]
   // },
   {
+    "id": "5e78e2c0-6da1-4568-b66a-63643ecf7fb5",
+    "name": "Colour",
+    "value": "0xeb1b1bff",
+    "category": "tubing",
+    "subCategory": "Frame",
+    "type": "color",
+    "configuratorTypes": ["stepthru"]
+  },
+  {
     "id": "93d72eca-25cc-4eb1-8a95-16ee449dd01d",
     "name": "SeatStay thickness",
     "value": "12",
@@ -680,15 +701,15 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "type": "text",
     "configuratorTypes": ["stepthru"]
   },
-  {
-    "id": "56fa370a-8b83-4bd6-9797-f1e0897faac3",
-    "name": "Frame Color",
-    "subCategory": "Frame",
-    "category": "tubing",
-    "type": "color",
-    "value": "1",
-    "configuratorTypes": ["stepthru"]
-  },
+  // {
+  //   "id": "56fa370a-8b83-4bd6-9797-f1e0897faac3",
+  //   "name": "Frame Color",
+  //   "subCategory": "Frame",
+  //   "category": "tubing",
+  //   "type": "color",
+  //   "value": "1",
+  //   "configuratorTypes": ["stepthru"]
+  // },
   {
     "id": "206889f8-8ef2-4f95-ac06-34486923c73e",
     "name": "Tube color texture",
@@ -792,7 +813,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   {
     "id": "91f05499-a206-4c8e-94f6-963cc7b70d39",
     "name": "Down Tube Logo Size",
-    "value": "1.0",
+    "value": "0.3",
     "subCategory": "Down Tube",
     "category": "tubing",
     "type": "slider",
@@ -804,16 +825,28 @@ export const parameterDefinitions: ParameterDefinition[] = [
   {
     "id": "1bd1f334-5a33-43d5-bae5-fe44fae61cda",
     "name": "Import DownTube logo(png)",
-    "value": "081df80a-6e1d-42ae-a2d9-cc31b6cd782e",
+    "value": "4f0757c2-032b-4c4b-b04b-62b2d44bda21",
     "subCategory": "Down Tube",
     "category": "tubing",
     "type": "logoUpload",
     "configuratorTypes": ["stepthru"]
   },
   {
+    "id": "a8423161-efb7-46a8-ab3a-edc8944e8ce3",
+    "name": "Position Y",
+    "value": "0.1",
+    "subCategory": "Down Tube",
+    "category": "tubing", 
+    "type": "slider",
+    "min": 0,
+    "max": 1,
+    "step": 0.01,
+    "configuratorTypes": ["stepthru"]
+  },
+  {
     "id": "23369373-f2f8-404b-9577-e48a24d39f83",
-    "name": "DownTube Logo Position",
-    "value": "0.9",
+    "name": "Position X",
+    "value": "0.8",
     "subCategory": "Down Tube",
     "category": "tubing",
     "type": "slider",

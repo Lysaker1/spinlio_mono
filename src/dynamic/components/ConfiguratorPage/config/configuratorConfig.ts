@@ -18,7 +18,7 @@ export const configuratorConfigs: Record<ConfiguratorType, ConfiguratorConfig> =
     parameterTags: ['vulz']
   },
   stepthru: {
-    ticket: '3797686225f6abb573e0c79cc10423666dbc5f80bcee82b149e3efb9ec1a23a6bd9476512c68eaec874e486ef78f085838f352aae7103c432ae9e1d4ce870b8d0567b2e5f18c24ae2f651611c341279aa72f7c5ca56d37b86fe0bc9e3f3925a2921a4360e21f70-acfd9ca327d60f5500cbb1013ca28da7',
+    ticket: '6b9c62a57b1d24dcc956f2b3733e7db753fbf961c86514338ac15873315ff081e9a3256a78ec7c03fc1a4f2de17cda33187e31b382e85dce84819896f14b62ee2bc39de188a31aae85b7e0d82f50436343d89ffda094683663a7eea2b9789f267fa6a853f7f559-5faea00e7f3b3a3665292bfa121a2f1c',
     modelId: '9e09bfba-141f-4c01-83b2-68f879e5657d',
     parameterTags: ['stepthru']
   },

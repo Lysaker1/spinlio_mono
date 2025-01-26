@@ -23,7 +23,7 @@ export const TubingPanel: React.FC<TubingPanelProps> = (props) => {
 
   // Define parameter order within each subCategory
   const parameterOrder: Record<string, string[]> = {
-    'Frame': ['Frame Color', 'Paint Finish', 'Logo Upload', 'Logo Placement'],
+    'Frame': ['Frame Color', 'Colour', 'Paint Finish', 'Logo Upload', 'Logo Placement'],
     'Top Tube': ['Shape', 'Front Width', 'Rear Width'],
     'Down Tube': ['Shape', 'Front Width', 'Rear Width']
   };

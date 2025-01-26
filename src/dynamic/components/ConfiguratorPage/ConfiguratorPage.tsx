@@ -20,7 +20,6 @@ import ShareButton from './components/Share/ShareButton';
 import SupplierButton from './components/SupplierButton/SupplierButton';
 import Sidebar from './components/Sidebar/Sidebar';
 import { bikeTemplates, BikeTemplate } from './components/Sidebar';
-import { MODEL_ID } from './components/Sidebar/bikeTemplates';
 import { SaveDesignButton } from '../../../shared/components/SaveDesignButton/SaveDesignButton';
 import { DesignStorageService } from '@shared/services/designStorage';
 import { MyDesigns } from '../../../shared/components/MyDesigns/MyDesigns';

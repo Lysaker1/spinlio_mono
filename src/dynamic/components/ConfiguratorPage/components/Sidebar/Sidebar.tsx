@@ -5,6 +5,7 @@ import { ISessionApi, IViewportApi } from '@shapediver/viewer';
 import { bikeTemplates } from './bikeTemplates';
 import { useNavigate } from 'react-router-dom';
 import { ConfiguratorType } from '@shared/types/SavedDesign';
+import { CONFIGURATOR_TYPES } from '@shared/constants/configuratorTypes';
 
 // Define BikeTemplate interface
 export interface BikeTemplate {
@@ -13,7 +14,7 @@ export interface BikeTemplate {
   name: string;
   modelStateId: string;
   parameters: Record<string, string>;
-  type: ConfiguratorType;
+  type: keyof typeof CONFIGURATOR_TYPES | Lowercase<keyof typeof CONFIGURATOR_TYPES>;
 }
 
 interface SidebarProps {
@@ -23,7 +24,7 @@ interface SidebarProps {
   setSession: (session: ISessionApi | null) => void;
   viewport: IViewportApi | null;
   setViewport: (viewport: IViewportApi | null) => void;
-  configuratorType: 'vulz' | 'default' | 'stepthru' | 'bookshelf' | 'table' | 'sofa';
+  configuratorType: ConfiguratorType;
   children?: React.ReactNode; // Add children prop
 }
 
@@ -68,8 +69,9 @@ const Sidebar: React.FC<SidebarProps> = ({
         setViewport(null);
       }
       
-      // Then navigate
-      const path = template.type === 'vulz' ? '/vulz' : '/';
+      // Then navigate based on template type
+      const path = template.type === 'vulz' ? '/vulz' : 
+                  template.type === 'stepthru' ? '/vulz/stepthru' : '/';
       navigate(path, {
         state: { designParameters: template.parameters }
       });

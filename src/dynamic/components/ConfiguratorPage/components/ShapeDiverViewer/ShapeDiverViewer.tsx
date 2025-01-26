@@ -76,13 +76,13 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
   ticket = 'fb56400eb88a6e3af0896d90b87ee69881c284ada493a0cc22023c7843443a1129d8e0ec8df7d6489976bae37c94b54c5fd1296134de1ea5bc52fb4fa92affa89e0c32f4e85ee71361521013e796a7679834f130144f49449a6b9d0fe2a2997b3eb1921ca2e614-3c83fa0e441a5e2c873f2b3f1cd9d237',
   isTransitioning = false
 }) => {
-  const initializationInProgress = useRef(false);
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
   const [showQrModal, setShowQrModal] = useState(false);
   const [internalLoading, setInternalLoading] = useState(true);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const viewportRef = useRef<IViewportApi | null>(null);
   const sessionRef = useRef<ISessionApi | null>(null);
+  const initializationInProgress = useRef(false);
 
   // Combine both loading states
   const isLoading = externalLoading || internalLoading;
@@ -104,13 +104,12 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
       initializationInProgress.current = false;
     };
 
-    // If transitioning or already initializing, cleanup
-    if (isTransitioning || initializationInProgress.current) {
-      cleanup();
-      return;
-    }
-
     const initShapeDiver = async () => {
+      // Always cleanup first
+      await cleanup();
+      
+      if (!isActive || isTransitioning) return;
+
       try {
         initializationInProgress.current = true;
         console.log('ShapeDiverViewer: Initializing...');
@@ -314,6 +313,10 @@ const ShapeDiverViewer: React.FC<ShapeDiverViewerProps> = ({
       } catch (error) {
         console.error('ShapeDiver initialization error:', error);
         await cleanup();
+      } finally {
+        if (!isActive || isTransitioning) {
+          await cleanup();
+        }
       }
     };
 

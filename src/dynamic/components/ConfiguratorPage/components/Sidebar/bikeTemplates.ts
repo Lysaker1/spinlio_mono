@@ -1,17 +1,20 @@
+import { CONFIGURATOR_TYPES } from '@shared/constants/configuratorTypes';
+
 export interface BikeTemplate {
     id: string;
     image?: string;
     name: string;
     modelStateId: string;
     parameters: Record<string, string>;
-    type: 'vulz' | 'default' | 'stepthru' | 'bookshelf' | 'table' | 'sofa';
+    type: keyof typeof CONFIGURATOR_TYPES | Lowercase<keyof typeof CONFIGURATOR_TYPES>;
   }
   
   // The model ID from your parameters
-  export const MODEL_ID = '9d6043a1-538e-4c70-8ff7-977224ec7928';
 
   // New Vulz parameters based on parameter definition v6
-export const VulzParameters = {};
+  export const VulzParameters = {};
+
+  export const StepthruParameters = {};
 
   export const CanyonParameters = {
     "7088e5a1-f07f-49c3-b1f6-98e74ae3734c": "false",
@@ -254,43 +257,44 @@ export const VulzParameters = {};
   export const bikeTemplates: BikeTemplate[] = [
     {
       id: 'vulz_e_gravel',
-      image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/Screenshot_2025-01-20_at_12.56.51_edoxbl.png',
+      image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/Screenshot_2025-01-27_at_01.42.08_x9yrka.png',
       name: 'VULZ E-Gravel',
       modelStateId: '9d74c500-e310-45bc-8c63-6dd2ee132cc6',
       parameters: VulzParameters,
-      type: 'vulz'
+      type: CONFIGURATOR_TYPES.VULZ
+    },
+    {
+      id: 'stepthru_e_gravel',
+      image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/Screenshot_2025-01-27_at_01.46.32_gfkmn5.png',
+      name: 'Step thru E-Gravel',
+      modelStateId: '9e104901-9480-4aaf-913a-fd34ee379ab6',
+      parameters: StepthruParameters,
+      type: CONFIGURATOR_TYPES.STEPTHRU
     },
     { 
         id: 'Canyon Bike',
-        image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/Canyon-bike_zitfqq.png',
+        image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/Screenshot_2025-01-27_at_01.41.22_yd8msm.png',
         name: 'Canyon Bike',
         modelStateId: '9d74c500-e310-45bc-8c63-6dd2ee132cc6',
         parameters: CanyonParameters,
-        type: 'default'
+        type: CONFIGURATOR_TYPES.DEFAULT
       },
       {
         id: 'Classic road bike',
-        image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/classic-road-bike_zmqq8b.png',
+        image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/Screenshot_2025-01-27_at_01.41.47_sbr52h.png',
         name: 'Classic road bike',
         modelStateId: '9d74c500-e310-45bc-8c63-6dd2ee132cc6',
         parameters: ClassicroadbikejsonParameters,
-        type: 'default'
-      },
-      {
-        id: 'Girls bike',
-        image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/girls-bike_j3kyi2.png',
-        name: 'Girls bike',
-        modelStateId: '9d74c500-e310-45bc-8c63-6dd2ee132cc6',
-        parameters: girlsbikejsonParameters,
-        type: 'default'
+        type: CONFIGURATOR_TYPES.DEFAULT
       },
       {
         id: 'Canyon Endurance 7',
-        image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/Canyon-bike_zitfqq.png',
+        image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/Screenshot_2025-01-27_at_01.42.32_iytpg3.png',
         name: 'Canyon Endurance 7',
-        modelStateId: '9d74e8ca-fbd2-4fae-8b88-91dd3132e316',
+        modelStateId: '9d74c500-e310-45bc-8c63-6dd2ee132cc6',
         parameters: canyonendurance7jsonParameters,
-        type: 'default'
+        type: CONFIGURATOR_TYPES.DEFAULT,
+
       }
 
 

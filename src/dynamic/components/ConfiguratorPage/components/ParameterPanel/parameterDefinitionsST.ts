@@ -376,7 +376,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   // },
   {
     "id": "ddfb0d82-db25-4cf7-9a76-679506641ed5",
-    "name": "Rear Tyre clearence",
+    "name": "Tyre Clearence",
     "value": "20",
     "category": "geometry",
     "subCategory": "Rear Triangle", 

@@ -1,7 +1,8 @@
 import React from 'react';
 import { Text, Title, Group, ActionIcon, Avatar, Button, Menu, Burger } from '@mantine/core';
-import { IconBell, IconChevronDown, IconLogout } from '@tabler/icons-react';
+import { IconBell, IconChevronDown, IconLogout, IconUser } from '@tabler/icons-react';
 import { useAuth0 } from '@auth0/auth0-react';
+import { useNavigate } from 'react-router-dom';
 import '../../Dashboard.css'
 
 interface DashboardHeaderProps {
@@ -11,6 +12,7 @@ interface DashboardHeaderProps {
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({ opened, toggle }) => {
   const { user, loginWithRedirect, isAuthenticated, logout } = useAuth0();
+  const navigate = useNavigate();
   const getInitials = (name: string): string => {
     const nameParts = name.split(' ');
     if (nameParts.length === 1) return nameParts[0][0].toUpperCase();
@@ -49,6 +51,12 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ opened, toggle }) => 
               </Menu.Target>
 
               <Menu.Dropdown>
+                <Menu.Item
+                  leftSection={<IconUser size={14} />}
+                  onClick={() => navigate('/dashboard/profile/')}
+                >
+                  My Profile
+                </Menu.Item>
                 <Menu.Item
                   color="red"
                   leftSection={<IconLogout size={14} />}

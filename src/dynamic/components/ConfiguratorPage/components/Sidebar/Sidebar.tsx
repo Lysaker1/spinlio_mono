@@ -6,6 +6,8 @@ import { bikeTemplates } from './bikeTemplates';
 import { useNavigate } from 'react-router-dom';
 import { ConfiguratorType } from '@shared/types/SavedDesign';
 import { CONFIGURATOR_TYPES } from '@shared/constants/configuratorTypes';
+import { IconArrowRight, IconBike, IconBookmarks } from '@tabler/icons-react';
+import { Button, Text } from '@mantine/core';
 
 // Define BikeTemplate interface
 export interface BikeTemplate {
@@ -38,16 +40,14 @@ const Sidebar: React.FC<SidebarProps> = ({
   configuratorType,
   children
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [activeSection, setActiveSection] = useState<'none' | 'prefabs' | 'myDesigns'>('none');
+  const [activeSection, setActiveSection] = useState<undefined | 'prefabs' | 'myDesigns'>();
   const sidebarRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
-        setIsExpanded(false);
-        setActiveSection('none');
+        setActiveSection(undefined);
       }
     };
 
@@ -78,38 +78,41 @@ const Sidebar: React.FC<SidebarProps> = ({
     } else {
       onTemplateSelect(template);
     }
-    
-    setIsExpanded(false);
   };
 
   return (
-    <div ref={sidebarRef} className={`left-sidebar ${isExpanded ? 'expanded' : ''}`}>
-      {!isExpanded && (
-        <button className="burger-menu" onClick={() => setIsExpanded(true)}>
-          <span className="burger-line"></span>
-          <span className="burger-line"></span>
-          <span className="burger-line"></span>
-        </button>
-      )}
+    <>
+      <div className="sidebar-menu">
+        <Button 
+          className={`sidebar-button ${activeSection === 'prefabs' ? 'active' : ''}`}
+          onClick={() => setActiveSection(activeSection === 'prefabs' ? undefined : 'prefabs')}
+        >
+          <IconBike size={20} />
+          <br />
+          Prefabs
+        </Button>
 
-      {isExpanded && (
-        <div className="sidebar-content">
-          <button 
-            className={`sidebar-button ${activeSection === 'prefabs' ? 'active' : ''}`}
-            onClick={() => setActiveSection(activeSection === 'prefabs' ? 'none' : 'prefabs')}
-          >
-            Prefabs
-          </button>
+        <Button 
+          className={`sidebar-button ${activeSection === 'myDesigns' ? 'active' : ''}`}
+          onClick={() => setActiveSection(activeSection === 'myDesigns' ? undefined : 'myDesigns')}
+        >
+          <IconBookmarks size={20}/>
+          <br />
+          My Designs
+        </Button>
+      </div>
 
-          <button 
-            className={`sidebar-button ${activeSection === 'myDesigns' ? 'active' : ''}`}
-            onClick={() => setActiveSection(activeSection === 'myDesigns' ? 'none' : 'myDesigns')}
-          >
-            My Designs
-          </button>
-
-          {activeSection === 'prefabs' && (
-            <div className={`template-container ${activeSection === 'prefabs' ? 'visible' : ''}`}>
+      {activeSection && (
+      <div className="expanded-sidebar-content">
+        {activeSection === 'prefabs' && (
+            <div className={`template-container`}>
+              <div className="template-container-header">
+                <Text className="template-container-title">Prefabs</Text>
+                <button className="view-all-button" onClick={() => navigate('/dashboard/prefabs')}>
+                  View All
+                  <IconArrowRight size={20} />
+                </button>
+              </div>
               {bikeTemplates.map((template) => (
                 <button
                   key={template.id}
@@ -131,17 +134,15 @@ const Sidebar: React.FC<SidebarProps> = ({
             </div>
           )}
 
-          {activeSection === 'myDesigns' && (
-            <div className={`template-container ${activeSection === 'myDesigns' ? 'visible' : ''}`}>
+        {activeSection === 'myDesigns' && (
               <MyDesigns 
                 onSelect={onDesignSelect}
                 currentConfiguratorType={configuratorType}
               />
-            </div>
           )}
         </div>
       )}
-    </div>
+    </>
   );
 };
 

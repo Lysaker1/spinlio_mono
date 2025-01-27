@@ -27,23 +27,19 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
   const isMobile = useMediaQuery('(max-width: 768px)');
   
   // Determine if this is the frame color parameter
-  const isFrameColor = definition.name.toLowerCase().includes('frame');
+  const isFrameColor = definition.id === '56fa370a-8b83-4bd6-9797-f1e0897faac3';
   const showColorWheel = !isFrameColor;
 
-  // Handle value formatting based on parameter type
-  const normalizedValue = isFrameColor 
-    ? value // Keep numeric value for frame color
-    : (value && value.startsWith('0x'))
-      ? '#' + value.substring(2, 8)
-      : value || '#000000';
+  // For frame color, use the numeric value directly
+  const normalizedValue = isFrameColor ? value : (value.startsWith('0x') ? '#' + value.substring(2, 8) : value);
 
   const handleColorChange = (newColor: string, isCustomColor: boolean = false) => {
     if (isFrameColor) {
       // For frame color, pass the numeric value directly
       onChange(newColor, definition);
     } else {
-      // For wheel color, handle hex values
-      const shapeDiverColor = newColor.startsWith('#')
+      // For other colors, convert to ShapeDiver format
+      const shapeDiverColor = newColor.startsWith('#') 
         ? '0x' + newColor.substring(1) + 'ff'
         : newColor;
       

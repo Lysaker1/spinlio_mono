@@ -6,6 +6,7 @@ const Prefabs = lazy(() => import('../pages/Prefabs/Prefabs'));
 const Designs = lazy(() => import('../pages/Designs/Designs'));
 const Uploads = lazy(() => import('../pages/Uploads/Uploads'));
 const Orders = lazy(() => import('../pages/Orders/Orders'));
+const ProfilePage = lazy(() => import('../pages/ProfilePage/ProfilePage'));
 
 const DashboardRoutes: React.FC = () => {
   return (
@@ -16,6 +17,8 @@ const DashboardRoutes: React.FC = () => {
         <Route path="designs" element={<Designs />} />
         <Route path="uploads" element={<Uploads />} />
         <Route path="orders" element={<Orders />} />
+        <Route path="profile" element={<ProfilePage />} />
+        <Route path="profile/:id" element={<ProfilePage />} />
       </Routes>
     </Dashboard>
   );

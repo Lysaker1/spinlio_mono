@@ -1,0 +1,24 @@
+.profile-sidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  text-align: center;
+  padding: 1rem 0.5rem;
+  gap: 1rem;
+}
+
+.profile-sidebar-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  text-align: center;
+  gap: 0.5rem;
+}
+
+.profile-sidebar-content {
+  gap: 0.5rem;
+}

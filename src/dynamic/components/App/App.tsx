@@ -1,6 +1,6 @@
 // Import necessary components and utilities for the app
 import React, { lazy, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, Outlet } from 'react-router-dom';
 import { MantineProvider } from '@mantine/core';
 import { theme } from '../../../shared/theme';
 import { Footer, Header } from '../../../shared/components';
@@ -41,6 +41,12 @@ const VulzConfigurator = lazy(() =>
   }))
 );
 
+const DashboardRoutes = lazy(() => 
+  import('../dashboard/routes/DashboardRoutes').then(module => ({
+    default: module.default
+  }))
+);
+
 const StepThruConfigurator = lazy(() => 
   import('../ConfiguratorPage/variants/StepThruConfigurator/StepThruConfigurator')
 );
@@ -66,6 +72,7 @@ const AppContent: React.FC = () => {
                              location.pathname.includes('/bookshelf') ||
                              location.pathname.includes('/sofa') ||
                              location.pathname.includes('/table');
+  const isDashboardRoute = location.pathname.startsWith('/dashboard');
 
   useEffect(() => {
     pageView(location.pathname + location.search);
@@ -73,6 +80,18 @@ const AppContent: React.FC = () => {
 
   if (isMobile && isConfiguratorRoute) {
     return <MobileWarning />;
+  }
+
+  if (isDashboardRoute) {
+    return (
+      <Routes>
+        <Route path="/dashboard/*" element={
+          <React.Suspense fallback={<div className="loading-placeholder" />}>
+            <DashboardRoutes />
+          </React.Suspense>
+        } />
+      </Routes>
+    )
   }
 
   return (
@@ -173,7 +192,7 @@ const AppContent: React.FC = () => {
               </React.Suspense>
             } 
           />
-          <Route path="/callback" element={<Navigate to="/" replace />} />
+          <Route path="/callback" element={<Navigate to="/" replace />} />         
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </main>

@@ -1,9 +1,8 @@
 const cluster = require('cluster');
-const numCPUs = process.env.WEB_CONCURRENCY || 2; // Let Heroku decide worker count
-
+const os = require('os');
+const numCPUs = Math.min(os.cpus().length, process.env.WEB_CONCURRENCY || 2);
 
 if (cluster.isPrimary) {
-  const port = process.env.PORT || 3000;
   console.log(`Primary ${process.pid} is running`);
 
   // Fork workers
@@ -11,7 +10,7 @@ if (cluster.isPrimary) {
     cluster.fork();
   }
 
-  // Improve worker management
+  // Worker management
   cluster.on('exit', (worker, code, signal) => {
     console.log(`Worker ${worker.process.pid} died (${signal || code}). Restarting...`);
     cluster.fork();
@@ -21,14 +20,17 @@ if (cluster.isPrimary) {
     console.log(`Worker ${worker.process.pid} is online`);
   });
 
-  // Add graceful shutdown
-  process.on('SIGTERM', () => {
-    console.log('SIGTERM received. Shutting down gracefully...');
+  // Graceful shutdown for primary
+  const shutdown = () => {
+    console.log('SIGTERM/SIGINT received. Shutting down gracefully...');
     for (const id in cluster.workers) {
       cluster.workers[id].process.kill('SIGTERM');
     }
-    process.exit(0);
-  });
+    setTimeout(() => process.exit(0), 5000); // Allow time for workers to shut down
+  };
+
+  process.on('SIGTERM', shutdown);
+  process.on('SIGINT', shutdown);
 } else {
   const app = require('./server.js')();
   const port = process.env.PORT || 3000;

@@ -1,4 +1,4 @@
-export type ConfiguratorType = 'default' | 'vulz';
+export type ConfiguratorType = 'default' | 'vulz' | 'stepthru' | 'bookshelf' | 'table' | 'sofa';
 
 export interface SavedDesign {
   id: string;
@@ -6,7 +6,7 @@ export interface SavedDesign {
   user_id: string;
   description: string;
   parameters: Record<string, any>;
-  configurator_type: 'default' | 'vulz';
+  configurator_type: ConfiguratorType;
   thumbnail_url: string | null;
   created_at: string;
   is_deleted?: boolean;

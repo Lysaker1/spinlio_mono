@@ -59,15 +59,14 @@ Stats: ${Object.keys(matchingParameters).length} parameters matched
 
 describe('Template Parameter Extraction', () => {
   test('Extract matching parameters from canyon bike', () => {
-    console.log(extractTemplateParameters('Canyon-bike.json')); // Add .json extension here
+    console.log(extractTemplateParameters('stepthru.json')); // Add .json extension here
   });
 });
-
-describe('Template Parameter Extraction', () => {
-  test('Extract matching parameters from classic road bike', () => {
-    console.log(extractTemplateParameters('bike-o1-r09-v24.json')); // Add .json extension here
-  });
-});
+// describe('Template Parameter Extraction', () => {
+//   test('Extract matching parameters from classic road bike', () => {
+//     console.log(extractTemplateParameters('bike-o1-r09-v24.json')); // Add .json extension here
+//   });
+// });
 
 // describe('Template Parameter Extraction', () => {
 //   test('Extract matching parameters from girls bike', () => {

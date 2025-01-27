@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { MyDesigns } from '@shared/components/MyDesigns/MyDesigns';
 import './Sidebar.css';
-import { ISessionApi } from '@shapediver/viewer';
+import { ISessionApi, IViewportApi } from '@shapediver/viewer';
 import { bikeTemplates } from './bikeTemplates';
 import { useNavigate } from 'react-router-dom';
+import { ConfiguratorType } from '@shared/types/SavedDesign';
+import { CONFIGURATOR_TYPES } from '@shared/constants/configuratorTypes';
 
 // Define BikeTemplate interface
 export interface BikeTemplate {
@@ -12,14 +14,17 @@ export interface BikeTemplate {
   name: string;
   modelStateId: string;
   parameters: Record<string, string>;
-  type: 'vulz' | 'default';
+  type: keyof typeof CONFIGURATOR_TYPES | Lowercase<keyof typeof CONFIGURATOR_TYPES>;
 }
 
 interface SidebarProps {
   onTemplateSelect: (template: BikeTemplate) => void;
   onDesignSelect: (parameters: Record<string, any>) => void;
   session: ISessionApi | null;
-  configuratorType: 'vulz' | 'default';
+  setSession: (session: ISessionApi | null) => void;
+  viewport: IViewportApi | null;
+  setViewport: (viewport: IViewportApi | null) => void;
+  configuratorType: ConfiguratorType;
   children?: React.ReactNode; // Add children prop
 }
 
@@ -27,6 +32,9 @@ const Sidebar: React.FC<SidebarProps> = ({
   onTemplateSelect, 
   onDesignSelect,
   session,
+  setSession,
+  viewport,
+  setViewport,
   configuratorType,
   children
 }) => {
@@ -51,13 +59,23 @@ const Sidebar: React.FC<SidebarProps> = ({
     e.stopPropagation();
     
     if (template.type !== configuratorType) {
-      // Redirect to appropriate configurator
-      const path = template.type === 'vulz' ? '/vulz' : '/';
+      // First, cleanup existing session
+      if (session) {
+        session.close();
+        setSession(null);
+      }
+      if (viewport) {
+        viewport.close();
+        setViewport(null);
+      }
+      
+      // Then navigate based on template type
+      const path = template.type === 'vulz' ? '/vulz' : 
+                  template.type === 'stepthru' ? '/vulz/stepthru' : '/';
       navigate(path, {
         state: { designParameters: template.parameters }
       });
     } else {
-      // Same configurator type, just apply the template
       onTemplateSelect(template);
     }
     

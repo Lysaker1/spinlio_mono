@@ -2,6 +2,8 @@ import React from 'react';
 import { Text, TextInput, Pagination } from '@mantine/core';
 import { IconArrowBarToLeft, IconArrowBarToRight, IconSearch } from '@tabler/icons-react';
 import '../../Dashboard.css'
+import { AuthenticatedFeature } from '@shared/components/AuthenticatedFeature/AuthenticatedFeature';
+import { useAuth0 } from '@auth0/auth0-react';
 
 interface PageLayoutProps {
   title: string;
@@ -20,6 +22,20 @@ const PageLayout: React.FC<PageLayoutProps> = ({
   onPageChange,
   onSearch,
 }) => {
+  const { isAuthenticated } = useAuth0();
+
+  const unauthenticatedPages = ["/dashboard/prefabs"] //  Pages that not require authentication
+
+  if (!isAuthenticated && !unauthenticatedPages.includes(window.location.pathname)) {
+    return (
+      <div className="page-container">
+        <AuthenticatedFeature>
+          Log in to visit this page
+        </AuthenticatedFeature>
+      </div>
+    )
+  }
+
   return (
     <div className="page-container">
       <div className="page-header">

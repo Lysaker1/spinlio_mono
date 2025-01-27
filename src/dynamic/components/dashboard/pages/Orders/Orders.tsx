@@ -5,7 +5,7 @@ import PageLayout from '../../components/PageLayout/PageLayout';
 const Orders: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
-
+  
   const handleSearch = (query: string) => {
     setSearchQuery(query);
   };

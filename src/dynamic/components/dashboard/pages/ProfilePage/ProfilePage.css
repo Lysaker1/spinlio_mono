@@ -1,0 +1,11 @@
+.profile-page-content {
+  padding: 20px 40px;
+  width: 100%;
+  min-height: calc(100vh - 60px);
+  background-color: white;
+}
+
+.profile-subpage-content {
+  padding: 20px 0;
+  width: 100%;
+}

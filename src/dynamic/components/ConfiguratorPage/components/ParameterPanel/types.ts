@@ -10,7 +10,7 @@ export interface ParameterPanelProps {
   session: ISessionApi | null;
   // ShapeDiver viewport API instance, can be null if not initialized
   viewport: IViewportApi | null;
-  configuratorType: 'default' | 'vulz' | 'stepthru' | 'bookshelf' | 'table' | 'sofa'; // Add this line
+  configuratorType: 'default' | 'vulz' | 'stepthru' | 'bookshelf' | 'table' | 'sofa' | 'urban'; // Add this line
 
 }
 

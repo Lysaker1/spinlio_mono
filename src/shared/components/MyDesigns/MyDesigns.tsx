@@ -3,9 +3,9 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { useNavigate } from 'react-router-dom';
 import { DesignStorageService } from '../../services/designStorage';
 import { SavedDesign } from '../../types/SavedDesign';
-import './MyDesigns.css';
 import { AuthenticatedFeature } from '../../components/AuthenticatedFeature/AuthenticatedFeature';
-import { IconCheck, IconX } from '@tabler/icons-react';
+import { IconArrowRight, IconCheck, IconDotsVertical, IconX } from '@tabler/icons-react';
+import { Text, Title } from '@mantine/core';
 
 interface MyDesignsProps {
   onSelect: (parameters: Record<string, any>) => void;
@@ -30,51 +30,6 @@ const DesignMenu: React.FC<DesignMenuProps> = ({
   onDelete
 }) => {
   const menuRef = useRef<HTMLDivElement>(null);
-  const [position, setPosition] = useState({ top: 0, left: 0 });
-
-  const updatePosition = useCallback(() => {
-    if (cardRef.current && menuRef.current) {
-      const cardRect = cardRef.current.getBoundingClientRect();
-      const menuRect = menuRef.current.getBoundingClientRect();
-      
-      // Calculate centered position
-      let left = cardRect.left + (cardRect.width - menuRect.width) / 2;
-      let top = cardRect.top + (cardRect.height - menuRect.height) / 2;
-      
-      // Adjust if menu goes outside viewport
-      const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
-      
-      // Prevent right overflow
-      if (left + menuRect.width > viewportWidth) {
-        left = viewportWidth - menuRect.width - 16; // 16px padding from viewport edge
-      }
-      
-      // Prevent left overflow
-      if (left < 16) {
-        left = 16;
-      }
-      
-      // Prevent bottom overflow
-      if (top + menuRect.height > viewportHeight) {
-        top = viewportHeight - menuRect.height - 16;
-      }
-      
-      // Prevent top overflow
-      if (top < 16) {
-        top = 16;
-      }
-      
-      setPosition({ top, left });
-    }
-  }, [cardRef]);
-
-  // Update position on mount and window resize
-  useEffect(() => {
-    updatePosition();
-    window.addEventListener('resize', updatePosition);
-    return () => window.removeEventListener('resize', updatePosition);
-  }, [updatePosition]);
 
   // Handle click outside
   useEffect(() => {
@@ -237,43 +192,41 @@ export const MyDesigns: React.FC<MyDesignsProps> = ({ onSelect, currentConfigura
     }
   };
 
-  const DeleteConfirmation: React.FC<{
-    onConfirm: () => void;
-    onCancel: () => void;
-  }> = ({ onConfirm, onCancel }) => (
-    <div className="delete-confirmation">
-      <p>Are you sure you want to delete this design?</p>
-      <div className="delete-actions">
-        <button onClick={onConfirm}>Yes</button>
-        <button onClick={onCancel}>No</button>
-      </div>
-    </div>
-  );
-
   return (
     <AuthenticatedFeature>
-      <div className="designs-container">
-        <div className="designs-grid">
-          {isLoading ? (
-            <div className="designs-loading">
-              <img 
-                src="https://res.cloudinary.com/da8qnqmmh/image/upload/e_bgremoval/WhatsApp_GIF_2025-01-15_at_12.36.33_tupvgo.gif"
-                alt="Loading designs"
-                className="loading-gif"
-              />
+      <div className="template-container">
+        {isLoading ? (
+          <div className="designs-loading">
+            <img 
+              src="https://res.cloudinary.com/da8qnqmmh/image/upload/e_bgremoval/WhatsApp_GIF_2025-01-15_at_12.36.33_tupvgo.gif"
+              alt="Loading designs"
+              className="loading-gif"
+            />
+          </div>
+        ) : (
+          designs.length === 0 ? (
+            <div className="no-designs">
+              <Title order={3}>No designs found</Title>
+              <Text>Create your first design by clicking the save button</Text>
             </div>
           ) : (
-            designs.map((design) => {
-              const isEditing = editingDesign?.id === design.id;
-              const isMenuOpen = activeMenu === design.id;
+          <>
+            <div className="template-container-header">
+              <Text className="template-container-title">My Designs</Text>
+              <button className="view-all-button" onClick={() => navigate('/dashboard/designs')}>
 
+              </button>
+            </div>
+            {designs.map((design) => {
+              const isEditing = editingDesign?.id === design.id;
+              const isMenuOpen = activeMenu === design.id;          
             return (
               <div 
                 key={design.id} 
-                className="design-card" 
+                className="template-button" 
                 onClick={() => handleDesignSelect(design)}
               >
-                <div className="design-thumbnail">
+                <div className="template-image-container">
                   {design.thumbnail_url ? (
                     <img
                       src={design.thumbnail_url}
@@ -286,7 +239,7 @@ export const MyDesigns: React.FC<MyDesignsProps> = ({ onSelect, currentConfigura
                 </div>
 
                 {design.thumbnail_url && (
-                  <div className="design-name">
+                  <div className="template-name">
                     {design.name}
                   </div>
                 )}
@@ -298,7 +251,7 @@ export const MyDesigns: React.FC<MyDesignsProps> = ({ onSelect, currentConfigura
                     setActiveMenu(isMenuOpen ? null : design.id);
                   }}
                 >
-                  ⋮
+                  <IconDotsVertical size={16} />
                 </button>
 
                 {isMenuOpen && (
@@ -362,8 +315,10 @@ export const MyDesigns: React.FC<MyDesignsProps> = ({ onSelect, currentConfigura
                 )}
               </div>
             );
-          }))}
-        </div>
+            })}
+          </>
+          )
+        )}
       </div>
     </AuthenticatedFeature>
   );

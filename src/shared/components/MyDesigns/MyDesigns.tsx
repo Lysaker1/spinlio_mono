@@ -214,8 +214,7 @@ export const MyDesigns: React.FC<MyDesignsProps> = ({ onSelect, currentConfigura
             <div className="template-container-header">
               <Text className="template-container-title">My Designs</Text>
               <button className="view-all-button" onClick={() => navigate('/dashboard/designs')}>
-                View All
-                <IconArrowRight size={20} />
+
               </button>
             </div>
             {designs.map((design) => {

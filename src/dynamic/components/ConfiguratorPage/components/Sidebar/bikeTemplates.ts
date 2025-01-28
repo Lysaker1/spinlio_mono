@@ -284,7 +284,7 @@ export interface BikeTemplate {
       {
         id: 'Urban Bike',
         image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/Screenshot_2025-01-27_at_01.42.32_iytpg3.png',
-        name: 'Urban Bike',
+        name: 'Urban E-Bike',
         modelStateId: '9d74c500-e310-45bc-8c63-6dd2ee132cc6',
         parameters: UrbanParameters,
         type: CONFIGURATOR_TYPES.URBAN

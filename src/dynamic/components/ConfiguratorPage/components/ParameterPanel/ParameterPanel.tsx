@@ -18,6 +18,7 @@ import { parameterDefinitions as parameterDefinitionsFurniture } from './paramet
 import { parameterDefinitions as parameterDefinitionsTable } from './parameterDefinitionsTable';
 import { parameterDefinitions as parameterDefinitionsSofa } from './parameterDefinitionsSofa';
 import { parameterDefinitions as parameterDefinitionsST } from './parameterDefinitionsST';
+import { parameterDefinitions as parameterDefinitionsUrban } from './parameterDefinitionsUrban';
 
 // Import hook to detect mobile screen size
 import { useMediaQuery } from '@mantine/hooks';
@@ -124,6 +125,9 @@ export const ParameterPanel: React.FC<ParameterPanelProps> = ({
         break;
       case 'stepthru':
         definitions = parameterDefinitionsST;
+        break;
+      case 'urban':
+        definitions = parameterDefinitionsUrban;
         break;
       default:
         definitions = parameterDefinitionsBike;

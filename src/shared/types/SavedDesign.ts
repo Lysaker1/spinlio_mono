@@ -1,4 +1,4 @@
-export type ConfiguratorType = 'default' | 'vulz' | 'stepthru' | 'bookshelf' | 'table' | 'sofa';
+export type ConfiguratorType = 'default' | 'vulz' | 'stepthru' | 'bookshelf' | 'table' | 'sofa' | 'urban';
 
 export interface SavedDesign {
   id: string;

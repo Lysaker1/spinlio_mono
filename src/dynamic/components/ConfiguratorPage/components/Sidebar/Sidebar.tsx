@@ -71,7 +71,9 @@ const Sidebar: React.FC<SidebarProps> = ({
       
       // Then navigate based on template type
       const path = template.type === 'vulz' ? '/vulz' : 
-                  template.type === 'stepthru' ? '/vulz/stepthru' : '/';
+                  template.type === 'stepthru' ? '/vulz/stepthru' :
+                  template.type === 'urban' ? '/vulz/urban' :
+                  '/';
       navigate(path, {
         state: { designParameters: template.parameters }
       });

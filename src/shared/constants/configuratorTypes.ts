@@ -4,7 +4,8 @@ export const CONFIGURATOR_TYPES = {
   STEPTHRU: 'stepthru',
   BOOKSHELF: 'bookshelf',
   TABLE: 'table',
-  SOFA: 'sofa'
+  SOFA: 'sofa',
+  URBAN: 'urban'
 } as const;
 
 export type ConfiguratorType = typeof CONFIGURATOR_TYPES[keyof typeof CONFIGURATOR_TYPES]; 

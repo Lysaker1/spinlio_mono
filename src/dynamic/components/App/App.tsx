@@ -45,6 +45,10 @@ const StepThruConfigurator = lazy(() =>
   import('../ConfiguratorPage/variants/StepThruConfigurator/StepThruConfigurator')
 );
 
+const UrbanConfigurator = lazy(() => 
+  import('../ConfiguratorPage/variants/UrbanConfigurator/UrbanConfigurator')
+);
+
 const BookshelfConfigurator = lazy(() => 
   import('../ConfiguratorPage/variants/BookshelfConfigurator/BookshelfConfigurator')
 );
@@ -63,6 +67,8 @@ const AppContent: React.FC = () => {
   const isConfiguratorRoute = location.pathname === '/' || 
                              location.pathname.includes('/configurator') ||
                              location.pathname.includes('/vulz') ||
+                             location.pathname.includes('/stepthru') ||
+                             location.pathname.includes('/urban') ||
                              location.pathname.includes('/bookshelf') ||
                              location.pathname.includes('/sofa') ||
                              location.pathname.includes('/table');
@@ -128,6 +134,14 @@ const AppContent: React.FC = () => {
             element={
               <React.Suspense fallback={<div className="loading-placeholder" />}>
                 <StepThruConfigurator />
+              </React.Suspense>
+            } 
+          />
+          <Route 
+            path="/vulz/urban" 
+            element={
+              <React.Suspense fallback={<div className="loading-placeholder" />}>
+                <UrbanConfigurator />
               </React.Suspense>
             } 
           />

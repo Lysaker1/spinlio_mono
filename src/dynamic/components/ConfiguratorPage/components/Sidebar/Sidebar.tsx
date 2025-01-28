@@ -109,8 +109,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               <div className="template-container-header">
                 <Text className="template-container-title">Prefabs</Text>
                 <button className="view-all-button" onClick={() => navigate('/dashboard/prefabs')}>
-                  View All
-                  <IconArrowRight size={20} />
+
                 </button>
               </div>
               {bikeTemplates.map((template) => (

@@ -1,5 +1,5 @@
 import { describe, expect, test } from '@jest/globals';
-import { parameterDefinitions } from '../parameterDefinitionsST';
+import { parameterDefinitions } from '../parameterDefinitionsUrban';
 import { ParameterDefinition } from '../types';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -15,51 +15,23 @@ interface ExternalConfig {
   parameters: ExternalParameter[];
 }
 
-// Helper function to extract all parameters including commented ones
-function getAllParameterDefinitions(filePath: string): ParameterDefinition[] {
-  const content = fs.readFileSync(filePath, 'utf8');
-  const parameterBlocks = content.match(/\/\/ \{[\s\S]*?\}|{[\s\S]*?}/g) || [];
-  
-  return parameterBlocks
-    .map(block => {
-      // Remove comment markers if present
-      const cleanBlock = block.replace(/\/\/ /g, '');
-      try {
-        return JSON.parse(cleanBlock);
-      } catch (e) {
-        return null;
-      }
-    })
-    .filter((param): param is ParameterDefinition => 
-      param !== null && 
-      typeof param === 'object' &&
-      'id' in param &&
-      'name' in param
-    );
-}
-
-describe('Stepthru Parameter Validation', () => {
-  test('Compare external stepthru parameters with definitions', () => {
+describe('Urban Parameter Validation', () => {
+  test('Compare external urban parameters with active definitions', () => {
     // Read and parse the external JSON file
     const externalJson = JSON.parse(
       fs.readFileSync(
-        path.join(__dirname, '../__fixtures__/stepthru3.json'),
+        path.join(__dirname, '../__fixtures__/urban.json'),
         'utf8'
       )
     ) as ExternalConfig;
 
-    // Get all parameter definitions including commented ones
-    const allParameterDefinitions = getAllParameterDefinitions(
-      path.join(__dirname, '../parameterDefinitionsST.ts')
-    );
-
     const output: string[] = [];
-    output.push('\n🔍 Stepthru Parameter Analysis');
+    output.push('\n🔍 Urban Parameter Analysis');
     output.push('============================');
 
     // Create maps for easier lookup
     const definedParams = new Map(
-      allParameterDefinitions.map(p => [p.id, p])
+      parameterDefinitions.map(p => [p.id, p])
     );
     
     const externalParams = new Map(
@@ -69,16 +41,14 @@ describe('Stepthru Parameter Validation', () => {
     // Statistics
     const stats = {
       totalExternalParams: externalJson.parameters.length,
-      totalDefinedParams: allParameterDefinitions.length,
-      activeDefinedParams: parameterDefinitions.length,
-      commentedOutParams: allParameterDefinitions.length - parameterDefinitions.length,
+      totalDefinedParams: parameterDefinitions.length,
       nameMismatches: 0,
       valueMismatches: 0,
       missingInDefinitions: 0,
       missingInJson: 0
     };
 
-    // Check parameters in JSON against definitions
+    // Check parameters in JSON against active definitions
     externalJson.parameters.forEach(externalParam => {
       const definedParam = definedParams.get(externalParam.id);
       
@@ -100,7 +70,7 @@ describe('Stepthru Parameter Validation', () => {
         }
       } else {
         stats.missingInDefinitions++;
-        output.push(`\n❌ Parameter in JSON but missing in definitions:`);
+        output.push(`\n❌ Parameter in JSON but missing in active definitions:`);
         output.push(`   Name: "${externalParam.name}"`);
         output.push(`   ID: ${externalParam.id}`);
         output.push(`   Value: ${externalParam.value}`);
@@ -108,23 +78,20 @@ describe('Stepthru Parameter Validation', () => {
     });
 
     // Check for parameters in definitions but not in JSON
-    allParameterDefinitions.forEach(definedParam => {
+    parameterDefinitions.forEach(definedParam => {
       if (!externalParams.has(definedParam.id)) {
         stats.missingInJson++;
         output.push(`\n⚠️ Parameter in definitions but missing in JSON:`);
         output.push(`   Name: "${definedParam.name}"`);
         output.push(`   ID: ${definedParam.id}`);
         output.push(`   Default value: ${definedParam.value}`);
-        output.push(`   Status: ${parameterDefinitions.some(p => p.id === definedParam.id) ? 'Active' : 'Commented Out'}`);
       }
     });
 
     // Output summary
     output.push('\n📈 Summary:');
     output.push(`Total parameters in JSON: ${stats.totalExternalParams}`);
-    output.push(`Total parameters in definitions: ${stats.totalDefinedParams}`);
-    output.push(`Active parameters: ${stats.activeDefinedParams}`);
-    output.push(`Commented out parameters: ${stats.commentedOutParams}`);
+    output.push(`Total active parameters in definitions: ${stats.totalDefinedParams}`);
     output.push(`Name mismatches: ${stats.nameMismatches}`);
     output.push(`Value mismatches: ${stats.valueMismatches}`);
     output.push(`Missing in definitions: ${stats.missingInDefinitions}`);
@@ -133,8 +100,8 @@ describe('Stepthru Parameter Validation', () => {
     // Print all output
     console.log(output.join('\n'));
 
-    // Basic assertions to ensure test runs properly
+    // Basic assertions
     expect(stats.totalExternalParams).toBeGreaterThan(0);
     expect(stats.totalDefinedParams).toBeGreaterThan(0);
   });
-}); 
+});

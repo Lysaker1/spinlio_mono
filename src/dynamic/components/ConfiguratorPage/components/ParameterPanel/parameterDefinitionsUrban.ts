@@ -7,7 +7,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   //   "value": "false",
   //   "category": "other",
   //   "type": "text",
-  //   "configuratorTypes": ["stepthru"]
+  //   "configuratorTypes": ["urban"]
   // },
   // {
   //   "id": "3577beb2-7946-4e3f-9549-9d43be77f27c", 
@@ -15,9 +15,17 @@ export const parameterDefinitions: ParameterDefinition[] = [
   //   "value": "true",
   //   "category": "other",
   //   "type": "text",
-  //   "configuratorTypes": ["stepthru"]
+  //   "configuratorTypes": ["urban"]
   // },
-  
+  {
+    "id": "818e483f-9099-4687-86c6-87637c511afc",
+    "name": "Colour",
+    "subCategory": "Frame",
+    "value": "0xcfcfcfff",
+    "category": "tubing",
+    "type": "color",
+    "configuratorTypes": ["urban"]
+  },
   {
     "id": "d1f726c0-fb21-4f15-8f11-06ba73e0f3a9",
     "name": "Bottom Bracket Drop",
@@ -28,46 +36,46 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "min": 65,
     "max": 75,
     "unit": "mm",
-    "configuratorTypes": ["stepthru"]
+    "configuratorTypes": ["urban"]
   },
   {
     "id": "c4d4c978-5b58-49ce-a567-739894dc5d36",
     "name": "Rear Width",
-    "value": "48",
+    "value": "50",
     "category": "other",
     "type": "text",
-    "configuratorTypes": ["stepthru"]
+    "configuratorTypes": ["urban"]
   },
-  // {
-  //   "id": "972de871-83ed-4243-9510-f4c2ab3228a3",
-  //   "name": "Wheel Spacing",
-  //   "category": "accessories", 
-  //   "type": "dropdown",
-  //   "subCategory": "Fork",
-  //   "value": "1",
-  //   "options": [
-  //     {
-  //       "label": "110mm",
-  //       "value": "0"
-  //     },
-  //     {
-  //       "label": "100mm", 
-  //       "value": "1"
-  //     }
-  //   ],
-  //   "configuratorTypes": ["stepthru"]
-  // },
+  {
+    "id": "972de871-83ed-4243-9510-f4c2ab3228a3",
+    "name": "Wheel Spacing",
+    "category": "accessories", 
+    "type": "dropdown",
+    "subCategory": "Fork",
+    "value": "1",
+    "options": [
+      {
+        "label": "110mm",
+        "value": "0"
+      },
+      {
+        "label": "100mm", 
+        "value": "1"
+      }
+    ],
+    "configuratorTypes": ["urban"]
+  },
   {
     "id": "815b0eaf-cd38-4638-8bde-5f6ac27739d0",
     "name": "Chain Stay Length",
-    "value": "460",
+    "value": "450",
     "category": "geometry",
     "subCategory": "Rear Triangle",
     "type": "slider",
     "min": 420,
     "max": 500,
     "unit": "mm",
-    "configuratorTypes": ["stepthru"]
+    "configuratorTypes": ["urban"]
   },
   {
     "id": "beff3154-f6bd-494e-998b-13f9660e9506",
@@ -75,11 +83,11 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "category": "geometry",
     "subCategory": "Seat Tube",
     "type": "slider",
-    "value": "483",
-    "min": 450,
+    "value": "540",
+    "min": 500,
     "max": 620,
     "unit": "mm",
-    "configuratorTypes": ["stepthru"]
+    "configuratorTypes": ["urban"]
   },
   {
     "id": "6eac979f-e146-4021-8439-0cf495cf0431",
@@ -98,19 +106,31 @@ export const parameterDefinitions: ParameterDefinition[] = [
         "value": "1"
       }
     ],
-    "configuratorTypes": ["stepthru"]
+    "configuratorTypes": ["urban"]
+  },
+  {
+    "id": "eea4374e-a513-4f61-924a-f8175351fa8b",
+    "name": "Stack Height",
+    "category": "geometry", 
+    "subCategory": "Head Tube",
+    "type": "slider",
+    "value": "560",
+    "min": 500,
+    "max": 600,
+    "unit": "mm",
+    "configuratorTypes": ["urban"]
   },
   {
     "id": "64ecfdab-39bb-4d5c-a11d-b98690404bf9",
     "name": "Length",
     "category": "tubing",
-    "subCategory": "Down Tube",
+    "subCategory": "Top Tube",
     "type": "slider",
-    "value": "621.00",
-    "min": 600,
+    "value": "630.00",
+    "min": 590,
     "max": 700,
     "unit": "mm",
-    "configuratorTypes": ["stepthru"]
+    "configuratorTypes": ["urban"]
   },
   {
     "id": "98f0a457-b4e5-44ea-8e55-8577941d49ad",
@@ -118,11 +138,11 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "category": "geometry",
     "subCategory": "Head Tube",
     "type": "slider",
-    "value": "70.0",
+    "value": "70.6",
     "min": 65,
-    "max": 70,
+    "max": 74,
     "unit": "°",
-    "configuratorTypes": ["stepthru"]
+    "configuratorTypes": ["urban"]
   },
   {
     "id": "09aa3a63-8d46-4b67-b87b-b4b869e5befd",
@@ -130,11 +150,11 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "category": "geometry",
     "subCategory": "Seat Tube",
     "type": "slider",
-    "value": "72.5",
+    "value": "74.1",
     "min": 72.5,
     "max": 75,
     "unit": "°",
-    "configuratorTypes": ["stepthru"]
+    "configuratorTypes": ["urban"]
   },
   // {
   //   "id": "d4c506b0-01e8-4958-883f-d7dac161eebe",
@@ -157,7 +177,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   //       "value": "2"
   //     }
   //   ],
-  //   "configuratorTypes": ["stepthru"]
+  //   "configuratorTypes": ["urban"]
   // },
   // {
   //   "id": "ac762528-d92e-4d5a-8c48-e364432e61e9",
@@ -169,26 +189,61 @@ export const parameterDefinitions: ParameterDefinition[] = [
   //   "min": 30,
   //   "max": 48,
   //   "unit": "mm",
-  //   "configuratorTypes": ["stepthru"]
+  //   "configuratorTypes": ["urban"]
   // },
-  // {
-  //   "id": "3902e965-6a81-4d91-a8c0-e65209a882a3",
-  //   "name": "Height",
-  //   "category": "tubing",
-  //   "subCategory": "Top Tube",
-  //   "type": "slider",
-  //   "value": "-6",
-  //   "min": 0,
-  //   "max": 60,
-  //   "configuratorTypes": ["stepthru"]
-  // },
+  {
+    "id": "3902e965-6a81-4d91-a8c0-e65209a882a3",
+    "name": "Height",
+    "category": "tubing",
+    "subCategory": "Top Tube",
+    "type": "slider",
+    "value": "-6",
+    "min": -20,
+    "max": 60,
+    "configuratorTypes": ["urban"]
+  },
+  {
+    "id": "9e898618-6cce-4a45-bc4d-ea7bbd9af54f", 
+    "name": "Shape",
+    "subCategory": "Top Tube",
+    "category": "tubing",
+    "type": "grid",
+    "value": "5",
+    "options": [
+      {
+        "label": "Oval",
+        "value": "0"
+      },
+      {
+        "label": "Capsule", 
+        "value": "1"
+      },
+      {
+        "label": "Hexagon",
+        "value": "2"
+      },
+      {
+        "label": "Circle",
+        "value": "3"
+      },
+      {
+        "label": "Triangle",
+        "value": "6"
+      },
+      {
+        "label": "Square",
+        "value": "5"
+      }
+    ],
+    "configuratorTypes": ["urban"]
+  },
   {
     "id": "7dc55512-0324-4e59-8686-2c97488645ca",
     "name": "Dimension_color",
     "value": "0x000000ff",
     "category": "other",
     "type": "text",
-    "configuratorTypes": ["stepthru"]
+    "configuratorTypes": ["urban"]
   },
   {
     "id": "748ef0ef-9e2c-493e-ad09-d908404f289c",
@@ -196,7 +251,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "value": "0x76808285",
     "category": "other",
     "type": "text",
-    "configuratorTypes": ["stepthru"]
+    "configuratorTypes": ["urban"]
   },
   {
     "id": "b5bf6f12-a078-4417-a4ae-d2049807178c",
@@ -204,7 +259,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "category": "geometry",
     "type": "checkbox",
     "value": "false",
-    "configuratorTypes": ["stepthru"]
+    "configuratorTypes": ["urban"]
   },
   // {
   //   "id": "ac947279-5f74-46ec-93c6-a3fdac0a9eb0",
@@ -212,7 +267,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   //   "value": "false",
   //   "category": "other",
   //   "type": "text",
-  //   "configuratorTypes": ["stepthru"]
+  //   "configuratorTypes": ["urban"]
   // },
   {
     "id": "9c43fdf1-d21d-4c8f-b8a3-b7d9602bfe1d",
@@ -220,10 +275,10 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "category": "accessories",
     "subCategory": "Water Bottle",
     "type": "slider",
-    "value": "0.70",
-    "min": 0.55,
-    "max": 0.80,
-    "configuratorTypes": ["stepthru"]
+    "value": "0.47",
+    "min": 0.40,
+    "max": 0.60,
+    "configuratorTypes": ["urban"]
   },
   {
     "id": "03c193b3-bbc9-491b-b4d5-1a2b48a4e0d1",
@@ -242,7 +297,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
         "value": "1"
       }
     ],
-    "configuratorTypes": ["stepthru"]
+    "configuratorTypes": ["urban"]
   },
   // {
   //   "id": "44d398e1-f057-4d3f-8446-2f8e38703b86",
@@ -261,27 +316,46 @@ export const parameterDefinitions: ParameterDefinition[] = [
   //       "value": "1"
   //     }
   //   ],
-  //   "configuratorTypes": ["stepthru"]
+  //   "configuratorTypes": ["urban"]
   // },
   {
-    "id": "00d82c20-556f-4710-bff6-84e43117f680",
-    "name": "Width",
-    "subCategory": "Seat Tube",
-    "category": "geometry",
-    "type": "slider",
-    "value": "35",
-    "min": 28,
-    "max": 40,
-    "unit": "mm",
-    "configuratorTypes": ["stepthru"]
+    "id": "44d398e1-f057-4d3f-8446-2f8e38703b86",
+    "name": "Water Bottle",
+    "category": "accessories", 
+    "subCategory": "Water Bottle",
+    "type": "dropdown",
+    "value": "1",
+    "options": [
+      {
+        "label": "Yes",
+        "value": "0"
+      },
+      {
+        "label": "No", 
+        "value": "1"
+      }
+    ],
+    "configuratorTypes": ["urban"]
   },
+  // {
+  //   "id": "00d82c20-556f-4710-bff6-84e43117f680",
+  //   "name": "Width",
+  //   "subCategory": "Seat Tube",
+  //   "category": "geometry",
+  //   "type": "slider",
+  //   "value": "35",
+  //   "min": 28,
+  //   "max": 40,
+  //   "unit": "mm",
+  //   "configuratorTypes": ["urban"]
+  // },
   // {
   //   "id": "f4a8c8c8-5f5d-4995-8d5c-fc6a89baa720",
   //   "name": "DownTube DiameterPoints",
   //   "value": "0,0;0.1,0.5;0.5,0.9;1,1",
   //   "category": "other",
   //   "type": "text",
-  //   "configuratorTypes": ["stepthru"]
+  //   "configuratorTypes": ["urban"]
   // },
   // {
   //   "id": "4ec438ea-a490-434b-82ea-88f84f67f6b7",
@@ -293,7 +367,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   //   "min": 30,
   //   "max": 50,
   //   "unit": "mm",
-  //   "configuratorTypes": ["stepthru"]
+  //   "configuratorTypes": ["urban"]
   // },
   // {
   //   "id": "62738150-ac17-418d-81ab-2876c45a413e",
@@ -328,7 +402,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   //       "value": "5"
   //     }
   //   ],
-  //   "configuratorTypes": ["stepthru"]
+  //   "configuratorTypes": ["urban"]
   // },
   {
     "id": "cc667ffa-3487-46e8-8b36-48ae1cd78efa",
@@ -336,7 +410,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "value": "0",
     "category": "other",
     "type": "text",
-    "configuratorTypes": ["stepthru"]
+    "configuratorTypes": ["urban"]
   },
   // {
   //   "id": "39881cea-9d0d-4879-99ee-6ed1d4c0574d",
@@ -344,20 +418,9 @@ export const parameterDefinitions: ParameterDefinition[] = [
   //   "value": "0x292424ff",
   //   "category": "other",
   //   "type": "text",
-  //   "configuratorTypes": ["stepthru"]
+  //   "configuratorTypes": ["urban"]
   // },
-  // {
-  //   "id": "ce96f93c-37dc-4584-808f-16d1c67d7c4d",
-  //   "name": "Brake Lever Angle",
-  //   "value": "20",
-  //   "category": "accessories",
-  //   "subCategory": "Fittings",
-  //   "type": "slider",
-  //   "min": -10,
-  //   "max": 30,
-  //   "unit": "°",
-  //   "configuratorTypes": ["stepthru"]
-  // },
+
   // {
   //   "id": "ea2fe86c-71b3-459e-8bd3-e056db0b5e8d",
   //   "name": "Seat Colour",
@@ -365,7 +428,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   //   "category": "accessories",
   //   "subCategory": "Colors",
   //   "type": "color",
-  //   "configuratorTypes": ["stepthru"]
+  //   "configuratorTypes": ["urban"]
   // },
   // {
   //   "id": "34db677e-094f-4ca3-ba28-1ffa0c21c9c0",
@@ -373,32 +436,41 @@ export const parameterDefinitions: ParameterDefinition[] = [
   //   "value": "0x1b1b1bff",
   //   "category": "other",
   //   "type": "text",
-  //   "configuratorTypes": ["stepthru"]
+  //   "configuratorTypes": ["urban"]
   // },
+
   {
-    "id": "ddfb0d82-db25-4cf7-9a76-679506641ed5",
-    "name": "Tyre Clearence",
-    "value": "20",
-    "category": "geometry",
-    "subCategory": "Rear Triangle", 
-    "type": "slider",
-    "min": 0,
-    "max": 30,
-    "unit": "mm",
-    "configuratorTypes": ["stepthru"]
-  },
-  {
-    "id": "cf01eb63-7d21-4c67-b27e-23f658b7140a",
+    "id": "6960e628-64f3-497b-811f-8148487505c7",
     "name": "Battery Cover Location",
-    "category": "tubing",
-    "subCategory": "Battery",
+    "category": "tubing", 
+    "subCategory": "Motor and Battery",
     "type": "slider",
-    "value": "0.41",
-    "min": 0.30,
+    "value": "0.25",
+    "min": 0.20,
     "max": 0.50,
     "step": 0.01,
-    "configuratorTypes": ["stepthru"]
+    "configuratorTypes": ["urban"]
   },
+  // {
+  //   "id": "fb34be77-f67f-4ee9-989e-c8baf24eacf1",
+  //   "name": "Disc Brake Mount",
+  //   "subCategory": "Fittings",
+  //   "category": "accessories", 
+  //   "type": "grid",
+  //   "value": "0",
+  //   "options": [
+  //     {
+  //       "label": "Post Mount",
+  //       "value": "0"
+  //     },
+  //     {
+  //       "label": "Flat Mount",
+  //       "value": "1"
+  //     }
+  //   ],
+  //   "configuratorTypes": ["urban"]
+  // },
+
   // {
   //   "id": "b6860af0-0da7-4c0e-9a4c-4e15dc378537",
   //   "name": "Battery Cover Length",
@@ -408,7 +480,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   //   "value": "0.352",
   //   "min": 0.1,
   //   "max": 0.4,
-  //   "configuratorTypes": ["stepthru"]
+  //   "configuratorTypes": ["urban"]
   // },
   // {
   //   "id": "15f903e5-2943-4bd9-8f50-581e26f9b7fb",
@@ -419,7 +491,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   //   "value": "0.55",
   //   "min": 0,
   //   "max": 1,
-  //   "configuratorTypes": ["stepthru"]
+  //   "configuratorTypes": ["urban"]
   // },
   {
     "id": "33ab6af5-42db-494e-834e-0f652a911a85",
@@ -438,35 +510,41 @@ export const parameterDefinitions: ParameterDefinition[] = [
         "value": "1"
       }
     ],
-    "configuratorTypes": ["stepthru"]
+    "configuratorTypes": ["urban"]
   },
-  // {
-  //   "id": "fb34be77-f67f-4ee9-989e-c8baf24eacf1",
-  //   "name": "Disc Brake Mount",
-  //   "value": "0",
-  //   "category": "accessories",
-  //   "subCategory": "Fittings",
-  //   "type": "dropdown",
-  //   "options": [
-  //     {
-  //       "label": "Post Mount",
-  //       "value": "0"
-  //     },
-  //     {
-  //       "label": "Flat Mount",
-  //       "value": "1"
-  //     }
-  //   ],
-  //   "configuratorTypes": ["stepthru"]
-  // },
+  
+  {
+    "id": "7491a9a5-9a85-444f-869f-38053382e0aa",
+    "name": "Chain Stay Tyre Clearence",
+    "value": "18",
+    "category": "geometry",
+    "subCategory": "Rear Triangle",
+    "type": "slider", 
+    "min": 0,
+    "max": 30,
+    "unit": "mm",
+    "configuratorTypes": ["urban"]
+  },
   // {
   //   "id": "6c895932-e37c-4815-88ef-9bc7ef8520b0",
   //   "name": "X-MatchSeatStay&TopTube",
   //   "value": "false",
   //   "category": "other",
   //   "type": "text",
-  //   "configuratorTypes": ["stepthru"]
+  //   "configuratorTypes": ["urban"]
   // },
+  {
+    "id": "278842f7-3407-4521-bc20-ee46abf7a298",
+    "name": "ChainStay Diameter",
+    "value": "24",
+    "category": "geometry",
+    "subCategory": "Rear Triangle",
+    "type": "slider",
+    "min": 15,
+    "max": 40,
+    "unit": "mm",
+    "configuratorTypes": ["urban"]
+  },
   {
     "id": "da8f6e1f-fe0a-43f1-a8c7-f7c2d27c5a4d",
     "name": "Angle",
@@ -477,7 +555,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "min": 45.0,
     "max": 75.0,
     "unit": "°",
-    "configuratorTypes": ["stepthru"]
+    "configuratorTypes": ["urban"]
   },
   // {
   //   "id": "f0f25a06-82aa-4584-b4ab-2f39c4e71651",
@@ -489,7 +567,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   //   "min": 30,
   //   "max": 40,
   //   "unit": "mm",
-  //   "configuratorTypes": ["stepthru"]
+  //   "configuratorTypes": ["urban"]
   // },
   {
     "id": "7920797e-f807-4b15-b964-d97d9a9d58a2",
@@ -497,7 +575,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "subCategory": "Wheels",
     "category": "accessories",
     "type": "dropdown",
-    "value": "7",
+    "value": "1",
     "options": [
       {
         "label": "23C",
@@ -532,15 +610,47 @@ export const parameterDefinitions: ParameterDefinition[] = [
         "value": "7"
       }
     ],
-    "configuratorTypes": ["stepthru"]
+    "configuratorTypes": ["urban"]
   },
+  {
+    "id": "5422df73-826b-4478-88d3-016cf74499f6", 
+    "name": "Rear Drop Out",
+    "subCategory": "Fittings",
+    "category": "accessories",
+    "type": "grid",
+    "value": "0",
+    "options": [
+      {
+        "label": "Quick Release",
+        "value": "0"
+      },
+      {
+        "label": "Bolt Through", 
+        "value": "1"
+      }
+    ],
+    "configuratorTypes": ["urban"]
+  },
+  {
+    "id": "dcc60569-5995-4c0f-8247-d85701c40a4c",
+    "name": "Angle",
+    "category": "tubing",
+    "subCategory": "Motor and Battery",
+    "type": "slider", 
+    "value": "-40",
+    "min": -40,
+    "max": 25,
+    "unit": "°",
+    "configuratorTypes": ["urban"]
+  },
+
   // {
   //   "id": "734e8f5c-4006-47e6-b84f-61df7fb0dde2",
   //   "name": "TopTube CurvePoints",
   //   "value": "0,0;0.1,0.4;0.4,0.8;1,1",
   //   "category": "other",
   //   "type": "text",
-  //   "configuratorTypes": ["stepthru"]
+  //   "configuratorTypes": ["urban"]
   // },
   // {
   //   "id": "b41d6573-f719-446b-b463-67046c93097f",
@@ -548,7 +658,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   //   "value": "0x333333ff",
   //   "category": "other",
   //   "type": "text",
-  //   "configuratorTypes": ["stepthru"]
+  //   "configuratorTypes": ["urban"]
   // },
   {
     "id": "cb15151e-0bb2-4895-b40d-3184fe772fe1",
@@ -556,7 +666,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "value": "0xe0e0e0ff",
     "category": "other",
     "type": "text",
-    "configuratorTypes": ["stepthru"]
+    "configuratorTypes": ["urban"]
   },
   {
     "id": "7b5d938d-b964-4f31-bd97-e36008869962",
@@ -565,7 +675,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "category": "accessories",
     "subCategory": "Wheels",
     "type": "colorWithPalette",
-    "configuratorTypes": ["stepthru"]
+    "configuratorTypes": ["urban"]
   },
   {
     "id": "7935dece-7133-4678-a77e-a3dd54c8e114",
@@ -577,7 +687,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "min": 10,
     "max": 50,
     "unit": "mm",
-    "configuratorTypes": ["stepthru"]
+    "configuratorTypes": ["urban"]
   },
   {
     "id": "cbdf47f8-4e69-45ce-bc08-dda011276a06",
@@ -596,7 +706,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
         "value": "1"
       }
     ],
-    "configuratorTypes": ["stepthru"]
+    "configuratorTypes": ["urban"]
   },
   {
     "id": "0c908c83-7337-42f5-896a-005f9b10f33c",
@@ -604,7 +714,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "value": "0",
     "category": "other",
     "type": "text",
-    "configuratorTypes": ["stepthru"]
+    "configuratorTypes": ["urban"]
   },
   {
     "id": "8620773c-238b-4627-ba8e-2d1c0995b089",
@@ -612,7 +722,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "value": "your name",
     "category": "client information",
     "type": "text",
-    "configuratorTypes": ["stepthru"]
+    "configuratorTypes": ["urban"]
   },
   // {
   //   "id": "b4a6298a-e0d9-4d7d-bdf8-51db53a813f1",
@@ -624,67 +734,37 @@ export const parameterDefinitions: ParameterDefinition[] = [
   //   "min": 15,
   //   "max": 40,
   //   "unit": "mm",
-  //   "configuratorTypes": ["stepthru"]
+  //   "configuratorTypes": ["urban"]
   // },
-  {
-    "id": "5e78e2c0-6da1-4568-b66a-63643ecf7fb5",
-    "name": "Colour",
-    "value": "0xeb1b1bff",
-    "category": "tubing",
-    "subCategory": "Frame",
-    "type": "color",
-    "configuratorTypes": ["stepthru"]
-  },
+
   {
     "id": "93d72eca-25cc-4eb1-8a95-16ee449dd01d",
     "name": "SeatStay thickness",
     "value": "12",
     "category": "other",
     "type": "text",
-    "configuratorTypes": ["stepthru"]
+    "configuratorTypes": ["urban"]
   },
-  // {
-  //   "id": "9e898618-6cce-4a45-bc4d-ea7bbd9af54f",
-  //   "name": "Shape", 
-  //   "subCategory": "Top Tube",
-  //   "category": "tubing",
-  //   "type": "grid",
-  //   "value": "5",
-  //   "options": [
-  //     {
-  //       "label": "Oval",
-  //       "value": "0"
-  //     },
-  //     {
-  //       "label": "Capsule",
-  //       "value": "1"
-  //     },
-  //     {
-  //       "label": "Hexagon",
-  //       "value": "2"
-  //     },
-  //     {
-  //       "label": "Circle",
-  //       "value": "3"
-  //     },
-  //     {
-  //       "label": "Triangle",
-  //       "value": "4"
-  //     },
-  //     {
-  //       "label": "Square",
-  //       "value": "5"
-  //     }
-  //   ],
-  //   "configuratorTypes": ["stepthru"]
-  // },
+
+  {
+    "id": "2dc3abdb-5726-4d60-bbd2-ce1b7817a5f6",
+    "name": "Seat Stay Tyre Clearance",
+    "value": "64",
+    "category": "geometry",
+    "subCategory": "Rear Triangle",
+    "type": "slider", 
+    "min": 40,
+    "max": 100,
+    "unit": "mm",
+    "configuratorTypes": ["urban"]
+  },
   // {
   //   "id": "7a55821d-3981-4eb8-9a4c-26b7e275e56c",
   //   "name": "TopTube DiameterPoints",
   //   "value": "0,0;1,1",
   //   "category": "other",
   //   "type": "text",
-  //   "configuratorTypes": ["stepthru"]
+  //   "configuratorTypes": ["urban"]
   // },
   {
     "id": "3afee937-c9ca-487d-b912-165b4be705be",
@@ -692,7 +772,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "value": "2",
     "category": "other",
     "type": "text",
-    "configuratorTypes": ["stepthru"]
+    "configuratorTypes": ["urban"]
   },
   {
     "id": "ef670dec-8b9c-4f01-8dec-072095cceb5a",
@@ -700,7 +780,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "value": "2",
     "category": "other",
     "type": "text",
-    "configuratorTypes": ["stepthru"]
+    "configuratorTypes": ["urban"]
   },
   // {
   //   "id": "56fa370a-8b83-4bd6-9797-f1e0897faac3",
@@ -709,7 +789,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   //   "category": "tubing",
   //   "type": "color",
   //   "value": "1",
-  //   "configuratorTypes": ["stepthru"]
+  //   "configuratorTypes": ["urban"]
   // },
   {
     "id": "206889f8-8ef2-4f95-ac06-34486923c73e",
@@ -717,7 +797,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "value": "https://thumbs.dreamstime.com/b/diagonal-stripes-pattern-vector-seamless-striped-texture-abstract-monochrome-geometric-background-thin-slanted-lines-black-104236907.jpg",
     "category": "other",
     "type": "text",
-    "configuratorTypes": ["stepthru"]
+    "configuratorTypes": ["urban"]
   },
   {
     "id": "6bebc909-bc55-448c-b316-4d9acb7e1c9a",
@@ -736,7 +816,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
         "value": "1"
       }
     ],
-    "configuratorTypes": ["stepthru"]
+    "configuratorTypes": ["urban"]
   },
   // {
   //   "id": "c01258ac-67a5-4ab2-968e-e368f3391b63",
@@ -744,7 +824,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   //   "value": "true",
   //   "category": "other",
   //   "type": "text",
-  //   "configuratorTypes": ["stepthru"]
+  //   "configuratorTypes": ["urban"]
   // },
   {
     "id": "55f308a4-1f48-4319-93c2-19fc11f04865",
@@ -752,7 +832,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "value": "0x101110ff",
     "category": "other",
     "type": "text",
-    "configuratorTypes": ["stepthru"]
+    "configuratorTypes": ["urban"]
   },
 
   {
@@ -761,7 +841,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "value": "yourname@email.com",
     "category": "other",
     "type": "text",
-    "configuratorTypes": ["stepthru"]
+    "configuratorTypes": ["urban"]
   },
   {
     "id": "48c92029-20cb-4a4a-a92d-4e367075d8bf",
@@ -769,7 +849,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "value": "Hey,\n\nThanks for using Spinlio! We've attached the 3D file of your custom bike, she's a beaut! \n\nIf you have any thoughts on how we can improve Spinlio or features you'd love to see, please reach out—we'd love to hear from you. Your feedback helps us make Spinlio better for everyone.\n\nAll the best,\nJack & Markus\nThe Spinlio Team",
     "category": "other",
     "type": "text",
-    "configuratorTypes": ["stepthru"]
+    "configuratorTypes": ["urban"]
   },
   // {
   //   "id": "3127f0e5-32f3-4977-bb79-aa81476912f8",
@@ -777,7 +857,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   //   "value": "1.0",
   //   "category": "other",
   //   "type": "text",
-  //   "configuratorTypes": ["stepthru"]
+  //   "configuratorTypes": ["urban"]
   // },
   // {
   //   "id": "bf8489bb-a14c-46be-b41c-54f4951e838b",
@@ -785,7 +865,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   //   "value": "",
   //   "category": "other", 
   //   "type": "text",
-  //   "configuratorTypes": ["stepthru"]
+  //   "configuratorTypes": ["urban"]
   // },
   // {
   //   "id": "5e5d90ef-320f-44d0-a24a-a73b12cb7bc4",
@@ -793,7 +873,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   //   "value": "0.6",
   //   "category": "other",
   //   "type": "text",
-  //   "configuratorTypes": ["stepthru"]
+  //   "configuratorTypes": ["urban"]
   // },
   // {
   //   "id": "10019dde-35c8-4c62-a58b-5cc224ac1b6e",
@@ -801,7 +881,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   //   "value": "false",
   //   "category": "other",
   //   "type": "text",
-  //   "configuratorTypes": ["stepthru"]
+  //   "configuratorTypes": ["urban"]
   // },
   {
     "id": "91f05499-a206-4c8e-94f6-963cc7b70d39",
@@ -813,7 +893,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "min": 0.10,
     "max": 1.00,
     "step": 0.01,
-    "configuratorTypes": ["stepthru"]
+    "configuratorTypes": ["urban"]
   },
   {
     "id": "1bd1f334-5a33-43d5-bae5-fe44fae61cda",
@@ -822,20 +902,9 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "subCategory": "Down Tube",
     "category": "tubing",
     "type": "logoUpload",
-    "configuratorTypes": ["stepthru"]
+    "configuratorTypes": ["urban"]
   },
-  {
-    "id": "a8423161-efb7-46a8-ab3a-edc8944e8ce3",
-    "name": "Position Y",
-    "value": "0.1",
-    "subCategory": "Down Tube",
-    "category": "tubing", 
-    "type": "slider",
-    "min": 0,
-    "max": 1,
-    "step": 0.01,
-    "configuratorTypes": ["stepthru"]
-  },
+
   {
     "id": "23369373-f2f8-404b-9577-e48a24d39f83",
     "name": "Position X",
@@ -845,7 +914,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "type": "slider",
     "min": 0.1,
     "max": 1.0,
-    "configuratorTypes": ["stepthru"]
+    "configuratorTypes": ["urban"]
   },
   // {
   //   "id": "373e9914-d7dd-40c2-9965-f296790dd30c",
@@ -853,7 +922,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
   //   "value": "0x171717ff",
   //   "category": "other",
   //   "type": "text",
-  //   "configuratorTypes": ["stepthru"]
+  //   "configuratorTypes": ["urban"]
   // },
   // {
   //   "id": "702dac9d-29a0-4ca4-b8ea-05286896fe23",
@@ -861,6 +930,6 @@ export const parameterDefinitions: ParameterDefinition[] = [
   //   "value": "0x0f0f0fff",
   //   "category": "other",
   //   "type": "text",
-  //   "configuratorTypes": ["stepthru"]
+  //   "configuratorTypes": ["urban"]
   // }
 ];

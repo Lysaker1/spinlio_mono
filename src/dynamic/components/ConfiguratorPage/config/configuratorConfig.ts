@@ -1,4 +1,4 @@
-export type ConfiguratorType = 'default' | 'vulz' | 'stepthru' | 'bookshelf' | 'table' | 'sofa';
+export type ConfiguratorType = 'default' | 'vulz' | 'stepthru' | 'bookshelf' | 'table' | 'sofa' | 'urban';
 
 interface ConfiguratorConfig {
   ticket: string;
@@ -36,7 +36,13 @@ export const configuratorConfigs: Record<ConfiguratorType, ConfiguratorConfig> =
     ticket: '73a3382e74c89650ec9b50fce62f0b25d2e9fd43018408ffbc6fd27dbc660977b0d0d12b81f27feaea653245b245a4ea3d0f7615b30afde4609f36244cc48076ab10dc5fa4497eceff79f7cfdf6fde3ae5e92d6a7632570f11114ce327be64608fea2d18d10b4d-14a78ea56bdfe568feb57d026e823787',
     modelId: '9e0ba608-ba8e-4dbb-a84a-7792ee6c6e3d',
     parameterTags: ['sofa']
+  },
+  urban: {
+    ticket: '54802e883dddc2fd95edfadd1366ac14da9682254c53715a2cad611bd6bbb15317ecfd2d777f9631ebfa67fac70e551253adbe76f319acc3ac960f338dab1457ce01076a139223baf2dc1ae202ebb6ee34e2a448dd3ad1f6305c3d6983980bde049afaad0daab4-45dcd5a7b5c984a0500c004811e78395',
+    modelId: '9e1114ae-d356-4cf2-94a6-d8021bdf32f5',
+    parameterTags: ['urban']
   }
+
 
 
 };

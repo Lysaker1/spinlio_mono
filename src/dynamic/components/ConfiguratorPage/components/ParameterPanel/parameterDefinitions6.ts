@@ -224,7 +224,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "subCategory": "Top Tube",
     "type": "slider",
     "value": "-6",
-    "min": 0,
+    "min": -6,
     "max": 60,
     "configuratorTypes": [
       "vulz"

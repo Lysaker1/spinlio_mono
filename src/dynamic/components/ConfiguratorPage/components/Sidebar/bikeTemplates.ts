@@ -16,6 +16,8 @@ export interface BikeTemplate {
 
   export const StepthruParameters = {};
 
+  export const UrbanParameters = {};
+
   export const CanyonParameters = {
     "7088e5a1-f07f-49c3-b1f6-98e74ae3734c": "false",
     "eea4374e-a513-4f61-924a-f8175351fa8b": "560",
@@ -280,12 +282,12 @@ export interface BikeTemplate {
         type: CONFIGURATOR_TYPES.DEFAULT
       },
       {
-        id: 'Classic road bike',
-        image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/Screenshot_2025-01-27_at_01.41.47_sbr52h.png',
-        name: 'Classic road bike',
+        id: 'Urban Bike',
+        image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/Screenshot_2025-01-27_at_01.42.32_iytpg3.png',
+        name: 'Urban E-Bike',
         modelStateId: '9d74c500-e310-45bc-8c63-6dd2ee132cc6',
-        parameters: ClassicroadbikejsonParameters,
-        type: CONFIGURATOR_TYPES.DEFAULT
+        parameters: UrbanParameters,
+        type: CONFIGURATOR_TYPES.URBAN
       },
       {
         id: 'Canyon Endurance 7',
@@ -294,8 +296,16 @@ export interface BikeTemplate {
         modelStateId: '9d74c500-e310-45bc-8c63-6dd2ee132cc6',
         parameters: canyonendurance7jsonParameters,
         type: CONFIGURATOR_TYPES.DEFAULT,
-
-      }
+      },
+      {
+        id: 'Classic road bike',
+        image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/Screenshot_2025-01-27_at_01.41.47_sbr52h.png',
+        name: 'Classic road bike',
+        modelStateId: '9d74c500-e310-45bc-8c63-6dd2ee132cc6',
+        parameters: ClassicroadbikejsonParameters,
+        type: CONFIGURATOR_TYPES.DEFAULT
+      },
+ 
 
 
 

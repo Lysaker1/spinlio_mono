@@ -565,6 +565,104 @@ app.delete('/api/designs/:id', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to delete design' });
   }
 });
+ 
+// Get profile by id (or custom url)
+app.get('/api/profile/:id', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      res.status(400).json({ error: 'User ID is missing in token' });
+      return;
+    }
+
+    let { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error && error.code === 'PGRST116') {
+      // If no profile was found with ID, check custom_url
+      let { data: customUrlData, error: customUrlError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('custom_url', id)
+        .single();
+
+      if (customUrlError && customUrlError.code === 'PGRST116') {
+        res.status(404).json({ error: 'Profile not found' });
+        return;
+      }
+
+      data = customUrlData;
+
+      if (!customUrlError) {
+        res.status(200).json(data)
+        return;
+      }
+    }
+
+    if (error) throw error;
+
+    if (!data) {
+      res.status(404).json({ error: 'Profile not found' });
+      return;
+    }
+
+    res.status(200).json(data);
+  } catch (error: any) {
+    console.error('Error fetching:', error);
+    res.status(500).json({ error: 'Failed to fetch profile' });
+  }
+});
+
+// Create profile
+app.post('/api/profile', jwtCheck, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const profile = req.body;
+    const { data, error } = await supabase
+      .from('profiles')
+      .insert(profile)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    res.status(201).json(data);
+  } catch (error: any) {
+    console.error('Error creating profile:', error);
+    res.status(500).json({ error: 'Failed to create profile' });
+  }
+});
+
+// Update user profile
+app.patch('/api/profile', jwtCheck, async (req: Request, res: Response): Promise<void> => {
+
+  try {
+    const userId = req.auth?.payload?.sub;
+    const updates = req.body;
+
+    if (!userId) {
+      res.status(400).json({ error: 'User ID is missing in token' });
+      return; // Sørger for at funksjonen avsluttes her
+    }
+
+    const { data, error } = await supabase
+      .from('profiles')
+      .update(updates)
+      .eq('id', userId)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    res.status(200).json(data);
+  } catch (error: any) {
+    console.error('Error updating profile:', error);
+    res.status(500).json({ error: 'Failed to update profile' });
+  }
+});
 
 const PORT = process.env.PORT|| 3003;
 app.listen(PORT, () => {

@@ -2,6 +2,7 @@ import React from 'react';
 import { Text, Title, Group, ActionIcon, Avatar, Button, Menu, Burger } from '@mantine/core';
 import { IconBell, IconChevronDown, IconLogout, IconUser } from '@tabler/icons-react';
 import { useAuth0 } from '@auth0/auth0-react';
+import { useUser } from '@shared/hooks/useUser';
 import { useNavigate } from 'react-router-dom';
 import '../../Dashboard.css'
 
@@ -11,11 +12,12 @@ interface DashboardHeaderProps {
 }
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({ opened, toggle }) => {
-  const { user, loginWithRedirect, isAuthenticated, logout } = useAuth0();
+  const { loginWithRedirect, isAuthenticated, logout } = useAuth0();
+  const { profile } = useUser();
   const navigate = useNavigate();
   const getInitials = (name: string): string => {
     const nameParts = name.split(' ');
-    if (nameParts.length === 1) return nameParts[0][0].toUpperCase();
+    if (nameParts.length === 1) return nameParts[0][0]?.toUpperCase() || '';
     return (nameParts[0][0] + nameParts[nameParts.length - 1][0]).toUpperCase();
   };
 
@@ -35,17 +37,17 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ opened, toggle }) => 
               radius="xl"
               color="initials"
               size="md"
-              src={user?.picture}
+              src={profile?.avatar_url}
               imageProps={{ onError: (e) => {
                 (e.target as HTMLImageElement).style.display = 'none';
               }}}
             >
-              {getInitials(user?.name || '')}
+              {getInitials(profile?.name || '')}
             </Avatar>
             <Menu shadow="md" width={200} position="bottom-end" zIndex={1000}>
               <Menu.Target>
                 <Group style={{ cursor: 'pointer' }}>
-                  <Text size="sm" fw={500}>{user?.name}</Text>
+                  <Text size="sm" fw={500}>{profile?.name}</Text>
                   <IconChevronDown size={14} />
                 </Group>
               </Menu.Target>

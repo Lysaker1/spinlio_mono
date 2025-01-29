@@ -8,32 +8,29 @@ import { IconStarFilled } from '@tabler/icons-react';
 import { bikeTemplates } from '@dynamic/components/ConfiguratorPage/components/Sidebar/bikeTemplates';
 import { DesignStorageService } from '@shared/services/designStorage';
 import { SavedDesign } from '@shared/types/SavedDesign';
-
-interface Profile {
-  id?: string;
-  name?: string;
-  email?: string;
-  profilePicture?: string;
-  country?: string;
-  url?: string;
-}
+import { ProfileStorageService } from '@shared/services/profileStorage';
+import EditProfileForm from '../../components/EditProfileForm/EditProfileForm';
+import { useUser } from '@shared/hooks/useUser';
+import { Profile } from '@shared/types/Profile';
 
 const mockProfiles: Profile[] = [
   {
     id: "vulz",
     name: 'Vulz',
     email: 'vulzbike@gmail.com',
-    profilePicture: '/placeholder-profile.png',
-    country: 'Taiwan',
-    url: 'https://www.vulzbike.ro/'
+    avatar_url: '/placeholder-profile.png',
+    location: 'Taiwan',
+    website: 'https://www.vulzbike.ro/',
+    created_at: new Date().toISOString()
   },
   {
     id: "zl",
     name: 'ZL CYCLES',
     email: 'kelly@zlbicycle.com',
-    profilePicture: 'https://5irorwxhplnkjik.leadongcdn.com/cloud/jnBpiKkpRijSlpornnlmj/ZL.png',
-    country: 'China',
-    url: 'https://www.zlbicycle.com/'
+    avatar_url: 'https://5irorwxhplnkjik.leadongcdn.com/cloud/jnBpiKkpRijSlpornnlmj/ZL.png',
+    location: 'China',
+    website: 'https://www.zlbicycle.com/',
+    created_at: new Date().toISOString()
   },
 ];
 
@@ -43,16 +40,16 @@ const ProfileDesigns = ({ id }: { id: string | undefined }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!id && isAuthenticated) {
-      const fetchDesigns = async () => {
-        setLoading(true);
-        const token = await getAccessTokenSilently();
-        const fetchedDesigns = await DesignStorageService.getDesignsByUser(user?.sub || '', token);
-        setDesigns(fetchedDesigns);
-        setLoading(false);
-      };
+    if (id) {
+        const fetchDesigns = async () => {
+          setLoading(true);
+          const token = await getAccessTokenSilently();
+          const fetchedDesigns = await DesignStorageService.getDesignsByUser(id, token);
+          setDesigns(fetchedDesigns);
+          setLoading(false);
+        };
       fetchDesigns();
-    }
+     }
   }, [user, getAccessTokenSilently, id]);
 
   
@@ -64,7 +61,7 @@ const ProfileDesigns = ({ id }: { id: string | undefined }) => {
           cols={4}
           spacing="lg"
         >
-          {id ? bikeTemplates.map((design) => (
+{/*           {!id ? bikeTemplates.map((design) => (
             <Card key={design.id} shadow="sm" padding="lg" radius="md" withBorder>
               <Card.Section>
                 <div style={{ position: 'relative' }}>
@@ -91,8 +88,8 @@ const ProfileDesigns = ({ id }: { id: string | undefined }) => {
                 {design.name}
               </Text>
             </Card>
-          )) : 
-          loading ? (
+          )) :  */}
+          {loading ? (
             <div className="designs-loading">
               <img 
                 src="https://res.cloudinary.com/da8qnqmmh/image/upload/e_bgremoval/WhatsApp_GIF_2025-01-15_at_12.36.33_tupvgo.gif"
@@ -110,6 +107,7 @@ const ProfileDesigns = ({ id }: { id: string | undefined }) => {
               </Text>
             </Card>
           ))}
+          {!loading && designs.length === 0 && <Text>No designs yet</Text>}
         </SimpleGrid>
       </Grid.Col>
     </Grid>
@@ -119,32 +117,51 @@ const ProfileDesigns = ({ id }: { id: string | undefined }) => {
 
 const ProfilePage: React.FC = () => {
   const { id } = useParams();
-  const { user } = useAuth0();
-  let profile: Profile | undefined = mockProfiles.find((profile) => profile.id === id);
-  if (!id && user) {
-    profile = {
-      id: user.sub,
-      name: user.name,
-      email: user.email,
-      profilePicture: user.picture || '/placeholder-profile.png',
-    };
-  }
+  const { profile: myProfile } = useUser();
+  const [profile, setProfile] = useState<Profile>();
+  const [ownProfile, setOwnProfile] = useState<boolean>(false);
+
+    useEffect(() => {
+      const fetchProfile = async () => {
+        let profileId = id;
+        if (!id) {
+          profileId = myProfile?.id;
+        }
+        if (profileId) {
+          try {
+            const profileResponse = await ProfileStorageService.getProfile(profileId);
+            if (profileResponse.id === myProfile?.id) setOwnProfile(true);
+            setProfile(profileResponse);
+          } catch (error) {
+            console.error('Error fetching profile:', error);
+          }
+        }
+      };
+  
+      fetchProfile();
+    }, [id]);
 
   return (
     <div>
+
     <AppShell>
       <AppShell.Navbar>
         <ProfileSidebar profile={profile}/>
       </AppShell.Navbar>
     </AppShell>
       <div className="profile-page-content">
+
       <Tabs defaultValue="designs">
         <Tabs.List>
-          <Tabs.Tab value="designs">{id ? "Prefabs" : "Designs"}</Tabs.Tab>
+          <Tabs.Tab value="designs">{profile?.user_type === 'manufacturer' ? "Prefabs" : "Designs"}</Tabs.Tab>
+          {ownProfile && <Tabs.Tab value="edit-profile">Edit profile</Tabs.Tab>}
         </Tabs.List>
         <Tabs.Panel value="designs">
-          <ProfileDesigns id={id} />
+          <ProfileDesigns id={profile?.id} />
         </Tabs.Panel>
+        {ownProfile && <Tabs.Panel value="edit-profile">
+          <EditProfileForm profile={profile} onSubmit={(p) => {setProfile(p)}}/>
+        </Tabs.Panel>}
       </Tabs>
       </div>
     </div>

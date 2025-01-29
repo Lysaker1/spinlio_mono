@@ -4,6 +4,7 @@ import { Auth0Provider } from '@auth0/auth0-react';
 import App from './components/App';
 import '../shared/styles/global.css';
 import { apiUrl } from './config/api';
+import { UserProvider } from '@shared/hooks/useUser';
 
 const root = ReactDOM.createRoot(document.getElementById('root')!);
 
@@ -40,7 +41,9 @@ root.render(
       useRefreshTokens={true}
       useRefreshTokensFallback={true}
     >
-      <App />
+      <UserProvider>
+        <App />
+      </UserProvider>
     </Auth0Provider>
   </React.StrictMode>
 );

@@ -7,7 +7,7 @@ interface SizingPanelProps {
   parameterValues: { [id: string]: string };
   onParameterChange: (value: any, definition: ParameterDefinition) => void;
   isActive?: boolean;
-  configuratorType?: 'default' | 'vulz' | 'stepthru' | 'bookshelf' | 'table' | 'sofa';
+  configuratorType?: 'default' | 'vulz' | 'stepthru' | 'bookshelf' | 'table' | 'sofa' | 'urban';
 }
 
 export const SizingPanel: React.FC<SizingPanelProps> = (props) => {

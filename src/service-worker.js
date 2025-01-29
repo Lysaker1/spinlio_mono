@@ -1,5 +1,7 @@
 const CACHE_NAME = 'spinlio-cache-v1';
 const MODEL_CACHE_NAME = 'spinlio-models-v1';
+const MODEL_CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
+const MAX_CACHE_SIZE = 500 * 1024 * 1024; // 500MB limit
 
 // Separate caches for different types of resources
 const staticUrlsToCache = [
@@ -98,16 +100,17 @@ self.addEventListener('activate', event => {
           })
         );
       }),
-      // Clean up old model cache entries
+      // Modified model cache cleanup with fallback to old behavior
       caches.open(MODEL_CACHE_NAME).then(cache => {
         return cache.keys().then(requests => {
           return Promise.all(
             requests.map(request => {
-              // Remove cached models older than 1 hour
               return cache.match(request).then(response => {
                 if (response && response.headers.get('date')) {
                   const cacheDate = new Date(response.headers.get('date'));
-                  if (Date.now() - cacheDate.getTime() > 3600000) {
+                  // Use new duration but fallback to old if something goes wrong
+                  const duration = MODEL_CACHE_DURATION || 3600000;
+                  if (Date.now() - cacheDate.getTime() > duration) {
                     return cache.delete(request);
                   }
                 }

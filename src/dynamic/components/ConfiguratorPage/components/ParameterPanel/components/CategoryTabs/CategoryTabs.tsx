@@ -29,7 +29,7 @@ const FURNITURE_TABS: Tab[] = [
 interface CategoryTabsProps {
   activeTab: TabType;
   onTabChange: (tab: TabType) => void;
-  configuratorType?: 'default' | 'vulz' | 'stepthru' | 'bookshelf' | 'table' | 'sofa';
+  configuratorType?: 'default' | 'vulz' | 'stepthru' | 'bookshelf' | 'table' | 'sofa' | 'urban';
 }
 
 // Main CategoryTabs component that renders a row of selectable tabs

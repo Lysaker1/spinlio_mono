@@ -94,7 +94,7 @@ const DesignCard: React.FC<Props> = ({design, onRename, onDelete, onChangeVisibi
     onConfirm: () => void;
     onCancel: () => void;
   }> = ({ onConfirm, onCancel }) => (
-    <div className="delete-confirmation">
+    <div className="delete-confirmation" onClick={(e)=>e.stopPropagation()}>
       <p>Are you sure you want to delete this design?</p>
       <div className="delete-actions">
         <button onClick={onConfirm}>Yes</button>
@@ -105,7 +105,7 @@ const DesignCard: React.FC<Props> = ({design, onRename, onDelete, onChangeVisibi
 
   return (
     <>
-      <Card key={design.id} shadow="sm" padding="lg" radius="md" withBorder onClick={() => setIsOpen(true)}>
+      <Card key={design.id} shadow="sm" padding="lg" radius="md" withBorder onClick={() => setIsOpen(true)} className='design-card'>
         {deleteConfirmation === design.id && (
           <DeleteConfirmation
             onConfirm={() => handleDeleteConfirm()}
@@ -143,12 +143,13 @@ const DesignCard: React.FC<Props> = ({design, onRename, onDelete, onChangeVisibi
                       }}
                       variant="subtle"
                       color="grey"
+                      onClick={(e)=>e.stopPropagation()}
                     >
                       <IconDotsVertical size="1rem" />
                     </ActionIcon>
                   </Menu.Target>
 
-                  <Menu.Dropdown>
+                  <Menu.Dropdown onClick={(e)=>e.stopPropagation()}>
                     <Menu.Item 
                       leftSection={<IconEdit size="1rem" />}
                       onClick={() => setIsEditing(true)}
@@ -182,7 +183,7 @@ const DesignCard: React.FC<Props> = ({design, onRename, onDelete, onChangeVisibi
         </Card.Section>
               
         {isEditing ? (
-          <div className='edit-name-container'>
+          <div className='edit-name-container' onClick={(e)=>e.stopPropagation()}>
             <TextInput
               value={newName}
               onChange={(e) => setNewName(e.target.value)}

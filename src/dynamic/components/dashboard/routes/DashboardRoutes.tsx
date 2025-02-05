@@ -12,7 +12,7 @@ const DashboardRoutes: React.FC = () => {
   return (
     <Dashboard>
       <Routes>
-        <Route path="/" element={<Navigate to="/dashboard/designs" replace />} />
+        <Route path="/" element={<Navigate to="/dashboard/prefabs" replace />} />
         <Route path="prefabs" element={<Prefabs />} />
         <Route path="designs" element={<Designs />} />
         <Route path="uploads" element={<Uploads />} />

@@ -24,3 +24,15 @@
 .submit-button:hover {
   font-weight: 700;
 }
+
+.profile-not-found {
+  width: 100vw;
+  min-height: calc(100vh - 60px);
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--mantine-color-body);
+  position: absolute;
+  left: 0;
+  padding: 20px;
+}

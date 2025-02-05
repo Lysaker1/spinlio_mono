@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TextInput, Textarea, Select, FileInput } from '@mantine/core';
+import { TextInput, Textarea, Select, Switch, Text } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { Profile, UserType } from 'src/shared/types/Profile';
 import { ProfileStorageService } from '@shared/services/profileStorage';
@@ -31,6 +31,7 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ profile, onSubmit }) 
       email: profile?.email || '',
       website: profile?.website || '',
       custom_url: profile?.custom_url || '',
+      is_public: profile?.is_public ?? true,
     },
     validate: {
       custom_url: (value) => {
@@ -84,6 +85,15 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ profile, onSubmit }) 
         <TextInput 
           label="Custom URL" {...form.getInputProps('custom_url')} 
           description="This will be the URL of your Spinlio profile. The URL will be https://design.spinlio.com/dashboard/profile/[custom_url]"
+        />
+        <Text style={{fontWeight: 500}}>Profile visibility</Text>
+        <Switch
+          label={form.getValues().is_public ? "Public" : "Private"}
+          size="md"
+          checked={form.values.is_public}
+          onChange={(event) => {
+            form.setFieldValue('is_public', event.currentTarget.checked)
+          }}
         />
         {notification && <Notification onClose={() => setNotification(null)} type={notification.type} title={notification.title} message={notification.message} />}
         <button type="submit" className='submit-button' disabled={isLoading}>{isLoading ? 'Saving...' : 'Save'}</button>

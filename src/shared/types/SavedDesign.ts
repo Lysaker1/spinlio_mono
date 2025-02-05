@@ -10,6 +10,7 @@ export interface SavedDesign {
   thumbnail_url: string | null;
   created_at: string;
   is_deleted?: boolean;
+  is_public: boolean;
 }
 
 // Add a type for creating a new design

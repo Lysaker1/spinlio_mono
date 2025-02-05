@@ -1,4 +1,4 @@
-import { AppShell, Badge, Card, Text, Grid, Image, Tabs, SimpleGrid } from '@mantine/core';
+import { AppShell, Badge, Card, Text, Grid, Image, Tabs, SimpleGrid, Title, Loader } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -21,7 +21,8 @@ const mockProfiles: Profile[] = [
     avatar_url: '/placeholder-profile.png',
     location: 'Taiwan',
     website: 'https://www.vulzbike.ro/',
-    created_at: new Date().toISOString()
+    created_at: new Date().toISOString(),
+    is_public: true,
   },
   {
     id: "zl",
@@ -30,7 +31,8 @@ const mockProfiles: Profile[] = [
     avatar_url: 'https://5irorwxhplnkjik.leadongcdn.com/cloud/jnBpiKkpRijSlpornnlmj/ZL.png',
     location: 'China',
     website: 'https://www.zlbicycle.com/',
-    created_at: new Date().toISOString()
+    created_at: new Date().toISOString(),
+    is_public: true,
   },
 ];
 
@@ -120,10 +122,12 @@ const ProfilePage: React.FC = () => {
   const { profile: myProfile } = useUser();
   const [profile, setProfile] = useState<Profile>();
   const [ownProfile, setOwnProfile] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
       const fetchProfile = async () => {
         let profileId = id;
+        setLoading(true);
         if (!id) {
           profileId = myProfile?.id;
         }
@@ -134,12 +138,37 @@ const ProfilePage: React.FC = () => {
             setProfile(profileResponse);
           } catch (error) {
             console.error('Error fetching profile:', error);
+          } finally {
+            setLoading(false);
           }
         }
+        setLoading(false);
       };
   
+
       fetchProfile();
     }, [id]);
+  
+  if (!profile) {
+    return (
+      <div className='profile-not-found'>
+        {loading ? (
+          <Loader type="dots" color="#000" size={50} style={{margin: "auto"}} />
+        ) : (
+          <>
+        <Title order={1}>
+          Profile not found
+        </Title>
+        <Title order={4}>
+          This is probably caused by a misspelled URL or the profile being set to private.
+        </Title>
+        </>
+        )}
+      </div>
+
+    );
+  }
+
 
   return (
     <div>

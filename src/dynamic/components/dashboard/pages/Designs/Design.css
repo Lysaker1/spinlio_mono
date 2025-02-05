@@ -4,3 +4,11 @@
   margin-top: 8px; 
   align-items: center;
 }
+
+.visibility-icon {
+  position: absolute;
+  border-radius: 50%;
+  top: 8px;
+  left: 8px;
+  cursor: default;
+}

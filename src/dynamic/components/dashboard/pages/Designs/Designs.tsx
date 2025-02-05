@@ -5,7 +5,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { useNavigate } from 'react-router-dom';
 import { SavedDesign } from '@shared/types/SavedDesign';
 import { DesignStorageService } from '@shared/services/designStorage';
-import { IconCheck, IconX, IconDotsVertical, IconDownload, IconEdit, IconTrash } from '@tabler/icons-react';
+import { IconCheck, IconX, IconDotsVertical, IconDownload, IconEdit, IconTrash, IconLock, IconLockOpen, IconNetwork } from '@tabler/icons-react';
 import './Design.css'
 
 const COLUMNS = 4;
@@ -102,6 +102,22 @@ const Designs: React.FC = () => {
     }
   };
 
+  const handleVisibility = async (design: SavedDesign) => {
+    try {
+      const token = await getAccessTokenSilently();
+      await DesignStorageService.updateDesign(design.id, { is_public: !design.is_public }, token);
+
+      // Update local so correct visibility setting is shown
+      setDesigns((prev) =>
+        prev.map((d) =>
+          d.id === design.id ? { ...d, is_public: !design.is_public } : d
+        )
+      );
+    } catch (error) {
+      console.error('Error changing design visibility:', error);
+    }
+  };
+
   const DeleteConfirmation: React.FC<{
     onConfirm: () => void;
     onCancel: () => void;
@@ -162,6 +178,13 @@ const Designs: React.FC = () => {
             )}
             <Card.Section>
               <div style={{ position: 'relative' }}>
+                <ActionIcon
+                    className='visibility-icon'
+                    variant="light"
+                    title={design.is_public ? "Public" : "Private"}
+                  >
+                  {design.is_public ? <IconNetwork size="1rem" /> : <IconLock size="1rem" />}
+                </ActionIcon>
                 <Image
                   src={design.thumbnail_url || '/placeholder-image.png'} 
                   height={160}
@@ -186,13 +209,19 @@ const Designs: React.FC = () => {
                       leftSection={<IconEdit size="1rem" />}
                       onClick={() => setEditingDesign(design)}
                     >
-                      Edit
+                      Edit name
                     </Menu.Item>
                     <Menu.Item
                       leftSection={<IconDownload size="1rem" />}
                       onClick={() => handleDownload(design.id)}
                     >
                       Download
+                    </Menu.Item>
+                    <Menu.Item 
+                      leftSection={design.is_public ? <IconLock size="1rem" /> : <IconLockOpen size="1rem" />}
+                      onClick={() => handleVisibility(design)}
+                    >
+                      {design.is_public ? "Make private" : "Make public"}
                     </Menu.Item>
                     <Menu.Item
                       leftSection={<IconTrash size="1rem" />}

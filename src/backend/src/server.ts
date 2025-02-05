@@ -302,10 +302,19 @@ app.post('/api/designs', (async (req: Request, res: Response) => {
 app.get('/api/designs/:userId', async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
-    const { data, error } = await supabase
+    const requestingUserId = req.auth?.payload?.sub;
+
+    let query = supabase
       .from('saved_designs')
       .select('*')
       .eq('user_id', userId);
+
+    // If the requesting user is not the same as the userId, filter by is_public
+    if (userId !== requestingUserId) {
+      query = query.eq('is_public', true);
+    }
+
+    const { data, error } = await query;
 
     if (error) throw error;
     res.json(data);
@@ -597,6 +606,16 @@ app.get('/api/profile/:id', async (req: Request, res: Response): Promise<void> =
 
       data = customUrlData;
 
+      if (!data) {
+        res.status(404).json({ error: 'Profile not found' });
+        return;
+      }
+
+      if (!data.is_public && req.auth?.payload?.sub !== data.id) {
+        res.status(403).json({ error: 'Access denied: Profile is private' });
+        return;
+      }
+
       if (!customUrlError) {
         res.status(200).json(data)
         return;
@@ -607,6 +626,11 @@ app.get('/api/profile/:id', async (req: Request, res: Response): Promise<void> =
 
     if (!data) {
       res.status(404).json({ error: 'Profile not found' });
+      return;
+    }
+
+    if (!data.is_public && req.auth?.payload?.sub !== data.id) {
+      res.status(403).json({ error: 'Access denied: Profile is private' });
       return;
     }
 

@@ -8,6 +8,10 @@
   padding: 0 24px;
 }
 
+.dashboard-header-title {
+  cursor: pointer;
+}
+
 /* Sidebar styles */
 
 .menu-item {

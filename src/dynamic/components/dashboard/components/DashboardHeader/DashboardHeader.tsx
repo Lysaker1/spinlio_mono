@@ -25,7 +25,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ opened, toggle }) => 
     <div className="dashboard-header-container">
       <Group>
         <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="md" />
-        <Title order={1}>Spinlio</Title>
+        <Title order={1} className='dashboard-header-title' onClick={()=>navigate("/dashboard")}>Spinlio</Title>
       </Group>
       <Group className="dashboard-header-group" gap="xs">
         {isAuthenticated ? (

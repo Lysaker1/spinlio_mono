@@ -82,7 +82,7 @@ export const ShapeIcons = {
     'Matte': (
         <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg"
              xmlnsXlink="http://www.w3.org/1999/xlink">
-            <g clip-path="url(#clip0_2776_7450)">
+            <g clipPath="url(#clip0_2776_7450)">
                 <rect width="56" height="56" rx="28" transform="matrix(-1 0 0 1 56 0)" fill="white"/>
                 <rect width="97.4815" height="155.556" transform="matrix(-1 0 0 1 82.9636 -6.22104)"
                       fill="url(#pattern0_2776_7450)"/>
@@ -102,7 +102,7 @@ export const ShapeIcons = {
     ),
     'Glossy': (<svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg"
                     xmlnsXlink="http://www.w3.org/1999/xlink">
-            <g clip-path="url(#clip0_2776_7456)">
+            <g clipPath="url(#clip0_2776_7456)">
                 <rect width="56" height="56" rx="28" fill="white"/>
                 <rect x="-25.9629" y="-82.9609" width="97.4815" height="157.63" fill="url(#pattern0_2776_7456)"/>
             </g>

@@ -12,6 +12,7 @@ import { ProfileStorageService } from '@shared/services/profileStorage';
 import EditProfileForm from '../../components/EditProfileForm/EditProfileForm';
 import { useUser } from '@shared/hooks/useUser';
 import { Profile } from '@shared/types/Profile';
+import DesignCard from '../../components/DesignCard/DesignCard';
 
 const mockProfiles: Profile[] = [
   {
@@ -100,14 +101,13 @@ const ProfileDesigns = ({ id }: { id: string | undefined }) => {
               />
             </div>
           ) : designs.map((design: SavedDesign) => (
-            <Card key={design.id} shadow="sm" padding="lg" radius="md" withBorder>
-              <Card.Section>
-                <Image src={design.thumbnail_url || '/placeholder-image.png'} height={160} alt={design.name} />
-              </Card.Section>
-              <Text fw={500} size="lg" mt="md">
-                {design.name}
-              </Text>
-            </Card>
+            <DesignCard
+              design={design}
+              key={design.id}
+              onRename={(newName) => setDesigns((prev) => prev.map((d) => d.id === design.id ? { ...d, name: newName.trim() } : d))}
+              onDelete={() => setDesigns((prev)=>prev.filter((d) => d.id !== design.id))}
+              onChangeVisibility={() => setDesigns((prev) => prev.map((d) => d.id === design.id ? { ...d, is_public: !design.is_public } : d ))}
+            />
           ))}
           {!loading && designs.length === 0 && <Text>No designs yet</Text>}
         </SimpleGrid>

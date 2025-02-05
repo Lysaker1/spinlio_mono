@@ -27,11 +27,11 @@
   background-color: var(--mantine-color-default-hover);
 }
 
-.active {
+.menu-item.active {
   font-weight: bold;
 }
 
-.active::after {
+.menu-item.active::after {
   content: '';
   position: absolute;
   right: 0;
@@ -86,3 +86,11 @@
   color: var(--mantine-color-text);
 }
 
+/* Modal styles */
+
+.configurator-button {
+  cursor: pointer;
+  border-radius: 5px;
+  background-color: var(--mantine-color-text);
+  color: var(--mantine-color-body)
+}

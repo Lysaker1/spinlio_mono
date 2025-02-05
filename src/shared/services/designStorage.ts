@@ -80,7 +80,8 @@ export class DesignStorageService {
         description: design.description,
         parameters: design.parameters,
         configurator_type: design.configurator_type,
-        thumbnail_url: design.thumbnail_url
+        thumbnail_url: design.thumbnail_url,
+        is_public: design.is_public
       };
 
       const savedDesign = await this.saveDesign(duplicatedDesign, token);

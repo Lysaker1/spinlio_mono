@@ -9,6 +9,7 @@ export interface Profile {
   user_type?: UserType;
   email?: string;
   website?: string;
+  is_public: boolean;
   custom_url?: string;
   created_at: string;
 }

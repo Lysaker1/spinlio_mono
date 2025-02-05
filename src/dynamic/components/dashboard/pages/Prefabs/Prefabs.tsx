@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Badge, Card, Image, SimpleGrid, Text} from '@mantine/core';
+import { Badge, Card, Image, SimpleGrid, Text, Button, Overlay } from '@mantine/core';
 import PageLayout from '../../components/PageLayout/PageLayout';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useNavigate } from 'react-router-dom';
 import { IconStarFilled } from '@tabler/icons-react';
 import { BikeTemplate, bikeTemplates } from '@dynamic/components/ConfiguratorPage/components/Sidebar/bikeTemplates';
+import "./Prefabs.css"
+import { PrefabModal } from '../../components/PrefabModal/PrefabModal';
 
 const COLUMNS = 4;
 const ROWS = 3;
@@ -17,10 +19,8 @@ const Prefabs: React.FC = () => {
   };
 
   const [filteredPrefabs, setFilteredPrefabs] = useState<BikeTemplate[]>(bikeTemplates);
-  const [newName, setNewName] = useState('');
-  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const navigate = useNavigate();
-
+  const [selectedPrefab, setSelectedPrefab] = useState<BikeTemplate | null>(null);
 
   useEffect(() => {
     const itemsPerPage = ROWS * COLUMNS;
@@ -45,6 +45,16 @@ const Prefabs: React.FC = () => {
     setFilteredPrefabs(filteredPrefabs.slice(startIndex, endIndex));
   }, [currentPage, searchQuery, bikeTemplates]);
 
+  const handleCardClick = (prefab: BikeTemplate) => {
+    setSelectedPrefab(prefab);
+  };
+
+  const handleNavigateToConfigurator = () => {
+    if (selectedPrefab) {
+      navigate(`/configurator/${selectedPrefab.id}`);
+    }
+  };
+
   return (
     <PageLayout
       title="Prefabs"
@@ -55,12 +65,26 @@ const Prefabs: React.FC = () => {
       onPageChange={setCurrentPage}
       onSearch={handleSearch}
     >
+      {selectedPrefab && (
+        <>
+          <Overlay className='prefabs-overlay' onClick={()=>setSelectedPrefab(null)}/>
+          <PrefabModal prefab={selectedPrefab} />
+        </>
+      )}
       <SimpleGrid
         cols={4}
         spacing="lg"
       >
         {filteredPrefabs.map((prefab) => (
-          <Card key={prefab.id} shadow="sm" padding="lg" radius="md" withBorder>
+          <Card 
+            key={prefab.id} 
+            shadow="sm" 
+            padding="lg" 
+            radius="md" 
+            withBorder 
+            onClick={() => handleCardClick(prefab)}
+            className={`prefab-card`}
+          >
             <Card.Section>
               <div style={{ position: 'relative' }}>
                 <Image
@@ -68,7 +92,7 @@ const Prefabs: React.FC = () => {
                   height={160}
                   alt={prefab.name}
                 />
-                <Badge 
+              {/*   <Badge 
                   leftSection={<IconStarFilled size="12" />}
                   variant="filled"
                   color="var(--mantine-color-gray-7)"
@@ -79,7 +103,7 @@ const Prefabs: React.FC = () => {
                     right: 8
                   }}>
                   3,9
-                </Badge>
+                </Badge> */}
               </div>
             </Card.Section>
               <Text fw={500} size="lg" mt="md">

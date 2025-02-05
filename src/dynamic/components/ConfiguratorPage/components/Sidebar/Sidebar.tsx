@@ -5,7 +5,7 @@ import { ISessionApi, IViewportApi } from '@shapediver/viewer';
 import { bikeTemplates } from './bikeTemplates';
 import { useNavigate } from 'react-router-dom';
 import { ConfiguratorType } from '@shared/types/SavedDesign';
-import { CONFIGURATOR_TYPES } from '@shared/constants/configuratorTypes';
+import { CONFIGURATOR_PATHS, CONFIGURATOR_TYPES } from '@shared/constants/configuratorTypes';
 import { IconArrowRight, IconBike, IconBookmarks } from '@tabler/icons-react';
 import { Button, Text } from '@mantine/core';
 
@@ -70,10 +70,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       }
       
       // Then navigate based on template type
-      const path = template.type === 'vulz' ? '/vulz' : 
-                  template.type === 'stepthru' ? '/vulz/stepthru' :
-                  template.type === 'urban' ? '/vulz/urban' :
-                  '/';
+      const path = CONFIGURATOR_PATHS[template.type as keyof typeof CONFIGURATOR_PATHS] || '/';
       navigate(path, {
         state: { designParameters: template.parameters }
       });
@@ -110,8 +107,9 @@ const Sidebar: React.FC<SidebarProps> = ({
             <div className={`template-container`}>
               <div className="template-container-header">
                 <Text className="template-container-title">Prefabs</Text>
-                <button className="view-all-button" onClick={() => navigate('/dashboard/prefabs')}>
-
+                  <button className="view-all-button" onClick={() => navigate('/dashboard/prefabs')}>
+                    View All
+                    <IconArrowRight size={20} />
                 </button>
               </div>
               {bikeTemplates.map((template) => (

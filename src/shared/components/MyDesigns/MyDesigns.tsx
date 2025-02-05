@@ -6,6 +6,7 @@ import { SavedDesign } from '../../types/SavedDesign';
 import { AuthenticatedFeature } from '../../components/AuthenticatedFeature/AuthenticatedFeature';
 import { IconArrowRight, IconCheck, IconDotsVertical, IconX } from '@tabler/icons-react';
 import { Text, Title } from '@mantine/core';
+import { CONFIGURATOR_PATHS } from '@shared/constants/configuratorTypes';
 
 interface MyDesignsProps {
   onSelect: (parameters: Record<string, any>) => void;
@@ -124,7 +125,7 @@ export const MyDesigns: React.FC<MyDesignsProps> = ({ onSelect, currentConfigura
 
   const handleDesignSelect = (design: SavedDesign) => {
     if (design.configurator_type !== currentConfiguratorType) {
-      const path = design.configurator_type === 'vulz' ? '/vulz' : '/';
+      const path = CONFIGURATOR_PATHS[design.configurator_type] || '/';
       navigate(path, {
         state: { designParameters: design.parameters }
       });
@@ -214,7 +215,8 @@ export const MyDesigns: React.FC<MyDesignsProps> = ({ onSelect, currentConfigura
             <div className="template-container-header">
               <Text className="template-container-title">My Designs</Text>
               <button className="view-all-button" onClick={() => navigate('/dashboard/designs')}>
-
+                View All
+                <IconArrowRight size={20} />
               </button>
             </div>
             {designs.map((design) => {

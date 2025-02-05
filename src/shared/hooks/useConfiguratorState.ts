@@ -67,7 +67,7 @@ export const useConfiguratorState = (configuratorType: ConfiguratorType) => {
     const handleTransition = async () => {
       setIsTransitioning(true);
       // Wait for cleanup to complete
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
       if (mounted) {
         setIsTransitioning(false);

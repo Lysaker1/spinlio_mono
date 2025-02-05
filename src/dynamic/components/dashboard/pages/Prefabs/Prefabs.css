@@ -1,0 +1,27 @@
+.prefab-card {
+  cursor: pointer;
+}
+
+.prefab-modal {
+  z-index: 1000;
+  position: absolute; 
+  top: 50vh;
+  left: 50vw;
+  transform: translate(-50%, -50%);
+  padding: 15px;
+  border-radius: 15px;
+  background: var(--mantine-color-body);
+  max-width: 80vw;
+  display: flex;
+  flex-direction: column;
+}
+
+.prefab-modal-image {
+  width: 400px;
+  border-radius: 15px;
+  margin: 20px 0;
+}
+
+.prefabs-overlay {
+  z-index: 1000;
+}

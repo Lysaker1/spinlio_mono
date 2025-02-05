@@ -1,3 +1,7 @@
+.design-card {
+  cursor: pointer;
+}
+
 .edit-name-container {
   display: flex;
   gap: 8px;

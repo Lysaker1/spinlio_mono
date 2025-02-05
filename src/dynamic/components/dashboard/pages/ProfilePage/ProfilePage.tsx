@@ -128,7 +128,7 @@ const ProfilePage: React.FC = () => {
       const fetchProfile = async () => {
         let profileId = id;
         setLoading(true);
-        if (!id) {
+        if (!id && myProfile) {
           profileId = myProfile?.id;
         }
         if (profileId) {
@@ -147,7 +147,7 @@ const ProfilePage: React.FC = () => {
   
 
       fetchProfile();
-    }, [id]);
+    }, [id, myProfile]);
   
   if (!profile) {
     return (

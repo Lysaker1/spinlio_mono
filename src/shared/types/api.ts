@@ -1,3 +1,4 @@
+import { CONFIGURATOR_TYPES } from '../constants/configuratorTypes';
 // Define what our API responses look like
 export interface ApiResponse<T> {
   success: boolean;
@@ -16,7 +17,7 @@ export interface DesignResponse {
   name: string;
   parameters: Record<string, any>;
   created_at: string;
-  configurator_type: 'default' | 'vulz';
+  configurator_type: typeof CONFIGURATOR_TYPES[keyof typeof CONFIGURATOR_TYPES];
 }
 
 // Now our services can use these types

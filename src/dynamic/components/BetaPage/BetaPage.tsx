@@ -1,32 +1,61 @@
 // src/dynamic/components/BetaPage/BetaPage.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ImageUpload from '../ImageUpload/ImageUpload';
 import ModelViewer from '../ModelViewer/ModelViewer';
+import RhinoTest from '../RhinoTest/RhinoTest';
+import { ModelGallery } from '../ModelGallery/ModelGallery';
+import TabbedInterface from '../TabbedInterface/TabbedInterface';
 import './BetaPage.css';
+import { ErrorBoundary } from 'react-error-boundary';
 
 const BetaPage: React.FC = () => {
-  const [modelBlob, setModelBlob] = useState<Blob | null>(null);
+  const [selectedModel, setSelectedModel] = useState<string | null>(null);
+
+  const handleModelSelect = (url: string | null) => {
+    console.log('BetaPage handling model selection:', url);
+    setSelectedModel(url);
+  };
 
   return (
     <div className="beta-page">
-      <div className="beta-content">
-        <div className="viewer-container">
-          {modelBlob ? (
-            <ModelViewer modelBlob={modelBlob} />
-          ) : (
-            <div className="placeholder-viewer">
-              <h2>Upload an image to generate a 3D model</h2>
-              <p>The model will appear here</p>
-            </div>
-          )}
-        </div>
-        
-        <div className="control-panel">
-          <div className="panel-content">
-            <h1>3D Model Generation</h1>
-            <ImageUpload onModelGenerated={setModelBlob} />
+      <div className="viewer-container">
+        {selectedModel ? (
+          <ErrorBoundary
+            fallback={<div>Error loading model</div>}
+            onReset={() => setSelectedModel(null)}
+          >
+            <ModelViewer
+              key={selectedModel}
+              modelUrl={selectedModel}
+              initialZoom={5}
+            />
+          </ErrorBoundary>
+        ) : (
+          <div className="placeholder-viewer">
+            <h2>No Model Selected</h2>
+            <p>Select a model from the gallery to view</p>
           </div>
-        </div>
+        )}
+      </div>
+
+      <div className="control-panel">
+        <TabbedInterface
+          tabs={[
+            {
+              label: '2D',
+              content: <div>2D content here</div>
+            },
+            {
+              label: '3D',
+              content: (
+                <ModelGallery 
+                  onModelSelect={handleModelSelect}
+                />
+              )
+            }
+          ]}
+          onModelSelect={handleModelSelect}
+        />
       </div>
     </div>
   );

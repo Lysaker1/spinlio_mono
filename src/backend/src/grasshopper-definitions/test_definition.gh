@@ -1,0 +1,16 @@
+# Required Components:
+# - Number Slider (x2) [Input Parameters]
+# - Cylinder (Surface -> Primitive)
+
+# Input Parameters
+radius = rs.GetReal("Radius", 10)  # Default radius 10
+height = rs.GetReal("Height", 20)  # Default height 20
+
+# Create cylinder
+cylinder = rs.AddCylinder(rs.WorldXYPlane(), height, radius)
+
+# Output geometry
+rs.EnableRedraw(False)
+rs.UnselectAllObjects()
+rs.SelectObject(cylinder)
+rs.EnableRedraw(True)

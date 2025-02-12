@@ -299,25 +299,7 @@ export const parameterDefinitions: ParameterDefinition[] = [
     ],
     "configuratorTypes": ["urban"]
   },
-  // {
-  //   "id": "44d398e1-f057-4d3f-8446-2f8e38703b86",
-  //   "name": "Down Tube",
-  //   "subCategory": "Water Bottle",
-  //   "category": "accessories",
-  //   "type": "dropdown",
-  //   "value": "1",
-  //   "options": [
-  //     {
-  //       "label": "Yes",
-  //       "value": "0"
-  //     },
-  //     {
-  //       "label": "No",
-  //       "value": "1"
-  //     }
-  //   ],
-  //   "configuratorTypes": ["urban"]
-  // },
+
   {
     "id": "44d398e1-f057-4d3f-8446-2f8e38703b86",
     "name": "Water Bottle",

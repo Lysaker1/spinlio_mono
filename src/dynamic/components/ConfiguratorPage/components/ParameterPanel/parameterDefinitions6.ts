@@ -6,21 +6,24 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "name": "Show Dimensions",
     "value": "false",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "83912dec-4ac3-4813-84a9-e9f8316536d8",
     "name": "X axis for front TIRE",
     "value": "58",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "3577beb2-7946-4e3f-9549-9d43be77f27c",
     "name": "Boolean Toggle",
     "value": "true",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "eea4374e-a513-4f61-924a-f8175351fa8b",
@@ -31,14 +34,16 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "value": "595",
     "min": 540,
     "max": 600,
-    "unit": "mm"
+    "unit": "mm",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "15c239d7-8130-41d2-8470-342335fcfb5f",
     "name": "X-Fork Crown Height",
     "value": "20",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "d1f726c0-fb21-4f15-8f11-06ba73e0f3a9",
@@ -49,14 +54,16 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "value": "65",
     "min": 65,
     "max": 75,
-    "unit": "mm"
+    "unit": "mm",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "c4d4c978-5b58-49ce-a567-739894dc5d36",
     "name": "Rear Width",
     "value": "48",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "972de871-83ed-4243-9510-f4c2ab3228a3",
@@ -74,7 +81,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
         "label": "110mm",
         "value": "1"
       }
-    ]
+    ],
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "815b0eaf-cd38-4638-8bde-5f6ac27739d0",
@@ -85,7 +93,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "value": "460",
     "min": 420,
     "max": 450,
-    "unit": "mm"
+    "unit": "mm",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "beff3154-f6bd-494e-998b-13f9660e9506",
@@ -96,7 +105,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "value": "483",
     "min": 500,
     "max": 620,
-    "unit": "mm"
+    "unit": "mm",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "6eac979f-e146-4021-8439-0cf495cf0431",
@@ -114,7 +124,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
         "label": "700",
         "value": "1"
       }
-    ]
+    ],
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "64ecfdab-39bb-4d5c-a11d-b98690404bf9",
@@ -157,7 +168,6 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "configuratorTypes": [
       "vulz",
       "stepthru"
-    
     ]
   },
   {
@@ -169,7 +179,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "value": "72.5",
     "min": 72.5,
     "max": 75,
-    "unit": "°"
+    "unit": "°",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "d4c506b0-01e8-4958-883f-d7dac161eebe",
@@ -201,7 +212,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "name": "DownTube thickness",
     "value": "99",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "ac762528-d92e-4d5a-8c48-e364432e61e9",
@@ -235,28 +247,32 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "name": "Dimension_color",
     "value": "0x000000ff",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "748ef0ef-9e2c-493e-ad09-d908404f289c",
     "name": "Bottle Colour",
     "value": "0x76808285",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "b5bf6f12-a078-4417-a4ae-d2049807178c",
     "name": "Show Only Frame",
     "category": "geometry",
     "type": "checkbox",
-    "value": "false"
+    "value": "false",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "ac947279-5f74-46ec-93c6-a3fdac0a9eb0",
     "name": "Show Only Fork",
     "value": "false",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "9c43fdf1-d21d-4c8f-b8a3-b7d9602bfe1d",
@@ -266,7 +282,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "type": "slider",
     "value": "0.73",
     "min": 0,
-    "max": 1
+    "max": 1,
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "03c193b3-bbc9-491b-b4d5-1a2b48a4e0d1",
@@ -284,7 +301,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
         "label": "No",
         "value": "1"
       }
-    ]
+    ],
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "44d398e1-f057-4d3f-8446-2f8e38703b86",
@@ -327,7 +345,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "name": "DownTube DiameterPoints",
     "value": "0,0;0.1,0.5;0.5,0.9;1,1",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "4ec438ea-a490-434b-82ea-88f84f67f6b7",
@@ -385,28 +404,32 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "name": "Width",
     "value": "0",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "39881cea-9d0d-4879-99ee-6ed1d4c0574d",
     "name": "HandleBar Colour",
     "value": "0x292424ff",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "2c3b8027-a4d7-42e2-afb8-264417ee9655",
     "name": "Number Slider",
     "value": "0.9",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "ea2fe86c-71b3-459e-8bd3-e056db0b5e8d",
     "name": "Seat Colour",
     "value": "0x262626ff",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "50033fab-4882-439f-8413-a68a99314ed2",
@@ -424,49 +447,56 @@ export const parameterDefinitions: ParameterDefinition[] = [
         "label": "Disc-brake",
         "value": "1"
       }
-    ]
+    ],
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "34db677e-094f-4ca3-ba28-1ffa0c21c9c0",
     "name": "Crank Colour",
     "value": "0x3d3d3dff",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "28506066-d464-4837-8f7c-99d6147df434",
     "name": "Pipe Reinforcement radius",
     "value": "12.5",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "cf01eb63-7d21-4c67-b27e-23f658b7140a",
     "name": "Battery Cover Location",
     "value": "0.406",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "b6860af0-0da7-4c0e-9a4c-4e15dc378537",
     "name": "Battery Cover Length",
     "value": "0.352",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "15f903e5-2943-4bd9-8f50-581e26f9b7fb",
     "name": "DownTube/HeadTube",
     "value": "0.55",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "c67853c5-b724-4bfb-bb0a-f12a58aa34ee",
     "name": "y axis scale FORK",
     "value": "0.800",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "fb34be77-f67f-4ee9-989e-c8baf24eacf1",
@@ -484,14 +514,16 @@ export const parameterDefinitions: ParameterDefinition[] = [
         "label": "Flat Mount",
         "value": "1"
       }
-    ]
+    ],
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "593f670d-a770-4d37-84e8-f34aabdecb17",
     "name": "Number Slider",
     "value": "22",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "33ab6af5-42db-494e-834e-0f652a911a85",
@@ -509,14 +541,16 @@ export const parameterDefinitions: ParameterDefinition[] = [
         "label": "142mm",
         "value": "1"
       }
-    ]
+    ],
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "6c895932-e37c-4815-88ef-9bc7ef8520b0",
     "name": "X-MatchSeatStay&TopTube",
     "value": "false",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "da8f6e1f-fe0a-43f1-a8c7-f7c2d27c5a4d",
@@ -538,7 +572,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "name": "Number Slider",
     "value": "-29",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "fbb5d1c5-9ede-49e3-8d68-5b5a7d390ce1",
@@ -549,14 +584,16 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "value": "24.00",
     "min": 20,
     "max": 35,
-    "unit": "mm"
+    "unit": "mm",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "a250e630-2572-402a-af6e-e36136793a42",
     "name": "X-Fork width at axel",
     "value": "9.7",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "f0f25a06-82aa-4584-b4ab-2f39c4e71651",
@@ -567,7 +604,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "value": "30",
     "min": 30,
     "max": 40,
-    "unit": "mm"
+    "unit": "mm",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "7920797e-f807-4b15-b964-d97d9a9d58a2",
@@ -586,27 +624,31 @@ export const parameterDefinitions: ParameterDefinition[] = [
         "value": "1"
       }
     ],
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "734e8f5c-4006-47e6-b84f-61df7fb0dde2",
     "name": "TopTube CurvePoints",
     "value": "0,0;0.1,0.4;0.4,0.8;1,1",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "b41d6573-f719-446b-b463-67046c93097f",
     "name": "Colour Swatch",
     "value": "0x333333ff",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "cb15151e-0bb2-4895-b40d-3184fe772fe1",
     "name": "Derailer Color",
     "value": "0xe0e0e0ff",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "5422df73-826b-4478-88d3-016cf74499f6",
@@ -624,14 +666,16 @@ export const parameterDefinitions: ParameterDefinition[] = [
         "label": "Bolt Through",
         "value": "1"
       }
-    ]
+    ],
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "214ed92c-846b-4f8a-a12e-1fb437e58d5c",
     "name": "Number Slider",
     "value": "10",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "7b5d938d-b964-4f31-bd97-e36008869962",
@@ -639,7 +683,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "subCategory": "Wheels",
     "value": "0x262626ff",
     "category": "accessories",
-    "type": "colorWithPalette"
+    "type": "colorWithPalette",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "7935dece-7133-4678-a77e-a3dd54c8e114",
@@ -650,7 +695,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "value": "21",
     "min": 10,
     "max": 50,
-    "unit": "mm"
+    "unit": "mm",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "cbdf47f8-4e69-45ce-bc08-dda011276a06",
@@ -668,56 +714,64 @@ export const parameterDefinitions: ParameterDefinition[] = [
         "label": "36",
         "value": "1"
       }
-    ]
+    ],
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "0c908c83-7337-42f5-896a-005f9b10f33c",
     "name": "File Format",
     "value": "0",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "8620773c-238b-4627-ba8e-2d1c0995b089",
     "name": "Client name",
     "category": "client information",
     "type": "text",
-    "value": "your name"
+    "value": "your name",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "97090b76-9451-44de-b9d8-1dc6056ee751",
     "name": "Number Slider",
     "value": "1.26",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "3412035c-c0e0-4a92-9ab8-e8085c434195",
     "name": "X-Frame texture Size",
     "value": "806",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "e593174a-549d-468a-92ab-28029f9b4ad0",
     "name": "Number Slider",
     "value": "15",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "b4a6298a-e0d9-4d7d-bdf8-51db53a813f1",
     "name": "SeatStay seatside Diameter",
     "value": "24",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "93d72eca-25cc-4eb1-8a95-16ee449dd01d",
     "name": "SeatStay thickness",
     "value": "12",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "9e898618-6cce-4a45-bc4d-ea7bbd9af54f",
@@ -751,28 +805,32 @@ export const parameterDefinitions: ParameterDefinition[] = [
         "label": "Square",
         "value": "5"
       }
-    ]
+    ],
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "7a55821d-3981-4eb8-9a4c-26b7e275e56c",
     "name": "TopTube DiameterPoints",
     "value": "0,0;1,1",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "3afee937-c9ca-487d-b912-165b4be705be",
     "name": "End Of Line",
     "value": "2",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "ef670dec-8b9c-4f01-8dec-072095cceb5a",
     "name": "Export Rhino Object names",
     "value": "2",
     "category": "other",
-    "type": "text"
+    "type": "text",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "56fa370a-8b83-4bd6-9797-f1e0897faac3",
@@ -780,7 +838,8 @@ export const parameterDefinitions: ParameterDefinition[] = [
     "subCategory": "Frame",
     "category": "tubing",
     "type": "color",
-    "value": "3"
+    "value": "3",
+    "configuratorTypes": ["default", "vulz"]
   },
   {
     "id": "206889f8-8ef2-4f95-ac06-34486923c73e",

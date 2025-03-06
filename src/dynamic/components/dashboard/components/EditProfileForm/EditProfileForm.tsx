@@ -34,7 +34,7 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ profile, onSubmit }) 
       is_public: profile?.is_public ?? true,
     },
     validate: {
-      custom_url: (value) => {
+      custom_url: (value: string) => {
         if (!value) {
           return null;
         }
@@ -67,7 +67,7 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ profile, onSubmit }) 
 
   return (
     <div className='profile-subpage-content'>
-      <form onSubmit={form.onSubmit((values)=>handleSubmit(values))}>
+      <form onSubmit={form.onSubmit((values: Profile)=>handleSubmit(values))}>
         <TextInput required label="Name" {...form.getInputProps('name')} />
         <TextInput label="Avatar URL" {...form.getInputProps('avatar_url')} />
         <TextInput label="Location" {...form.getInputProps('location')} />

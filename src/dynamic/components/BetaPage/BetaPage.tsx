@@ -6,7 +6,7 @@ import RhinoTest from '../RhinoTest/RhinoTest';
 import { ModelGallery } from '../ModelGallery/ModelGallery';
 import TabbedInterface from '../TabbedInterface/TabbedInterface';
 import './BetaPage.css';
-import { ErrorBoundary } from 'react-error-boundary';
+import { ErrorBoundary } from '@shared/components';
 
 const BetaPage: React.FC = () => {
   const [selectedModel, setSelectedModel] = useState<string | null>(null);
@@ -22,7 +22,6 @@ const BetaPage: React.FC = () => {
         {selectedModel ? (
           <ErrorBoundary
             fallback={<div>Error loading model</div>}
-            onReset={() => setSelectedModel(null)}
           >
             <ModelViewer
               key={selectedModel}

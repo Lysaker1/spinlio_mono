@@ -6,6 +6,7 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { extractModelMetadata, createAttachmentPointVisuals } from '../../services/modelMetadataService';
 import { ErrorBoundary } from '@shared/components';
 
+
 interface ModelViewerProps {
   modelUrl: string;
   initialZoom?: number;

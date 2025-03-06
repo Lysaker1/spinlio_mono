@@ -7,6 +7,7 @@ import { RequestHandler } from 'express-serve-static-core';
 import { auth } from 'express-oauth2-jwt-bearer';
 import crypto from 'crypto';
 import Stripe from 'stripe';
+import path from 'path';
 
 
 dotenv.config();
@@ -17,7 +18,9 @@ const requiredEnvVars = [
     'AUTH0_AUDIENCE',  // Just use a single audience variable
     'AUTH0_ISSUER_BASE_URL',
     'STRIPE_SECRET_KEY',
-    'FRONTEND_URL'
+    'FRONTEND_URL',
+    'RHINO_COMPUTE_ENDPOINT',
+    'RHINO_COMPUTE_KEY'
 ];
 
 // Validate required env vars
@@ -517,6 +520,102 @@ app.post('/api/webhook', express.raw({type: 'application/json'}), async (req: Re
   }
 });
 
+// Add this after your existing routes
+app.get('/developer', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client/dist/index.html'));
+});
+
+// Serve static files for the developer portal
+app.use('/developer', express.static(path.join(__dirname, 'client/dist')));
+
+// Add the API endpoint for models
+app.post('/api/developer/models', jwtCheck, async (req, res) => {
+  const { name, ticket, modelId, configuratorType } = req.body;
+  try {
+    const { data, error } = await supabase
+      .from('models')
+      .insert([{ 
+        name, 
+        ticket, 
+        model_id: modelId,
+        configurator_type: configuratorType 
+      }])
+      .select();
+    
+    if (error) throw error;
+    res.json(data[0]);
+  } catch (error: any) {
+    console.error('Error saving model:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Add this new endpoint for Rhino Compute
+app.post('/api/rhino-compute', async (req: Request, res: Response) => {
+  try {
+    const { definitionId, parameters } = req.body;
+    
+    const computeResponse = await fetch(`${process.env.RHINO_COMPUTE_ENDPOINT}/grasshopper`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.RHINO_COMPUTE_KEY}`
+      },
+      body: JSON.stringify({
+        definitionId,
+        inputs: parameters
+      })
+    });
+
+    if (!computeResponse.ok) throw new Error(await computeResponse.text());
+    
+    const resultBuffer = await computeResponse.arrayBuffer();
+    res.set('Content-Type', 'application/octet-stream');
+    res.send(Buffer.from(resultBuffer));
+  } catch (error) {
+    res.status(500).json({ error: error instanceof Error ? error.message : 'Rhino Compute error' });
+  }
+});
+
+// Add this after your existing endpoints
+app.post('/api/upload-model', async (req: Request, res: Response) => {
+  try {
+    const { modelFile, filename } = req.body;
+    const modelId = crypto.randomUUID();
+    const modelFilename = `${modelId}-${filename}`;
+
+    // Convert base64 to buffer if needed
+    const modelBuffer = modelFile.startsWith('data:') 
+      ? Buffer.from(modelFile.split(',')[1], 'base64')
+      : Buffer.from(modelFile);
+
+    // Upload to Supabase storage
+    const { data, error } = await supabase.storage
+      .from('models')
+      .upload(modelFilename, modelBuffer, {
+        contentType: 'model/gltf+json',
+        upsert: true
+      });
+
+    if (error) throw error;
+
+    // Get public URL
+    const { data: { publicUrl } } = supabase.storage
+      .from('models')
+      .getPublicUrl(modelFilename);
+
+    res.json({
+      id: modelId,
+      filename: modelFilename,
+      url: publicUrl
+    });
+
+  } catch (error) {
+    console.error('Model upload error:', error);
+    res.status(500).json({ error: 'Failed to upload model' });
+  }
+});
+
 // // Any catch-all or error handling middleware should be last
 // app.use((req, res, next) => {
 //   // Allow everything
@@ -687,6 +786,10 @@ app.patch('/api/profile', jwtCheck, async (req: Request, res: Response): Promise
     res.status(500).json({ error: 'Failed to update profile' });
   }
 });
+
+if (!process.env.RHINO_COMPUTE_ENDPOINT || !process.env.RHINO_COMPUTE_KEY) {
+  throw new Error('Rhino Compute environment variables not configured');
+}
 
 const PORT = process.env.PORT|| 3003;
 app.listen(PORT, () => {

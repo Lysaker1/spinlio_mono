@@ -72,6 +72,8 @@ app.use(helmet({
       connectSrc: [
         "'self'", 
         "blob:",
+        "data:",
+        "https://www.gstatic.com",
         "https://*.shapediver.com", 
         "wss://*.shapediver.com",
         "http://localhost:3003",
@@ -195,8 +197,10 @@ app.use(helmet({
       ],
       workerSrc: [
         "'self'",
+        "data:",
         "blob:",
         "http://localhost:3003",
+        "http://localhost:3001/*",
         "https://api.spinlio.com",
         "*"
       ]

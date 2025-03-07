@@ -1,6 +1,5 @@
 import React, { useRef, useState } from 'react';
 import { InfoButton } from '../InfoButton/InfoButton';
-import './LogoUpload.css';
 import { ParameterDefinition } from '../../../types';
 
 interface LogoUploadProps {
@@ -48,10 +47,10 @@ export const LogoUpload: React.FC<LogoUploadProps> = ({
   };
 
   const logoUploadInfo = (
-    <div>
-      <h4>Logo Upload Guidelines</h4>
-      <p>Upload your custom logo to be displayed on the down tube:</p>
-      <ul>
+    <div className="text-black p-4 rounded-md max-w-xs">
+      <h4 className="text-lg font-semibold mb-2">Logo Upload Guidelines</h4>
+      <p className="text-sm mb-2">Upload your custom logo to be displayed on the down tube:</p>
+      <ul className="text-sm space-y-1 list-disc pl-5">
         <li>File format: PNG only</li>
         <li>Transparent background recommended</li>
         <li>High contrast for better visibility</li>
@@ -61,19 +60,19 @@ export const LogoUpload: React.FC<LogoUploadProps> = ({
   );
 
   return (
-    <div className="parameter-card logo-upload-container">
-      <div className="parameter-header">
-        <span className="parameter-label">{definition.name}</span>
+    <div className="w-full px-2 bg-transparent rounded-lg">
+      <div className="flex justify-between items-center">
+        <span className="text-base font-medium text-gray-500">{definition.name}</span>
         <InfoButton content={logoUploadInfo} />
       </div>
-      <div className="logo-upload-wrapper">
+      <div className="flex items-center gap-2 mt-2 w-full">
         <button 
-          className="logo-upload-button"
+          className="py-3 px-5 bg-black/10 border border-black/20 rounded-lg text-black cursor-pointer transition-all duration-200 ease-in-out text-sm min-w-[140px] hover:bg-black/15"
           onClick={() => fileInputRef.current?.click()}
         >
           Choose Logo
         </button>
-        <span className="file-name">
+        <span className="text-black/70 text-sm overflow-hidden text-ellipsis whitespace-nowrap">
           {fileName ? fileName : 'No logo chosen'}
         </span>
         <input
@@ -81,7 +80,7 @@ export const LogoUpload: React.FC<LogoUploadProps> = ({
           type="file"
           onChange={handleFileChange}
           accept="image/png"
-          className="hidden-input"
+          className="hidden"
         />
       </div>
     </div>

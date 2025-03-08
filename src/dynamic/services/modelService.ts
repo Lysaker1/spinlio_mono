@@ -1,12 +1,18 @@
 import { PutObjectCommand, GetObjectCommand, ListObjectsV2Command, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { s3Client, BUCKET_NAME, uploadFileToS3 } from '../utils/s3Client';
-import { getFileExtension, getFileCategory } from '../utils/fileTypeUtils';
+import { s3Client, BUCKET_NAME, uploadFileToS3, testS3Connection } from '../utils/s3Client';
+import { getFileExtension, getFileCategory, getMimeTypeFromExtension, isSupportedModelFormat } from '../utils/fileTypeUtils';
 import { supabase } from '../utils/supabaseClient';
 import { initiateModelConversion, checkConversionStatus } from './rhinoComputeService';
+import { v4 as uuidv4 } from 'uuid';
 
 // Model metadata type
 export interface ModelMetadata {
+  /**
+   * Unique UUID identifier for the model
+   * This should be a valid RFC 4122 UUID v4 string
+   * Generated automatically if not provided
+   */
   id?: string;
   name: string;
   filename: string;
@@ -38,16 +44,74 @@ export interface ModelMetadata {
   conversion_job_id?: string;
 }
 
-// Organize files in S3 by file type
-const getS3KeyForFile = (file: File, userId?: string): string => {
-  const fileCategory = getFileCategory(file.name);
+// Organize files in S3 using a structured folder approach
+const getS3KeyForFile = (file: File, userId?: string, metadata?: Partial<ModelMetadata>): string => {
+  const fileExtension = getFileExtension(file.name);
   const timestamp = Date.now();
   const sanitizedFileName = file.name.replace(/[^a-z0-9.-]/gi, '_').toLowerCase();
+  
+  // Use component ID from metadata or generate a new random UUID
+  // This ensures we have a proper UUID format for the database
+  const componentId = metadata?.id || uuidv4();
+  
+  // Get category and subcategory from metadata or use defaults
+  const category = metadata?.category || 'uncategorized';
+  const subcategory = metadata?.subcategory || 'general';
+  
+  // Determine the base path based on file type
+  let basePath = '';
+  
+  // Original models go in the models directory
+  if (isSupportedModelFormat(file.name)) {
+    basePath = `models/${category}/${subcategory}`;
+  } 
+  // Thumbnails and preview images
+  else if (getFileCategory(file.name) === 'image') {
+    basePath = 'thumbnails';
+  } 
+  // Converted models will be handled separately
+  else {
+    // For other file types, use a generic structure
+    basePath = `other/${getFileCategory(file.name)}`;
+  }
   
   // If userId is provided, include it in the path for user-specific storage
   const userPrefix = userId ? `users/${userId}/` : '';
   
-  return `${userPrefix}${fileCategory}/${timestamp}-${sanitizedFileName}`;
+  // Construct the final S3 key with timestamp and component ID for uniqueness
+  return `${userPrefix}${basePath}/${componentId}-${sanitizedFileName}`;
+};
+
+// Generate S3 key for converted model formats
+export const getConvertedModelS3Key = (
+  originalS3Key: string,
+  convertedFormat: string,
+  modelId: string
+): string => {
+  // Use the provided modelId (which is now a UUID) directly
+  const baseName = modelId;
+  
+  // Determine the category/subcategory from the original path
+  let categoryPath = 'converted';
+  
+  // If original path follows our structure, extract category info
+  if (originalS3Key.includes('/models/')) {
+    const pathParts = originalS3Key.split('/');
+    // Extract category and subcategory if available
+    if (pathParts.length >= 3) {
+      // Get category and subcategory
+      const categoryIndex = pathParts.indexOf('models') + 1;
+      if (categoryIndex < pathParts.length) {
+        categoryPath = `converted/${pathParts[categoryIndex]}`;
+        if (categoryIndex + 1 < pathParts.length) {
+          categoryPath += `/${pathParts[categoryIndex + 1]}`;
+        }
+      }
+    }
+  }
+  
+  // Return path for converted model format
+  return `${categoryPath}/${baseName}/${baseName}.${convertedFormat}`;
 };
 
 // Upload a model file to S3
@@ -57,24 +121,44 @@ export const uploadModelToS3 = async (
   userId?: string
 ): Promise<ModelMetadata> => {
   try {
-    const s3Key = getS3KeyForFile(file, userId);
+    // Generate a proper UUID for the model if not provided
+    if (!metadata.id) {
+      metadata.id = uuidv4();
+    }
     
-    // S3 upload parameters
+    // Test S3 connectivity first
+    const isConnected = await testS3Connection();
+    if (!isConnected) {
+      throw new Error('Cannot connect to S3. Please check your credentials and network connection.');
+    }
+    
+    // Generate S3 key using our new structured approach
+    const s3Key = getS3KeyForFile(file, userId, metadata);
+    
+    console.log('Uploading file:', file.name, 'Size:', file.size, 'Type:', file.type || 'unknown');
+    
+    // Ensure file has a proper content type based on extension
+    const contentType = file.type || getMimeTypeFromExtension(file.name);
+    
+    // S3 upload parameters with enhanced metadata
     const params = {
       Bucket: BUCKET_NAME,
       Key: s3Key,
       Body: file,
-      ContentType: file.type || `model/${getFileExtension(file.name)}`,
+      ContentType: contentType,
       Metadata: {
         'x-amz-meta-name': metadata.name,
         'x-amz-meta-category': metadata.category,
         ...(metadata.subcategory && { 'x-amz-meta-subcategory': metadata.subcategory }),
         ...(metadata.manufacturer && { 'x-amz-meta-manufacturer': metadata.manufacturer }),
+        ...(metadata.part_type && { 'x-amz-meta-part-type': metadata.part_type }),
+        'x-amz-meta-original-filename': file.name,
       }
     };
 
-    // Use the new uploadFileToS3 function that handles both small and large files
-    await uploadFileToS3(params);
+    // Upload file to S3
+    const uploadResult = await uploadFileToS3(params);
+    console.log('Upload successful:', uploadResult);
     
     // Generate a temporary signed URL for the uploaded object
     const command = new GetObjectCommand({
@@ -84,11 +168,15 @@ export const uploadModelToS3 = async (
     
     const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
     
+    // We don't need to extract component ID from the S3 key anymore
+    // Instead, use the UUID we generated or was provided in metadata
+    
     // Prepare the complete metadata object
     const completeMetadata: ModelMetadata = {
       ...metadata,
+      // id is already set correctly in metadata
       file_size: file.size,
-      file_type: file.type || `model/${getFileExtension(file.name)}`,
+      file_type: contentType,
       s3_key: s3Key,
       url: signedUrl,
       conversion_status: 'pending',
@@ -104,7 +192,7 @@ export const uploadModelToS3 = async (
       
     if (error) throw error;
     
-    // Queue conversion job with Rhino Compute
+    // Queue conversion job with Rhino Compute, using the structured path for converted models
     await queueRhinoModelConversion(data.id, s3Key, file.name);
     
     return data;
@@ -185,19 +273,33 @@ const queueRhinoModelConversion = async (modelId: string, s3Key: string, filenam
   try {
     // Call the Rhino Compute service to initiate conversion
     const sourceFormat = getFileExtension(filename);
+    
+    // Add information about where converted files should be stored
+    const conversionInfo = {
+      outputs: {
+        glb: getConvertedModelS3Key(s3Key, 'glb', modelId),
+        gltf: getConvertedModelS3Key(s3Key, 'gltf', modelId),
+        // Add more formats as needed
+      }
+    };
+    
     const { jobId } = await initiateModelConversion(modelId, s3Key, sourceFormat);
     
     // Store the job ID in the database for status tracking
     await supabase
       .from('models')
-      .update({ conversion_job_id: jobId })
+      .update({ 
+        conversion_job_id: jobId,
+        // Store information about expected conversion outputs
+        converted_formats: Object.keys(conversionInfo.outputs)
+      })
       .eq('id', modelId);
       
     console.log(`Conversion job initiated with ID: ${jobId}`);
   } catch (error) {
-    console.error('Error initiating conversion:', error);
+    console.error('Error initiating model conversion:', error);
     
-    // Update model status to failed if conversion could not be initiated
+    // Update the model status to failed
     await supabase
       .from('models')
       .update({ conversion_status: 'failed' })
@@ -284,5 +386,49 @@ export const getModelConversionStatus = async (modelId: string): Promise<{
   } catch (error) {
     console.error('Error getting model conversion status:', error);
     throw error;
+  }
+};
+
+/**
+ * Test function to verify S3 connectivity and upload capabilities
+ * This can be called from a button in the UI to check if S3 is working
+ */
+export const testS3Upload = async (): Promise<{success: boolean, message: string}> => {
+  try {
+    // Create a small test file
+    const testContent = 'This is a test file to verify S3 upload functionality.';
+    const testBlob = new Blob([testContent], { type: 'text/plain' });
+    const testFile = new File([testBlob], 'test-upload.txt');
+    
+    console.log('Testing S3 upload with a small text file...');
+    
+    // Use our uploadModelToS3 function with minimal metadata
+    await uploadModelToS3(
+      testFile, 
+      {
+        name: 'Test Upload',
+        filename: 'test-upload.txt',
+        category: 'test'
+      }
+    );
+    
+    return {
+      success: true,
+      message: 'S3 upload test successful! Your S3 configuration is working correctly.'
+    };
+  } catch (error) {
+    console.error('S3 upload test failed:', error);
+    
+    let errorMessage = 'Unknown error occurred';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    } else if (typeof error === 'string') {
+      errorMessage = error;
+    }
+    
+    return {
+      success: false,
+      message: `S3 upload test failed: ${errorMessage}`
+    };
   }
 }; 

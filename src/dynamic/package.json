@@ -2,6 +2,8 @@
   "name": "@spinlio/dynamic",
   "version": "1.0.0",
   "dependencies": {
+    "@react-three/drei": "^9.90.0",
+    "@react-three/fiber": "^8.15.12",
     "axios": "^1.7.7",
     "express": "^4.21.1",
     "helmet": "^8.0.0",

@@ -1,0 +1,135 @@
+.pedro-container {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  height: calc(100vh - 200px);
+  min-height: 500px;
+}
+
+.pedro-controls {
+  flex: 1;
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  overflow-y: auto;
+  max-width: 400px;
+}
+
+.upload-button-container {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  border: 1px dashed #dee2e6;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+  transition: all 0.2s ease;
+}
+
+.upload-button-container:hover {
+  border-color: #adb5bd;
+  background-color: #f1f3f5;
+}
+
+.uploaded-file-info {
+  padding: 1rem;
+  background-color: #e9ecef;
+  border-radius: 8px;
+  border-left: 4px solid #228be6;
+}
+
+/* Tab styling */
+.tab-content {
+  display: flex;
+  align-items: center;
+}
+
+.pedro-viewer {
+  flex: 2;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.empty-viewer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  border: 2px dashed #dee2e6;
+  border-radius: 8px;
+  padding: 2rem;
+  background-color: #f8f9fa;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+/* Attachment points list styling */
+.attachment-points-list {
+  margin-bottom: 1.5rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.attachment-point-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #e9ecef;
+  background-color: #f8f9fa;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.attachment-point-item:hover {
+  background-color: #e9ecef;
+}
+
+.attachment-point-item.selected {
+  border-color: #228be6;
+  background-color: #e7f5ff;
+}
+
+/* Button styling fix */
+.mantine-Button-root {
+  color: white;
+}
+
+.mantine-Button-root[data-variant="subtle"] {
+  color: inherit;
+}
+
+/* Make sure the 3D canvas takes up the full height of the viewer */
+canvas {
+  height: 100% !important;
+  width: 100% !important;
+  outline: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .pedro-container {
+    flex-direction: column;
+    height: auto;
+  }
+  
+  .pedro-controls {
+    max-width: 100%;
+  }
+  
+  .pedro-viewer {
+    min-height: 400px;
+  }
+} 

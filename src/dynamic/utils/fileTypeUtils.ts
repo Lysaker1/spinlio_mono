@@ -44,9 +44,13 @@ export const FILE_TYPE_CATEGORIES = {
   RHINO_FORMATS
 };
 
-// Returns file extension without the dot
+// Get the file extension from a filename (e.g., 'model.glb' -> 'glb')
 export const getFileExtension = (filename: string): string => {
-  return filename.split('.').pop()?.toLowerCase() || '';
+  const lastDotIndex = filename.lastIndexOf('.');
+  if (lastDotIndex === -1) return '';
+  const extension = filename.substring(lastDotIndex + 1).toLowerCase();
+  console.log(`File extension detected: ${extension} for file: ${filename}`);
+  return extension;
 };
 
 // Check if a file is a supported 3D model format
@@ -61,17 +65,70 @@ export const isThreeJsCompatible = (filename: string): boolean => {
   return THREEJS_COMPATIBLE.includes(extension as any);
 };
 
-// Determine file category based on extension
+// Get the file category based on extension (e.g., 'glb' -> '3d')
 export const getFileCategory = (filename: string): string => {
   const extension = getFileExtension(filename);
   
-  if (THREEJS_COMPATIBLE.includes(extension as any)) {
-    return 'threejs';
-  } else if (CAD_FORMATS.includes(extension as any)) {
-    return 'cad';
-  } else if (RHINO_FORMATS.includes(extension as any)) {
-    return 'rhino';
-  }
+  // Map of file extensions to categories
+  const extensionCategories: Record<string, string> = {
+    // 3D model formats
+    'glb': '3d',
+    'gltf': '3d',
+    'obj': '3d',
+    'fbx': '3d',
+    'stl': '3d',
+    'dae': '3d',
+    '3ds': '3d',
+    'blend': '3d',
+    // Image formats
+    'jpg': 'image',
+    'jpeg': 'image',
+    'png': 'image',
+    'gif': 'image',
+    'webp': 'image',
+    'svg': 'image',
+    // Document formats
+    'pdf': 'document',
+    'doc': 'document',
+    'docx': 'document',
+    'txt': 'document',
+  };
   
-  return 'other';
+  const category = extensionCategories[extension] || 'other';
+  console.log(`File category detected: ${category} for extension: ${extension}`);
+  return category;
+};
+
+// Detect MIME type from file extension
+export const getMimeTypeFromExtension = (filename: string): string => {
+  const extension = getFileExtension(filename);
+  
+  // Map of file extensions to MIME types
+  const mimeTypes: Record<string, string> = {
+    // 3D model formats
+    'glb': 'model/gltf-binary',
+    'gltf': 'model/gltf+json',
+    'obj': 'model/obj',
+    'fbx': 'application/octet-stream',  // No standard MIME type for FBX
+    'stl': 'model/stl',
+    'dae': 'model/vnd.collada+xml',
+    '3ds': 'application/x-3ds',
+    'blend': 'application/octet-stream',
+    // Image formats
+    'jpg': 'image/jpeg',
+    'jpeg': 'image/jpeg',
+    'png': 'image/png',
+    'gif': 'image/gif',
+    'webp': 'image/webp',
+    'svg': 'image/svg+xml',
+    // Document formats
+    'pdf': 'application/pdf',
+    'doc': 'application/msword',
+    'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'txt': 'text/plain',
+  };
+  
+  const mimeType = mimeTypes[extension] || 'application/octet-stream';
+  console.log(`MIME type detected: ${mimeType} for extension: ${extension}`);
+  return mimeType;
 }; 

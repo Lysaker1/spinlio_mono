@@ -24,7 +24,10 @@ const PageLayout: React.FC<PageLayoutProps> = ({
 }) => {
   const { isAuthenticated } = useAuth0();
 
-  const unauthenticatedPages = ["/dashboard/prefabs"] //  Pages that not require authentication
+  const unauthenticatedPages = [
+    "/dashboard/prefabs",
+    "/dashboard/pedro"
+  ] //  Pages that not require authentication
 
   if (!isAuthenticated && !unauthenticatedPages.includes(window.location.pathname)) {
     return (

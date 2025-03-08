@@ -4,7 +4,8 @@ import {
   IconTruck, 
   IconBike, 
   IconUpload, 
-  IconShoppingCart
+  IconShoppingCart,
+  IconTools
 } from '@tabler/icons-react';
 import '../../Dashboard.css'
 
@@ -28,6 +29,11 @@ const menuItems = [
     icon: <IconShoppingCart size={32} stroke={1}/>, 
     label: 'My Orders', 
     path: '/dashboard/orders' 
+  },
+  { 
+    icon: <IconTools size={32} stroke={1}/>, 
+    label: 'Pedro', 
+    path: '/dashboard/pedro' 
   },
 ];
 

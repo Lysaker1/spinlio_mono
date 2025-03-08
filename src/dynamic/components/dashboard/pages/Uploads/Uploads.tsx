@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { SimpleGrid, Text, Button, Card, Image, Group, Badge, Modal, Loader, Stack, TextInput, Textarea, Select } from '@mantine/core';
+import { SimpleGrid, Text, Button, Card, Image, Group, Badge, Modal, Loader, Stack, TextInput, Textarea, Select, Alert } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import PageLayout from '../../components/PageLayout/PageLayout';
-import { getModels, uploadModelToS3, deleteModel, ModelMetadata } from '../../../../services/modelService';
+import { getModels, uploadModelToS3, deleteModel, ModelMetadata, testS3Upload } from '../../../../services/modelService';
 import { isSupportedModelFormat } from '../../../../utils/fileTypeUtils';
 import './Uploads.css';
 
@@ -157,6 +157,28 @@ const Uploads: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadModalOpened, { open: openUploadModal, close: closeUploadModal }] = useDisclosure(false);
   const [refreshInterval, setRefreshInterval] = useState<number | null>(null);
+  const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
+  const [testing, setTesting] = useState(false);
+
+  // Function to test S3 connectivity
+  const handleTestS3 = async () => {
+    setTesting(true);
+    setTestResult(null);
+    try {
+      const result = await testS3Upload();
+      setTestResult(result);
+    } catch (error) {
+      let message = 'Unknown error occurred';
+      if (error instanceof Error) {
+        message = error.message;
+      } else if (typeof error === 'string') {
+        message = error;
+      }
+      setTestResult({ success: false, message });
+    } finally {
+      setTesting(false);
+    }
+  };
 
   useEffect(() => {
     loadModels();
@@ -280,10 +302,43 @@ const Uploads: React.FC = () => {
             accept=".glb,.gltf,.obj,.stl,.step,.stp,.3dm,.fbx,.iges,.igs,.dwg"
           />
         </Button>
-        <Button variant="outline" ml="sm" onClick={handleRefresh}>
+        
+        {/* S3 Test Button */}
+        <Button 
+          onClick={handleTestS3}
+          loading={testing}
+          style={{ 
+            backgroundColor: '#fd7e14', // Orange background
+            color: 'white',
+            border: '1px solid #f76707',
+            padding: '8px 16px',
+            marginRight: '8px'
+          }}
+        >
+          Test S3 Connection
+        </Button>
+
+        <Button 
+          variant="outline" 
+          onClick={handleRefresh}
+          style={{ padding: '8px 16px' }}
+        >
           Refresh
         </Button>
       </div>
+
+      {/* S3 Test Result Alert */}
+      {testResult && (
+        <Alert 
+          color={testResult.success ? 'green' : 'red'} 
+          title={testResult.success ? 'S3 Connection Successful' : 'S3 Connection Failed'}
+          mb="md"
+          withCloseButton
+          onClose={() => setTestResult(null)}
+        >
+          {testResult.message}
+        </Alert>
+      )}
 
       {loading ? (
         <div className="loading-container">

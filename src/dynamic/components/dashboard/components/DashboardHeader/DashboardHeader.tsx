@@ -22,59 +22,61 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ opened, toggle }) => 
   };
 
   return (
-    <div className="dashboard-header-container">
-      <Group>
-        <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="md" />
-        <Title order={1} className='dashboard-header-title' onClick={()=>navigate("/dashboard")}>Spinlio</Title>
-      </Group>
-      <Group className="dashboard-header-group" gap="xs">
-        {isAuthenticated ? (
-          <>
-            <ActionIcon variant="subtle" size="lg">
-              <IconBell size={20} />
-            </ActionIcon>          
-            <Avatar
-              radius="xl"
-              color="initials"
-              size="md"
-              src={profile?.avatar_url}
-              imageProps={{ onError: (e) => {
-                (e.target as HTMLImageElement).style.display = 'none';
-              }}}
-            >
-              {getInitials(profile?.name || '')}
-            </Avatar>
-            <Menu shadow="md" width={200} position="bottom-end" zIndex={1000}>
-              <Menu.Target>
-                <Group style={{ cursor: 'pointer' }}>
-                  <Text size="sm" fw={500}>{profile?.name}</Text>
-                  <IconChevronDown size={14} />
-                </Group>
-              </Menu.Target>
+    <div className="p-2">
+      <div className="dashboard-header-container">
+        <Group>
+          <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="md" />
+          <Title order={1} className='dashboard-header-title' onClick={()=>navigate("/dashboard")}>Spinlio</Title>
+        </Group>
+        <Group className="dashboard-header-group" gap="xs">
+          {isAuthenticated ? (
+            <>
+              <ActionIcon variant="subtle" size="lg">
+                <IconBell size={20} />
+              </ActionIcon>          
+              <Avatar
+                radius="xl"
+                color="initials"
+                size="md"
+                src={profile?.avatar_url}
+                imageProps={{ onError: (e) => {
+                  (e.target as HTMLImageElement).style.display = 'none';
+                }}}
+              >
+                {getInitials(profile?.name || '')}
+              </Avatar>
+              <Menu shadow="md" width={200} position="bottom-end" zIndex={1000}>
+                <Menu.Target>
+                  <Group style={{ cursor: 'pointer' }}>
+                    <Text size="sm" fw={500}>{profile?.name}</Text>
+                    <IconChevronDown size={14} />
+                  </Group>
+                </Menu.Target>
 
-              <Menu.Dropdown>
-                <Menu.Item
-                  leftSection={<IconUser size={14} />}
-                  onClick={() => navigate('/dashboard/profile/')}
-                >
-                  My Profile
-                </Menu.Item>
-                <Menu.Item
-                  color="red"
-                  leftSection={<IconLogout size={14} />}
-                  onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
-                >
-                  Log out
-                </Menu.Item>
-              </Menu.Dropdown>
-            </Menu>
-          </>
-        ) : (
-          <Button onClick={() => loginWithRedirect()} bg='black'>
-            Log in
-          </Button>
-        )}
-      </Group>
+                <Menu.Dropdown>
+                  <Menu.Item
+                    leftSection={<IconUser size={14} />}
+                    onClick={() => navigate('/dashboard/profile/')}
+                  >
+                    My Profile
+                  </Menu.Item>
+                  <Menu.Item
+                    color="red"
+                    leftSection={<IconLogout size={14} />}
+                    onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
+                  >
+                    Log out
+                  </Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
+            </>
+          ) : (
+            <Button onClick={() => loginWithRedirect()} bg='black'>
+              Log in
+            </Button>
+          )}
+        </Group>
+      </div>
     </div>
   );
 };

@@ -5,6 +5,7 @@ import PageLayout from '../../components/PageLayout/PageLayout';
 import { getModels, uploadModelToS3, deleteModel, ModelMetadata, testS3Upload } from '../../../../services/modelService';
 import { isSupportedModelFormat } from '../../../../utils/fileTypeUtils';
 import './Uploads.css';
+import UploadModal from './components/UploadModal/UploadModal';
 
 // Import ModelCard component if it exists
 let ModelCard: React.ComponentType<any> | null = null;
@@ -75,78 +76,6 @@ const InlineModelCard = ({ model, onDelete, onRefresh }: {
 
 // Use either imported ModelCard or inline version
 const ModelCardComponent = ModelCard || InlineModelCard;
-
-// Create the ModelUploadForm component inline
-const ModelUploadForm = ({ 
-  filename, 
-  fileSize, 
-  onSubmit, 
-  uploading 
-}: { 
-  filename: string; 
-  fileSize: number; 
-  onSubmit: (metadata: any) => void; 
-  uploading: boolean; 
-}) => {
-  const [name, setName] = useState(filename.split('.')[0]);
-  const [category, setCategory] = useState('');
-  const [description, setDescription] = useState('');
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit({
-      name,
-      filename,
-      category,
-      description
-    });
-  };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <Stack gap="md">
-        <TextInput
-          required
-          label="Model Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Enter model name"
-        />
-
-        <Select
-          required
-          label="Category"
-          placeholder="Select a category"
-          value={category}
-          onChange={(value) => setCategory(value || '')}
-          data={[
-            { value: 'category_1', label: 'Category 1' },
-            { value: 'category_2', label: 'Category 2' },
-            { value: 'category_3', label: 'Category 3' },
-            { value: 'category_4', label: 'Category 4' },
-            { value: 'category_5', label: 'Category 5' },
-            { value: 'category_6', label: 'Category 6' },
-            { value: 'category_7', label: 'Category 7' },
-          ]}
-        />
-
-        <Textarea
-          label="Description"
-          placeholder="Enter model description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          minRows={3}
-        />
-
-        <Group justify="flex-end">
-          <Button type="submit" loading={uploading}>
-            {uploading ? 'Uploading...' : 'Upload Model'}
-          </Button>
-        </Group>
-      </Stack>
-    </form>
-  );
-};
 
 const Uploads: React.FC = () => {
   const [models, setModels] = useState<ModelMetadata[]>([]);
@@ -284,7 +213,7 @@ const Uploads: React.FC = () => {
     <PageLayout {...pageLayoutProps}>
       <div style={{ marginBottom: '1rem' }}>
         <Button 
-          onClick={() => document.getElementById('file-upload')?.click()}
+          onClick={() => openUploadModal()}
           style={{ 
             backgroundColor: '#228be6', // Blue background
             color: 'white',            // White text
@@ -294,13 +223,6 @@ const Uploads: React.FC = () => {
           }}
         >
           Upload Model
-          <input
-            id="file-upload"
-            type="file"
-            style={{ display: 'none' }}
-            onChange={handleFileSelect}
-            accept=".glb,.gltf,.obj,.stl,.step,.stp,.3dm,.fbx,.iges,.igs,.dwg"
-          />
         </Button>
         
         {/* S3 Test Button */}
@@ -364,50 +286,10 @@ const Uploads: React.FC = () => {
         </SimpleGrid>
       )}
 
-      <Modal
-        opened={uploadModalOpened}
-        onClose={closeUploadModal}
-        title="Upload 3D Model"
-        size="lg"
-        styles={{
-          content: {
-            maxHeight: '90vh', // Use nearly full viewport height
-          },
-          body: { 
-            maxHeight: 'none', // Let the body expand as needed
-            overflowY: 'auto',
-            padding: '20px',
-            display: 'flex',
-            flexDirection: 'column',
-          },
-          header: {
-            marginBottom: '10px',
-            padding: '20px 20px 0 20px',
-          }
-        }}
-      >
-        {selectedFile && (
-          <>
-            <ModelUploadForm
-              filename={selectedFile.name}
-              fileSize={selectedFile.size}
-              onSubmit={handleUpload}
-              uploading={uploading}
-            />
-            {/* Backup fixed button that's always visible */}
-            <Group justify="flex-end" mt="xl" className="model-upload-form-footer">
-              <Button 
-                onClick={() => document.querySelector('form')?.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }))}
-                loading={uploading}
-                className="model-upload-submit-button"
-                size="md"
-              >
-                {uploading ? 'Uploading...' : 'Upload Model'}
-              </Button>
-            </Group>
-          </>
-        )}
-      </Modal>
+      <UploadModal 
+        uploadModalOpened={uploadModalOpened} 
+        closeUploadModal={closeUploadModal} 
+      />
     </PageLayout>
   );
 };

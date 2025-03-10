@@ -46,7 +46,8 @@ export const AuthService = {
         name: "Test Design",
         description: "Testing API",
         parameters: { test: "value" },
-        configurator_type: CONFIGURATOR_TYPES.DEFAULT
+        configurator_type: CONFIGURATOR_TYPES.DEFAULT,
+        is_public: false
       };
       
       const result = await DesignStorageService.saveDesign(testDesign as NewDesign, token);

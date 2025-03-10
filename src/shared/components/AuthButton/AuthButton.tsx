@@ -36,7 +36,15 @@ export const AuthButton: React.FC = () => {
     </Button>
   ) : (
     <Button
-      onClick={() => loginWithRedirect()}
+      onClick={() => {
+        // Store the current path in localStorage before redirecting
+        const currentPath = window.location.pathname;
+        console.log('Storing redirect path:', currentPath);
+        localStorage.setItem('auth_redirect_path', currentPath);
+        
+        // Then redirect to login
+        loginWithRedirect();
+      }}
       variant="filled"
       styles={() => ({
         root: buttonStyles

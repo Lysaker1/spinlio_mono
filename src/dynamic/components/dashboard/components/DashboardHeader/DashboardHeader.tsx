@@ -71,7 +71,15 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ opened, toggle }) => 
               </Menu>
             </>
           ) : (
-            <Button onClick={() => loginWithRedirect()} bg='black'>
+            <Button onClick={() => {
+              // Store the current path in localStorage before redirecting
+              const currentPath = window.location.pathname;
+              console.log('Storing redirect path:', currentPath);
+              localStorage.setItem('auth_redirect_path', currentPath);
+              
+              // Then redirect to login
+              loginWithRedirect();
+            }} bg='black'>
               Log in
             </Button>
           )}

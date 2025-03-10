@@ -14,6 +14,8 @@ import { Notifications } from '@mantine/notifications';
 import { MyDesigns } from '@shared/components/MyDesigns/MyDesigns';
 import { Success } from '@shared/components/CheckoutResult/Success';
 import { Cancel } from '@shared/components/CheckoutResult/Cancel';
+// Import the AuthCallback component
+const AuthCallback = lazy(() => import('../Auth/AuthCallback'));
 
 // Don't load the big 3D page right away - wait until we need it
 const ConfiguratorPage = lazy(() => 
@@ -206,7 +208,14 @@ const AppContent: React.FC = () => {
               </React.Suspense>
             } 
           />
-          <Route path="/callback" element={<Navigate to="/" replace />} />         
+          <Route 
+            path="/callback" 
+            element={
+              <React.Suspense fallback={<div className="loading-placeholder" />}>
+                <AuthCallback />
+              </React.Suspense>
+            } 
+          />         
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </main>

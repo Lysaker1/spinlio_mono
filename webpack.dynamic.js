@@ -37,7 +37,7 @@ module.exports = (env) => {
   const cspHeaders = {
     'Content-Security-Policy': `
       default-src 'self' data:; 
-      script-src 'self' 'unsafe-eval' 'unsafe-inline' 
+      script-src 'self' 'unsafe-eval' 'unsafe-inline' blob:
         https://static.klaviyo.com
         https://www.googletagmanager.com
         https://*.klaviyo.com
@@ -48,7 +48,8 @@ module.exports = (env) => {
       style-src 'self' 'unsafe-inline' 
         https://static.klaviyo.com
         https://*.klaviyo.com
-        https://fonts.googleapis.com; 
+        https://fonts.googleapis.com
+        https://fonts.gstatic.com;
       connect-src 'self' ws: wss: http: https: data: localhost:* blob:
         https://static.klaviyo.com
         https://*.klaviyo.com
@@ -59,7 +60,8 @@ module.exports = (env) => {
         https://api.spinlio.com; 
       font-src 'self' data:
         https://static.klaviyo.com
-        https://*.klaviyo.com;
+        https://*.klaviyo.com
+        https://fonts.gstatic.com;
       img-src 'self' data: blob:
         http://localhost:3003
         https://api.spinlio.com

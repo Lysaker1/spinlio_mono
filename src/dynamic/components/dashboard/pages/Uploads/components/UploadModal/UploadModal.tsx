@@ -56,9 +56,15 @@ const UploadModal = ({ uploadModalOpened, closeUploadModal }: UploadModalProps) 
     
     setUploading(true);
     try {
+      // Start the upload process and get the model metadata
       const uploadResponse = await uploadModelToS3(selectedFile, metadata);
+      console.log('Model metadata created:', uploadResponse);
+      
+      // Close the modal and reset state
       closeUploadModal();
       setSelectedFile(null);
+      
+      // Navigate to the edit page immediately
       if (uploadResponse.id) {
         navigate(`/dashboard/uploads/${uploadResponse.id}`);
       }
@@ -96,7 +102,7 @@ const UploadModal = ({ uploadModalOpened, closeUploadModal }: UploadModalProps) 
                 className="flex flex-col gap-2 items-center justify-center border-2 border-dashed text-center border-gray-300 rounded-lg p-4 cursor-pointer"
               >
                 <IconCloudUpload size={48} />
-                <p className="text-lg">Drag and drop or click to choose your .gh or .ghx file here</p>
+                <p className="text-lg">Drag and drop or click to choose your 3D file here</p>
                 <p className="text-sm text-gray-500">Max file size: 10MB</p> 
                 <input
                   id="file-upload"

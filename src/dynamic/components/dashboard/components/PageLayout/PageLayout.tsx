@@ -29,7 +29,12 @@ const PageLayout: React.FC<PageLayoutProps> = ({
     "/dashboard/pedro"
   ] //  Pages that not require authentication
 
-  if (!isAuthenticated && !unauthenticatedPages.includes(window.location.pathname)) {
+  // Check if the current path starts with any of the unauthenticated pages
+  const isUnauthenticatedPage = unauthenticatedPages.some(page => 
+    window.location.pathname.startsWith(page)
+  );
+
+  if (!isAuthenticated && !isUnauthenticatedPage) {
     return (
       <div className="page-container">
         <AuthenticatedFeature>

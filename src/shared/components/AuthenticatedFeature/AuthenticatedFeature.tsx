@@ -49,7 +49,15 @@ export const AuthenticatedFeature: React.FC<AuthenticatedFeatureProps> = ({
     return (
       <LoginContainer>
         <LoginText>Login to access this feature</LoginText>
-        <LoginButton onClick={() => loginWithRedirect()}>
+        <LoginButton onClick={() => {
+          // Store the current path in localStorage before redirecting
+          const currentPath = window.location.pathname;
+          console.log('Storing redirect path:', currentPath);
+          localStorage.setItem('auth_redirect_path', currentPath);
+          
+          // Then redirect to login
+          loginWithRedirect();
+        }}>
           Log in
         </LoginButton>
       </LoginContainer>

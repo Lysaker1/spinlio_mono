@@ -5,6 +5,8 @@ import App from './components/App';
 import '../shared/styles/global.css';
 import { apiUrl } from './config/api';
 import { UserProvider } from '@shared/hooks/useUser';
+import '@mantine/core/styles.css';
+import '../index.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root')!);
 

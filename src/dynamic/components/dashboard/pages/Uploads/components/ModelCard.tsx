@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
 import { Card, Image, Text, Group, Badge, Button, ActionIcon, Tooltip, Menu, Collapse } from '@mantine/core';
-import { IconTrash, IconDownload, IconEye, IconRefresh, IconInfoCircle } from '@tabler/icons-react';
+import { IconTrash, IconDownload, IconEye, IconRefresh, IconInfoCircle, IconArrowRight, IconPencil } from '@tabler/icons-react';
 import { ModelMetadata } from '../../../../../services/modelService';
 import { getModelConversionStatus } from '../../../../../services/modelService';
 import { getFileExtension } from '../../../../../utils/fileTypeUtils';
+import { useNavigate } from 'react-router-dom';
 
 interface ModelCardProps {
-  model: ModelMetadata;
-  onDelete: () => void;
+  model: ModelMetadata    
   onRefresh?: () => void;
 }
 
-const ModelCard: React.FC<ModelCardProps> = ({ model, onDelete, onRefresh }) => {
+const ModelCard: React.FC<ModelCardProps> = ({ model,  onRefresh }) => {
   const [showDetails, setShowDetails] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
-
+  const navigate = useNavigate();
   const formatFileSize = (bytes: number): string => {
     if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)} KB`;
@@ -66,7 +66,7 @@ const ModelCard: React.FC<ModelCardProps> = ({ model, onDelete, onRefresh }) => 
         <div className="model-thumbnail">
           {/* Placeholder image - in a real app, generate thumbnails */}
           <Image
-            src={`/assets/placeholder-thumbnails/${getFileExtension(model.filename)}.jpg`}
+            src={model.thumbnail_url || `/assets/placeholder-thumbnails/default.jpg`}
             fallbackSrc="/assets/placeholder-thumbnails/default.jpg"
             h={160}
             alt={model.name}
@@ -146,29 +146,29 @@ const ModelCard: React.FC<ModelCardProps> = ({ model, onDelete, onRefresh }) => 
         </div>
       </Collapse>
 
-      <Group justify="flex-end" mt="md">
-        {/* View model button */}
+      <Group justify="flex-center" mt="md">
         <Menu>
           <Menu.Target>
-            <Button size="xs" variant="light">
+            <Button leftSection={<IconEye size={16} style={{ color: '#fff' }} />} size="sm" variant="filled" style={{ borderRadius: '8px', backgroundColor: '#000', color: '#fff', ':hover': { backgroundColor: '#218838' } }}>
               View Model
             </Button>
           </Menu.Target>
-          <Menu.Dropdown>
+          <Menu.Dropdown style={{ borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
             <Menu.Item 
-              leftSection={<IconEye size={14} />}
+              leftSection={<IconEye size={16} style={{ color: '#007bff' }} />}
               onClick={handleViewModel}
+              style={{ padding: '10px', ':hover': { backgroundColor: '#f1f3f5' } }}
             >
               View Original
             </Menu.Item>
-            
             {model.conversion_status === 'completed' && 
              model.converted_formats && 
              model.converted_formats.map(format => (
               <Menu.Item 
                 key={format}
-                leftSection={<IconEye size={14} />}
+                leftSection={<IconEye size={16} style={{ color: '#007bff' }} />}
                 onClick={() => handleViewConverted(format)}
+                style={{ padding: '10px', ':hover': { backgroundColor: '#f1f3f5' } }}
               >
                 View as {format.toUpperCase()}
               </Menu.Item>
@@ -176,40 +176,39 @@ const ModelCard: React.FC<ModelCardProps> = ({ model, onDelete, onRefresh }) => 
           </Menu.Dropdown>
         </Menu>
 
-        {/* Download model button */}
         <Menu>
           <Menu.Target>
-            <Button size="xs" variant="light" color="green">
+            <Button leftSection={<IconDownload size={16} style={{ color: '#fff' }} />} size="sm" variant="filled" style={{ borderRadius: '8px', backgroundColor: '#000', color: '#fff', ':hover': { backgroundColor: '#218838' } }}>
               Download
             </Button>
           </Menu.Target>
-          <Menu.Dropdown>
+          <Menu.Dropdown style={{ borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
             <Menu.Item 
-              leftSection={<IconDownload size={14} />}
+              leftSection={<IconDownload size={16} style={{ color: '#28a745' }} />}
               onClick={() => model.url && window.open(model.url, '_blank')}
+              style={{ padding: '10px', ':hover': { backgroundColor: '#f1f3f5' } }}
             >
               Download Original
             </Menu.Item>
-            
             {model.conversion_status === 'completed' && 
              model.converted_formats && 
              model.converted_formats.map(format => (
               <Menu.Item 
                 key={format}
-                leftSection={<IconDownload size={14} />}
+                leftSection={<IconDownload size={16} style={{ color: '#28a745' }} />}
                 onClick={() => handleViewConverted(format)}
+                style={{ padding: '10px', ':hover': { backgroundColor: '#f1f3f5' } }}
               >
                 Download as {format.toUpperCase()}
               </Menu.Item>
             ))}
           </Menu.Dropdown>
         </Menu>
-
-        {/* Delete model button */}
-        <Button size="xs" color="red" onClick={onDelete}>
-          Delete
+        <Button leftSection={<IconPencil size={16} style={{ color: '#fff' }} />} size="sm" variant="filled" style={{ borderRadius: '8px', backgroundColor: '#000', color: '#fff', ':hover': { backgroundColor: '#218838' } }} onClick={() => navigate(`/dashboard/uploads/${model.id}`)}>
+          Edit
         </Button>
       </Group>
+      
     </Card>
   );
 };

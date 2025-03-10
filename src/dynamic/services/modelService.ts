@@ -42,6 +42,9 @@ export interface ModelMetadata {
   conversion_status?: 'pending' | 'processing' | 'completed' | 'failed';
   converted_formats?: string[];
   conversion_job_id?: string;
+  color?: string;
+  thumbnail_url?: string;
+  is_public?: boolean;
 }
 
 // Organize files in S3 using a structured folder approach
@@ -191,7 +194,7 @@ export const uploadModelToS3 = async (
       .single();
       
     if (error) throw error;
-    
+
     // Queue conversion job with Rhino Compute, using the structured path for converted models
     await queueRhinoModelConversion(data.id, s3Key, file.name);
     
@@ -304,6 +307,44 @@ const queueRhinoModelConversion = async (modelId: string, s3Key: string, filenam
       .from('models')
       .update({ conversion_status: 'failed' })
       .eq('id', modelId);
+  }
+};
+
+// Get a model by ID
+export const getModelById = async (modelId: string): Promise<ModelMetadata | null> => {
+  try {
+    const { data, error } = await supabase
+      .from('models')
+      .select('*')
+      .eq('id', modelId)
+      .single();
+
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.error('Error fetching model by ID:', error);
+    throw error;
+  }
+};
+
+// Update a model
+export const updateModel = async (modelId: string, model: Partial<ModelMetadata>): Promise<ModelMetadata | null> => {
+  try {
+    const { data, error } = await supabase
+      .from('models')
+      .select('*')
+      .eq('id', modelId)
+      .single();
+
+    if (error) {
+      console.error('Error updating model:', error);
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error updating model:', error);  
+    throw error;
   }
 };
 

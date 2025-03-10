@@ -14,6 +14,7 @@ import { Notifications } from '@mantine/notifications';
 import { MyDesigns } from '@shared/components/MyDesigns/MyDesigns';
 import { Success } from '@shared/components/CheckoutResult/Success';
 import { Cancel } from '@shared/components/CheckoutResult/Cancel';
+import { useAuth0 } from '@auth0/auth0-react';
 
 // Don't load the big 3D page right away - wait until we need it
 const ConfiguratorPage = lazy(() => 
@@ -80,6 +81,8 @@ const AppContent: React.FC = () => {
                              location.pathname.includes('/table');
   const isDashboardRoute = location.pathname.startsWith('/dashboard');
 
+  const { isAuthenticated } = useAuth0();
+
   useEffect(() => {
     pageView(location.pathname + location.search);
   }, [location]);
@@ -102,7 +105,6 @@ const AppContent: React.FC = () => {
 
   return (
     <div className="app">
-      <Header />
       <main className="main-content">
         <Routes>
           {/* Default route - goes straight to configurator */}
@@ -110,7 +112,7 @@ const AppContent: React.FC = () => {
             path="/" 
             element={
               <React.Suspense fallback={<div className="loading-placeholder" />}>
-                <ConfiguratorPage />
+                <ConfiguratorPage isAuthenticated={isAuthenticated} />
               </React.Suspense>
             } 
           />
@@ -120,7 +122,7 @@ const AppContent: React.FC = () => {
             path="/configurator" 
             element={
               <React.Suspense fallback={<div className="loading-placeholder" />}>
-                <ConfiguratorPage />
+                <ConfiguratorPage isAuthenticated={isAuthenticated} />
               </React.Suspense>
             } 
           />
@@ -144,7 +146,7 @@ const AppContent: React.FC = () => {
             path="/vulz" 
             element={
               <React.Suspense fallback={<div className="loading-placeholder" />}>
-                <VulzConfigurator />
+                <VulzConfigurator isAuthenticated={isAuthenticated} />
               </React.Suspense>
             } 
           />
@@ -152,7 +154,7 @@ const AppContent: React.FC = () => {
             path="/vulz/stepthru" 
             element={
               <React.Suspense fallback={<div className="loading-placeholder" />}>
-                <StepThruConfigurator />
+                <StepThruConfigurator isAuthenticated={isAuthenticated} />
               </React.Suspense>
             } 
           />
@@ -160,7 +162,7 @@ const AppContent: React.FC = () => {
             path="/vulz/urban" 
             element={
               <React.Suspense fallback={<div className="loading-placeholder" />}>
-                <UrbanConfigurator />
+                <UrbanConfigurator isAuthenticated={isAuthenticated} />
               </React.Suspense>
             } 
           />
@@ -168,7 +170,7 @@ const AppContent: React.FC = () => {
             path="/bookshelf" 
             element={
               <React.Suspense fallback={<div className="loading-placeholder" />}>
-                <BookshelfConfigurator />
+                <BookshelfConfigurator isAuthenticated={isAuthenticated} />
               </React.Suspense>
             } 
           />
@@ -176,7 +178,7 @@ const AppContent: React.FC = () => {
             path="/sofa" 
             element={
               <React.Suspense fallback={<div className="loading-placeholder" />}>
-                <SofaConfigurator />
+                <SofaConfigurator isAuthenticated={isAuthenticated} />
               </React.Suspense>
             } 
           />
@@ -184,7 +186,7 @@ const AppContent: React.FC = () => {
             path="/table" 
             element={
               <React.Suspense fallback={<div className="loading-placeholder" />}>
-                <TableConfigurator />
+                <TableConfigurator isAuthenticated={isAuthenticated} />
               </React.Suspense>
             } 
           />

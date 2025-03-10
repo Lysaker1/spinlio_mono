@@ -2,18 +2,16 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { DesignStorageService } from '../../services/designStorage';
 import { SavedDesign } from '../../types/SavedDesign';
-import './SaveDesignButton.css';
 import { AuthenticatedFeature } from '../AuthenticatedFeature/AuthenticatedFeature';
 import { ISessionApi, IViewportApi } from '@shapediver/viewer';
 import { ConfiguratorType } from '../../../dynamic/components/ConfiguratorPage/config/configuratorConfig';
+import { Menu } from '@mantine/core';
 
 interface SaveDesignButtonProps {
   getCurrentParameters: () => Record<string, any>;
   configuratorType: ConfiguratorType;
   viewport: IViewportApi | null;
   session: ISessionApi | null;
-  onMenuOpen: (isOpen: boolean) => void;
-  onMenuHeightChange: (height: number) => void;
 }
 
 
@@ -21,10 +19,7 @@ export const SaveDesignButton: React.FC<SaveDesignButtonProps> = ({
   getCurrentParameters,
   configuratorType,
   viewport,
-  onMenuOpen,
-  onMenuHeightChange,
   session
-
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [designName, setDesignName] = useState('');
@@ -32,27 +27,7 @@ export const SaveDesignButton: React.FC<SaveDesignButtonProps> = ({
   const { user, loginWithRedirect, getAccessTokenSilently } = useAuth0();
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  // Memoize the menu state change callback
-  const handleMenuStateChange = useCallback((isOpen: boolean) => {
-    onMenuOpen(isOpen);
-    onMenuHeightChange(isOpen ? 15 : 0);
-  }, [onMenuOpen, onMenuHeightChange]);
-
-  // Update the useEffect to use the memoized callback
-  useEffect(() => {
-    handleMenuStateChange(isModalOpen);
-  }, [isModalOpen, handleMenuStateChange]);
-
-  useEffect(() => {
-    onMenuOpen(isModalOpen);
-    if (isModalOpen) {
-      onMenuHeightChange?.(15);
-    } else {
-      onMenuHeightChange?.(0);
-    }
-  }, [isModalOpen, onMenuOpen, onMenuHeightChange]);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -63,8 +38,9 @@ export const SaveDesignButton: React.FC<SaveDesignButtonProps> = ({
 
         const clickedInsideMenu = saveMenu?.contains(clickTarget);
         const clickedInsideButton = saveButton?.contains(clickTarget);
+        const clickedInsideInput = inputRef.current?.contains(clickTarget);
 
-        if (!clickedInsideMenu && !clickedInsideButton) {
+        if (!clickedInsideMenu && !clickedInsideButton && !clickedInsideInput) {
           setIsModalOpen(false);
         }
       }
@@ -78,18 +54,6 @@ export const SaveDesignButton: React.FC<SaveDesignButtonProps> = ({
       window.removeEventListener('click', handleClickOutside, true);
     };
   }, [isModalOpen]);
-
-  useEffect(() => {
-    if (menuRef.current && isModalOpen) {
-      const height = menuRef.current.getBoundingClientRect().height;
-      const heightInVh = (height / window.innerHeight) * 100;
-      document.documentElement.style.setProperty('--save-menu-height', `${heightInVh}vh`);
-      onMenuHeightChange?.(Math.max(15, heightInVh));
-    } else {
-      document.documentElement.style.setProperty('--save-menu-height', '0px');
-      onMenuHeightChange?.(0);
-    }
-  }, [isModalOpen, onMenuHeightChange]);
 
   const handleButtonClick = () => {
     console.log('Save button clicked');
@@ -144,7 +108,8 @@ export const SaveDesignButton: React.FC<SaveDesignButtonProps> = ({
         description: `${configuratorType} bike configuration`,
         parameters,
         configurator_type: configuratorType as ConfiguratorType,
-        thumbnail_url: screenshotData
+        thumbnail_url: screenshotData,
+        is_public: true,
       };
 
       console.log('4. Saving design...');
@@ -161,76 +126,63 @@ export const SaveDesignButton: React.FC<SaveDesignButtonProps> = ({
     }
   };
 
+
   return (
     <AuthenticatedFeature
       fallback={
-        <div className="save-container">
-          <div className="save-button-container">
-            <button
-              className="save-button"
-              onClick={() => loginWithRedirect()}
-              aria-label="Save design"
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H16L21 8V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M17 21V13H7V21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M7 3V8H15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              <span className="save-button-text">Save</span>
-            </button>
-          </div>
-        </div>
+        <button
+          className="bg-gray-200 text-black rounded-full px-12 py-2 h-12 cursor-pointer"
+          onClick={() => loginWithRedirect()}
+        >
+          Save
+        </button>
       }
     >
-      <div className={`save-container ${isModalOpen ? 'menu-open' : ''}`}>
-        <div className="save-button-container">
-          <button
-            ref={buttonRef}
-            onClick={handleButtonClick}
-            className="save-button"
-            aria-label="Save design"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H16L21 8V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M17 21V13H7V21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M7 3V8H15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            <span className="save-button-text">Save</span>
-          </button>
-        </div>
-
-        {isModalOpen && (
-          <div className="save-menu" ref={menuRef}>
-            <button className="close-button" onClick={() => setIsModalOpen(false)} aria-label="Close">
-              &times;
-            </button>
-            <h3 className="save-title">Save Your Design</h3>
-            <div className="save-form">
-              <input
-                type="text"
-                className="save-input"
-                value={designName}
-                onChange={(e) => setDesignName(e.currentTarget.value)}
-                placeholder="Enter a name for your design"
-                disabled={isSaving}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter' && designName.trim() && !isSaving) {
-                    handleSave();
-                  }
-                }}
-              />
-              <div className="save-button-container">
-                <button
-                  onClick={handleSave}
-                  className="save-option-button"
-                  disabled={!designName.trim() || isSaving}
-                >
-                  {isSaving ? 'Saving...' : 'Save Design'}
+      <div>
+        <div>
+          <Menu opened={isModalOpen} onClose={() => setIsModalOpen(false)}>
+            <Menu.Target>
+              <button
+                ref={buttonRef}
+                onClick={handleButtonClick}
+                className="bg-gray-200 text-black rounded-full px-12 py-2 h-12 cursor-pointer"
+              >
+                Save
+              </button>
+            </Menu.Target>
+            <Menu.Dropdown className="bg-white rounded-xl p-2 text-center mt-2" ref={menuRef}>
+                <button className="absolute top-0 right-1 text-2xl" onClick={() => setIsModalOpen(false)} aria-label="Close">
+                  &times;
                 </button>
-              </div>
-            </div>
-          </div>
-        )}
+                <h3 className="text-center">Save Your Design</h3>
+                <div className="save-form">
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    className="bg-gray-bg rounded-full w-full px-4 py-2 my-4"
+                    value={designName}
+                    onChange={(e) => setDesignName(e.currentTarget.value)}
+                    placeholder="Name your design"
+                    disabled={isSaving}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter' && designName.trim() && !isSaving) {
+                        handleSave();
+                      }
+                    }}
+                  />
+                  <div>
+                    <button
+                      onClick={handleSave}
+                      className={`rounded-full w-full h-8 ${designName.trim() ? 'bg-black text-white' : 'bg-gray-200 text-gray-500 cursor-not-allowed'}`}
+                      disabled={!designName.trim() || isSaving}
+                    >
+                      {isSaving ? 'Saving...' : 'Save Design'}
+                    </button>
+                  </div>
+                </div>  
+            </Menu.Dropdown>
+          </Menu>
+        </div>
       </div>
     </AuthenticatedFeature>
   );

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import './ExportOptions.css';
 
 type FileFormat = 'OBJ' | 'STL' | '3DM';
 
@@ -19,20 +18,20 @@ const FileTypeSelect: React.FC<FileTypeSelectProps> = ({ value, onChange }) => {
     };
 
     return (
-        <div className="file-type-select">
-            <label>File format</label>
+        <div className="w-full flex justify-between align-middle">
+            <label className="mb-2 text-sm text-black/80">File format</label>
             <div
-                className={`custom-select ${isOpen ? 'open' : ''}`}
+                className={`relative w-1/3 p-2 bg-gray-bg rounded-lg text-black text-sm cursor-pointer flex justify-between items-center ${isOpen ? 'border-white/50' : ''}`}
                 onClick={() => setIsOpen(!isOpen)}
             >
-                <div className="selected-value">{value}</div>
-                <div className="dropdown-icon">&#9662;</div>
+                <div className="flex-1">{value}</div>
+                <div className="ml-2">&#9662;</div>
                 {isOpen && (
-                    <ul className="options">
+                    <ul className="absolute top-full left-0 w-full bg-gray-bg border border-white/20 z-10 mt-1 list-none p-0">
                         {options.map((option) => (
                             <li
                                 key={option}
-                                className={`option ${option === value ? 'active' : ''}`}
+                                className={`p-2 text-black text-sm cursor-pointer ${option === value ? 'bg-white' : ''} hover:bg-white/90`}
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     handleSelect(option);

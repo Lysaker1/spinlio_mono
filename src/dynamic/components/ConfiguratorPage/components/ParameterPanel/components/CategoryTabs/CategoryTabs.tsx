@@ -1,7 +1,5 @@
 // Import React for JSX support and component creation
 import React from 'react';
-// Import styles for the category tabs
-import './CategoryTabs.css';
 
 // Update TabType to include furniture categories
 export type TabType = 'tubing' | 'geometry' | 'accessories' | 'sizing' | 'material';
@@ -49,7 +47,7 @@ export const CategoryTabs: React.FC<CategoryTabsProps> = ({
 
   // Render a navigation element containing the tab buttons
   return (
-    <nav className="category-tabs" role="tablist">
+    <nav className="flex items-center justify-between w-full gap-0.5 p-0.5 rounded-2xl h-full" role="tablist">
       {/* Map through tabs array to create button elements */}
       {tabs.map(tab => (
         <button
@@ -57,7 +55,7 @@ export const CategoryTabs: React.FC<CategoryTabsProps> = ({
           role="tab"             // Accessibility role
           aria-selected={activeTab === tab.id}  // Tells screen readers which tab is selected
           aria-controls={`${tab.id}-panel`}     // Links tab to its panel for accessibility
-          className={`tab-button ${activeTab === tab.id ? 'active' : ''}`}  // Styling classes
+          className={`tab-button w-1/${tabs.length} h-full rounded-full ${activeTab === tab.id ? 'bg-black text-white' : ''}`}  // Styling classes
           onClick={() => handleTabClick(tab.id)} // Click handler
         >
           {tab.label}  {/* Display the tab's label text */}

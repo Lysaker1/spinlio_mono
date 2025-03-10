@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useThree, useFrame } from '@react-three/fiber';
-import { TransformControls, Plane, Html } from '@react-three/drei';
+import { TransformControls, Plane, Text as DreiText } from '@react-three/drei';
 import * as THREE from 'three';
 import { ThreeEvent } from '@react-three/fiber/dist/declarations/src/core/events';
 
@@ -12,7 +12,8 @@ export interface AttachmentPoint {
   position: [number, number, number];
   rotation: [number, number, number, number]; // Quaternion
   normal: [number, number, number];
-  color?: string;
+  color: string; // Make color required
+  meshId?: string; // Add optional meshId
 }
 
 interface AttachmentPointHelperProps {
@@ -396,19 +397,17 @@ const AttachmentPointHelper: React.FC<AttachmentPointHelperProps> = ({
               </group>
               
               {/* Label to identify the point */}
-              <Html position={[0, -0.3, 0]} center distanceFactor={10}>
-                <div style={{ 
-                  background: isSelected ? 'rgba(255,150,0,0.8)' : 'rgba(0,150,255,0.6)', 
-                  padding: '3px 6px', 
-                  borderRadius: '4px',
-                  color: 'white',
-                  fontWeight: 'bold',
-                  fontSize: '12px',
-                  pointerEvents: 'none'
-                }}>
-                  {attachmentPoints.indexOf(point) + 1}
-                </div>
-              </Html>
+              <DreiText
+                position={[0, -0.3, 0]}
+                color="white"
+                fontSize={0.15}
+                anchorX="center"
+                anchorY="middle"
+                backgroundColor={isSelected ? 'rgba(255,150,0,0.8)' : 'rgba(0,150,255,0.6)'}
+                padding={0.05}
+              >
+                {(attachmentPoints.indexOf(point) + 1).toString()}
+              </DreiText>
             </group>
             
             {/* Add transform controls when selected */}
@@ -423,56 +422,41 @@ const AttachmentPointHelper: React.FC<AttachmentPointHelperProps> = ({
                   onMouseUp={() => handleTransformChange(point.id)}
                 />
                 
-                <Html position={[0, 0.8, 0]} center distanceFactor={10}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                    <button 
-                      onClick={toggleTransformMode}
-                      style={{
-                        background: '#333',
-                        color: 'white',
-                        border: 'none',
-                        padding: '3px 8px',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        fontSize: '12px'
-                      }}
+                <group position={[0, 0.8, 0]}>
+                  {/* Mode toggle button */}
+                  <group position={[0, 0.2, 0]} onClick={toggleTransformMode}>
+                    <mesh>
+                      <planeGeometry args={[1, 0.3]} />
+                      <meshBasicMaterial color="#333333" />
+                    </mesh>
+                    <DreiText
+                      position={[0, 0, 0.01]}
+                      color="white"
+                      fontSize={0.1}
+                      anchorX="center"
+                      anchorY="middle"
                     >
                       Mode: {transformMode}
-                    </button>
-                    
-                    <button 
-                      onClick={toggleSnap}
-                      style={{
-                        background: snapEnabled ? '#007bff' : '#333',
-                        color: 'white',
-                        border: 'none',
-                        padding: '3px 8px',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        fontSize: '12px'
-                      }}
+                    </DreiText>
+                  </group>
+                  
+                  {/* Snap toggle button */}
+                  <group position={[0, -0.2, 0]} onClick={toggleSnap}>
+                    <mesh>
+                      <planeGeometry args={[1, 0.3]} />
+                      <meshBasicMaterial color={snapEnabled ? '#007bff' : '#333333'} />
+                    </mesh>
+                    <DreiText
+                      position={[0, 0, 0.01]}
+                      color="white"
+                      fontSize={0.1}
+                      anchorX="center"
+                      anchorY="middle"
                     >
-                      {snapEnabled ? 'Snap: ON' : 'Snap: OFF'}
-                    </button>
-                    
-                    {snapEnabled && (
-                      <button 
-                        onClick={() => snapToModel(point.id)}
-                        style={{
-                          background: '#28a745',
-                          color: 'white',
-                          border: 'none',
-                          padding: '3px 8px',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          fontSize: '12px'
-                        }}
-                      >
-                        Snap Now
-                      </button>
-                    )}
-                  </div>
-                </Html>
+                      Snap: {snapEnabled ? 'On' : 'Off'}
+                    </DreiText>
+                  </group>
+                </group>
               </>
             )}
           </group>

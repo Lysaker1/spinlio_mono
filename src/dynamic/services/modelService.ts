@@ -143,50 +143,20 @@ export const uploadModelToS3 = async (
     // Ensure file has a proper content type based on extension
     const contentType = file.type || getMimeTypeFromExtension(file.name);
     
-    // S3 upload parameters with enhanced metadata
-    const params = {
-      Bucket: BUCKET_NAME,
-      Key: s3Key,
-      Body: file,
-      ContentType: contentType,
-      Metadata: {
-        'x-amz-meta-name': metadata.name,
-        'x-amz-meta-category': metadata.category,
-        ...(metadata.subcategory && { 'x-amz-meta-subcategory': metadata.subcategory }),
-        ...(metadata.manufacturer && { 'x-amz-meta-manufacturer': metadata.manufacturer }),
-        ...(metadata.part_type && { 'x-amz-meta-part-type': metadata.part_type }),
-        'x-amz-meta-original-filename': file.name,
-      }
-    };
-
-    // Upload file to S3
-    const uploadResult = await uploadFileToS3(params);
-    console.log('Upload successful:', uploadResult);
-    
-    // Generate a temporary signed URL for the uploaded object
-    const command = new GetObjectCommand({
-      Bucket: BUCKET_NAME,
-      Key: s3Key
-    });
-    
-    const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
-    
-    // We don't need to extract component ID from the S3 key anymore
-    // Instead, use the UUID we generated or was provided in metadata
-    
-    // Prepare the complete metadata object
+    // Prepare the complete metadata object with temporary URL before actual upload
+    // This allows for immediate redirection to edit page
     const completeMetadata: ModelMetadata = {
       ...metadata,
-      // id is already set correctly in metadata
+      id: metadata.id,
       file_size: file.size,
       file_type: contentType,
       s3_key: s3Key,
-      url: signedUrl,
+      url: URL.createObjectURL(file), // Create a temporary local URL
       conversion_status: 'pending',
       converted_formats: [],
     };
     
-    // Store metadata in your database
+    // Store metadata in your database immediately
     const { data, error } = await supabase
       .from('models')
       .insert(completeMetadata)
@@ -195,9 +165,62 @@ export const uploadModelToS3 = async (
       
     if (error) throw error;
 
-    // Queue conversion job with Rhino Compute, using the structured path for converted models
-    await queueRhinoModelConversion(data.id, s3Key, file.name);
+    // Start S3 upload in the background without blocking
+    (async () => {
+      try {
+        // S3 upload parameters with enhanced metadata
+        const params = {
+          Bucket: BUCKET_NAME,
+          Key: s3Key,
+          Body: file,
+          ContentType: contentType,
+          Metadata: {
+            'x-amz-meta-name': metadata.name,
+            'x-amz-meta-category': metadata.category,
+            ...(metadata.subcategory && { 'x-amz-meta-subcategory': metadata.subcategory }),
+            ...(metadata.manufacturer && { 'x-amz-meta-manufacturer': metadata.manufacturer }),
+            ...(metadata.part_type && { 'x-amz-meta-part-type': metadata.part_type }),
+            'x-amz-meta-original-filename': file.name,
+          }
+        };
+
+        // Upload file to S3
+        const uploadResult = await uploadFileToS3(params);
+        console.log('S3 upload successful:', uploadResult);
+        
+        // Generate a signed URL for the uploaded object
+        const command = new GetObjectCommand({
+          Bucket: BUCKET_NAME,
+          Key: s3Key
+        });
+        
+        const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+        
+        // Update the database with the new signed URL and mark upload as completed
+        await supabase
+          .from('models')
+          .update({ 
+            url: signedUrl,
+            conversion_status: 'completed' // Mark as completed since we're not doing conversions yet
+          })
+          .eq('id', data.id);
+      
+        // COMMENTED OUT: Queue conversion job with Rhino Compute
+        // The Rhino compute API is not working currently and costs money to run
+        /*
+        await queueRhinoModelConversion(data.id, s3Key, file.name);
+        */
+      } catch (uploadError) {
+        console.error('Background S3 upload failed:', uploadError);
+        // Update status in database to indicate failure
+        await supabase
+          .from('models')
+          .update({ conversion_status: 'failed' })
+          .eq('id', data.id);
+      }
+    })();
     
+    // Return the model data immediately without waiting for S3 upload or conversion
     return data;
   } catch (error) {
     console.error('Error uploading model to S3:', error);

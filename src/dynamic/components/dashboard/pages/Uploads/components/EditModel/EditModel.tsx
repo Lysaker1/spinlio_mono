@@ -2,10 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { ModelMetadata } from '../../../../../../services/modelService';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getModelById, updateModel, deleteModel } from '../../../../../../services/modelService';
-import { Loader, Text, Switch, Tabs, TextInput, Textarea, ColorPicker, Select, NumberInput, Menu } from '@mantine/core';
+import { Loader, Text, Switch, Tabs, TextInput, ColorPicker, Select, NumberInput, Menu } from '@mantine/core';
 import { Variant, allVariants } from '../UploadModal/constants';
-import { IconCheck, IconChevronDown, IconPencil } from '@tabler/icons-react';
-
+import { IconCheck, IconChevronDown, IconPencil, IconAlertCircle } from '@tabler/icons-react';
+import ModelViewer from './ModelViewer';
+import SnapPointHelper from './SnapPointHelper';
+import SnapPointsTab from './SnapPointsTab';
+import { AttachmentPoint, apiToAttachmentPoint, attachmentPointToApi } from '../../../../../../types/attachment-points';
 
 const EditModel: React.FC = () => {
   const [model, setModel] = useState<ModelMetadata | null>(null);
@@ -17,6 +20,13 @@ const EditModel: React.FC = () => {
   const [colorPickerVisible, setColorPickerVisible] = useState<boolean>(false);
 
   const [variants, setVariants] = useState<Variant[]>([]);
+  
+  // Snap points state
+  const [attachmentPoints, setAttachmentPoints] = useState<AttachmentPoint[]>([]);
+  const [selectedPoint, setSelectedPoint] = useState<string | null>(null);
+  
+  // Active tab state
+  const [activeTab, setActiveTab] = useState<string>("parameters");
 
   const navigate = useNavigate();
   
@@ -38,6 +48,15 @@ const EditModel: React.FC = () => {
         } else {
           setVariants([]);
         }
+        
+        // Load attachment points if available
+        if (model?.attachment_points && Array.isArray(model.attachment_points)) {
+          // Convert from API format to our internal format using our helper
+          const points: AttachmentPoint[] = model.attachment_points.map((point: any, index: number) => 
+            apiToAttachmentPoint(point, index)
+          );
+          setAttachmentPoints(points);
+        }
       } catch (error) {
         setError((error as Error).message); 
       } finally {
@@ -54,14 +73,20 @@ const EditModel: React.FC = () => {
       return;
     }
     console.log("Saving...");
+    
+    // Convert attachment points to API format using our helper
+    const apiAttachmentPoints = attachmentPoints.map(attachmentPointToApi);
+    
     await updateModel(id, { 
       ...model,
       name: name,
       description: description,
       is_public: isPublic,
-     });
+      attachment_points: apiAttachmentPoints,
+      color: color || undefined
+    });
     console.log("Saved!");
-  }
+  };
 
   const handleDelete = async () => {
     if (!id) {
@@ -72,7 +97,37 @@ const EditModel: React.FC = () => {
     await deleteModel(id);
     navigate('/dashboard/uploads');
     console.log("Deleted!");
-  }
+  };
+  
+  // Handle updating an attachment point
+  const handleAttachmentPointUpdated = (updatedPoint: AttachmentPoint) => {
+    setAttachmentPoints(prev => 
+      prev.map(point => point.id === updatedPoint.id ? updatedPoint : point)
+    );
+  };
+  
+  // Add a new attachment point
+  const handleAddAttachmentPoint = () => {
+    const newPointId = `point-${Date.now()}`;
+    const newPoint: AttachmentPoint = {
+      id: newPointId,
+      position: [0, 0, 0],
+      rotation: [0, 0, 0, 1], // Identity quaternion
+      normal: [0, 0, 1], // Forward direction
+      color: '#FF0000'
+    };
+    
+    setAttachmentPoints(prev => [...prev, newPoint]);
+    setSelectedPoint(newPointId);
+  };
+  
+  // Remove an attachment point
+  const handleRemoveAttachmentPoint = (pointId: string) => {
+    setAttachmentPoints(prev => prev.filter(point => point.id !== pointId));
+    if (selectedPoint === pointId) {
+      setSelectedPoint(null);
+    }
+  };
 
   const [isEditingName, setIsEditingName] = useState<boolean>(false);
   const [isPublic, setIsPublic] = useState<boolean>(false);
@@ -86,6 +141,16 @@ const EditModel: React.FC = () => {
       setDescription(model.description || '');
     }
   }, [model]);
+
+  const fileExtension = model?.filename?.split('.').pop()?.toLowerCase();
+  const isSupported = fileExtension === 'glb' || fileExtension === 'gltf';
+
+  // Handler for tab change that handles the nullable value
+  const handleTabChange = (value: string | null) => {
+    if (value) {
+      setActiveTab(value);
+    }
+  };
 
   return (
     <div className='w-full h-[calc(100vh-60px)] bg-white p-4'>
@@ -134,11 +199,28 @@ const EditModel: React.FC = () => {
         </div>
       ) : (
         <>
-        <div className='flex border border-gray-300 rounded-lg'>
-          <img className='w-1/2 h-64 object-cover mb-4' src={`/assets/placeholder-thumbnails/${model?.filename?.split('.').pop()}.jpg`} alt={model?.name} />
-          <div className='w-1/2 border-l border-gray-300'>
-            <div className='w-full'>
-              <Tabs defaultValue={"parameters"}>
+        <div className='flex border border-gray-300 rounded-lg h-[calc(100vh-140px)]'>
+          <div className='w-1/2 h-full relative'>
+            {/* Single ModelViewer with conditional SnapPointHelper */}
+            <ModelViewer 
+              url={model?.url} 
+              fileFormat={fileExtension} 
+              status={model?.conversion_status}
+            >
+              {/* Only show SnapPointHelper when on the snap-points tab and format is supported */}
+              {activeTab === 'snap-points' && isSupported && (
+                <SnapPointHelper 
+                  attachmentPoints={attachmentPoints}
+                  onAttachmentPointUpdated={handleAttachmentPointUpdated}
+                  selectedPoint={selectedPoint}
+                  onSelectPoint={setSelectedPoint}
+                />
+              )}
+            </ModelViewer>
+          </div>
+          <div className='w-1/2 border-l border-gray-300 h-full overflow-auto'>
+            <div className='w-full h-full flex flex-col'>
+              <Tabs defaultValue={"parameters"} value={activeTab} onChange={handleTabChange} className="h-full flex flex-col">
                 <Tabs.List>
                   <Tabs.Tab value='parameters' className='w-1/4'>
                     Parameters
@@ -153,107 +235,134 @@ const EditModel: React.FC = () => {
                     Price
                   </Tabs.Tab>
                 </Tabs.List>
-                <Tabs.Panel value='parameters' className='p-4 flex flex-col gap-4'>
-                  {
-                    variants.map((variant) => {
-                      if (variant.type === "select") {
-                        return (
-                          <Select label={variant.name} placeholder={variant.name} data={variant.options} />
-                        )
-                      }
-                      if (variant.type === "number") {
-                        return (
-                          <NumberInput label={variant.name} placeholder={variant.name} />
-                        )
-                      }
-                      if (variant.type === "boolean") {
-                        return (
-                          <Switch label={variant.name} />
-                        )
-                      }
-                      if (variant.type === "color") {
-                        let variantColor = '#000000';
-                        return (
-                          <ColorPicker format="hex" value={variantColor} onChange={(value) => variantColor = value} />
-                        )
-                      }
-                      if (variant.type === "string") {
-                        return (
-                          <TextInput label={variant.name} placeholder={variant.name} />
-                        )
-                      }
-                      return null;
-                    })
-                  }
-                </Tabs.Panel>
-                <Tabs.Panel value='snap-points' className='p-4'>
-                  <p>Here you will hopefully be able to select a relevant snap point for the model, and adjust it in the 3D viewer on the left side</p>
-                  
-                </Tabs.Panel>
-                <Tabs.Panel value='surface' className='p-4 relative'>
-                  <div className='mb-4 flex justify-between'>
-                    <Text>Color</Text>
-                    <div 
-                      className={`h-6 w-6 rounded-md border border-gray-300 bg-[${color}] cursor-pointer`} 
-                      onClick={() => setColorPickerVisible(!colorPickerVisible)}
-                      style={{ backgroundColor: color || '#000000' }}
+                <div className="flex-1 overflow-auto">
+                  <Tabs.Panel value='parameters' className='p-4 flex flex-col gap-4 h-full'>
+                    {
+                      variants.map((variant, index) => {
+                        if (variant.type === "select") {
+                          return (
+                            <Select 
+                              key={`variant-${index}`}
+                              label={variant.name} 
+                              placeholder={variant.name} 
+                              data={variant.options} 
+                            />
+                          )
+                        }
+                        if (variant.type === "number") {
+                          return (
+                            <NumberInput 
+                              key={`variant-${index}`}
+                              label={variant.name} 
+                              placeholder={variant.name} 
+                            />
+                          )
+                        }
+                        if (variant.type === "boolean") {
+                          return (
+                            <Switch 
+                              key={`variant-${index}`}
+                              label={variant.name} 
+                            />
+                          )
+                        }
+                        if (variant.type === "color") {
+                          let variantColor = '#000000';
+                          return (
+                            <ColorPicker 
+                              key={`variant-${index}`}
+                              format="hex" 
+                              value={variantColor} 
+                              onChange={(value) => variantColor = value} 
+                            />
+                          )
+                        }
+                        if (variant.type === "string") {
+                          return (
+                            <TextInput 
+                              key={`variant-${index}`}
+                              label={variant.name} 
+                              placeholder={variant.name} 
+                            />
+                          )
+                        }
+                        return null;
+                      })
+                    }
+                  </Tabs.Panel>
+                  <Tabs.Panel value='snap-points' className='p-4 h-full'>
+                    {/* Use the simplified SnapPointsTab component */}
+                    <SnapPointsTab
+                      fileFormat={fileExtension}
+                      conversionStatus={model?.conversion_status}
+                      attachmentPoints={attachmentPoints}
+                      onAttachmentPointUpdated={handleAttachmentPointUpdated}
+                      onAddAttachmentPoint={handleAddAttachmentPoint}
+                      onRemoveAttachmentPoint={handleRemoveAttachmentPoint}
+                      selectedPoint={selectedPoint}
+                      onSelectPoint={setSelectedPoint}
                     />
-                    {colorPickerVisible && (
-                      <div className='absolute top-10 right-0 bg-white rounded-md p-2 border border-gray-300'>
-                        <ColorPicker
-                          format="hex"
-                          value={color || '#000000'}
-                          onChange={(value) => setColor(value)}
-                        />
-                        <button 
-                          className='bg-black text-white w-full mt-2 px-2 py-1 rounded-full'
-                          onClick={() => setColorPickerVisible(false)}
-                        >
-                          OK
-                        </button>
+                  </Tabs.Panel>
+                  <Tabs.Panel value='surface' className='p-4 relative h-full'>
+                    <div className='mb-4 flex justify-between'>
+                      <Text>Color</Text>
+                      <div 
+                        className='h-6 w-6 rounded-md border border-gray-300 cursor-pointer'
+                        onClick={() => setColorPickerVisible(!colorPickerVisible)}
+                        style={{ backgroundColor: color || '#000000' }}
+                      />
+                      {colorPickerVisible && (
+                        <div className='absolute top-10 right-0 bg-white rounded-md p-2 border border-gray-300'>
+                          <ColorPicker
+                            format="hex"
+                            value={color || '#000000'}
+                            onChange={(value) => setColor(value)}
+                          />
+                          <button 
+                            className='bg-black text-white w-full mt-2 px-2 py-1 rounded-full'
+                            onClick={() => setColorPickerVisible(false)}
+                          >
+                            OK
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    <div className='mb-4'>
+                      <Text>Surface</Text>
+                      <div className='flex gap-4'>
+                        <label>
+                          <input type='radio' name='surface' value='smooth' /> Smooth
+                        </label>
+                        <label>
+                          <input type='radio' name='surface' value='rough' /> Rough
+                        </label>
                       </div>
-                    )}
-                  </div>
-                  <div className='mb-4'>
-                    <Text>Surface</Text>
-                    <div className='flex gap-4'>
-                      <label>
-                        <input type='radio' name='surface' value='smooth' /> Smooth
-                      </label>
-                      <label>
-                        <input type='radio' name='surface' value='rough' /> Rough
-                      </label>
                     </div>
-                  </div>
-                  <div className='mb-4'>
-                    <Text>Paint Finish</Text>
-                    <div className='flex gap-4'>
-                      <label>
-                        <input type='radio' name='paint-finish' value='matte' /> Matte
-                      </label>
-                      <label>
-                        <input type='radio' name='paint-finish' value='glossy' /> Glossy
-                      </label>
-                      <label>
-                        <input type='radio' name='paint-finish' value='metallic' /> Metallic
-                      </label>
+                    <div className='mb-4'>
+                      <Text>Paint Finish</Text>
+                      <div className='flex gap-4'>
+                        <label>
+                          <input type='radio' name='paint-finish' value='matte' /> Matte
+                        </label>
+                        <label>
+                          <input type='radio' name='paint-finish' value='glossy' /> Glossy
+                        </label>
+                        <label>
+                          <input type='radio' name='paint-finish' value='metallic' /> Metallic
+                        </label>
+                      </div>
                     </div>
-                  </div>
-                </Tabs.Panel>
-                <Tabs.Panel value='price' className='p-4 flex flex-col gap-4'>
-                  {/* Inntastningsfelter for Price */}
-                  <NumberInput label='Unit Price' placeholder='Enter unit price' prefix='$'/>
-                  <NumberInput label='Minimum Order Quantity' placeholder='Enter minimum order quantity' />
-                  <NumberInput label='Lead Time' placeholder='Enter lead time' suffix=' days'/>
-                  <TextInput label="Payment Terms" placeholder='Enter payment terms' />
-                </Tabs.Panel>
+                  </Tabs.Panel>
+                  <Tabs.Panel value='price' className='p-4 flex flex-col gap-4 h-full'>
+                    {/* Input fields for Price */}
+                    <NumberInput label='Unit Price' placeholder='Enter unit price' prefix='$'/>
+                    <NumberInput label='Minimum Order Quantity' placeholder='Enter minimum order quantity' />
+                    <NumberInput label='Lead Time' placeholder='Enter lead time' suffix=' days'/>
+                    <TextInput label="Payment Terms" placeholder='Enter payment terms' />
+                  </Tabs.Panel>
+                </div>
               </Tabs>
             </div>
-          </div>
-        </div>
-        <div className='w-full flex flex-col gap-4 mt-4'>
-          <div>
-            <Textarea label='Description' placeholder='Enter model description' rows={4} value={description} onChange={(e) => setDescription(e.target.value)} />
           </div>
         </div>
         </>

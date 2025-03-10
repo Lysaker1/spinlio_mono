@@ -23,16 +23,19 @@ console.log('Environment Check:', {
 console.log('Auth0 Config:', {
   redirectUri: window.location.origin,
   currentUrl: window.location.href,
-  environment: process.env.NODE_ENV
+  environment: process.env.NODE_ENV,
+  clientId: process.env.REACT_APP_AUTH0_CLIENT_ID || "buzvq3JLo9qwHqQusnlkqWkldLKMQjAu"
 });
 
 root.render(
   <React.StrictMode>
     <Auth0Provider
       domain="auth.spinlio.com"
-      clientId="buzvq3JLo9qwHqQusnlkqWkldLKMQjAu"
+      clientId={process.env.REACT_APP_AUTH0_CLIENT_ID || "buzvq3JLo9qwHqQusnlkqWkldLKMQjAu"}
       authorizationParams={{
-        redirect_uri: `${window.location.protocol}//${window.location.host}`,
+        redirect_uri: process.env.NODE_ENV === 'production'
+          ? 'https://design.spinlio.com/callback'
+          : 'http://localhost:3001/callback',
         audience: process.env.NODE_ENV === 'production'
           ? 'https://api.spinlio.com'
           : 'http://localhost:3003',

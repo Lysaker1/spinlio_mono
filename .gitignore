@@ -6,10 +6,9 @@ node_modules/
 
 # Environment files
 .env
-.env*
-.env.local
-.env.development
-.env.production
+.env*            # This catches all .env files
+!.env.template   # This correctly excludes the template
+!src/backend/.env.template
 
 # IDE files
 .idea/

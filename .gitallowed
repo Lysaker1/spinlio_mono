@@ -1,0 +1,12 @@
+\.env\.\*
+const envPath = path\.resolve\(__dirname, `\.env\.\${env}`\);
+\.gitignore:.*\.env\.
+// Load environment variables from \.env\.
+REACT_APP_.*=your_.*
+AUTH0_.*=your_.*
+AUTH0_.*=http://localhost:.*
+STRIPE_.*_KEY=YOUR_.*
+REACT_APP_RHINO_COMPUTE_URL=http://.*
+REACT_APP_RHINO_COMPUTE_KEY=YOUR_.*
+AUTH0_ISSUER_BASE_URL=https://auth\.spinlio\.com
+AUTH0_DOMAIN=auth\.spinlio\.com

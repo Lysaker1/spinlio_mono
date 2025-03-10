@@ -17,29 +17,28 @@ const Dashboard: React.FC<DashboardProps> = ({ children }) => {
   const showDashboardNavbar = !location.pathname.includes('/profile');
 
   return (
-    <AppShell
-      header={{ height: 60 }}
-      navbar={{
-        width: 240,
-        breakpoint: 'sm',
-        collapsed: { mobile: !opened },
-      }}
-      p={0}
-    >
-      <AppShell.Header zIndex={1000}>
-        <DashboardHeader opened={opened} toggle={toggle} />
-      </AppShell.Header>
+      <AppShell
+        header={{ height: 60 }}
+        navbar={{
+          width: 240,
+          breakpoint: 'sm',
+          collapsed: { mobile: !opened },
+        }}
+      >
+        <AppShell.Header>
+          <DashboardHeader opened={opened} toggle={toggle} />
+        </AppShell.Header>
 
-      {showDashboardNavbar && (
-        <AppShell.Navbar>
-          <DashboardSidebar />
-        </AppShell.Navbar>
-      )}
+        {showDashboardNavbar && (
+          <AppShell.Navbar>
+            <DashboardSidebar />
+          </AppShell.Navbar>
+        )}
 
-      <AppShell.Main>
-        {children}
-      </AppShell.Main>
-    </AppShell>
+        <AppShell.Main>
+          {children}
+        </AppShell.Main>
+      </AppShell>
   );
 };
 

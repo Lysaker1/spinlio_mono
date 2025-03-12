@@ -45,17 +45,18 @@ export const FILE_TYPE_CATEGORIES = {
 };
 
 // Get the file extension from a filename (e.g., 'model.glb' -> 'glb')
-export const getFileExtension = (filename: string): string => {
-  const lastDotIndex = filename.lastIndexOf('.');
-  if (lastDotIndex === -1) return '';
-  const extension = filename.substring(lastDotIndex + 1).toLowerCase();
-  console.log(`File extension detected: ${extension} for file: ${filename}`);
-  return extension;
+export const getFileExtension = (filename: string | undefined): string => {
+  if (!filename) return '';
+  
+  const parts = filename.split('.');
+  return parts[parts.length - 1].toLowerCase();
 };
 
 // Check if a file is a supported 3D model format
 export const isSupportedModelFormat = (filename: string): boolean => {
   const extension = getFileExtension(filename);
+  
+  // Cast the extension to ModelFileType when checking if it's included in SUPPORTED_MODEL_FORMATS
   return SUPPORTED_MODEL_FORMATS.includes(extension as ModelFileType);
 };
 
@@ -95,7 +96,6 @@ export const getFileCategory = (filename: string): string => {
   };
   
   const category = extensionCategories[extension] || 'other';
-  console.log(`File category detected: ${category} for extension: ${extension}`);
   return category;
 };
 
@@ -129,6 +129,5 @@ export const getMimeTypeFromExtension = (filename: string): string => {
   };
   
   const mimeType = mimeTypes[extension] || 'application/octet-stream';
-  console.log(`MIME type detected: ${mimeType} for extension: ${extension}`);
   return mimeType;
 }; 

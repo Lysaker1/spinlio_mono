@@ -158,6 +158,12 @@ const Uploads: React.FC = () => {
   const handleUpload = async (metadata: any) => {
     if (!selectedFile) return;
     
+    // Add file size warning for large files
+    if (selectedFile.size > 50 * 1024 * 1024) {
+      const fileSizeMB = (selectedFile.size / (1024 * 1024)).toFixed(2);
+      alert(`Warning: You are uploading a large file (${fileSizeMB}MB). The upload may take some time to complete. Please don't close the browser tab during the upload.`);
+    }
+    
     setUploading(true);
     try {
       await uploadModelToS3(selectedFile, metadata);
@@ -166,7 +172,14 @@ const Uploads: React.FC = () => {
       setSelectedFile(null);
     } catch (error) {
       console.error('Upload failed:', error);
-      alert('Failed to upload model. Please try again.');
+      let errorMessage = 'Failed to upload model. Please try again.';
+      
+      // Get more detailed error message if available
+      if (error instanceof Error) {
+        errorMessage = `Upload failed: ${error.message}`;
+      }
+      
+      alert(errorMessage);
     } finally {
       setUploading(false);
     }

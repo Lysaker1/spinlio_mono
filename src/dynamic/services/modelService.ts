@@ -93,41 +93,118 @@ export interface SubcategoryParameter {
   parameter_id: number;
 }
 
+/**
+ * Get a category name by its ID
+ * This function tries to find the category name from the database
+ * If the name cannot be found, it returns the default name
+ */
+const getCategoryNameById = async (categoryId: number | string): Promise<string> => {
+  if (!categoryId) return 'Uncategorized';
+  
+  try {
+    // Convert categoryId to number if it's a string
+    const id = typeof categoryId === 'string' ? parseInt(categoryId, 10) : categoryId;
+    
+    // Query the database for the category
+    const { data, error } = await supabase
+      .from('component_categories')
+      .select('name')
+      .eq('id', id)
+      .single();
+      
+    if (error || !data) {
+      console.error('Error fetching category name:', error);
+      return `Category_${id}`;
+    }
+    
+    return data.name;
+  } catch (error) {
+    console.error('Error in getCategoryNameById:', error);
+    return `Category_${categoryId}`;
+  }
+};
+
+/**
+ * Get a subcategory name by its ID
+ * This function tries to find the subcategory name from the database
+ * If the name cannot be found, it returns the default name
+ */
+const getSubcategoryNameById = async (subcategoryId: number | string): Promise<string> => {
+  if (!subcategoryId) return 'General';
+  
+  try {
+    // Convert subcategoryId to number if it's a string
+    const id = typeof subcategoryId === 'string' ? parseInt(subcategoryId, 10) : subcategoryId;
+    
+    // Query the database for the subcategory
+    const { data, error } = await supabase
+      .from('component_subcategories')
+      .select('name')
+      .eq('id', id)
+      .single();
+      
+    if (error || !data) {
+      console.error('Error fetching subcategory name:', error);
+      return `Subcategory_${id}`;
+    }
+    
+    return data.name;
+  } catch (error) {
+    console.error('Error in getSubcategoryNameById:', error);
+    return `Subcategory_${subcategoryId}`;
+  }
+};
+
 // Organize files in S3 using a structured folder approach
-const getS3KeyForFile = (file: File, userId?: string, metadata?: Partial<ModelMetadata>): string => {
+const getS3KeyForFile = async (file: File, userId?: string, metadata?: Partial<ModelMetadata>): Promise<string> => {
   const fileExtension = getFileExtension(file.name);
-  const timestamp = Date.now();
   const sanitizedFileName = file.name.replace(/[^a-z0-9.-]/gi, '_').toLowerCase();
   
-  // Use component ID from metadata or generate a new random UUID
-  // This ensures we have a proper UUID format for the database
+  // Ensure we have a UUID for the file
   const componentId = metadata?.id || uuidv4();
   
-  // Get category and subcategory from metadata or use defaults
-  const category = metadata?.category || 'uncategorized';
-  const subcategory = metadata?.subcategory || 'general';
+  // Get category and subcategory information
+  const categoryId = metadata?.category || 0;
+  const subcategoryId = metadata?.subcategory || 0;
   
-  // Determine the base path based on file type
-  let basePath = '';
+  // Fetch readable names from our database 
+  let categoryName, subcategoryName;
   
-  // Original models go in the models directory
-  if (isSupportedModelFormat(file.name)) {
-    basePath = `models/${category}/${subcategory}`;
-  } 
-  // Thumbnails and preview images
-  else if (getFileCategory(file.name) === 'image') {
-    basePath = 'thumbnails';
-  } 
-  // Converted models will be handled separately
-  else {
-    // For other file types, use a generic structure
-    basePath = `other/${getFileCategory(file.name)}`;
+  try {
+    // For better performance, fetch category and subcategory names in parallel
+    [categoryName, subcategoryName] = await Promise.all([
+      getCategoryNameById(categoryId),
+      getSubcategoryNameById(subcategoryId)
+    ]);
+  } catch (error) {
+    console.error('Error fetching category/subcategory names:', error);
+    // Fallback to using IDs directly if names can't be fetched
+    categoryName = `Category_${categoryId}`;
+    subcategoryName = `Subcategory_${subcategoryId}`;
   }
   
-  // If userId is provided, include it in the path for user-specific storage
+  // Create folder-friendly versions of the names
+  const safeCategory = `${categoryName.replace(/[^a-z0-9]/gi, '_')}_${categoryId}`;
+  const safeSubcategory = `${subcategoryName.replace(/[^a-z0-9]/gi, '_')}_${subcategoryId}`;
+  
+  // Organize by model format
+  let basePath = '';
+  
+  if (isSupportedModelFormat(file.name)) {
+    // Category/Subcategory/Format structure
+    basePath = `models/${safeCategory}/${safeSubcategory}/${fileExtension}`;
+  } else if (getFileCategory(file.name) === 'image') {
+    // For thumbnails, keep them with the model they belong to
+    basePath = `thumbnails/${safeCategory}/${safeSubcategory}`;
+  } else {
+    // Other files get their own organization
+    basePath = `other/${getFileCategory(file.name)}/${safeCategory}`;
+  }
+  
+  // Add user prefix if needed
   const userPrefix = userId ? `users/${userId}/` : '';
   
-  // Construct the final S3 key with timestamp and component ID for uniqueness
+  // Final path that's both unique and logically organized
   return `${userPrefix}${basePath}/${componentId}-${sanitizedFileName}`;
 };
 
@@ -143,24 +220,26 @@ export const getConvertedModelS3Key = (
   // Determine the category/subcategory from the original path
   let categoryPath = 'converted';
   
-  // If original path follows our structure, extract category info
+  // If original path follows our structure, extract category and format info
   if (originalS3Key.includes('/models/')) {
     const pathParts = originalS3Key.split('/');
+    
     // Extract category and subcategory if available
-    if (pathParts.length >= 3) {
-      // Get category and subcategory
-      const categoryIndex = pathParts.indexOf('models') + 1;
-      if (categoryIndex < pathParts.length) {
-        categoryPath = `converted/${pathParts[categoryIndex]}`;
-        if (categoryIndex + 1 < pathParts.length) {
-          categoryPath += `/${pathParts[categoryIndex + 1]}`;
-        }
+    const categoryIndex = pathParts.indexOf('models') + 1;
+    if (categoryIndex < pathParts.length) {
+      // Get category and subcategory folders (which include IDs now)
+      const categoryFolder = pathParts[categoryIndex];
+      categoryPath = `converted/${categoryFolder}`;
+      
+      if (categoryIndex + 1 < pathParts.length) {
+        const subcategoryFolder = pathParts[categoryIndex + 1];
+        categoryPath += `/${subcategoryFolder}`;
       }
     }
   }
   
-  // Return path for converted model format
-  return `${categoryPath}/${baseName}/${baseName}.${convertedFormat}`;
+  // Return path for converted model format, maintaining consistent structure with original
+  return `${categoryPath}/${convertedFormat}/${baseName}-converted.${convertedFormat}`;
 };
 
 // Upload a model file to S3
@@ -182,7 +261,7 @@ export const uploadModelToS3 = async (
     }
     
     // Generate S3 key using our new structured approach
-    const s3Key = getS3KeyForFile(file, userId, metadata);
+    const s3Key = await getS3KeyForFile(file, userId, metadata);
     
     console.log('Uploading file:', file.name, 'Size:', file.size, 'Type:', file.type || 'unknown');
     
@@ -214,25 +293,29 @@ export const uploadModelToS3 = async (
     // Start S3 upload in the background without blocking
     (async () => {
       try {
-        // S3 upload parameters with enhanced metadata
+        // Remove any problematic headers or metadata properties that could be undefined
+        const cleanedMetadata: Record<string, string> = {};
+        
+        // Only include metadata that is a string and not empty
+        if (metadata.name) cleanedMetadata['x-amz-meta-name'] = metadata.name;
+        if (metadata.category) cleanedMetadata['x-amz-meta-category'] = metadata.category.toString();
+        if (metadata.subcategory) cleanedMetadata['x-amz-meta-subcategory'] = metadata.subcategory.toString();
+        if (metadata.manufacturer) cleanedMetadata['x-amz-meta-manufacturer'] = metadata.manufacturer;
+        if (metadata.part_type) cleanedMetadata['x-amz-meta-part-type'] = metadata.part_type;
+        if (file.name) cleanedMetadata['x-amz-meta-original-filename'] = file.name;
+
+        // S3 upload parameters with sanitized metadata
         const params = {
           Bucket: BUCKET_NAME,
           Key: s3Key,
           Body: file,
           ContentType: contentType,
-          Metadata: {
-            'x-amz-meta-name': metadata.name,
-            'x-amz-meta-category': metadata.category,
-            ...(metadata.subcategory && { 'x-amz-meta-subcategory': metadata.subcategory }),
-            ...(metadata.manufacturer && { 'x-amz-meta-manufacturer': metadata.manufacturer }),
-            ...(metadata.part_type && { 'x-amz-meta-part-type': metadata.part_type }),
-            'x-amz-meta-original-filename': file.name,
-          }
+          Metadata: cleanedMetadata
         };
 
-        // Upload file to S3
+        // Upload file to S3 using our improved uploadFileToS3 function
         const uploadResult = await uploadFileToS3(params);
-        console.log('S3 upload successful:', uploadResult);
+        console.log('S3 upload successful');
         
         // Generate a signed URL for the uploaded object
         const command = new GetObjectCommand({

@@ -226,7 +226,7 @@ const PedroMeshExplorer: React.FC = () => {
                     {meshInfo.length > 0 ? (
                       <pre className="text-xs">{JSON.stringify(meshInfo, null, 2)}</pre>
                     ) : (
-                      <Text color="dimmed" size="sm">No mesh data available yet. Load a model to see details.</Text>
+                      <Text c="dimmed" size="sm">No mesh data available yet. Load a model to see details.</Text>
                     )}
                   </div>
                 </div>

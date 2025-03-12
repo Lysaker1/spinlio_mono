@@ -14,13 +14,17 @@ export interface AttachmentPoint {
   normal: [number, number, number];
   color: string; // Make color required
   meshId?: string; // Add optional meshId
+  name?: string; // Add name property
+  auto?: boolean; // Add auto property
+  size?: number; // Add size property
 }
 
 interface AttachmentPointHelperProps {
-  attachmentPoints: AttachmentPoint[];
-  onAttachmentPointUpdated: (point: AttachmentPoint) => void;
-  selectedPoint: string | null;
-  onSelectPoint: (id: string | null) => void;
+  point: AttachmentPoint;
+  selected: boolean;
+  onSelect: () => void;
+  onUpdate: (updatedPoint: AttachmentPoint) => void;
+  onDelete: () => void;
   modelInfo?: { size: THREE.Vector3, center: THREE.Vector3 } | null;
 }
 
@@ -28,10 +32,11 @@ interface AttachmentPointHelperProps {
  * Component for visualizing and manipulating attachment points
  */
 const AttachmentPointHelper: React.FC<AttachmentPointHelperProps> = ({
-  attachmentPoints,
-  onAttachmentPointUpdated,
-  selectedPoint,
-  onSelectPoint,
+  point,
+  selected,
+  onSelect,
+  onUpdate,
+  onDelete,
   modelInfo
 }) => {
   const { camera, scene, raycaster } = useThree();
@@ -49,10 +54,8 @@ const AttachmentPointHelper: React.FC<AttachmentPointHelperProps> = ({
     const pointObj = pointsRef.current[id];
     if (!pointObj) return;
     
-    const point = attachmentPoints.find(p => p.id === id);
-    if (!point) return;
-
-    // Get the new position
+    // No need to find point since it's passed as a prop
+    // Create a new position array
     const newPosition: [number, number, number] = [
       pointObj.position.x,
       pointObj.position.y,
@@ -80,7 +83,7 @@ const AttachmentPointHelper: React.FC<AttachmentPointHelperProps> = ({
     ];
 
     // Update the attachment point
-    onAttachmentPointUpdated({
+    onUpdate({
       ...point,
       position: newPosition,
       rotation: newRotation,
@@ -177,9 +180,6 @@ const AttachmentPointHelper: React.FC<AttachmentPointHelperProps> = ({
     
     // If we found an intersection, update the position and normal
     if (closestIntersection && closestDistance < 20) { // Increased distance threshold
-      const point = attachmentPoints.find(p => p.id === pointId);
-      if (!point) return;
-      
       try {
         // Move slightly off the surface to avoid z-fighting
         const snappedPosition = new THREE.Vector3().copy(closestIntersection.point);
@@ -226,7 +226,7 @@ const AttachmentPointHelper: React.FC<AttachmentPointHelperProps> = ({
         pointObj.quaternion.copy(quaternion);
         
         // Update the attachment point
-        onAttachmentPointUpdated({
+        onUpdate({
           ...point,
           position: newPosition,
           rotation: newRotation,
@@ -248,34 +248,24 @@ const AttachmentPointHelper: React.FC<AttachmentPointHelperProps> = ({
   // Create and update refs for all points
   useEffect(() => {
     // Create refs for any new points
-    attachmentPoints.forEach(point => {
-      if (!pointsRef.current[point.id]) {
-        const newGroup = new THREE.Group();
-        newGroup.position.set(...point.position);
-        newGroup.quaternion.set(...point.rotation);
-        // Mark this group for identification
-        newGroup.userData.isAttachmentPoint = true;
-        pointsRef.current[point.id] = newGroup;
-      }
-    });
+    pointsRef.current[point.id] = new THREE.Group();
+    pointsRef.current[point.id].position.set(...point.position);
+    pointsRef.current[point.id].quaternion.set(...point.rotation);
+    // Mark this group for identification
+    pointsRef.current[point.id].userData.isAttachmentPoint = true;
     
     // Update positions for all points
-    attachmentPoints.forEach(point => {
-      const pointObj = pointsRef.current[point.id];
-      if (pointObj) {
-        pointObj.position.set(...point.position);
-        pointObj.quaternion.set(...point.rotation);
-      }
-    });
+    pointsRef.current[point.id].position.set(...point.position);
+    pointsRef.current[point.id].quaternion.set(...point.rotation);
     
     // If snap is enabled, try to snap any newly selected point
-    if (snapEnabled && selectedPoint) {
-      snapToModel(selectedPoint);
+    if (snapEnabled && selected) {
+      snapToModel(point.id);
     }
     
     // Log for debugging
-    console.log("AttachmentPoints updated:", attachmentPoints.length);
-  }, [attachmentPoints, snapEnabled, selectedPoint]);
+    console.log("AttachmentPoints updated:", Object.keys(pointsRef.current).length);
+  }, [point, snapEnabled, selected]);
   
   // Handle click events on the scene to deselect
   useEffect(() => {
@@ -287,7 +277,7 @@ const AttachmentPointHelper: React.FC<AttachmentPointHelperProps> = ({
         const isTransformControlClick = (event.target as HTMLElement)?.closest('.transform-controls');
         if (!isTransformControlClick) {
           // Don't deselect if we're interacting with transform controls
-          // onSelectPoint(null);
+          // onSelect(null);
         }
       }
     };
@@ -296,7 +286,7 @@ const AttachmentPointHelper: React.FC<AttachmentPointHelperProps> = ({
     return () => {
       window.removeEventListener('click', handleSceneClick);
     };
-  }, [onSelectPoint]);
+  }, [onSelect]);
   
   // Update TransformControls mode when it changes
   useEffect(() => {
@@ -307,10 +297,10 @@ const AttachmentPointHelper: React.FC<AttachmentPointHelperProps> = ({
   
   // Effect to handle snap when selectedPoint changes
   useEffect(() => {
-    if (snapEnabled && selectedPoint) {
-      snapToModel(selectedPoint);
+    if (snapEnabled && selected) {
+      snapToModel(point.id);
     }
-  }, [selectedPoint, snapEnabled]);
+  }, [selected, snapEnabled]);
   
   // Prevent orbit controls from interfering with transform controls
   useEffect(() => {
@@ -346,122 +336,112 @@ const AttachmentPointHelper: React.FC<AttachmentPointHelperProps> = ({
   return (
     <group>
       {/* Render each attachment point */}
-      {attachmentPoints.map((point) => {
-        const isSelected = selectedPoint === point.id;
-        const color = point.color || '#00a8ff';
+      <group 
+        position={new THREE.Vector3(...point.position)}
+        quaternion={new THREE.Quaternion(...point.rotation)}
+        onClick={(e: ThreeEvent<MouseEvent>) => {
+          e.stopPropagation();
+          onSelect();
+        }}
+        ref={(el: THREE.Group | null) => {
+          if (el) {
+            // Mark this group as an attachment point
+            el.userData.isAttachmentPoint = true;
+            pointsRef.current[point.id] = el;
+          }
+        }}
+      >
+        {/* Visualize the attachment plane */}
+        <Plane 
+          args={[0.5, 0.5]} 
+          onClick={(e: ThreeEvent<MouseEvent>) => {
+            e.stopPropagation();
+            onSelect();
+          }}
+        >
+          <meshBasicMaterial 
+            color={selected ? '#ff9900' : point.color || '#00a8ff'} 
+            side={THREE.DoubleSide} 
+            transparent 
+            opacity={selected ? 0.9 : 0.7} 
+          />
+        </Plane>
         
-        return (
-          <group key={point.id}>
-            {/* Attachment point representation */}
-            <group 
-              position={new THREE.Vector3(...point.position)}
-              quaternion={new THREE.Quaternion(...point.rotation)}
-              onClick={(e: ThreeEvent<MouseEvent>) => {
-                e.stopPropagation();
-                onSelectPoint(point.id);
-              }}
-              ref={(el: THREE.Group | null) => {
-                if (el) {
-                  // Mark this group as an attachment point
-                  el.userData.isAttachmentPoint = true;
-                  pointsRef.current[point.id] = el;
-                }
-              }}
-            >
-              {/* Visualize the attachment plane */}
-              <Plane 
-                args={[0.5, 0.5]} 
-                onClick={(e: ThreeEvent<MouseEvent>) => {
-                  e.stopPropagation();
-                  onSelectPoint(point.id);
-                }}
-              >
-                <meshBasicMaterial 
-                  color={isSelected ? '#ff9900' : color} 
-                  side={THREE.DoubleSide} 
-                  transparent 
-                  opacity={isSelected ? 0.9 : 0.7} 
-                />
-              </Plane>
-              
-              {/* Visualize the normal vector */}
-              <group position={[0, 0, 0.1]}>
-                <mesh>
-                  <cylinderGeometry args={[0.02, 0.02, 0.25, 8]} />
-                  <meshBasicMaterial color={isSelected ? '#ff0000' : '#cc0000'} />
-                </mesh>
-                <mesh position={[0, 0, 0.15]}>
-                  <coneGeometry args={[0.04, 0.1, 8]} />
-                  <meshBasicMaterial color={isSelected ? '#ff0000' : '#cc0000'} />
-                </mesh>
-              </group>
-              
-              {/* Label to identify the point */}
+        {/* Visualize the normal vector */}
+        <group position={[0, 0, 0.1]}>
+          <mesh>
+            <cylinderGeometry args={[0.02, 0.02, 0.25, 8]} />
+            <meshBasicMaterial color={selected ? '#ff0000' : '#cc0000'} />
+          </mesh>
+          <mesh position={[0, 0, 0.15]}>
+            <coneGeometry args={[0.04, 0.1, 8]} />
+            <meshBasicMaterial color={selected ? '#ff0000' : '#cc0000'} />
+          </mesh>
+        </group>
+        
+        {/* Label to identify the point */}
+        <DreiText
+          position={[0, -0.3, 0]}
+          color="white"
+          fontSize={0.15}
+          anchorX="center"
+          anchorY="middle"
+          backgroundColor={selected ? 'rgba(255,150,0,0.8)' : 'rgba(0,150,255,0.6)'}
+          padding={0.05}
+        >
+          {(Object.keys(pointsRef.current).indexOf(point.id) + 1).toString()}
+        </DreiText>
+      </group>
+      
+      {/* Add transform controls when selected */}
+      {selected && (
+        <>
+          <TransformControls
+            ref={controlsRef}
+            object={pointsRef.current[point.id]}
+            mode={transformMode}
+            size={0.7}
+            onObjectChange={() => handleTransformChange(point.id)}
+            onMouseUp={() => handleTransformChange(point.id)}
+          />
+          
+          <group position={[0, 0.8, 0]}>
+            {/* Mode toggle button */}
+            <group position={[0, 0.2, 0]} onClick={toggleTransformMode}>
+              <mesh>
+                <planeGeometry args={[1, 0.3]} />
+                <meshBasicMaterial color="#333333" />
+              </mesh>
               <DreiText
-                position={[0, -0.3, 0]}
+                position={[0, 0, 0.01]}
                 color="white"
-                fontSize={0.15}
+                fontSize={0.1}
                 anchorX="center"
                 anchorY="middle"
-                backgroundColor={isSelected ? 'rgba(255,150,0,0.8)' : 'rgba(0,150,255,0.6)'}
-                padding={0.05}
               >
-                {(attachmentPoints.indexOf(point) + 1).toString()}
+                Mode: {transformMode}
               </DreiText>
             </group>
             
-            {/* Add transform controls when selected */}
-            {isSelected && (
-              <>
-                <TransformControls
-                  ref={controlsRef}
-                  object={pointsRef.current[point.id]}
-                  mode={transformMode}
-                  size={0.7}
-                  onObjectChange={() => handleTransformChange(point.id)}
-                  onMouseUp={() => handleTransformChange(point.id)}
-                />
-                
-                <group position={[0, 0.8, 0]}>
-                  {/* Mode toggle button */}
-                  <group position={[0, 0.2, 0]} onClick={toggleTransformMode}>
-                    <mesh>
-                      <planeGeometry args={[1, 0.3]} />
-                      <meshBasicMaterial color="#333333" />
-                    </mesh>
-                    <DreiText
-                      position={[0, 0, 0.01]}
-                      color="white"
-                      fontSize={0.1}
-                      anchorX="center"
-                      anchorY="middle"
-                    >
-                      Mode: {transformMode}
-                    </DreiText>
-                  </group>
-                  
-                  {/* Snap toggle button */}
-                  <group position={[0, -0.2, 0]} onClick={toggleSnap}>
-                    <mesh>
-                      <planeGeometry args={[1, 0.3]} />
-                      <meshBasicMaterial color={snapEnabled ? '#007bff' : '#333333'} />
-                    </mesh>
-                    <DreiText
-                      position={[0, 0, 0.01]}
-                      color="white"
-                      fontSize={0.1}
-                      anchorX="center"
-                      anchorY="middle"
-                    >
-                      Snap: {snapEnabled ? 'On' : 'Off'}
-                    </DreiText>
-                  </group>
-                </group>
-              </>
-            )}
+            {/* Snap toggle button */}
+            <group position={[0, -0.2, 0]} onClick={toggleSnap}>
+              <mesh>
+                <planeGeometry args={[1, 0.3]} />
+                <meshBasicMaterial color={snapEnabled ? '#007bff' : '#333333'} />
+              </mesh>
+              <DreiText
+                position={[0, 0, 0.01]}
+                color="white"
+                fontSize={0.1}
+                anchorX="center"
+                anchorY="middle"
+              >
+                Snap: {snapEnabled ? 'On' : 'Off'}
+              </DreiText>
+            </group>
           </group>
-        );
-      })}
+        </>
+      )}
     </group>
   );
 };

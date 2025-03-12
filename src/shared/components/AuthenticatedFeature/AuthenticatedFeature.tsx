@@ -47,12 +47,12 @@ export const AuthenticatedFeature: React.FC<AuthenticatedFeatureProps> = ({
   if (!isAuthenticated) {
     if (fallback) return <>{fallback}</>;
     return (
-      <LoginContainer>
-        <LoginText>Login to access this feature</LoginText>
-        <LoginButton onClick={() => loginWithRedirect()}>
+      <div className="flex flex-col items-center justify-center p-4 py-8 bg-white backdrop-blur-md rounded-xl">
+        <p className="text-black text-center pb-4 text-lg">Login to access this feature</p>
+        <button className="bg-black text-white px-8 py-2 rounded-full" onClick={() => loginWithRedirect()}>
           Log in
-        </LoginButton>
-      </LoginContainer>
+        </button>
+      </div>
     );
   }
 

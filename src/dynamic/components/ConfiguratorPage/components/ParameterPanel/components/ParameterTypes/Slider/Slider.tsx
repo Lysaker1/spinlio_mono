@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ParameterDefinition } from '../../../types';
 import { useMediaQuery } from '@mantine/hooks';
-import './Slider.css';
-
 interface SliderProps {
   definition: ParameterDefinition;
   value: string;
@@ -60,17 +58,17 @@ export const Slider: React.FC<SliderProps> = ({
   }, [isDragging]);
 
   return (
-    <div className={`slider-container ${isMobile ? 'mobile' : ''}`}>
-      <div className="slider-header">
-        <span className="slider-label">{definition.name}</span>
-        <span className="slider-value">
+    <div className={`w-full box-border ${isMobile ? 'bg-transparent backdrop-blur-md p-[0.1rem_0.2rem_0.1rem_0.2rem] relative' : ''}`}>
+      <div className="flex justify-between items-center mb-0">
+        <span>{definition.name}</span>
+        <span className="text-black/90 text-sm py-1 px-2 bg-black/10 rounded pr-2 ml-auto text-center relative">
           {isFloat ? Number(value).toFixed(1) : Math.round(Number(value))}
           {definition.unit || ''}
         </span>
       </div>
 
       <div
-        className="slider-control"
+        className="relative h-8 cursor-pointer w-[99%] box-border my-2"
         onMouseDown={(e) => {
           setIsDragging(true);
           handleInteraction(e);
@@ -82,19 +80,19 @@ export const Slider: React.FC<SliderProps> = ({
         }}
         onTouchMove={(e) => isDragging && handleInteraction(e)}
       >
-        <div className="slider-track">
+        <div className="absolute top-1/2 w-full h-2 bg-black/10 rounded-md -translate-y-1/2">
           <div
-            className={`slider-fill ${isDragging ? 'active' : ''}`}
+            className={`absolute h-full ${isDragging ? 'bg-black' : 'bg-[#3E3E3E]'} rounded-2xl transition-width duration-100 ease-in-out`}
             style={{ width: `${calculatePosition(Number(value))}%` }}
           />
         </div>
         <div
-          className={`slider-thumb ${isDragging ? 'active' : ''}`}
+          className={`absolute top-1/2 ${isDragging ? 'w-5 h-5 shadow-[0_0_0_0.25rem_rgba(0,0,0,0.349)]' : 'w-4 h-4'} bg-black rounded-full -translate-x-1/2 -translate-y-1/2 transition-all duration-100 ease-in-out`}
           style={{ left: `${calculatePosition(Number(value)) === 0 ? 3 : calculatePosition(Number(value)) - 2}%` }}
         />
       </div>
 
-      <div className="slider-range">
+      <div className="flex justify-between mt-2.5 text-black text-xs">
         <span>{definition.min}{definition.unit || ''}</span>
         <span>{definition.max}{definition.unit || ''}</span>
       </div>

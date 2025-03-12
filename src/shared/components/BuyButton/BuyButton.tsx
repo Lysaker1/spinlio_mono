@@ -1,5 +1,4 @@
 import React from 'react';
-import './BuyButton.css';
 import { CONFIGURATOR_TYPES, ConfiguratorType } from '../../../shared/constants/configuratorTypes';
 
 interface BuyButtonProps {
@@ -23,15 +22,11 @@ export const BuyButton: React.FC<BuyButtonProps> = ({ configuratorType }) => {
   };
 
   return (
-    <div className="buy-container">
-      <div className="buy-button-container">
-        <button 
-          className="buy-button"
-          onClick={handleClick}
-        >
-          Buy Now
-        </button>
-      </div>
-    </div>
+    <button 
+      className="w-full h-12 rounded-full bg-black text-white"
+      onClick={handleClick}
+    >
+      Buy Now
+    </button>
   );
 }; 

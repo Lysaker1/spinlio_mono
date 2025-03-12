@@ -2,7 +2,6 @@ import React, { ReactElement } from 'react';
 import { ParameterDefinition } from '../../../types';
 import { useMediaQuery } from '@mantine/hooks';
 import { ShapeIcons } from './ShapeIcons';
-import './ShapeGrid.css';
 
 interface ShapeGridProps {
   definition: ParameterDefinition;
@@ -31,7 +30,7 @@ export const ShapeGrid = ({
     // Handle new SVG icon type
     if (typeof icon === 'object' && 'type' in icon && icon.type === 'svg' && 'icon' in icon) {
       return (
-        <div className="shape-icon">
+        <div className="flex items-center justify-center w-full h-full">
           {icon.icon}
         </div>
       );
@@ -44,11 +43,11 @@ export const ShapeGrid = ({
       const specialClass = isMount ? 'mount-image' : isDropout ? 'dropout-image' : '';
 
       return (
-        <div className={`shape-icon ${specialClass}`}>
+        <div className={`flex items-center justify-center w-full h-full ${specialClass}`}>
           <img
             src={icon.src}
             alt={option.label}
-            className="shape-icon-image"
+            className="w-[90%] h-[90%] object-contain"
           />
         </div>
       );
@@ -56,32 +55,37 @@ export const ShapeGrid = ({
 
     // Handle direct SVG icons (original behavior)
     return (
-      <div className="shape-icon">
+      <div className="flex items-center justify-center w-full h-full">
         {icon as ReactElement}
       </div>
     );
   };
 
   return (
-    <div className={`parameter-card ${isMobile ? 'mobile' : ''}`}>
-      <div className="parameter-header">
-        <span className="parameter-label">{definition.name}</span>
-        <span className="selected-shape">
+    <div className={`w-full mb-4`}>
+      <div className="flex justify-between items-center py-3">
+        <span className="text-gray-500 text-sm">{definition.name}:</span>
+        <span className="text-gray text-sm bg-black/10 px-2 py-1 rounded-md">
           {definition.options?.find(opt => opt.value === value)?.label}
         </span>
       </div>
 
-      <div className={`shape-grid ${
+      <div className={`grid ${
         definition.name.toLowerCase().includes('mount') || 
         definition.name.toLowerCase().includes('drop') ||
         definition.name.toLowerCase().includes('paint')
-          ? 'two-columns' 
-          : ''
-      }`}>
+          ? 'grid-cols-2 gap-3' 
+          : 'grid-cols-3 gap-2'
+      } w-full box-border justify-center`}>
         {definition.options?.map((option) => (
           <button
             key={option.value}
-            className={`shape-option ${value === option.value ? 'selected' : ''}`}
+            className={`relative w-[90%] aspect-square flex flex-col items-center justify-center 
+              ${value === option.value 
+                ? 'border border-black bg-gray-bg' 
+                : 'border border-gray'} 
+              rounded-lg cursor-pointer transition-all duration-200 ease-in-out p-[0.35rem] 
+              hover:bg-gray-bg/90`}
             onClick={() => onChange(option.value, definition)}
           >
             {renderIcon(option)}

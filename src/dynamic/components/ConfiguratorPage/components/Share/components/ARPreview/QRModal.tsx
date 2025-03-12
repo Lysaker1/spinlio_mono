@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import './ARPreview.css';
 
 interface QRModalProps {
   qrCodeUrl: string;
@@ -17,15 +16,13 @@ const QRModal: React.FC<QRModalProps> = ({ qrCodeUrl, onClose }) => {
   }, []);
 
   return (
-    <div className={`qr-modal-overlay ${browserClass}`} onClick={onClose}>
-      <div className="qr-modal" onClick={e => e.stopPropagation()}>
-        <button className="close-button" onClick={onClose}>×</button>
-        <h3>Scan QR Code</h3>
-        <img src={qrCodeUrl} alt="AR QR Code" className="qr-code" />
-        <p>Scan this code with your mobile device to view in AR</p>
-      </div>
+    <div className={`flex items-center justify-center ${browserClass}`} onClick={onClose}>
+        <div className="text-center text-black w-full rounded-lg" onClick={e => e.stopPropagation()}>
+            <img src={qrCodeUrl} alt="AR QR Code" className="w-36 h-36 m-auto" />
+            <p className="text-md text-black/80 text-center m-0 leading-6">Scan this code with your mobile device to view in AR</p>
+        </div>
     </div>
-  );
+);
 };
 
 export default QRModal;

@@ -1,25 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import { ModelMetadata } from '../../../../../../services/modelService';
-import { useParams, useNavigate } from 'react-router-dom';
-import { getModelById, updateModel, deleteModel } from '../../../../../../services/modelService';
-import { Loader, Text, Switch, Tabs, TextInput, ColorPicker, Select, NumberInput, Menu } from '@mantine/core';
-import { Variant, allVariants } from '../UploadModal/constants';
-import { IconCheck, IconChevronDown, IconPencil, IconAlertCircle } from '@tabler/icons-react';
+import { ColorPicker, Loader, Menu, NumberInput, Tabs, Text, TextInput } from '@mantine/core';
+import { IconCheck, IconChevronDown, IconPencil } from '@tabler/icons-react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { ModelMetadata, ModelParameterValue, deleteModel, getModelById, updateModel } from '../../../../../../services/modelService';
+import { AttachmentPoint, apiToAttachmentPoint, attachmentPointToApi } from '../../../../../../types/attachment-points';
 import ModelViewer from './ModelViewer';
+import Parameters from './Parameters';
 import SnapPointHelper from './SnapPointHelper';
 import SnapPointsTab from './SnapPointsTab';
-import { AttachmentPoint, apiToAttachmentPoint, attachmentPointToApi } from '../../../../../../types/attachment-points';
 
 const EditModel: React.FC = () => {
   const [model, setModel] = useState<ModelMetadata | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [saving, setSaving] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { id } = useParams();
+
+  const [isEditingName, setIsEditingName] = useState<boolean>(false);
+  const [isPublic, setIsPublic] = useState<boolean>(false);
+  const [name, setName] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
 
   const [color, setColor] = useState<string | null>(null);
   const [colorPickerVisible, setColorPickerVisible] = useState<boolean>(false);
 
-  const [variants, setVariants] = useState<Variant[]>([]);
+  const [parameterValues, setParameterValues] = useState<ModelParameterValue[]>([]);
   
   // Snap points state
   const [attachmentPoints, setAttachmentPoints] = useState<AttachmentPoint[]>([]);
@@ -41,13 +46,6 @@ const EditModel: React.FC = () => {
       try {
         const model = await getModelById(id);
         setModel(model);
-        if (model?.subcategory && allVariants[model?.subcategory]) {
-          setVariants(allVariants[model?.subcategory]);
-        } else if (model?.category && allVariants[model?.category]) {
-          setVariants(allVariants[model?.category]);
-        } else {
-          setVariants([]);
-        }
         
         // Load attachment points if available
         if (model?.attachment_points && Array.isArray(model.attachment_points)) {
@@ -72,20 +70,23 @@ const EditModel: React.FC = () => {
       setError('No model ID provided');
       return;
     }
+    setSaving(true);
     console.log("Saving...");
     
     // Convert attachment points to API format using our helper
     const apiAttachmentPoints = attachmentPoints.map(attachmentPointToApi);
-    
+
+    console.log("Parameter values:", parameterValues);
     await updateModel(id, { 
       ...model,
       name: name,
       description: description,
       is_public: isPublic,
-      attachment_points: apiAttachmentPoints,
+/*       attachment_points: apiAttachmentPoints, */
       color: color || undefined
-    });
+    }, parameterValues);
     console.log("Saved!");
+    setSaving(false);
   };
 
   const handleDelete = async () => {
@@ -129,15 +130,10 @@ const EditModel: React.FC = () => {
     }
   };
 
-  const [isEditingName, setIsEditingName] = useState<boolean>(false);
-  const [isPublic, setIsPublic] = useState<boolean>(false);
-  const [name, setName] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
-
   useEffect(() => {
     if (model) {
-      setIsPublic(model.is_public || true);
-      setName(model.name || '');
+      setIsPublic(model.is_public);
+      setName(model.name);
       setDescription(model.description || '');
     }
   }, [model]);
@@ -184,7 +180,7 @@ const EditModel: React.FC = () => {
           </div>
         </div>
         <div className='flex gap-1'>
-          <button className='bg-black text-white px-6 py-2 rounded-full' onClick={() => handleSave()}>Save</button>
+          <button className='bg-black text-white px-6 py-2 rounded-full' onClick={() => handleSave()} disabled={saving}>{saving ? 'Saving...' : 'Save'}</button>
           <button className='bg-red-500 text-white px-4 py-2 rounded-full' onClick={() => handleDelete()}>Delete</button>
         </div>
       </div>
@@ -237,58 +233,7 @@ const EditModel: React.FC = () => {
                 </Tabs.List>
                 <div className="flex-1 overflow-auto">
                   <Tabs.Panel value='parameters' className='p-4 flex flex-col gap-4 h-full'>
-                    {
-                      variants.map((variant, index) => {
-                        if (variant.type === "select") {
-                          return (
-                            <Select 
-                              key={`variant-${index}`}
-                              label={variant.name} 
-                              placeholder={variant.name} 
-                              data={variant.options} 
-                            />
-                          )
-                        }
-                        if (variant.type === "number") {
-                          return (
-                            <NumberInput 
-                              key={`variant-${index}`}
-                              label={variant.name} 
-                              placeholder={variant.name} 
-                            />
-                          )
-                        }
-                        if (variant.type === "boolean") {
-                          return (
-                            <Switch 
-                              key={`variant-${index}`}
-                              label={variant.name} 
-                            />
-                          )
-                        }
-                        if (variant.type === "color") {
-                          let variantColor = '#000000';
-                          return (
-                            <ColorPicker 
-                              key={`variant-${index}`}
-                              format="hex" 
-                              value={variantColor} 
-                              onChange={(value) => variantColor = value} 
-                            />
-                          )
-                        }
-                        if (variant.type === "string") {
-                          return (
-                            <TextInput 
-                              key={`variant-${index}`}
-                              label={variant.name} 
-                              placeholder={variant.name} 
-                            />
-                          )
-                        }
-                        return null;
-                      })
-                    }
+                    <Parameters modelId={id} onParameterChange={setParameterValues} />
                   </Tabs.Panel>
                   <Tabs.Panel value='snap-points' className='p-4 h-full'>
                     {/* Use the simplified SnapPointsTab component */}

@@ -21,8 +21,8 @@ export interface ModelMetadata {
   s3_key: string;
   url?: string;
   created_at?: string;
-  category: string;
-  subcategory?: string;
+  category: number;
+  subcategory?: number;
   price?: number;
   description?: string;
   manufacturer?: string;
@@ -44,7 +44,53 @@ export interface ModelMetadata {
   conversion_job_id?: string;
   color?: string;
   thumbnail_url?: string;
-  is_public?: boolean;
+  is_public: boolean;
+}
+
+export interface ComponentGroup {
+  id: number;
+  name: string;
+  description?: string;
+}
+
+export interface ComponentCategory {
+  id: number;
+  name: string;
+  description?: string;
+  component_group: number;
+}
+
+export interface ComponentSubcategory {
+  id: number;
+  name: string;
+  description?: string;
+  component_category: number;
+}
+
+export interface ParameterDefinition {
+  id: number;
+  name: string;
+  type: 'number' | 'string' | 'boolean';
+  suffix?: string;
+  value?: string | number | boolean | null; // This is an attribute we add in the backend call
+}
+
+export interface ModelParameterValue {
+  model_id: string;
+  parameter_id: number;
+  numeric_value?: number;
+  string_value?: string;
+  boolean_value?: boolean;
+}
+
+export interface CategoryParameter {
+  category_id: number;
+  parameter_id: number;
+}
+
+export interface SubcategoryParameter {
+  subcategory_id: number;
+  parameter_id: number;
 }
 
 // Organize files in S3 using a structured folder approach
@@ -240,7 +286,7 @@ export const getModels = async (): Promise<ModelMetadata[]> => {
     
     // Refresh signed URLs if they exist but might be expired
     const modelsWithRefreshedUrls = await Promise.all(
-      (data || []).map(async (model) => {
+      (data || []).map(async (model: ModelMetadata) => {
         if (!model.s3_key) return model;
         
         const command = new GetObjectCommand({
@@ -350,18 +396,102 @@ export const getModelById = async (modelId: string): Promise<ModelMetadata | nul
   }
 };
 
+// Get all parameter values for a model
+export const getModelParameterValues = async (modelId: string): Promise<ParameterDefinition[]> => {
+  try {
+    // Get model's category and subcategory
+    const { data: model, error: modelError } = await supabase
+      .from('models')
+      .select('category, subcategory')
+      .eq('id', modelId)
+      .single();
+    if (modelError) throw modelError;
+
+
+    const categoryParametersPromise = model.category ? supabase.from('category_parameters').select('*').eq('category_id', model.category) : Promise.resolve({ data: [] });
+    const subcategoryParametersPromise = model.subcategory ? supabase.from('subcategory_parameters').select('*').eq('subcategory_id', model.subcategory) : Promise.resolve({ data: [] });
+
+    // Get all parameters for category and subcategory in parallel and existing model parameter values
+    const [categoryParameters, subcategoryParameters, modelParameterValues] = await Promise.all([
+      categoryParametersPromise,
+      subcategoryParametersPromise,
+      supabase.from('model_parameter_values').select('*').eq('model_id', modelId)
+    ]);
+
+    if ('error' in categoryParameters && categoryParameters.error) {
+      console.error('Error fetching category parameters:', categoryParameters.error);
+      throw categoryParameters.error;
+    }
+    if ('error' in subcategoryParameters && subcategoryParameters.error) {
+      console.error('Error fetching subcategory parameters:', subcategoryParameters.error);
+      throw subcategoryParameters.error;
+    }
+    if (modelParameterValues.error) {
+      console.error('Error fetching model parameter values:', modelParameterValues.error);
+      throw modelParameterValues.error;
+    }
+
+    // Combine all parameters
+    const allParameterIds = [
+      ...(categoryParameters.data || []).map(p => p.parameter_id),
+      ...(subcategoryParameters.data || []).map(p => p.parameter_id)
+    ];
+
+    // Get parameter definitions
+    const { data: parameterDefinitions, error: parameterDefinitionsError } = await supabase
+      .from('parameter_definitions')
+      .select('*')
+      .in('id', allParameterIds);
+
+    if (parameterDefinitionsError) {
+      console.error('Error fetching parameter definitions:', parameterDefinitionsError);
+      throw parameterDefinitionsError;
+    }
+
+    // Map parameter definitions to their values
+    return parameterDefinitions.map(def => {
+      let value;
+      if (def.type === 'number') {
+        value = modelParameterValues.data.find(mp => mp.parameter_id === def.id)?.numeric_value || null;
+      } else {
+        value = modelParameterValues.data.find(mp => mp.parameter_id === def.id)?.[`${def.type}_value`] || null;
+      }
+      return {
+        ...def,
+        value
+      };
+    });
+    
+  } catch (error) {
+    console.error('Error fetching model parameter values:', error);
+    throw error;
+  }
+};
+
 // Update a model
-export const updateModel = async (modelId: string, model: Partial<ModelMetadata>): Promise<ModelMetadata | null> => {
+export const updateModel = async (modelId: string, model: Partial<ModelMetadata>, parameterValues?: ModelParameterValue[]): Promise<ModelMetadata | null> => {
   try {
     const { data, error } = await supabase
       .from('models')
-      .select('*')
+      .update(model)
       .eq('id', modelId)
+      .select()
       .single();
 
     if (error) {
       console.error('Error updating model:', error);
       throw error;
+    }
+
+    if (parameterValues) {
+      const { error: parameterError } = await supabase
+        .from('model_parameter_values')
+        .upsert(parameterValues, { onConflict: 'model_id,parameter_id' }); // Inserts if not exists, updates if exists
+    
+      if (parameterError) {
+        console.error('Error updating/inserting model parameters:', parameterError);
+        throw parameterError;
+      }
     }
 
     return data;
@@ -472,7 +602,8 @@ export const testS3Upload = async (): Promise<{success: boolean, message: string
       {
         name: 'Test Upload',
         filename: 'test-upload.txt',
-        category: 'test'
+        category: 1,
+        is_public: false
       }
     );
     
@@ -496,3 +627,55 @@ export const testS3Upload = async (): Promise<{success: boolean, message: string
     };
   }
 }; 
+
+// Get all component groups
+export const getComponentGroups = async (): Promise<ComponentGroup[]> => {
+  try {
+    console.log('fetching component groups backend');
+    const { data, error } = await supabase
+      .from('component_groups')
+      .select('*');
+    console.log('component groups fetched backend', data);
+
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.error('Error fetching component groups:', error);
+    throw error;
+  }
+};
+
+// Get all component categories within a group
+export const getComponentCategories = async (groupId: number): Promise<ComponentCategory[]> => {
+  try {
+    const { data, error } = await supabase
+      .from('component_categories')
+      .select('*')
+      .eq('component_group', groupId);
+
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.error('Error fetching component categories:', error); 
+    throw error;
+  }
+};
+
+// Get all component subcategories within a category
+export const getComponentSubcategories = async (categoryId: number): Promise<ComponentSubcategory[]> => {
+  try {
+    const { data, error } = await supabase
+      .from('component_subcategories')
+      .select('*')
+      .eq('component_category', categoryId);
+
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.error('Error fetching component subcategories:', error);
+    throw error;
+  }
+};
+
+
+

@@ -1,10 +1,9 @@
 import { Button, Group, Modal, Select, Stack } from "@mantine/core";
 import ModelUploadForm from "../UploadForm/ModelUploadForm";
 import { IconCloudUpload, IconDownload, IconTrash, IconX } from "@tabler/icons-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { isSupportedModelFormat } from "@dynamic/utils/fileTypeUtils";
-import { componentGroups, components, subCategories } from "./constants"; 
-import { uploadModelToS3 } from "@dynamic/services/modelService";
+import { ComponentCategory, ComponentGroup, ComponentSubcategory, getComponentCategories, getComponentGroups, getComponentSubcategories, uploadModelToS3 } from "@dynamic/services/modelService";
 import { useNavigate } from "react-router-dom";
 interface UploadModalProps {
   uploadModalOpened: boolean;
@@ -13,14 +12,56 @@ interface UploadModalProps {
 
 const UploadModal = ({ uploadModalOpened, closeUploadModal }: UploadModalProps) => {
   const [uploading, setUploading] = useState(false);
-  
 
-  const [componentGroup, setComponentGroup] = useState<string | null>(null);
-  const [component, setComponent] = useState<string | null>(null);
-  const [subCategory, setSubCategory] = useState<string | null>(null);
+  const [loadingComponentGroups, setLoadingComponentGroups] = useState(false);
+  const [loadingCategories, setLoadingCategories] = useState(false);
+  const [loadingSubCategories, setLoadingSubCategories] = useState(false);
+  const [componentGroups, setComponentGroups] = useState<ComponentGroup[]>([]);
+  const [categories, setCategories] = useState<ComponentCategory[]>([]);
+  const [subCategories, setSubCategories] = useState<ComponentSubcategory[]>([]);
+
+  const [componentGroup, setComponentGroup] = useState<number | null>(null);
+  const [component, setComponent] = useState<number | null>(null);
+  const [subCategory, setSubCategory] = useState<number | null>(null);
+
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchComponentGroups = async () => {
+      setLoadingComponentGroups(true);
+      const groups = await getComponentGroups();
+      setComponentGroups(groups);
+      setLoadingComponentGroups(false);
+      setCategories([]);
+      setSubCategories([]);
+    };
+    fetchComponentGroups();
+  }, []);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      if (!componentGroup) return;
+      setLoadingCategories(true);
+      const categories = await getComponentCategories(componentGroup);
+      setCategories(categories);
+      setSubCategories([]);
+      setLoadingCategories(false);
+    };
+    fetchCategories();
+  }, [componentGroup]);
+
+  useEffect(() => {
+    const fetchSubCategories = async () => {
+      if (!component) return;
+      setLoadingSubCategories(true);
+      const subCategories = await getComponentSubcategories(component);
+      setSubCategories(subCategories);
+      setLoadingSubCategories(false);
+    };
+    fetchSubCategories();
+  }, [component]);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files || event.target.files.length === 0) return;
@@ -76,7 +117,9 @@ const UploadModal = ({ uploadModalOpened, closeUploadModal }: UploadModalProps) 
     }
   };
 
-  const disabled = !selectedFile || !componentGroup || !component || (!subCategory && subCategories[component as keyof typeof subCategories]?.length > 0);
+
+
+  const disabled = !selectedFile || !componentGroup || !component || (!subCategory && subCategories.length > 0 && !loadingSubCategories);
 
   return (
     <Modal
@@ -148,38 +191,38 @@ const UploadModal = ({ uploadModalOpened, closeUploadModal }: UploadModalProps) 
                   <p className="text-xl text-black mb-1">What are you uploading?</p>
                   <Select
                     label="Category Group"
-                    placeholder="Select a category group"
-                    data={componentGroups}
-                    value={componentGroup}
-                    onChange={(value) => {
-                    setComponentGroup(value);
-                    setComponent(null);
-                    setSubCategory(null);
-                  }}
+                    placeholder={loadingComponentGroups ? 'Loading category groups...' : 'Select a category group'}
+                    data={componentGroups.map((group) => ({ label: group.name, value: group.id?.toString() }))}
+                    value={componentGroup?.toString()}
+                    onChange={(value: string | null) => {
+                      setComponentGroup(value ? parseInt(value) : null);
+                      setComponent(null);
+                      setSubCategory(null);
+                    }}
                   />
                 </>
               )}
-              {componentGroup && (
+              {componentGroup &&  (
                 <Select
                   label="Category"
-                  placeholder="Select a category"
-                  data={components[componentGroup as keyof typeof components]}
-                  value={component}
-                  onChange={(value) => {
-                    setComponent(value);
+                  placeholder={loadingCategories ? 'Loading categories...' : 'Select a category'}
+                  data={categories.map((category) => ({ label: category.name, value: category.id?.toString() }))}
+                  value={component?.toString()}
+                  onChange={(value: string | null) => {
+                    setComponent(value ? parseInt(value) : null);
                     setSubCategory(null);
                   }}
                 />
               )}
 
-              {component && subCategories[component as keyof typeof subCategories]?.length > 0 && (
+              {component && (
                 <Select
                   label="Subcategory"
-                  placeholder="Select a subcategory"
-                  data={subCategories[component as keyof typeof subCategories]}
-                  value={subCategory}
-                  onChange={(value) => {
-                    setSubCategory(value);
+                  placeholder={loadingSubCategories ? 'Loading subcategories...' : 'Select a subcategory'}
+                  data={subCategories.map((subCat) => ({ label: subCat.name, value: subCat.id?.toString() }))}
+                  value={subCategory?.toString()}
+                  onChange={(value: string | null) => {
+                    setSubCategory(value ? parseInt(value) : null);
                   }}
                 />
               )}

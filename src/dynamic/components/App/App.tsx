@@ -1,7 +1,7 @@
 // Import necessary components and utilities for the app
 import React, { lazy, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, Outlet } from 'react-router-dom';
-import { MantineProvider } from '@mantine/core';
+import { createTheme, Loader, MantineProvider } from '@mantine/core';
 import { theme } from '../../../shared/theme';
 import { Footer, Header } from '../../../shared/components';
 import { AboutPage } from '../../../static/components';
@@ -14,6 +14,7 @@ import { Notifications } from '@mantine/notifications';
 import { MyDesigns } from '@shared/components/MyDesigns/MyDesigns';
 import { Success } from '@shared/components/CheckoutResult/Success';
 import { Cancel } from '@shared/components/CheckoutResult/Cancel';
+import CustomLoader from '../Loader/Loader';
 // Import the AuthCallback component
 const AuthCallback = lazy(() => import('../Auth/AuthCallback'));
 
@@ -233,6 +234,18 @@ console.log('App: Runtime check:', {
 });
 
 const App: React.FC = () => {
+
+  const theme = createTheme({
+    components: {
+      Loader: {
+        defaultProps: {
+          loaders: { ...Loader.defaultLoaders, custom: CustomLoader },
+          type: 'custom',
+        },
+      },
+    },
+  });
+  
   return (
     <ErrorBoundary>
       <MantineProvider theme={theme}>

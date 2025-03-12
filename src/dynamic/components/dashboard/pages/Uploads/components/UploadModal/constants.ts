@@ -30,12 +30,10 @@ const subCategories = {
   "Disc Brake": ["Lever", "Calliper"],
   "V-Brake": ["Lever", "Calliper"],
   "Brake Rotor": ["Centre Mount", "6 Bolt"],
-  "Tire": ["Application"],
   "Handlebar": ["Riser Handlebars", "Dropdown Bars", "Bullhorn Bars"],
   "Grips": ["Lock-on", "Push fit"],
   "Saddle": ["Regular", "Suspension"],
   "Seat Post": ["Standard", "Layback", "Integrated Light", "Dropper", "Suspension"],
-  "Fenders": ["Material"],
   "Pedals": ["Platform", "SPD", "Toe Clip"],
   "Lights": ["External", "Integrated Light"],
 };

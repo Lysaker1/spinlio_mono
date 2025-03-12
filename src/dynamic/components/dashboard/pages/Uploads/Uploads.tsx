@@ -195,7 +195,6 @@ const Uploads: React.FC = () => {
   // Filter models based on search query
   const filteredModels = models.filter(model => 
     model.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    model.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
     (model.manufacturer && model.manufacturer.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 

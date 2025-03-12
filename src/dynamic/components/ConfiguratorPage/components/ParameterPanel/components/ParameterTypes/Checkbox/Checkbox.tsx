@@ -3,9 +3,7 @@ import React from 'react';
 // Import ParameterDefinition type from parent directory
 import { ParameterDefinition } from '../../../types';
 // Import useMediaQuery hook from Mantine for responsive design
-import { useMediaQuery } from '@mantine/hooks';
-// Import associated CSS styles
-import './Checkbox.css';
+import { useMediaQuery } from '@mantine/hooks';  
 
 // Define the props interface for the Checkbox component
 interface CheckboxProps {
@@ -33,17 +31,21 @@ export const Checkbox: React.FC<CheckboxProps> = ({
 
   return (
     // Container div with conditional mobile class
-    <div className={`parameter-card ${isMobile ? 'mobile' : ''}`}>
+    <div className={`w-full bg-transparent rounded-xl py-5 backdrop-blur-md mb-4 ${isMobile ? 'w-[280px] flex-shrink-0 snap-start mr-4 mb-0' : ''}`}>
       {/* Button wrapper for checkbox interaction */}
       <button 
-        className="checkbox-button" 
+        className="w-full flex items-center gap-3 bg-transparent border-none rounded-lg cursor-pointer transition-all duration-200 ease-in-out hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:bg-white/5 active:bg-white/10"
         onClick={handleToggle}
       >
         {/* Custom checkbox visual element */}
-        <div className={`checkbox ${isChecked ? 'checked' : ''}`}>
+        <div className={`w-6 h-6 rounded-md border-2 border-black/40 flex items-center justify-center transition-all duration-200 ease-in-out text-black flex-shrink-0 bg-black/5
+          ${isChecked ? 'bg-black/20 border-black/80 scale-105' : ''}
+          hover:border-black/60 hover:scale-105
+          ${isChecked ? 'hover:bg-white/25 hover:scale-110' : ''}`}
+        >
           {/* Render checkmark SVG only when checked */}
           {isChecked && (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <svg className="w-4 h-4 opacity-100 scale-100 transition-all duration-200 ease-in-out" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               {/* SVG path for checkmark icon */}
               <path 
                 d="M20 6L9 17L4 12" 
@@ -55,7 +57,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
           )}
         </div>
         {/* Label displaying parameter name */}
-        <span className="checkbox-label">{definition.name}</span>
+        <span className="transition-colors duration-200 ease-in-out group-hover:text-black/20">{definition.name}</span>
       </button>
     </div>
   );

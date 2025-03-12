@@ -10,8 +10,6 @@ import { SizingPanel } from './components/Panels/SizingPanel/SizingPanel';
 import { MaterialPanel } from './components/Panels/MaterialPanel/MaterialPanel';
 // Import TypeScript interfaces and types
 import { ParameterDefinition, ParameterPanelProps } from './types';
-// Import component styles
-import './ParameterPanel.css';
 // Import parameter configuration data
 import { parameterDefinitions as parameterDefinitionsBike } from './parameterDefinitions6';
 import { parameterDefinitions as parameterDefinitionsFurniture } from './parameterDefinitionsFurniture';
@@ -189,15 +187,15 @@ export const ParameterPanel: React.FC<ParameterPanelProps> = ({
   };
 
   return (
-    <div className={`parameter-panel ${isMobile ? 'mobile' : ''}`}>
-      <div className="category-navigation">
+    <div className={`w-full h-full flex flex-col gap-2 backdrop-blur-md rounded-3xl bg-white max-w-full p-4 ${isMobile ? 'w-full h-[26vh] fixed bottom-0 left-0 bg-transparent justify-end' : ''}`}>
+      <div className={`bg-gray-bg ${isMobile ? 'fixed bottom-0 left-1/2 -translate-x-1/2 w-full h-[6vh] p-0 z-[103]' : 'h-12 min-h-12 rounded-full w-full max-w-full border-[#777574]'}`}>
         <CategoryTabs 
           activeTab={activeTab as TabType} 
           onTabChange={setActiveTab}
           configuratorType={configuratorType}
         />
       </div>
-      <div className="panel-content">
+      <div className={`${isMobile ? ' fixed bottom-[7vh] left-1/2 -translate-x-1/2 w-full h-[20vh] p-0 z-[102] overflow-x-hidden transition-all duration-300 ease-in-out [mask-image:linear-gradient(to_right,transparent,black_5%,black_95%,transparent)] [-webkit-mask-image:linear-gradient(to_right,transparent,black_5%,black_95%,transparent)]' : 'overflow-x-hidden w-full flex-grow text-[calc(14px+0.2vw)]'}`}>
         {renderPanel()}
       </div>
     </div>

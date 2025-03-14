@@ -1,18 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { Badge, Card, Image, SimpleGrid, Text, Button, Overlay } from '@mantine/core';
-import PageLayout from '../../components/PageLayout/PageLayout';
-import { useAuth0 } from '@auth0/auth0-react';
-import { useNavigate } from 'react-router-dom';
-import { IconStarFilled } from '@tabler/icons-react';
 import { BikeTemplate, bikeTemplates } from '@dynamic/components/ConfiguratorPage/components/Sidebar/bikeTemplates';
-import "./Prefabs.css"
+import { Overlay, SimpleGrid } from '@mantine/core';
+import { Profile } from '@shared/types/Profile';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import MarketplaceCard from '../../components/MarketplaceCard/MarketplaceCard';
+import PageLayout from '../../components/PageLayout/PageLayout';
 import { PrefabModal } from '../../components/PrefabModal/PrefabModal';
+import { ProfileStorageService } from '@shared/services/profileStorage';
 
 const COLUMNS = 4;
 const ROWS = 3;
 const Prefabs: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
+  const [users, setUsers] = useState<Map<string, Profile>>(new Map());
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -55,9 +56,26 @@ const Prefabs: React.FC = () => {
     }
   };
 
+  useEffect(()=>{
+    const uniqueUserIds = new Set<string>();
+    bikeTemplates.forEach((prefab) => {
+      if (prefab.manufacturer_id) {
+        uniqueUserIds.add(prefab.manufacturer_id);
+      }
+    });
+    
+    uniqueUserIds.forEach(async (userId) => {
+      const user = await ProfileStorageService.getProfile(userId);
+
+      if (user) {
+        setUsers(prev => new Map(prev.set(userId, user)));
+      }
+    });
+  }, []);
+
   return (
     <PageLayout
-      title="Prefabs"
+      title="All Prefabs"
       totalPages={Math.ceil(
         filteredPrefabs.length / (ROWS * COLUMNS)
       )}
@@ -67,50 +85,19 @@ const Prefabs: React.FC = () => {
     >
       {selectedPrefab && (
         <>
-          <Overlay className='prefabs-overlay' onClick={()=>setSelectedPrefab(null)}/>
-          <PrefabModal prefab={selectedPrefab} />
+          <PrefabModal prefab={selectedPrefab} onClose={()=>setSelectedPrefab(null)}/>
         </>
       )}
       <SimpleGrid
         cols={4}
         spacing="lg"
       >
-        {filteredPrefabs.map((prefab) => (
-          <Card 
-            key={prefab.id} 
-            shadow="sm" 
-            padding="lg" 
-            radius="md" 
-            withBorder 
-            onClick={() => handleCardClick(prefab)}
-            className={`prefab-card`}
-          >
-            <Card.Section>
-              <div style={{ position: 'relative' }}>
-                <Image
-                  src={prefab.image || '/placeholder-image.png'} 
-                  height={160}
-                  alt={prefab.name}
-                />
-              {/*   <Badge 
-                  leftSection={<IconStarFilled size="12" />}
-                  variant="filled"
-                  color="var(--mantine-color-gray-7)"
-                  style={{
-                    padding: '0px 5px',
-                    position: 'absolute',
-                    top: 8,
-                    right: 8
-                  }}>
-                  3,9
-                </Badge> */}
-              </div>
-            </Card.Section>
-              <Text fw={500} size="lg" mt="md">
-                {prefab.name}
-              </Text>
-          </Card>
-        ))}
+        {filteredPrefabs.map((prefab) => {
+          const user = users.get(prefab.manufacturer_id || '');
+          return (
+            <MarketplaceCard key={prefab.id} image={prefab.image} user={user} name={prefab.name} price={prefab.price} onClick={()=>handleCardClick(prefab)}/>
+          );
+        })}
       </SimpleGrid>
     </PageLayout>
   );

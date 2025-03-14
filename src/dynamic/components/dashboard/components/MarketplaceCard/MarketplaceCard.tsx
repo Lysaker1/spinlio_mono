@@ -7,12 +7,13 @@ interface MarketplaceCardProps {
   user?: Profile 
   name: string
   price: number
+  onClick?: () => void
 }
 
-const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ image, user, name, price }) => {
+const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ image, user, name, price, onClick }) => {
   const navigate = useNavigate();
   return (
-    <Card shadow='sm' padding='lg' radius='md' withBorder>
+    <Card shadow='sm' padding='lg' radius='md' withBorder onClick={onClick} className="cursor-pointer">
       <Card.Section className='h-48'>
         <Image src={image || fallback} alt={name} className="w-full object-cover object-center" style={{ objectPosition: 'middle' }} />
       </Card.Section>

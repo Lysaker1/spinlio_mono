@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import * as THREE from 'three';
 import { useThree, useFrame, ThreeEvent } from '@react-three/fiber';
-import { Text as DreiText, Html, useHelper, Center, PerspectiveCamera } from '@react-three/drei';
+import { Text as DreiText, Html, useHelper, Center, PerspectiveCamera, ContactShadows, OrbitControls as DreiOrbitControls } from '@react-three/drei';
 import { v4 as uuidv4 } from 'uuid';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 import modelLoaderService from '../services/ModelLoaderService';
 import snapPointService from '../services/SnapPointService';
@@ -55,11 +56,13 @@ export const ModelViewer: React.FC<ModelViewerProps> = ({
   const [viewMode, setViewMode] = useState<'normal' | 'wireframe' | 'x-ray'>('normal');
   
   // Refs
-  const modelRef = useRef<THREE.Group>(null);
+  const modelGroupRef = useRef<THREE.Group>(new THREE.Group());
+  const modelRef = useRef<THREE.Object3D | null>(null);
+  const meshesRef = useRef<Record<string, THREE.Mesh>>({});
   const loadingModelRef = useRef<File | null>(null);
-  const meshesRef = useRef<{[key: string]: THREE.Mesh}>({});
   const autoPointsGeneratedRef = useRef<boolean>(false);
   const cameraRef = useRef<THREE.PerspectiveCamera>(null);
+  const orbitControlsRef = useRef<any>(null);
   
   // Get THREE.js context
   const { camera, scene } = useThree();
@@ -81,8 +84,10 @@ export const ModelViewer: React.FC<ModelViewerProps> = ({
     }
   }, [attachmentMode]);
   
-  // Handle automatic attachment point generation
+  // Handle automatic attachment point generation with better error protection
   useEffect(() => {
+    // Only generate automatic points when the component type is set, 
+    // the model is loaded, and the automatic attachment mode is active
     if (
       attachmentMode === 'automatic' &&
       modelLoaded &&
@@ -90,29 +95,86 @@ export const ModelViewer: React.FC<ModelViewerProps> = ({
       Object.keys(meshesRef.current).length > 0 &&
       !autoPointsGeneratedRef.current
     ) {
-      console.log("Generating automatic attachment points...");
-      
-      // Use the service to generate points based on component type
-      const boundingBox = new THREE.Box3().setFromCenterAndSize(
-        new THREE.Vector3(0, 0, 0),
-        modelInfo.size
-      );
-      
-      const autoPoints = snapPointService.generateAttachmentPoints(
-        componentType,
-        meshesRef.current,
-        boundingBox
-      );
-      
-      // Add all generated points
-      autoPoints.forEach(point => {
-        onAddAttachmentPoint(point);
-      });
-      
-      // Mark that we've generated points for this model
+      // Set flag immediately to prevent duplicate generation
       autoPointsGeneratedRef.current = true;
+      
+      try {
+        console.log(`Generating automatic attachment points for ${componentType}...`);
+        
+        // Ensure model and all meshes have up-to-date world matrices
+        console.log("Updating model world matrices before generating attachment points");
+        if (modelRef.current) {
+          // Force world matrix update to ensure all transforms are applied
+          modelRef.current.updateWorldMatrix(true, true);
+        }
+        
+        // Update individual mesh matrices to ensure all transformations are applied
+        Object.values(meshesRef.current).forEach(mesh => {
+          mesh.updateWorldMatrix(true, true);
+        });
+        
+        // IMPORTANT: Use the actual model's bounding box in WORLD space
+        // This ensures we're using the model's real position in the scene
+        const worldBoundingBox = new THREE.Box3().setFromObject(modelRef.current!);
+        console.log(`Initial world bounding box: min=(${worldBoundingBox.min.x.toFixed(2)}, ${worldBoundingBox.min.y.toFixed(2)}, ${worldBoundingBox.min.z.toFixed(2)}), max=(${worldBoundingBox.max.x.toFixed(2)}, ${worldBoundingBox.max.y.toFixed(2)}, ${worldBoundingBox.max.z.toFixed(2)})`);
+        
+        // Calculate model size
+        const size = new THREE.Vector3();
+        worldBoundingBox.getSize(size);
+        
+        // Make sure model is elevated from the grid properly
+        if (modelRef.current) {
+          // Get the lowest point of the bounding box
+          const lowestY = worldBoundingBox.min.y;
+          
+          // We want to adjust the model so the bottom of the bounding box sits exactly at Y=0
+          const yOffset = -lowestY;
+          console.log(`Adjusting model Y position by ${yOffset.toFixed(4)} to sit exactly on the grid`);
+          
+          // Apply the adjustment
+          modelRef.current.position.y += yOffset;
+          
+          // After moving the model, make sure to update its world matrix again
+          modelRef.current.updateWorldMatrix(true, true);
+          
+          // Update individual mesh matrices again after the model has been repositioned
+          Object.values(meshesRef.current).forEach(mesh => {
+            mesh.updateWorldMatrix(true, true);
+          });
+          
+          // Recompute the world bounding box after adjustments
+          worldBoundingBox.setFromObject(modelRef.current);
+          
+          console.log(`Updated bounding box after positioning: min=(${worldBoundingBox.min.x.toFixed(2)}, ${worldBoundingBox.min.y.toFixed(2)}, ${worldBoundingBox.min.z.toFixed(2)}), max=(${worldBoundingBox.max.x.toFixed(2)}, ${worldBoundingBox.max.y.toFixed(2)}, ${worldBoundingBox.max.z.toFixed(2)})`);
+        }
+        
+        // Generate points using the service, which will use specialized analyzers when appropriate
+        // Use the WORLD bounding box to ensure correct coordinates
+        const autoPoints = snapPointService.generateAttachmentPoints(
+          componentType,
+          meshesRef.current,
+          worldBoundingBox
+        );
+        
+        console.log(`Generated ${autoPoints.length} attachment points`);
+        
+        // Add all generated points - no need to adjust positions as they're already in world space
+        if (autoPoints.length > 0) {
+          autoPoints.forEach(point => {
+            onAddAttachmentPoint(point);
+          });
+        } else {
+          console.warn("No automatic attachment points were generated");
+          // Reset flag so user can try again
+          autoPointsGeneratedRef.current = false;
+        }
+      } catch (error) {
+        console.error("Error generating attachment points:", error);
+        // Reset flag so user can try again
+        autoPointsGeneratedRef.current = false;
+      }
     }
-  }, [attachmentMode, modelLoaded, modelInfo, onAddAttachmentPoint, componentType]);
+  }, [attachmentMode, modelLoaded, modelInfo, onAddAttachmentPoint, componentType, modelRef]);
   
   // Handle view mode changes (normal, wireframe, x-ray)
   useEffect(() => {
@@ -175,126 +237,191 @@ export const ModelViewer: React.FC<ModelViewerProps> = ({
     
     // Calculate a good camera distance based on model size and FOV
     const fov = camera.fov * (Math.PI / 180);
-    const distance = (maxDim / 2) / Math.tan(fov / 2) * 1.5; // 1.5x to give some margin
+    const distance = (maxDim / 2) / Math.tan(fov / 2) * 2.5; // 2.5x to give more margin
     
-    // Position camera diagonally from the model for better perspective
-    camera.position.set(distance, distance, distance);
+    // Position camera slightly offset for better perspective (not directly on axis)
+    camera.position.set(distance * 0.8, distance * 0.6, distance);
     camera.lookAt(0, 0, 0);
     camera.updateProjectionMatrix();
     
     console.log(`Camera positioned at distance: ${distance} for model size: ${maxDim}`);
+    console.log(`Camera position:`, camera.position);
   }, [camera]);
   
-  // Load the model when file changes
+  // Add better cleanup for webgl resources
   useEffect(() => {
-    // Skip if no file or if we already loaded this exact file
-    if (!file || loadingModelRef.current === file || !modelRef.current) {
-      return;
-    }
-    
-    // Set loading state
-    setLoading(true);
-    setLoadingProgress(0);
-    setModelLoaded(false);
-    setError(null);
-    loadingModelRef.current = file;
-    
-    // Clear existing model and meshes
-    while (modelRef.current.children.length > 0) {
-      modelRef.current.remove(modelRef.current.children[0]);
-    }
-    meshesRef.current = {};
-    
-    console.log(`Loading model: ${file.name}`);
-    
-    // Load the model using the service
-    modelLoaderService.loadModelFromFile(file, {
-      normalizeModel: true,
-      autoCenter: true,
-      computeBoundingBox: true,
-      wireframe: wireframe,
-      targetSize: 5, // Target size of 5 units
-      maintainAspectRatio: true
-    }).then(result => {
-      console.log('Model loaded successfully');
-      
-      // Add loaded model to scene
-      if (modelRef.current) {
-        modelRef.current.add(result.object);
+    // Cleanup function to properly dispose resources when component unmounts
+    return () => {
+      // Dispose any meshes to avoid memory leaks
+      if (meshesRef.current) {
+        Object.values(meshesRef.current).forEach(mesh => {
+          if (mesh.geometry) {
+            mesh.geometry.dispose();
+          }
+          if (mesh.material) {
+            if (Array.isArray(mesh.material)) {
+              mesh.material.forEach(material => material.dispose());
+            } else {
+              mesh.material.dispose();
+            }
+          }
+        });
+        meshesRef.current = {};
       }
       
-      // Store meshes in our ref
-      result.object.traverse((child: THREE.Object3D) => {
-        if (child instanceof THREE.Mesh) {
-          meshesRef.current[child.uuid] = child;
-          
-          // Ensure the mesh can be raycast for interactions
-          child.userData.selectable = true;
-          child.userData.id = child.uuid;
+      // Clear model reference
+      if (modelGroupRef.current) {
+        while (modelGroupRef.current.children.length > 0) {
+          const child = modelGroupRef.current.children[0];
+          modelGroupRef.current.remove(child);
         }
-      });
+      }
       
-      // Set model info
-      const modelInfoData = {
-        size: result.dimensions,
-        center: result.center,
-        scale: result.scale,
-        meshes: result.meshes,
-        originalDimensions: result.originalDimensions,
-        normalizedMatrix: result.normalizedMatrix
+      // Reset flags
+      autoPointsGeneratedRef.current = false;
+    };
+  }, []);
+  
+  // Handle file changes with better error protection
+  useEffect(() => {
+    // Only load model once per file
+    if (file && file !== loadingModelRef.current) {
+      setModelLoaded(false);
+      setLoadingProgress(0);
+      
+      // Reset refs
+      modelRef.current = null;
+      
+      // Properly dispose old resources
+      if (meshesRef.current) {
+        Object.values(meshesRef.current).forEach(mesh => {
+          if (mesh.geometry) mesh.geometry.dispose();
+          if (mesh.material) {
+            if (Array.isArray(mesh.material)) {
+              mesh.material.forEach(material => material.dispose());
+            } else {
+              mesh.material.dispose();
+            }
+          }
+        });
+        meshesRef.current = {};
+      }
+      
+      autoPointsGeneratedRef.current = false;
+      loadingModelRef.current = file;
+      
+      console.log(`Loading model: ${file.name}`);
+      
+      const handleProgress = (progress: number) => {
+        setLoadingProgress(Math.round(progress * 100));
       };
       
-      setModelInfo(modelInfoData);
-      
-      // Create mesh list for UI
-      const meshList = result.meshes
-        .sort((a, b) => b.volume - a.volume) // Sort by size (largest first)
-        .map(mesh => ({
-          id: mesh.id,
-          name: mesh.name || `Mesh ${mesh.index}`
-        }));
-      
-      setVisibleMeshes(meshList);
-      
-      // Update camera position to show the entire model
-      setupCameraForModel(result.dimensions);
-      
-      // Call callback if provided
-      if (onModelInfoLoaded) {
-        const typeDetection = modelLoaderService.detectComponentType(
-          result.meshes,
-          result.dimensions
-        );
-        
-        onModelInfoLoaded({
-          size: result.dimensions,
-          center: result.center,
-          scale: result.scale,
-          meshes: result.meshes,
-          meshCount: result.meshes.length,
-          dimensions: {
-            width: result.dimensions.x.toFixed(2),
-            height: result.dimensions.y.toFixed(2),
-            depth: result.dimensions.z.toFixed(2)
-          },
-          originalDimensions: result.originalDimensions,
-          suggestedComponentType: typeDetection.type,
-          typeConfidence: typeDetection.confidence,
-          typeReason: typeDetection.reason
-        });
+      // Clear the scene
+      if (modelGroupRef.current) {
+        while (modelGroupRef.current.children.length > 0) {
+          const child = modelGroupRef.current.children[0];
+          modelGroupRef.current.remove(child);
+        }
       }
       
-      // Finish loading
-      setLoading(false);
-      setModelLoaded(true);
-    }).catch(err => {
-      console.error("Error loading model:", err);
-      setError(`Failed to load model: ${err.message || 'Unknown error'}`);
-      setLoading(false);
-      loadingModelRef.current = null;
-    });
-    
-  }, [file, wireframe, setupCameraForModel, onModelInfoLoaded]);
+      // Load the model with progress tracking and error handling
+      modelLoaderService.loadModelFromFile(
+        file, 
+        {
+          normalizeModel: true,
+          autoCenter: true,
+          computeBoundingBox: true,
+          targetSize: 5,
+          maintainAspectRatio: true
+        }, 
+        handleProgress
+      ).then(result => {
+        try {
+          if (result.object && modelGroupRef.current) {
+            // Clear any existing model first
+            while (modelGroupRef.current.children.length > 0) {
+              modelGroupRef.current.remove(modelGroupRef.current.children[0]);
+            }
+            
+            // Add the new model
+            modelGroupRef.current.add(result.object);
+            modelRef.current = result.object;
+            
+            // Store all meshes for raycasting
+            meshesRef.current = {};
+            result.object.traverse((child) => {
+              if (child instanceof THREE.Mesh) {
+                meshesRef.current[child.uuid] = child;
+                child.castShadow = true;
+                child.receiveShadow = true;
+              }
+            });
+            
+            // Set model position to be on the ground
+            if (modelRef.current) {
+              // Calculate the model's bounding box in world space
+              const worldBoundingBox = new THREE.Box3().setFromObject(modelRef.current);
+              
+              // Get the lowest point of the bounding box
+              const lowestY = worldBoundingBox.min.y;
+              
+              // Calculate offset to place model exactly on grid
+              const yOffset = -lowestY;
+              
+              console.log(`Adjusting model Y position by ${yOffset.toFixed(4)} to sit exactly on grid`);
+              modelRef.current.position.y += yOffset;
+              
+              // Update world matrix after position change
+              modelRef.current.updateWorldMatrix(true, true);
+              
+              // Recalculate bounding box after positioning
+              const updatedBox = new THREE.Box3().setFromObject(modelRef.current);
+              const updatedSize = updatedBox.getSize(new THREE.Vector3());
+              const updatedCenter = updatedBox.getCenter(new THREE.Vector3());
+              
+              console.log(`After positioning - Model dimensions: ${updatedSize.x.toFixed(2)} x ${updatedSize.y.toFixed(2)} x ${updatedSize.z.toFixed(2)}`);
+              console.log(`After positioning - Model bounding box: min=(${updatedBox.min.x.toFixed(2)}, ${updatedBox.min.y.toFixed(2)}, ${updatedBox.min.z.toFixed(2)}), max=(${updatedBox.max.x.toFixed(2)}, ${updatedBox.max.y.toFixed(2)}, ${updatedBox.max.z.toFixed(2)})`);
+            }
+            
+            // Store model info and update state
+            setModelInfo({
+              size: result.dimensions,
+              center: result.center,
+              meshCount: Object.keys(meshesRef.current).length
+            });
+            
+            // Log model information
+            console.log("Model loaded successfully");
+            console.log("Model position:", modelRef.current.position);
+            console.log("Model dimensions:", result.dimensions);
+            
+            // Set up camera based on model size
+            const maxDim = Math.max(result.dimensions.x, result.dimensions.y, result.dimensions.z);
+            const targetDistance = maxDim * 2.5;
+            
+            // Position camera appropriately
+            setupCameraForModel(result.dimensions);
+            console.log(`Camera positioned at distance: ${targetDistance} for model size: ${maxDim}`);
+            console.log(`Camera position:`, cameraRef.current?.position);
+            
+            // Update view
+            setModelLoaded(true);
+            
+            // Call parent callback
+            if (onModelInfoLoaded) {
+              onModelInfoLoaded(result);
+            }
+          }
+        } catch (error) {
+          console.error('Error processing loaded model:', error);
+          setError(error instanceof Error ? error.message : 'Unknown error processing model');
+        }
+      }).catch(error => {
+        console.error('Error loading model:', error);
+        setError(error instanceof Error ? error.message : 'Unknown error loading model');
+      });
+    }
+  }, [file, onModelInfoLoaded, setupCameraForModel]);
   
   // Mesh interaction handlers
   const handleMeshHover = (event: ThreeEvent<PointerEvent>) => {
@@ -313,28 +440,47 @@ export const ModelViewer: React.FC<ModelViewerProps> = ({
     }
   };
   
+  // Handle user interaction with meshes to create attachment points
   const handleMeshClick = (event: ThreeEvent<MouseEvent>) => {
+    event.stopPropagation();
+    
+    // Only proceed if we're in mesh selection mode
     if (!meshSelectionMode) return;
     
-    if (event.object instanceof THREE.Mesh && event.object.userData.selectable) {
-      setSelectedMeshId(event.object.userData.id);
-      
-      if (event.point && event.face) {
-        // Create attachment point using the service
-        const mesh = event.object;
-        const point = event.point;
-        const normal = event.face.normal.clone();
+    const mesh = event.object as THREE.Mesh;
+    const meshId = mesh.uuid;
+    
+    console.log(`Mesh clicked: ${mesh.name || 'Unnamed'} (${meshId})`);
+    setSelectedMeshId(meshId);
+    
+    // If we're in attachment mode, create an attachment point
+    if (attachmentMode === 'mesh') {
+      try {
+        // Get the hit point in world coordinates
+        const hitPoint = event.point.clone();
         
-        // Convert the face normal from local to world space
-        normal.transformDirection(mesh.matrixWorld);
+        // Get the face normal
+        const faceNormal = event.face?.normal.clone();
+        if (faceNormal) {
+          // Convert from local space to world space
+          mesh.updateMatrixWorld();
+          const normalMatrix = new THREE.Matrix3().getNormalMatrix(mesh.matrixWorld);
+          faceNormal.applyMatrix3(normalMatrix).normalize();
+        }
         
+        // Create an attachment point at the hit location
         const attachmentPoint = snapPointService.createMeshAttachmentPoint(
           mesh,
-          point,
-          normal
+          hitPoint,
+          faceNormal
         );
         
+        console.log('Created mesh attachment point:', attachmentPoint);
+        
+        // Add the point
         onAddAttachmentPoint(attachmentPoint);
+      } catch (error) {
+        console.error('Error creating attachment point:', error);
       }
     }
   };
@@ -481,10 +627,164 @@ export const ModelViewer: React.FC<ModelViewerProps> = ({
     });
   };
   
+  // Add these lighting improvements
+  const SceneSetup = () => {
+    return (
+      <group>
+        {/* Ground plane */}
+        <mesh 
+          rotation={[-Math.PI / 2, 0, 0]} 
+          position={[0, 0, 0]}
+          receiveShadow
+        >
+          <planeGeometry args={[50, 50]} />
+          <meshStandardMaterial 
+            color="#f0f0f0" 
+            transparent 
+            opacity={0.6}
+            roughness={0.8}
+          />
+        </mesh>
+
+        {/* Grid helper for better depth perception */}
+        <gridHelper 
+          args={[50, 50, '#bbbbbb', '#dddddd']} 
+          position={[0, 0.01, 0]} 
+        />
+        
+        {/* Improved lighting */}
+        <hemisphereLight args={['#ffffff', '#ddddff', 0.5]} />
+        <directionalLight 
+          position={[5, 5, 5]} 
+          intensity={0.5} 
+          castShadow 
+        />
+        <directionalLight 
+          position={[-5, 5, -5]} 
+          intensity={0.3} 
+        />
+        <directionalLight 
+          position={[0, 5, 0]} 
+          intensity={0.4} 
+        />
+        
+        {/* Contact shadows for better grounding */}
+        <ContactShadows 
+          opacity={0.4} 
+          scale={10} 
+          blur={1} 
+          far={10} 
+          resolution={256} 
+          color="#000000" 
+          position={[0, 0, 0]}
+        />
+      </group>
+    );
+  };
+  
+  // Add a function to focus camera on selected point with fixed OrbitControls reference
+  const focusOnPoint = useCallback((pointId: string | null) => {
+    if (!pointId) return;
+    
+    // Find the selected point in attachmentPoints
+    const point = attachmentPoints.find(p => p.id === pointId);
+    if (!point) return;
+    
+    console.log(`Focusing camera on attachment point: ${point.name || pointId}`);
+    
+    // Get the point position
+    const pointPosition = new THREE.Vector3(...point.position);
+    
+    // Calculate appropriate distance based on point size or model size
+    const pointRadius = point.radius || 0.25;
+    const distance = Math.max(pointRadius * 8, 2); // Increased for better view
+    
+    // Get orbit controls - using ref from drei's OrbitControls
+    const controls = orbitControlsRef.current;
+    if (!controls) {
+      console.warn("Could not focus camera: OrbitControls not available");
+      return;
+    }
+    
+    // Get camera - just use the camera from the context
+    const cam = camera;
+    if (!cam) {
+      console.warn("Could not focus camera: Camera not available");
+      return;
+    }
+    
+    // Save current camera position for smooth transition
+    const startPosition = new THREE.Vector3().copy(cam.position);
+    
+    // Calculate new camera position
+    // Move slightly off direct axis for better viewing angle
+    const dir = new THREE.Vector3();
+    
+    // Use point's normal direction if available to position camera
+    if (point.normal && (point.normal[0] !== 0 || point.normal[1] !== 0 || point.normal[2] !== 0)) {
+      // Position camera opposite to the point's normal
+      dir.set(-point.normal[0], -point.normal[1], -point.normal[2]).normalize();
+    } else {
+      // Default camera offset for better viewing angle if no normal
+      dir.set(0.7, 0.5, 0.7).normalize();
+    }
+    
+    // Offset by the calculated distance
+    const cameraOffset = dir.multiplyScalar(distance);
+    const targetPosition = new THREE.Vector3().copy(pointPosition).add(cameraOffset);
+    
+    // Animate the camera move
+    let startTime = performance.now();
+    const duration = 1000; // 1 second transition
+    
+    const animateCamera = () => {
+      const elapsed = performance.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // Use easing function for smoother animation
+      const easeProgress = 1 - Math.pow(1 - progress, 3); // Cubic ease out
+      
+      // Interpolate camera position
+      cam.position.lerpVectors(startPosition, targetPosition, easeProgress);
+      
+      // Look at the point
+      controls.target.lerp(pointPosition, easeProgress);
+      controls.update();
+      
+      // Continue animation if not complete
+      if (progress < 1) {
+        requestAnimationFrame(animateCamera);
+      } else {
+        // When animation completes, ensure we're looking at the point
+        controls.target.copy(pointPosition);
+        controls.update();
+        console.log("Camera focus complete");
+      }
+    };
+    
+    // Start animation
+    animateCamera();
+    
+  }, [attachmentPoints, camera]);
+  
+  // Add to dependency array for useEffect that watches selectedPoint
+  useEffect(() => {
+    // When selected point changes, focus on it
+    if (selectedPoint) {
+      focusOnPoint(selectedPoint);
+    }
+  }, [selectedPoint, focusOnPoint]);
+  
+  // Render the model and helpers
   return (
-    <>
-      {/* Main model container */}
-      <group ref={modelRef} position={[0, 0, 0]} />
+    <group>
+      {/* Scene setup */}
+      <SceneSetup />
+      
+      {/* Main model container - wrapped in Center component for better visibility */}
+      <Center scale={1.0}>
+        <group ref={modelGroupRef} position={[0, 0, 0]} />
+      </Center>
       
       {/* Mesh interaction layer */}
       {modelLoaded && meshSelectionMode && (
@@ -521,150 +821,45 @@ export const ModelViewer: React.FC<ModelViewerProps> = ({
         </group>
       )}
       
-      {/* Debug helpers */}
+      {/* Debug helpers when debug mode is enabled */}
       {debugMode && (
-        <group>
+        <>
           <AxesHelper />
           <GridHelper />
-          
-          {modelInfo && (
+          {modelRef.current && (
             <Box3Helper 
-              box={new THREE.Box3().setFromCenterAndSize(
-                new THREE.Vector3(0, 0, 0),
-                modelInfo.size
-              )} 
-              color="yellow" 
+              box={new THREE.Box3().setFromObject(modelRef.current)} 
+              color="#00ff00" 
             />
           )}
-          
           <ModelOriginHelper />
-        </group>
+        </>
       )}
       
-      {/* Show loading indicator when the model is loading */}
-      {loading && !error && (
-        <LoadingIndicator message="Loading model... Please wait" />
+      {/* Loading indicator while model is loading */}
+      {!modelLoaded && loadingProgress < 100 && (
+        <LoadingIndicator message={`Loading model... ${loadingProgress}%`} />
       )}
       
       {/* Show error message if there was a problem loading the model */}
       {error && (
-        <group position={[0, 0, 0]}>
-          <mesh position={[0, 0, 0]}>
-            <boxGeometry args={[1, 1, 1]} />
-            <meshStandardMaterial color="red" />
-          </mesh>
-          <DreiText
-            position={[0, 1.5, 0]}
-            fontSize={0.2}
-            color="white"
-            anchorX="center"
-            anchorY="middle"
-          >
-            Error Loading Model
-          </DreiText>
-          <DreiText
-            position={[0, 1.2, 0]}
-            fontSize={0.1}
-            color="white"
-            anchorX="center"
-            anchorY="middle"
-          >
-            {error}
-          </DreiText>
-        </group>
-      )}
-      
-      {/* Mesh selection mode indicator */}
-      {modelLoaded && meshSelectionMode && (
-        <DreiText
-          position={[0, 2, 0]}
-          fontSize={0.15}
-          color="#ffffff"
-          anchorX="center"
-          anchorY="middle"
-          backgroundColor="rgba(0,0,0,0.5)"
-          padding={0.05}
-        >
-          Click on a mesh to add an attachment point
-        </DreiText>
-      )}
-      
-      {/* Floating mesh controls interface */}
-      {modelLoaded && (
-        <Html position={[0, -2, 0]} center>
-          <div style={{ 
-            background: 'rgba(0,0,0,0.7)', 
-            padding: '12px 16px', 
-            borderRadius: '8px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '12px',
-            color: 'white',
-            boxShadow: '0 4px 6px rgba(0,0,0,0.3)',
-            maxWidth: '350px'
-          }}>
-            <div style={{ 
-              color: 'white', 
-              fontSize: '14px', 
-              fontWeight: 'bold',
-              borderBottom: '1px solid rgba(255,255,255,0.2)',
-              paddingBottom: '8px',
-              marginBottom: '4px'
-            }}>
-              {attachmentMode === 'manual' && 'Manual Mode: Add points using controls panel'}
-              {attachmentMode === 'automatic' && 'Auto Mode: Points added to key model areas'}
-              {attachmentMode === 'mesh' && 'Mesh Mode: Click on a mesh to add a point'}
-            </div>
-            
-            {/* View mode toggle */}
-            <div 
-              onClick={toggleViewMode} 
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '6px 10px',
-                backgroundColor: 'rgba(255,255,255,0.1)',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
-            >
-              <span>View Mode: </span>
-              <span style={{ 
-                fontWeight: 'bold', 
-                color: viewMode === 'normal' ? '#4CAF50' : 
-                       viewMode === 'wireframe' ? '#2196F3' : '#FF9800' 
-              }}>
-                {viewMode.charAt(0).toUpperCase() + viewMode.slice(1)}
-              </span>
-            </div>
-            
-            {/* Show mesh list when in mesh selection mode */}
-            {attachmentMode === 'mesh' && visibleMeshes.length > 0 && (
-              <div style={{ maxHeight: '150px', overflowY: 'auto' }}>
-                <div style={{ marginBottom: '6px', fontSize: '13px' }}>Available Meshes:</div>
-                {visibleMeshes.map(mesh => (
-                  <div 
-                    key={mesh.id}
-                    onClick={() => setSelectedMeshId(mesh.id)}
-                    style={{
-                      padding: '4px 8px',
-                      margin: '2px 0',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      backgroundColor: selectedMeshId === mesh.id ? '#2C7BE5' : 'rgba(255,255,255,0.1)',
-                      fontSize: '12px'
-                    }}
-                  >
-                    {mesh.name}
-                  </div>
-                ))}
-              </div>
-            )}
+        <Html position={[0, 1, 0]} center>
+          <div style={{ background: '#f8d7da', padding: '10px', borderRadius: '5px', color: '#721c24' }}>
+            Error: {error}
           </div>
         </Html>
       )}
-    </>
+      
+      {/* Camera controls - use drei's OrbitControls */}
+      <DreiOrbitControls 
+        ref={orbitControlsRef}
+        enableDamping 
+        dampingFactor={0.1} 
+        rotateSpeed={0.5}
+        minDistance={1}
+        maxDistance={20}
+      />
+    </group>
   );
 };
 

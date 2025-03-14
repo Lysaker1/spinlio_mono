@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import * as THREE from 'three';
 import { v4 as uuidv4 } from 'uuid';
 import { AttachmentPoint } from '../components/AttachmentPointHelper';
+import { AttachmentPointType } from '../constants/SnapPointConfigurations';
 import snapPointService from '../services/SnapPointService';
 
 interface UseSnapPointsOptions {
@@ -28,11 +29,19 @@ export function useSnapPoints(options: UseSnapPointsOptions = {}) {
       rotation: point.rotation || [0, 0, 0, 1],
       normal: point.normal || [0, 1, 0],
       color: point.color || '#00a0ff',
+      type: point.type || AttachmentPointType.STANDARD,
       ...(point.name && { name: point.name }),
       ...(point.auto !== undefined && { auto: point.auto }),
       ...(point.meshId && { meshId: point.meshId }),
-      ...(point.size !== undefined && { size: point.size })
+      ...(point.size !== undefined && { size: point.size }),
+      ...(point.radius !== undefined && { radius: point.radius }),
+      ...(point.width !== undefined && { width: point.width }),
+      ...(point.height !== undefined && { height: point.height }),
+      ...(point.depth !== undefined && { depth: point.depth }),
     };
+    
+    // Log the actual new point being added to confirm it has the correct properties
+    console.log(`Adding new attachment point with type: ${newPoint.type}, radius: ${newPoint.radius}, depth: ${newPoint.depth}`);
     
     setPoints(prev => [...prev, newPoint]);
     setSelectedPointId(newPoint.id);
@@ -83,15 +92,25 @@ export function useSnapPoints(options: UseSnapPointsOptions = {}) {
   const generateAutomaticPoints = useCallback((
     componentType: string,
     meshes: Record<string, THREE.Mesh>,
-    boundingBox: THREE.Box3
+    boundingBox: THREE.Box3,
+    componentCategory?: string,
+    componentSubcategory?: string
   ) => {
     console.log(`Generating automatic attachment points for ${componentType}`);
+    if (componentCategory) {
+      console.log(`Category: ${componentCategory}`);
+    }
+    if (componentSubcategory) {
+      console.log(`Subcategory: ${componentSubcategory}`);
+    }
     
     // Use service to generate points
     const autoPoints = snapPointService.generateAttachmentPoints(
       componentType,
       meshes,
-      boundingBox
+      boundingBox,
+      componentCategory,
+      componentSubcategory
     );
     
     // Add all generated points

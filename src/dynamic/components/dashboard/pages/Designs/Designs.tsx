@@ -1,5 +1,5 @@
 import { useAuth0 } from '@auth0/auth0-react';
-import { SimpleGrid } from '@mantine/core';
+import { Loader, SimpleGrid } from '@mantine/core';
 import { DesignStorageService } from '@shared/services/designStorage';
 import { SavedDesign } from '@shared/types/SavedDesign';
 import React, { useEffect, useState } from 'react';
@@ -21,11 +21,13 @@ const Designs: React.FC = () => {
   const [designs, setDesigns] = useState<SavedDesign[]>([]);
   const [filteredDesigns, setFilteredDesigns] = useState<SavedDesign[]>([]);
   const { user, getAccessTokenSilently } = useAuth0();
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   
   useEffect(() => {
     const fetchDesigns = async () => {
       if (user?.sub) {
+        setLoading(true);
         try {
           const token = await getAccessTokenSilently();
           console.log('Auth Token:', token);
@@ -39,6 +41,8 @@ const Designs: React.FC = () => {
           setDesigns(sortedDesigns);
         } catch (error) {
           console.error('Error fetching designs:', error);
+        } finally {
+          setLoading(false);
         }
       }
     };
@@ -78,9 +82,12 @@ const Designs: React.FC = () => {
       onPageChange={setCurrentPage}
       onSearch={handleSearch}
     >
-      <SimpleGrid
-        cols={4}
-        spacing="lg"
+      {loading ? (
+        <Loader />
+      ) : (
+        <SimpleGrid
+          cols={4}
+          spacing="lg"
       >
         {filteredDesigns.map((design) => (
           <DesignCard
@@ -91,7 +98,8 @@ const Designs: React.FC = () => {
             onChangeVisibility={() => setDesigns((prev) => prev.map((d) => d.id === design.id ? { ...d, is_public: !design.is_public } : d ))}
           />
         ))}
-      </SimpleGrid>
+        </SimpleGrid>
+      )}
     </PageLayout>
   );
 };

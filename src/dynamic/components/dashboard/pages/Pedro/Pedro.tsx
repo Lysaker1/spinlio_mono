@@ -132,6 +132,8 @@ const Pedro: React.FC = () => {
   const [debugMode, setDebugMode] = useState(true);
   const [wireframe, setWireframe] = useState(false);
   const [componentType, setComponentType] = useState('other');
+  const [componentCategory, setComponentCategory] = useState<string | null>(null);
+  const [componentSubcategory, setComponentSubcategory] = useState<string | null>(null);
   const [measurements, setMeasurements] = useState({
     width: 0,
     height: 0,
@@ -159,9 +161,16 @@ const Pedro: React.FC = () => {
     // Reset points when loading a new model
     snapPoints.clearPoints();
     
+    // Reset component category and subcategory to prevent confusion
+    setComponentCategory(null);
+    setComponentSubcategory(null);
+    
+    // Reset component type to default
+    setComponentType('other');
+    
     // Load the model
     modelLoader.loadModel(file);
-  }, [modelLoader, snapPoints]);
+  }, [modelLoader, snapPoints, setComponentCategory, setComponentSubcategory, setComponentType]);
   
   // Handle measurement changes
   const handleMeasurementChange = useCallback((field: keyof typeof measurements, value: number) => {
@@ -175,31 +184,17 @@ const Pedro: React.FC = () => {
   const handleAttachmentModeChange = useCallback((mode: 'manual' | 'automatic' | 'mesh') => {
     snapPoints.setAttachmentMode(mode);
     
-    // For automatic mode, generate points if model is loaded
-    if (mode === 'automatic' && 
-        modelLoader.modelLoaded && 
-        modelLoader.modelInfo && 
-        modelLoader.modelObject) {
-      
-      // First clear existing points
+    // When switching to automatic or mesh mode, just clear existing points
+    // Let the ModelViewer handle the actual generation
+    if (mode === 'automatic' || mode === 'mesh') {
+      // Clear existing points
       snapPoints.clearPoints();
       
-      // Calculate bounding box from model info
-      const boundingBox = new THREE.Box3().setFromCenterAndSize(
-        new THREE.Vector3(0, 0, 0),
-        modelLoader.modelInfo.size
-      );
-      
-      // Collect meshes
-      const meshes: Record<string, THREE.Mesh> = {};
-      modelLoader.modelObject.traverse((child: THREE.Object3D) => {
-        if (child instanceof THREE.Mesh) {
-          meshes[child.uuid] = child;
-        }
-      });
-      
-      // Generate automatic points
-      snapPoints.generateAutomaticPoints(componentType, meshes, boundingBox);
+      // Reset the auto generation flag to force regeneration
+      if (modelLoader.modelObject) {
+        console.log(`Switching to ${mode} attachment mode for ${componentType}`);
+        // Don't generate points here - ModelViewer will handle this
+      }
     }
   }, [modelLoader, snapPoints, componentType]);
   
@@ -235,15 +230,17 @@ const Pedro: React.FC = () => {
   const renderCanvas = useCallback(() => {
     return (
       <Canvas
-        camera={{ position: [5, 5, 5], fov: 50 }}
+        camera={{ position: [0, 2, 5], fov: 50 }}
         shadows
         className="model-canvas"
+        gl={{ antialias: true }}
       >
         <Suspense fallback={null}>
           {/* Environment and lighting */}
-          <ambientLight intensity={0.5} />
-          <pointLight position={[10, 10, 10]} intensity={0.8} castShadow />
-          <Environment preset="studio" />
+          <ambientLight intensity={0.8} />
+          <pointLight position={[10, 10, 10]} intensity={1.5} castShadow />
+          <pointLight position={[-10, -10, -10]} intensity={0.5} />
+          <hemisphereLight args={['#ffffff', '#ddddff', 0.5]} />
           <ContactShadows opacity={0.5} scale={10} blur={1} far={10} resolution={256} color="#000000" />
           
           {/* Model viewer with attachment points */}
@@ -270,17 +267,9 @@ const Pedro: React.FC = () => {
               onSelect={() => snapPoints.setSelectedPointId(point.id)}
               onUpdate={snapPoints.updatePoint}
               onDelete={() => snapPoints.removePoint(point.id)}
+              modelInfo={modelLoader.modelInfo}
             />
           ))}
-          
-          {/* Camera controls */}
-          <OrbitControls 
-            enableDamping 
-            dampingFactor={0.1} 
-            rotateSpeed={0.5}
-            minDistance={1}
-            maxDistance={20}
-          />
           
           {/* Performance stats in debug mode */}
           {debugMode && <Stats />}
@@ -290,6 +279,7 @@ const Pedro: React.FC = () => {
   }, [
     modelLoader.file,
     modelLoader.modelLoaded,
+    modelLoader.modelInfo,
     snapPoints.points,
     snapPoints.selectedPointId,
     snapPoints.addPoint,
@@ -309,124 +299,178 @@ const Pedro: React.FC = () => {
           {/* Left sidebar */}
           <Grid.Col span={3}>
             <Stack gap="md">
-              {/* Upload form */}
-              <UploadForm 
-                onFileSelected={handleFileSelect} 
-                loading={modelLoader.loading}
-                error={modelLoader.error}
-              />
+              {/* Upload form in collapsible accordion */}
+              <Accordion defaultValue="upload">
+                <Accordion.Item value="upload">
+                  <Accordion.Control>
+                    <Title order={5}>Upload 3D Model</Title>
+                  </Accordion.Control>
+                  <Accordion.Panel>
+                    <UploadForm 
+                      onFileSelected={handleFileSelect} 
+                      loading={modelLoader.loading}
+                      error={modelLoader.error}
+                    />
+                  </Accordion.Panel>
+                </Accordion.Item>
+              </Accordion>
               
-              {/* Configuration panel (only visible when model is loaded) */}
+              {/* Configuration panel in collapsible accordion (only visible when model is loaded) */}
               {modelLoader.modelLoaded && (
-                <ConfigurationPanel
-                  componentType={componentType}
-                  onComponentTypeChange={setComponentType}
-                  measurements={measurements}
-                  onMeasurementChange={handleMeasurementChange}
-                  attachmentMode={snapPoints.attachmentMode}
-                  onAttachmentModeChange={handleAttachmentModeChange}
-                  debugMode={debugMode}
-                  onDebugModeChange={setDebugMode}
-                  wireframe={wireframe}
-                  onWireframeChange={setWireframe}
-                  meshCount={modelLoader.modelInfo?.meshCount || 0}
-                  suggestedType={modelLoader.modelInfo?.suggestedComponentType}
-                  typeConfidence={modelLoader.modelInfo?.typeConfidence}
-                  typeReason={modelLoader.modelInfo?.typeReason}
-                  onSaveConfiguration={handleSaveConfiguration}
-                />
+                <Accordion defaultValue="configuration">
+                  <Accordion.Item value="configuration">
+                    <Accordion.Control>
+                      <Title order={5}>Component Configuration</Title>
+                    </Accordion.Control>
+                    <Accordion.Panel>
+                      <ConfigurationPanel
+                        componentType={componentType}
+                        onComponentTypeChange={setComponentType}
+                        componentCategory={componentCategory}
+                        onComponentCategoryChange={setComponentCategory}
+                        componentSubcategory={componentSubcategory}
+                        onComponentSubcategoryChange={setComponentSubcategory}
+                        measurements={measurements}
+                        onMeasurementChange={handleMeasurementChange}
+                        debugMode={debugMode}
+                        onDebugModeChange={setDebugMode}
+                        wireframe={wireframe}
+                        onWireframeChange={setWireframe}
+                        meshCount={modelLoader.modelInfo?.meshCount || 0}
+                        suggestedType={modelLoader.modelInfo?.suggestedComponentType}
+                        typeConfidence={modelLoader.modelInfo?.typeConfidence}
+                        typeReason={modelLoader.modelInfo?.typeReason}
+                        onSaveConfiguration={handleSaveConfiguration}
+                      />
+                    </Accordion.Panel>
+                  </Accordion.Item>
+                </Accordion>
               )}
               
-              {/* Attachment points panel (only visible when model is loaded) */}
+              {/* Attachment points panel in collapsible accordion (only visible when model is loaded) */}
               {modelLoader.modelLoaded && (
-                <Paper 
-                  shadow="sm" 
-                  p="md" 
-                  style={{ backgroundColor: '#f8f9fa', borderRadius: '8px' }}
-                >
-                  <Stack gap="md">
-                    <Group justify="apart">
-                      <Title order={4}>Attachment Points</Title>
-                      <Text size="sm" c="dimmed">
-                        {snapPoints.points.length} points
-                      </Text>
-                    </Group>
-                    
-                    <Divider />
-                    
-                    {/* Point list */}
-                    {snapPoints.points.length > 0 ? (
-                      <Accordion>
-                        {snapPoints.points.map((point) => (
-                          <Accordion.Item 
-                            key={point.id} 
-                            value={point.id}
-                          >
-                            <Accordion.Control
-                              onClick={() => snapPoints.setSelectedPointId(point.id)}
-                              style={{ 
-                                backgroundColor: 
-                                  snapPoints.selectedPointId === point.id ? 
-                                  'rgba(0, 120, 255, 0.1)' : 'transparent',
-                                borderLeft: `3px solid ${point.color}`
-                              }}
+                <Accordion defaultValue="attachmentPoints">
+                  <Accordion.Item value="attachmentPoints">
+                    <Accordion.Control>
+                      <Title order={5}>Attachment Points</Title>
+                    </Accordion.Control>
+                    <Accordion.Panel>
+                      <Stack gap="md">
+                        {/* Add attachment mode selector here instead of in ComponentConfiguration */}
+                        <Box>
+                          <Text size="sm" fw={500} mb={4} c="dimmed" tt="uppercase">
+                            Attachment Mode
+                          </Text>
+                          <Select
+                            data={[
+                              { value: 'manual', label: 'Manual Placement' },
+                              { value: 'automatic', label: 'Automatic Detection' },
+                              { value: 'mesh', label: 'Mesh Selection' }
+                            ]}
+                            value={snapPoints.attachmentMode}
+                            onChange={(value) => value && handleAttachmentModeChange(value as 'manual' | 'automatic' | 'mesh')}
+                            style={{ marginBottom: 10 }}
+                          />
+                        </Box>
+                        
+                        <Divider />
+                        
+                        <Group justify="apart">
+                          <Text size="sm" c="dimmed">
+                            {snapPoints.points.length} points
+                          </Text>
+                        </Group>
+                        
+                        {/* Point list with improved focus handling */}
+                        {snapPoints.points.length > 0 ? (
+                          <Accordion defaultValue={snapPoints.points[0]?.id}>
+                            {snapPoints.points.map((point) => (
+                              <Accordion.Item 
+                                key={point.id} 
+                                value={point.id}
+                              >
+                                <Accordion.Control
+                                  onClick={(e) => {
+                                    // Stop event propagation to prevent accordion from toggling when selecting a point
+                                    e.stopPropagation();
+                                    // Select this point - this will trigger the camera focus via useEffect in ModelViewer
+                                    snapPoints.setSelectedPointId(point.id);
+                                  }}
+                                  style={{ 
+                                    backgroundColor: 
+                                      snapPoints.selectedPointId === point.id ? 
+                                      'rgba(0, 120, 255, 0.1)' : 'transparent',
+                                    borderLeft: `3px solid ${point.color}`,
+                                    cursor: 'pointer'
+                                  }}
+                                >
+                                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                    <span>{point.name || 'Unnamed Point'}</span>
+                                    {point.type && (
+                                      <span style={{ 
+                                        fontSize: '10px', 
+                                        padding: '2px 6px', 
+                                        background: 'rgba(0,0,0,0.1)', 
+                                        borderRadius: '4px',
+                                        color: 'rgba(0,0,0,0.6)'
+                                      }}>
+                                        {point.type.replace('_', ' ')}
+                                      </span>
+                                    )}
+                                  </div>
+                                </Accordion.Control>
+                                <Accordion.Panel>
+                                  <Stack gap="xs">
+                                    <Text size="xs">
+                                      Position: [{point.position.map(p => p.toFixed(2)).join(', ')}]
+                                    </Text>
+                                    <Text size="xs">
+                                      Normal: [{point.normal.map(n => n.toFixed(2)).join(', ')}]
+                                    </Text>
+                                    <Group mt="xs" justify="apart">
+                                      <Button 
+                                        size="xs"
+                                        variant="light"
+                                        color="blue"
+                                        onClick={() => snapPoints.setSelectedPointId(point.id)}
+                                      >
+                                        Select & Focus
+                                      </Button>
+                                      <Button 
+                                        size="xs"
+                                        variant="light"
+                                        color="red"
+                                        onClick={() => snapPoints.removePoint(point.id)}
+                                      >
+                                        Remove
+                                      </Button>
+                                    </Group>
+                                  </Stack>
+                                </Accordion.Panel>
+                              </Accordion.Item>
+                            ))}
+                          </Accordion>
+                        ) : (
+                          <Text size="sm" c="dimmed" ta="center" py="md">
+                            No attachment points yet
+                          </Text>
+                        )}
+                        
+                        {/* Add point button (only in manual mode) */}
+                        {snapPoints.attachmentMode === 'manual' && (
+                          <Group justify="center">
+                            <button 
+                              className="pedro-button"
+                              onClick={handleAddManualPoint}
                             >
-                              {point.name || 'Unnamed Point'}
-                            </Accordion.Control>
-                            <Accordion.Panel>
-                              <Stack gap="xs">
-                                <Text size="xs">
-                                  Position: [{point.position.map(p => p.toFixed(2)).join(', ')}]
-                                </Text>
-                                <Text size="xs">
-                                  Normal: [{point.normal.map(n => n.toFixed(2)).join(', ')}]
-                                </Text>
-                                <Group mt="xs" justify="apart">
-                                  <Text 
-                                    size="xs"
-                                    style={{ 
-                                      cursor: 'pointer',
-                                      color: '#228be6' // Using hex color instead of deprecated 'color' prop
-                                    }}
-                                    onClick={() => snapPoints.setSelectedPointId(point.id)}
-                                  >
-                                    Select
-                                  </Text>
-                                  <Text 
-                                    size="xs"
-                                    style={{ 
-                                      cursor: 'pointer',
-                                      color: '#fa5252' // Using hex color instead of deprecated 'color' prop
-                                    }}
-                                    onClick={() => snapPoints.removePoint(point.id)}
-                                  >
-                                    Remove
-                                  </Text>
-                                </Group>
-                              </Stack>
-                            </Accordion.Panel>
-                          </Accordion.Item>
-                        ))}
-                      </Accordion>
-                    ) : (
-                      <Text size="sm" c="dimmed" ta="center" py="md">
-                        No attachment points yet
-                      </Text>
-                    )}
-                    
-                    {/* Add point button (only in manual mode) */}
-                    {snapPoints.attachmentMode === 'manual' && (
-                      <Group justify="center">
-                        <button 
-                          className="pedro-button"
-                          onClick={handleAddManualPoint}
-                        >
-                          Add Attachment Point
-                        </button>
-                      </Group>
-                    )}
-                  </Stack>
-                </Paper>
+                              Add Attachment Point
+                            </button>
+                          </Group>
+                        )}
+                      </Stack>
+                    </Accordion.Panel>
+                  </Accordion.Item>
+                </Accordion>
               )}
             </Stack>
           </Grid.Col>

@@ -65,7 +65,8 @@ export class ModelLoaderService {
       wireframe: false,
       targetSize: 5,
       maintainAspectRatio: true
-    }
+    },
+    onProgress?: (progress: number) => void
   ): Promise<ModelLoadResult> {
     const url = URL.createObjectURL(file);
     const fileId = `${file.name}-${file.size}-${file.lastModified}`;
@@ -104,8 +105,11 @@ export class ModelLoaderService {
         (progress) => {
           // Optional progress callback
           if (progress.lengthComputable) {
-            const percent = Math.round((progress.loaded / progress.total) * 100);
-            console.log(`Loading progress: ${percent}%`);
+            const percent = (progress.loaded / progress.total);
+            console.log(`Loading progress: ${Math.round(percent * 100)}%`);
+            if (onProgress) {
+              onProgress(percent);
+            }
           }
         },
         (error) => {

@@ -2,11 +2,13 @@ import { CONFIGURATOR_TYPES } from '@shared/constants/configuratorTypes';
 
 export interface BikeTemplate {
     id: string;
+    manufacturer_id: string;
     image?: string;
     name: string;
     modelStateId: string;
     parameters: Record<string, string>;
     type: keyof typeof CONFIGURATOR_TYPES | Lowercase<keyof typeof CONFIGURATOR_TYPES>;
+    price: number;
   }
   
   // The model ID from your parameters
@@ -259,54 +261,62 @@ export interface BikeTemplate {
   export const bikeTemplates: BikeTemplate[] = [
     {
       id: 'vulz_e_gravel',
+      manufacturer_id: 'vulz',
       image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/Screenshot_2025-01-27_at_01.42.08_x9yrka.png',
       name: 'VULZ E-Gravel',
       modelStateId: '9d74c500-e310-45bc-8c63-6dd2ee132cc6',
       parameters: VulzParameters,
-      type: CONFIGURATOR_TYPES.VULZ
+      type: CONFIGURATOR_TYPES.VULZ,
+      price: 459,
     },
     {
       id: 'stepthru_e_gravel',
+      manufacturer_id: 'vulz',
       image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/Screenshot_2025-01-27_at_01.46.32_gfkmn5.png',
       name: 'Step thru E-Gravel',
       modelStateId: '9e104901-9480-4aaf-913a-fd34ee379ab6',
       parameters: StepthruParameters,
-      type: CONFIGURATOR_TYPES.STEPTHRU
+      type: CONFIGURATOR_TYPES.STEPTHRU,
+      price: 429
     },
     { 
         id: 'Canyon Bike',
+        manufacturer_id: 'vulz',
         image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/Screenshot_2025-01-27_at_01.41.22_yd8msm.png',
         name: 'Canyon Bike',
         modelStateId: '9d74c500-e310-45bc-8c63-6dd2ee132cc6',
         parameters: CanyonParameters,
-        type: CONFIGURATOR_TYPES.DEFAULT
+        type: CONFIGURATOR_TYPES.DEFAULT,
+        price: 549
       },
       {
         id: 'Urban Bike',
+        manufacturer_id: 'vulz',
         image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/Screenshot_2025-01-27_at_01.42.32_iytpg3.png',
         name: 'Urban E-Bike',
         modelStateId: '9d74c500-e310-45bc-8c63-6dd2ee132cc6',
         parameters: UrbanParameters,
-        type: CONFIGURATOR_TYPES.URBAN
+        type: CONFIGURATOR_TYPES.URBAN,
+        price: 569
       },
       {
         id: 'Canyon Endurance 7',
+        manufacturer_id: 'vulz',
         image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/Screenshot_2025-01-27_at_01.42.32_iytpg3.png',
         name: 'Canyon Endurance 7',
         modelStateId: '9d74c500-e310-45bc-8c63-6dd2ee132cc6',
         parameters: canyonendurance7jsonParameters,
         type: CONFIGURATOR_TYPES.DEFAULT,
+        price: 449
       },
       {
         id: 'Classic road bike',
+        manufacturer_id: 'vulz',
         image: 'https://res.cloudinary.com/da8qnqmmh/image/upload/Screenshot_2025-01-27_at_01.41.47_sbr52h.png',
         name: 'Classic road bike',
         modelStateId: '9d74c500-e310-45bc-8c63-6dd2ee132cc6',
         parameters: ClassicroadbikejsonParameters,
-        type: CONFIGURATOR_TYPES.DEFAULT
+        type: CONFIGURATOR_TYPES.DEFAULT,
+        price: 499
       },
- 
-
-
-
   ];

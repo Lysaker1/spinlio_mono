@@ -1,19 +1,20 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { 
   IconTruck, 
   IconBike, 
   IconUpload, 
   IconShoppingCart,
-  IconTools
+  IconTools,
+  IconBuildingStore
 } from '@tabler/icons-react';
 import '../../Dashboard.css'
 
 const menuItems = [
   { 
-    icon: <IconTruck size={32} stroke={1}/>, 
-    label: 'Prefabs', 
-    path: '/dashboard/prefabs' 
+    icon: <IconBuildingStore size={32} stroke={1}/>, 
+    label: 'Marketplace', 
+    path: '/dashboard/marketplace' 
   },
   { 
     icon: <IconBike size={32} stroke={1}/>, 

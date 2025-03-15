@@ -28,12 +28,20 @@ import { v4 as uuidv4 } from 'uuid';
 import AttachmentPointHelper, { AttachmentPoint } from './components/AttachmentPointHelper';
 import MeshExplorer from './components/MeshExplorer';
 import SnapPointControl from './components/SnapPointControl';
+import SnapPointControls3D from './components/SnapPointControls3D';
+import { AttachmentPointType } from './constants/SnapPointConfigurations';
 import UploadForm from './components/UploadForm';
 import ConfigurationPanel from './components/ConfigurationPanel';
+import AttachmentOptionsPanel from './components/AttachmentOptionsPanel';
+import AttachmentModeSelector, { AttachmentMode } from './components/AttachmentModeSelector';
 import ModelViewer from './three/ModelViewer';
 import useModelLoader from './hooks/useModelLoader';
 import useSnapPoints from './hooks/useSnapPoints';
+import { useComponentOptions } from './hooks/useComponentOptions';
+import { AnalyzerFactory } from './utils/analyzers/AnalyzerFactory';
 import './Pedro.css';
+import { useComponentIntegration } from './hooks/useComponentIntegration';
+import AttachmentPointControls from './components/AttachmentPointControls';
 
 // Create DRACOLoader outside of component to reuse
 const createDRACOLoader = () => {
@@ -97,6 +105,16 @@ const COMPONENT_TYPES = [
   { value: 'other', label: 'Other Component' }
 ];
 
+// Convert between SnapPoint and AttachmentPoint types
+const convertSnapPointToAttachmentPoint = (snapPoint: any): AttachmentPoint => {
+  return {
+    ...snapPoint,
+    normal: [0, 1, 0], // Default normal if not provided
+    type: AttachmentPointType.STANDARD,
+    auto: false
+  } as AttachmentPoint;
+};
+
 /**
  * Pedro Page Component
  * 
@@ -140,6 +158,98 @@ const Pedro: React.FC = () => {
     depth: 0
   });
   
+  // State to track if we're placing a point (shared between UI and 3D)
+  const [isPlacingPoint, setIsPlacingPoint] = useState(false);
+  
+  // Component integration hook for managing component options
+  const componentOptions = useComponentIntegration({
+    componentType,
+    modelBoundingBox: modelLoader.modelInfo ? new THREE.Box3(
+      new THREE.Vector3(
+        modelLoader.modelInfo.originalDimensions?.center.x - modelLoader.modelInfo.originalDimensions?.size.x / 2 || 0,
+        modelLoader.modelInfo.originalDimensions?.center.y - modelLoader.modelInfo.originalDimensions?.size.y / 2 || 0,
+        modelLoader.modelInfo.originalDimensions?.center.z - modelLoader.modelInfo.originalDimensions?.size.z / 2 || 0
+      ),
+      new THREE.Vector3(
+        modelLoader.modelInfo.originalDimensions?.center.x + modelLoader.modelInfo.originalDimensions?.size.x / 2 || 0,
+        modelLoader.modelInfo.originalDimensions?.center.y + modelLoader.modelInfo.originalDimensions?.size.y / 2 || 0,
+        modelLoader.modelInfo.originalDimensions?.center.z + modelLoader.modelInfo.originalDimensions?.size.z / 2 || 0
+      )
+    ) : null,
+    meshes: modelLoader.modelInfo?.meshes || [],
+    modelCenter: modelLoader.modelInfo?.center 
+      ? new THREE.Vector3(
+          modelLoader.modelInfo.center.x,
+          modelLoader.modelInfo.center.y,
+          modelLoader.modelInfo.center.z
+        ) 
+      : null,
+    onAttachmentPointsChange: (points) => {
+      // Update the snap points system for backward compatibility
+      snapPoints.setPoints(points);
+    },
+    attachmentMode: snapPoints.attachmentMode
+  });
+  
+  // State for scene controls
+  const [sceneLocked, setSceneLocked] = useState(false);
+  const [editMode, setEditMode] = useState<'translate' | 'rotate' | 'scale'>('translate');
+  const [verifiedPoints, setVerifiedPoints] = useState<string[]>([]);
+  
+  // Add state for axis locking
+  const [lockedAxes, setLockedAxes] = useState<{x: boolean, y: boolean, z: boolean}>({
+    x: false,
+    y: false,
+    z: false
+  });
+  
+  // Add state for disabling auto focus
+  const [disableAutoFocus, setDisableAutoFocus] = useState(true); // Default to true to improve user experience
+  
+  // Handle scene lock toggle
+  const handleToggleSceneLock = useCallback(() => {
+    setSceneLocked(prev => !prev);
+  }, []);
+  
+  // Handle focusing on a specific attachment point
+  const handleFocusPoint = useCallback((pointId: string, forceFocus = true) => {
+    // First select the point
+    snapPoints.setSelectedPointId(pointId);
+    
+    // We use ModelViewer's focusOnPoint indirectly through the selection effect
+    // The forceFocus parameter will be handled by the useEffect in ModelViewer
+    // To force focus even when disableAutoFocus is true, we set a temporary flag
+    if (forceFocus) {
+      // Create a reference to the ModelViewer
+      const modelViewerElem = document.querySelector('.model-canvas');
+      if (modelViewerElem) {
+        // Use a custom event to signal that we want to force focus
+        const event = new CustomEvent('forceFocus', { detail: { pointId } });
+        modelViewerElem.dispatchEvent(event);
+      }
+    }
+  }, [snapPoints]);
+  
+  // Handle verifying an attachment point position
+  const handleVerifyPoint = useCallback((pointId: string) => {
+    setVerifiedPoints(prev => {
+      // If already verified, remove it
+      if (prev.includes(pointId)) {
+        return prev.filter(id => id !== pointId);
+      }
+      // Otherwise add it
+      return [...prev, pointId];
+    });
+  }, []);
+  
+  // Handle toggling individual axis locks
+  const handleToggleAxisLock = useCallback((axis: 'x' | 'y' | 'z') => {
+    setLockedAxes(prev => ({
+      ...prev,
+      [axis]: !prev[axis]
+    }));
+  }, []);
+  
   // Update measurements when model info changes
   useEffect(() => {
     if (modelLoader.modelInfo) {
@@ -156,10 +266,13 @@ const Pedro: React.FC = () => {
     }
   }, [modelLoader.modelInfo, componentType]);
   
-  // Handle model file selection
+  // Handle file upload - update to clear component options
   const handleFileSelect = useCallback((file: File) => {
     // Reset points when loading a new model
     snapPoints.clearPoints();
+    
+    // Reset component options
+    componentOptions.clearAllPoints();
     
     // Reset component category and subcategory to prevent confusion
     setComponentCategory(null);
@@ -170,7 +283,7 @@ const Pedro: React.FC = () => {
     
     // Load the model
     modelLoader.loadModel(file);
-  }, [modelLoader, snapPoints, setComponentCategory, setComponentSubcategory, setComponentType]);
+  }, [modelLoader, snapPoints, componentOptions, setComponentCategory, setComponentSubcategory, setComponentType]);
   
   // Handle measurement changes
   const handleMeasurementChange = useCallback((field: keyof typeof measurements, value: number) => {
@@ -181,22 +294,39 @@ const Pedro: React.FC = () => {
   }, []);
   
   // Handle attachment mode change
-  const handleAttachmentModeChange = useCallback((mode: 'manual' | 'automatic' | 'mesh') => {
+  const handleAttachmentModeChange = useCallback((mode: AttachmentMode) => {
     snapPoints.setAttachmentMode(mode);
     
-    // When switching to automatic or mesh mode, just clear existing points
-    // Let the ModelViewer handle the actual generation
+    // When switching to automatic or mesh mode, clear existing points
+    // and explicitly trigger new point generation
     if (mode === 'automatic' || mode === 'mesh') {
       // Clear existing points
       snapPoints.clearPoints();
       
-      // Reset the auto generation flag to force regeneration
+      // Reset component options
+      componentOptions.clearAllPoints();
+      
+      // If we have a model loaded, explicitly force regeneration once
       if (modelLoader.modelObject) {
-        console.log(`Switching to ${mode} attachment mode for ${componentType}`);
-        // Don't generate points here - ModelViewer will handle this
+        console.log(`Switching to ${mode} attachment mode for ${componentType} - explicitly triggering analysis`);
+        // Wait a moment for state updates to propagate
+        setTimeout(() => {
+          componentOptions.forceRegeneratePoints();
+        }, 200);
       }
+    } else if (mode === 'manual') {
+      // In manual mode, we preserve existing points and don't generate new ones
+      console.log(`Switched to ${mode} mode - no auto-generation will occur`);
+      
+      // If there are no points yet, we might want to start with at least one
+      if (componentOptions.attachmentPoints.length === 0) {
+        console.log('No existing points found in manual mode - adding a default point');
+        componentOptions.addCustomAttachmentPoint('custom');
+      }
+    } else {
+      console.log(`Switched to ${mode} mode - no auto-generation will occur`);
     }
-  }, [modelLoader, snapPoints, componentType]);
+  }, [modelLoader.modelObject, snapPoints, componentOptions, componentType]);
   
   // Add manual attachment point
   const handleAddManualPoint = useCallback(() => {
@@ -226,7 +356,7 @@ const Pedro: React.FC = () => {
     alert('Configuration saved! Check console for details.');
   }, [modelLoader.modelInfo, componentType, measurements, snapPoints.points]);
   
-  // Render the main 3D scene
+  // Update the renderCanvas function to include SnapPointControls3D
   const renderCanvas = useCallback(() => {
     return (
       <Canvas
@@ -246,30 +376,95 @@ const Pedro: React.FC = () => {
           {/* Model viewer with attachment points */}
           <ModelViewer 
             file={modelLoader.file}
-            attachmentPoints={snapPoints.points}
-            onAttachmentPointUpdated={snapPoints.updatePoint}
+            attachmentPoints={componentOptions.attachmentPoints}
+            onAttachmentPointUpdated={componentOptions.updateAttachmentPoint}
             selectedPoint={snapPoints.selectedPointId}
             onSelectPoint={snapPoints.setSelectedPointId}
             debugMode={debugMode}
             wireframe={wireframe}
             onModelInfoLoaded={(info) => console.log('Model info loaded:', info)}
             attachmentMode={snapPoints.attachmentMode}
-            onAddAttachmentPoint={snapPoints.addPoint}
+            onAddAttachmentPoint={(point) => {
+              // If there's an optionId provided, use that
+              if (point.optionId) {
+                componentOptions.addCustomAttachmentPoint(
+                  point.optionId, 
+                  point.position as [number, number, number]
+                );
+              } else {
+                // Otherwise fall back to legacy behavior
+                snapPoints.addPoint(point);
+              }
+            }}
             componentType={componentType}
+            sceneLocked={sceneLocked}
+            onToggleSceneLock={handleToggleSceneLock}
+            editMode={editMode}
+            onChangeEditMode={setEditMode}
+            lockedAxes={lockedAxes}
+            disableAutoFocus={disableAutoFocus}
           />
           
+          {/* 3D Controls for snap points (must be inside Canvas) */}
+          {modelLoader.modelLoaded && (
+            /* IMPORTANT: Only render SnapPointControls3D when there's no selected point
+             * This prevents multiple TransformControls from being active simultaneously
+             * which was causing the "must be part of the scene graph" errors
+             */
+            !snapPoints.selectedPointId && (
+              <SnapPointControls3D
+                meshes={modelLoader.modelInfo?.meshes.map((mesh, index) => ({
+                  id: `mesh_${index}`,
+                  name: `Mesh ${index}`,
+                  position: [mesh.position?.x || 0, mesh.position?.y || 0, mesh.position?.z || 0]
+                })) || []}
+                snapPoints={componentOptions.attachmentPoints}
+                selectedPointId={snapPoints.selectedPointId}
+                addMode={snapPoints.attachmentMode}
+                isPlacingPoint={isPlacingPoint}
+                onAddPoint={(point) => componentOptions.addCustomAttachmentPoint(
+                  'custom',
+                  point.position
+                )}
+                onSelectPoint={snapPoints.setSelectedPointId}
+                onUpdatePoint={(point) => {
+                  // Convert SnapPoint to AttachmentPoint and update
+                  componentOptions.updateAttachmentPoint(convertSnapPointToAttachmentPoint(point));
+                }}
+                onPointPlaced={() => setIsPlacingPoint(false)}
+              />
+            )
+          )}
+          
           {/* Render attachment point helpers */}
-          {modelLoader.modelLoaded && snapPoints.points.map(point => (
-            <AttachmentPointHelper
-              key={point.id}
-              point={point}
-              selected={snapPoints.selectedPointId === point.id}
-              onSelect={() => snapPoints.setSelectedPointId(point.id)}
-              onUpdate={snapPoints.updatePoint}
-              onDelete={() => snapPoints.removePoint(point.id)}
-              modelInfo={modelLoader.modelInfo}
-            />
-          ))}
+          {modelLoader.modelLoaded && componentOptions.attachmentPoints.map(point => {
+            // Skip rendering points with invalid positions to prevent errors
+            if (!point || !point.position || 
+                point.position.some(val => isNaN(val) || !isFinite(val)) ||
+                (point.rotation && point.rotation.some(val => isNaN(val) || !isFinite(val)))) {
+              console.error('Skipping invalid attachment point:', point);
+              return null;
+            }
+            
+            try {
+              return (
+                <AttachmentPointHelper
+                  key={point.id}
+                  point={point}
+                  selected={snapPoints.selectedPointId === point.id}
+                  onSelect={() => snapPoints.setSelectedPointId(point.id)}
+                  onUpdate={componentOptions.updateAttachmentPoint}
+                  onDelete={() => componentOptions.deleteAttachmentPoint(point.id)}
+                  modelInfo={modelLoader.modelInfo}
+                  sceneLocked={sceneLocked}
+                  lockedAxes={lockedAxes}
+                />
+              );
+            } catch (error) {
+              console.error('Error rendering attachment point:', error, point);
+              return null;
+            }
+          })}
           
           {/* Performance stats in debug mode */}
           {debugMode && <Stats />}
@@ -280,17 +475,115 @@ const Pedro: React.FC = () => {
     modelLoader.file,
     modelLoader.modelLoaded,
     modelLoader.modelInfo,
-    snapPoints.points,
+    componentOptions.attachmentPoints,
+    componentOptions.updateAttachmentPoint,
+    componentOptions.deleteAttachmentPoint,
+    componentOptions.addCustomAttachmentPoint,
     snapPoints.selectedPointId,
     snapPoints.addPoint,
-    snapPoints.updatePoint,
-    snapPoints.removePoint,
     snapPoints.setSelectedPointId,
     snapPoints.attachmentMode,
     debugMode,
     wireframe,
-    componentType
+    componentType,
+    isPlacingPoint,
+    sceneLocked,
+    editMode,
+    lockedAxes,
+    disableAutoFocus
   ]);
+  
+  // Update the SnapPointControl usage in the UI to pass isPlacingPoint
+  const renderAttachmentOptions = () => {
+    return (
+      <Accordion defaultValue="attachmentPoints">
+        <Accordion.Item value="attachmentPoints">
+          <Accordion.Control>
+            <Title order={5}>Attachment Points</Title>
+          </Accordion.Control>
+          <Accordion.Panel>
+            <Stack gap="md">
+              {/* Add attachment mode selector here instead of in ComponentConfiguration */}
+              <AttachmentModeSelector
+                value={snapPoints.attachmentMode}
+                onChange={handleAttachmentModeChange}
+              />
+              
+              {/* External UI controls for attachment points */}
+              {modelLoader.modelLoaded && (
+                <AttachmentPointControls
+                  attachmentPoints={componentOptions.attachmentPoints}
+                  selectedPoint={snapPoints.selectedPointId}
+                  onSelectPoint={snapPoints.setSelectedPointId}
+                  sceneLocked={sceneLocked}
+                  onToggleSceneLock={handleToggleSceneLock}
+                  editMode={editMode}
+                  onChangeEditMode={setEditMode}
+                  onFocusPoint={handleFocusPoint}
+                  onVerifyPoint={handleVerifyPoint}
+                  verifiedPoints={verifiedPoints}
+                  lockedAxes={lockedAxes}
+                  onToggleAxisLock={handleToggleAxisLock}
+                />
+              )}
+              
+              {/* Add additional settings */}
+              <Paper p="sm" withBorder>
+                <Title order={6} mb="xs">Editing Settings</Title>
+                <Group>
+                  <Switch
+                    label="Disable Auto-Focus"
+                    checked={disableAutoFocus}
+                    onChange={() => setDisableAutoFocus(prev => !prev)}
+                  />
+                  <Text size="xs" c="dimmed">
+                    When enabled, camera won't auto-focus when selecting points
+                  </Text>
+                </Group>
+              </Paper>
+              
+              {/* Component options integrated with point management */}
+              <AttachmentOptionsPanel
+                componentConfig={componentOptions.componentConfig}
+                availableOptions={componentOptions.availableOptions}
+                enabledOptions={componentOptions.enabledOptions}
+                optionPointsMap={componentOptions.optionPointsMap}
+                onToggleOption={componentOptions.toggleOption}
+                onAddCustomAttachmentPoint={componentOptions.addCustomAttachmentPoint}
+                onResetOption={componentOptions.resetOption}
+                onGenerateAttachmentPoints={componentOptions.generateAttachmentPoints}
+              />
+              
+              {/* Manual point addition - only show if in manual mode */}
+              {snapPoints.attachmentMode === 'manual' && (
+                <Box mt="md">
+                  <Text size="sm" fw={500} mb={4} c="dimmed">Manual Controls</Text>
+                  <Group>
+                    <Button
+                      size="sm"
+                      onClick={handleAddManualPoint}
+                      leftSection={<IconPlus size={14} />}
+                      disabled={!modelLoader.modelLoaded}
+                    >
+                      Add Manual Point
+                    </Button>
+                    <Button
+                      size="sm"
+                      color="red"
+                      onClick={() => snapPoints.clearPoints()}
+                      disabled={snapPoints.points.length === 0}
+                    >
+                      Clear All
+                    </Button>
+                  </Group>
+                </Box>
+              )}
+            </Stack>
+          </Accordion.Panel>
+        </Accordion.Item>
+      </Accordion>
+    );
+  };
   
   return (
     <SimplifiedPageLayout title="3D Component Attachment Tool">
@@ -347,131 +640,8 @@ const Pedro: React.FC = () => {
                 </Accordion>
               )}
               
-              {/* Attachment points panel in collapsible accordion (only visible when model is loaded) */}
-              {modelLoader.modelLoaded && (
-                <Accordion defaultValue="attachmentPoints">
-                  <Accordion.Item value="attachmentPoints">
-                    <Accordion.Control>
-                      <Title order={5}>Attachment Points</Title>
-                    </Accordion.Control>
-                    <Accordion.Panel>
-                      <Stack gap="md">
-                        {/* Add attachment mode selector here instead of in ComponentConfiguration */}
-                        <Box>
-                          <Text size="sm" fw={500} mb={4} c="dimmed" tt="uppercase">
-                            Attachment Mode
-                          </Text>
-                          <Select
-                            data={[
-                              { value: 'manual', label: 'Manual Placement' },
-                              { value: 'automatic', label: 'Automatic Detection' },
-                              { value: 'mesh', label: 'Mesh Selection' }
-                            ]}
-                            value={snapPoints.attachmentMode}
-                            onChange={(value) => value && handleAttachmentModeChange(value as 'manual' | 'automatic' | 'mesh')}
-                            style={{ marginBottom: 10 }}
-                          />
-                        </Box>
-                        
-                        <Divider />
-                        
-                        <Group justify="apart">
-                          <Text size="sm" c="dimmed">
-                            {snapPoints.points.length} points
-                          </Text>
-                        </Group>
-                        
-                        {/* Point list with improved focus handling */}
-                        {snapPoints.points.length > 0 ? (
-                          <Accordion defaultValue={snapPoints.points[0]?.id}>
-                            {snapPoints.points.map((point) => (
-                              <Accordion.Item 
-                                key={point.id} 
-                                value={point.id}
-                              >
-                                <Accordion.Control
-                                  onClick={(e) => {
-                                    // Stop event propagation to prevent accordion from toggling when selecting a point
-                                    e.stopPropagation();
-                                    // Select this point - this will trigger the camera focus via useEffect in ModelViewer
-                                    snapPoints.setSelectedPointId(point.id);
-                                  }}
-                                  style={{ 
-                                    backgroundColor: 
-                                      snapPoints.selectedPointId === point.id ? 
-                                      'rgba(0, 120, 255, 0.1)' : 'transparent',
-                                    borderLeft: `3px solid ${point.color}`,
-                                    cursor: 'pointer'
-                                  }}
-                                >
-                                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                    <span>{point.name || 'Unnamed Point'}</span>
-                                    {point.type && (
-                                      <span style={{ 
-                                        fontSize: '10px', 
-                                        padding: '2px 6px', 
-                                        background: 'rgba(0,0,0,0.1)', 
-                                        borderRadius: '4px',
-                                        color: 'rgba(0,0,0,0.6)'
-                                      }}>
-                                        {point.type.replace('_', ' ')}
-                                      </span>
-                                    )}
-                                  </div>
-                                </Accordion.Control>
-                                <Accordion.Panel>
-                                  <Stack gap="xs">
-                                    <Text size="xs">
-                                      Position: [{point.position.map(p => p.toFixed(2)).join(', ')}]
-                                    </Text>
-                                    <Text size="xs">
-                                      Normal: [{point.normal.map(n => n.toFixed(2)).join(', ')}]
-                                    </Text>
-                                    <Group mt="xs" justify="apart">
-                                      <Button 
-                                        size="xs"
-                                        variant="light"
-                                        color="blue"
-                                        onClick={() => snapPoints.setSelectedPointId(point.id)}
-                                      >
-                                        Select & Focus
-                                      </Button>
-                                      <Button 
-                                        size="xs"
-                                        variant="light"
-                                        color="red"
-                                        onClick={() => snapPoints.removePoint(point.id)}
-                                      >
-                                        Remove
-                                      </Button>
-                                    </Group>
-                                  </Stack>
-                                </Accordion.Panel>
-                              </Accordion.Item>
-                            ))}
-                          </Accordion>
-                        ) : (
-                          <Text size="sm" c="dimmed" ta="center" py="md">
-                            No attachment points yet
-                          </Text>
-                        )}
-                        
-                        {/* Add point button (only in manual mode) */}
-                        {snapPoints.attachmentMode === 'manual' && (
-                          <Group justify="center">
-                            <button 
-                              className="pedro-button"
-                              onClick={handleAddManualPoint}
-                            >
-                              Add Attachment Point
-                            </button>
-                          </Group>
-                        )}
-                      </Stack>
-                    </Accordion.Panel>
-                  </Accordion.Item>
-                </Accordion>
-              )}
+              {/* Attachment options panel (only visible when model is loaded) */}
+              {modelLoader.modelLoaded && renderAttachmentOptions()}
             </Stack>
           </Grid.Col>
           

@@ -27,6 +27,8 @@ const SnapPointHelper: React.FC<SnapPointHelperProps> = ({
   
   // Keep track of which transform controls are active
   const [transformMode, setTransformMode] = useState<'translate' | 'rotate'>('translate');
+  // Track whether TransformControls is active to prevent orbit controls conflicts
+  const [isTransforming, setIsTransforming] = useState(false);
   
   // Handle updating an attachment point when transformed
   const handleTransformChange = (id: string) => {
@@ -79,15 +81,32 @@ const SnapPointHelper: React.FC<SnapPointHelperProps> = ({
   
   // Create and update refs for all points
   useEffect(() => {
+    console.log("SnapPointHelper: Updating attachment points, count:", attachmentPoints.length);
+    
+    // First clean up any orphaned objects from the scene
+    Object.entries(pointsRef.current).forEach(([id, group]) => {
+      if (!attachmentPoints.some(p => p.id === id)) {
+        console.log(`Removing orphaned point object: ${id}`);
+        scene.remove(group);
+        delete pointsRef.current[id];
+      }
+    });
+    
     // Create refs for any new points
     attachmentPoints.forEach(point => {
       if (!pointsRef.current[point.id]) {
+        console.log(`Creating new point object: ${point.id}`);
         const newGroup = new THREE.Group();
         newGroup.position.set(...point.position);
         newGroup.quaternion.set(...point.rotation);
         // Mark this group for identification
         newGroup.userData.isAttachmentPoint = true;
+        newGroup.userData.id = point.id;
         pointsRef.current[point.id] = newGroup;
+        
+        // IMPORTANT: Add to scene to ensure it's part of the scene graph
+        // This fixes the "TransformControls: The attached 3D object must be a part of the scene graph" error
+        scene.add(newGroup);
       }
     });
     
@@ -95,42 +114,125 @@ const SnapPointHelper: React.FC<SnapPointHelperProps> = ({
     attachmentPoints.forEach(point => {
       const pointObj = pointsRef.current[point.id];
       if (pointObj) {
-        pointObj.position.set(...point.position);
-        pointObj.quaternion.set(...point.rotation);
+        // Only update if the position actually changed, to prevent unnecessary re-renders
+        if (!pointObj.position.equals(new THREE.Vector3(...point.position))) {
+          pointObj.position.set(...point.position);
+        }
+        
+        // Only update if the rotation changed
+        const currentQuat = pointObj.quaternion;
+        const newQuat = new THREE.Quaternion(...point.rotation);
+        if (!currentQuat.equals(newQuat)) {
+          pointObj.quaternion.set(...point.rotation);
+        }
       }
     });
-  }, [attachmentPoints]);
+    
+    // Cleanup function - remove any groups that are no longer needed
+    return () => {
+      // Get current point IDs
+      const currentIds = new Set(attachmentPoints.map(p => p.id));
+      
+      // Remove any groups that don't correspond to current points
+      Object.entries(pointsRef.current).forEach(([id, group]) => {
+        if (!currentIds.has(id)) {
+          scene.remove(group);
+          delete pointsRef.current[id];
+        }
+      });
+    };
+  }, [attachmentPoints, scene]);
   
   // Prevent orbit controls from interfering with transform controls
   useEffect(() => {
-    if (controlsRef.current) {
-      const controls = controlsRef.current;
+    if (!controlsRef.current) return;
+    
+    const controls = controlsRef.current;
+    
+    // Use a standard approach for orbit controls disabling
+    const onDragStart = () => {
+      setIsTransforming(true);
+      // Disable orbit controls
+      if (scene.userData.controls) {
+        scene.userData.controls.enabled = false;
+      }
       
-      const onDragStart = () => {
-        if (scene.userData.controls) {
-          scene.userData.controls.enabled = false;
-        }
-      };
+      // Also try with named controls
+      if (scene.userData.orbitControls) {
+        scene.userData.orbitControls.enabled = false;
+      }
+    };
+    
+    const onDragEnd = () => {
+      setIsTransforming(false);
+      // Re-enable orbit controls
+      if (scene.userData.controls) {
+        scene.userData.controls.enabled = true;
+      }
       
-      const onDragEnd = () => {
-        if (scene.userData.controls) {
-          scene.userData.controls.enabled = true;
-        }
-      };
-      
-      controls.addEventListener('dragging-changed', (event: { value: boolean }) => {
-        if (event.value) onDragStart();
-        else onDragEnd();
-      });
-      
-      return () => {
+      // Also try with named controls
+      if (scene.userData.orbitControls) {
+        scene.userData.orbitControls.enabled = true;
+      }
+    };
+    
+    // Add event listeners for TransformControls dragging changes
+    controls.addEventListener('dragging-changed', (event: { value: boolean }) => {
+      if (event.value) onDragStart();
+      else onDragEnd();
+    });
+    
+    // Add event listener for mouseDown to update scene.userData.transformActive
+    controls.addEventListener('mouseDown', () => {
+      scene.userData.transformActive = true;
+    });
+    
+    // Add event listener for mouseUp to update scene.userData.transformActive
+    controls.addEventListener('mouseUp', () => {
+      scene.userData.transformActive = false;
+    });
+    
+    // Clean up event listeners when this component unmounts or controlsRef changes
+    return () => {
+      if (controls) {
         controls.removeEventListener('dragging-changed', (event: { value: boolean }) => {
           if (event.value) onDragStart();
           else onDragEnd();
         });
-      };
-    }
-  }, [scene.userData.controls]);
+        controls.removeEventListener('mouseDown', () => {
+          scene.userData.transformActive = true;
+        });
+        controls.removeEventListener('mouseUp', () => {
+          scene.userData.transformActive = false;
+        });
+      }
+    };
+  }, [scene.userData, controlsRef]);
+
+  // Effect to handle component unmount cleanup
+  useEffect(() => {
+    // Return cleanup function for component unmount
+    return () => {
+      console.log("SnapPointHelper unmounting, cleaning up objects");
+      
+      // Clean up all point objects when component unmounts
+      Object.values(pointsRef.current).forEach(group => {
+        scene.remove(group);
+      });
+      pointsRef.current = {};
+      
+      // Ensure orbit controls are re-enabled
+      if (scene.userData.controls) {
+        scene.userData.controls.enabled = true;
+      }
+      if (scene.userData.orbitControls) {
+        scene.userData.orbitControls.enabled = true;
+      }
+      
+      // Clear transform active flag
+      scene.userData.transformActive = false;
+    };
+  }, [scene]);
 
   return (
     <group>
@@ -141,20 +243,13 @@ const SnapPointHelper: React.FC<SnapPointHelperProps> = ({
         
         return (
           <group key={point.id}>
-            {/* Attachment point representation */}
+            {/* Attachment point representation - visual only, actual transform happens on the reference object */}
             <group 
               position={new THREE.Vector3(...point.position)}
               quaternion={new THREE.Quaternion(...point.rotation)}
               onClick={(e: any) => {
                 e.stopPropagation();
                 onSelectPoint(point.id);
-              }}
-              ref={(el: THREE.Group | null) => {
-                if (el) {
-                  // Mark this group as an attachment point
-                  el.userData.isAttachmentPoint = true;
-                  pointsRef.current[point.id] = el;
-                }
               }}
             >
               {/* Visualize the attachment plane */}

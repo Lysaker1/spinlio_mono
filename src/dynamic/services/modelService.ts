@@ -14,6 +14,7 @@ export interface ModelMetadata {
    * Generated automatically if not provided
    */
   id?: string;
+  user_id?: string;
   name: string;
   filename: string;
   file_size: number;
@@ -253,7 +254,7 @@ export const uploadModelToS3 = async (
     if (!metadata.id) {
       metadata.id = uuidv4();
     }
-    
+
     // Test S3 connectivity first
     const isConnected = await testS3Connection();
     if (!isConnected) {
@@ -279,6 +280,7 @@ export const uploadModelToS3 = async (
       url: URL.createObjectURL(file), // Create a temporary local URL
       conversion_status: 'pending',
       converted_formats: [],
+      user_id: userId,
     };
     
     // Store metadata in your database immediately
@@ -357,12 +359,31 @@ export const uploadModelToS3 = async (
   }
 };
 
+export const getModelsPerUser = async (userId: string): Promise<ModelMetadata[]> => {
+  try {
+    const { data, error } = await supabase
+      .from('models')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    return data;
+
+  } catch (error) {
+    console.error('Error fetching models for user:', error);
+    throw error;
+  }
+};
+
 // Get all models from the database
 export const getModels = async (): Promise<ModelMetadata[]> => {
   try {
     const { data, error } = await supabase
       .from('models')
       .select('*')
+      .eq('is_public', true)
       .order('created_at', { ascending: false });
       
     if (error) throw error;

@@ -34,7 +34,8 @@ export const UserProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
                 email: user.email,
                 custom_url: user.nickname,
                 location: user.locale,
-                created_at: new Date().toISOString()
+                created_at: new Date().toISOString(),
+                is_public: true
               }, token);
               setProfile(newProfile);
             } catch (createError) {

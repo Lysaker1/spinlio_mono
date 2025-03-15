@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { SimpleGrid, Text, Button, Card, Image, Group, Badge, Modal, Loader, Stack, TextInput, Textarea, Select, Alert } from '@mantine/core';
+import { Alert, Badge, Button, Card, Group, Image, Loader, SimpleGrid, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import PageLayout from '../../components/PageLayout/PageLayout';
-import { getModels, uploadModelToS3, deleteModel, ModelMetadata, testS3Upload } from '../../../../services/modelService';
+import { useUser } from '@shared/hooks/useUser';
+import React, { useEffect, useState } from 'react';
+import { deleteModel, getModelsPerUser, ModelMetadata, testS3Upload, uploadModelToS3 } from '../../../../services/modelService';
 import { isSupportedModelFormat } from '../../../../utils/fileTypeUtils';
+import PageLayout from '../../components/PageLayout/PageLayout';
 import './Uploads.css';
 import UploadModal from './components/UploadModal/UploadModal';
 
@@ -88,6 +89,8 @@ const Uploads: React.FC = () => {
   const [refreshInterval, setRefreshInterval] = useState<number | null>(null);
   const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
   const [testing, setTesting] = useState(false);
+  const { profile, isAuthenticated } = useUser();  
+
 
   // Function to test S3 connectivity
   const handleTestS3 = async () => {
@@ -132,7 +135,7 @@ const Uploads: React.FC = () => {
   const loadModels = async () => {
     setLoading(true);
     try {
-      const fetchedModels = await getModels();
+      const fetchedModels = await getModelsPerUser(profile?.id || '');
       setModels(fetchedModels);
     } catch (error) {
       console.error('Failed to load models:', error);
@@ -221,6 +224,11 @@ const Uploads: React.FC = () => {
     // Removed actions prop if it's not supported
   };
 
+  
+  if (!profile) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <PageLayout {...pageLayoutProps}>
       <div style={{ marginBottom: '1rem' }}>
@@ -301,6 +309,7 @@ const Uploads: React.FC = () => {
       <UploadModal 
         uploadModalOpened={uploadModalOpened} 
         closeUploadModal={closeUploadModal} 
+        profile={profile}
       />
     </PageLayout>
   );

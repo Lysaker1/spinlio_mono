@@ -1,5 +1,4 @@
 import { Button, Group, Modal, Select, Stack } from "@mantine/core";
-import ModelUploadForm from "../UploadForm/ModelUploadForm";
 import { IconCloudUpload, IconDownload, IconTrash, IconX } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { isSupportedModelFormat } from "@dynamic/utils/fileTypeUtils";
@@ -14,13 +13,15 @@ import {
   getCachedSubcategories
 } from "@dynamic/utils/cacheUtils";
 import { measureLoadTime } from "@dynamic/utils/preloadUtils";
-
+import { useUser } from "@shared/hooks/useUser";
+import { Profile } from "@shared/types/Profile";
 interface UploadModalProps {
+  profile: Profile;
   uploadModalOpened: boolean;
   closeUploadModal: () => void;
 }
 
-const UploadModal = ({ uploadModalOpened, closeUploadModal }: UploadModalProps) => {
+const UploadModal = ({ uploadModalOpened, closeUploadModal, profile }: UploadModalProps) => {
   const [uploading, setUploading] = useState(false);
 
   const [loadingComponentGroups, setLoadingComponentGroups] = useState(false);
@@ -221,7 +222,7 @@ const UploadModal = ({ uploadModalOpened, closeUploadModal }: UploadModalProps) 
     setUploading(true);
     try {
       // Start the upload process and get the model metadata
-      const uploadResponse = await uploadModelToS3(selectedFile, metadata);
+      const uploadResponse = await uploadModelToS3(selectedFile, metadata, profile?.id);
       
       // Close the modal and reset state
       resetFormState();

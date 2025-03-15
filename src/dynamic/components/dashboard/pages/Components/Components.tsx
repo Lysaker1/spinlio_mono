@@ -94,7 +94,9 @@ const Components: React.FC = () => {
     <PageLayout
       title="All Components"
       totalPages={Math.ceil(
-        filteredComponents.length / (ROWS * COLUMNS)
+        components.filter(component => 
+          component.name.toLowerCase().includes(searchQuery.toLowerCase())
+        ).length / (ROWS * COLUMNS)
       )}
       currentPage={currentPage}
       onPageChange={setCurrentPage}

@@ -31,11 +31,11 @@ const menuItems = [
     label: 'My Orders', 
     path: '/dashboard/orders' 
   },
-  { 
-    icon: <IconTools size={32} stroke={1}/>, 
-    label: 'Pedro', 
-    path: '/dashboard/pedro' 
-  },
+  // { 
+  //   icon: <IconTools size={32} stroke={1}/>, 
+  //   label: 'Pedro', 
+  //   path: '/dashboard/pedro' 
+  // },
 ];
 
 const DashboardSidebar: React.FC = () => {

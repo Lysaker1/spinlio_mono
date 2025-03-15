@@ -20,6 +20,7 @@ const EditModel: React.FC = () => {
   const [isPublic, setIsPublic] = useState<boolean>(false);
   const [name, setName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
+  const [price, setPrice] = useState<number>(0);
 
   const [color, setColor] = useState<string | null>(null);
   const [colorPickerVisible, setColorPickerVisible] = useState<boolean>(false);
@@ -82,6 +83,7 @@ const EditModel: React.FC = () => {
       name: name,
       description: description,
       is_public: isPublic,
+      price: price,
 /*       attachment_points: apiAttachmentPoints, */
       color: color || undefined
     }, parameterValues);
@@ -135,6 +137,7 @@ const EditModel: React.FC = () => {
       setIsPublic(model.is_public);
       setName(model.name);
       setDescription(model.description || '');
+      setPrice(model.price || 0);
     }
   }, [model]);
 
@@ -300,7 +303,7 @@ const EditModel: React.FC = () => {
                   </Tabs.Panel>
                   <Tabs.Panel value='price' className='p-4 flex flex-col gap-4 h-full'>
                     {/* Input fields for Price */}
-                    <NumberInput label='Unit Price' placeholder='Enter unit price' prefix='$'/>
+                    <NumberInput label='Unit Price' placeholder='Enter unit price' prefix='$' value={price} onChange={(e) => setPrice(Number(e))}/>
                     <NumberInput label='Minimum Order Quantity' placeholder='Enter minimum order quantity' />
                     <NumberInput label='Lead Time' placeholder='Enter lead time' suffix=' days'/>
                     <TextInput label="Payment Terms" placeholder='Enter payment terms' />

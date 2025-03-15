@@ -1,9 +1,16 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { useThree, useFrame } from '@react-three/fiber';
-import { TransformControls, Plane, Text as DreiText, Html } from '@react-three/drei';
+import { Plane, Text as DreiText, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { ThreeEvent } from '@react-three/fiber/dist/declarations/src/core/events';
 import { AttachmentPointType } from '../constants/SnapPointConfigurations';
+
+/** Set to true only if you need to debug transform control issues */
+const DEV_MODE = false;
+
+function logDebug(...args: any[]) {
+  if (DEV_MODE) console.log('[AttachmentPointHelper]', ...args);
+}
 
 /**
  * Interface for an attachment point with position, rotation and normal vector
@@ -23,6 +30,7 @@ export interface AttachmentPoint {
   width?: number; // Add width property
   height?: number; // Add height property
   depth?: number; // Add depth property for tube attachments
+  optionId?: string; // Add optionId to track which component option this point belongs to
 }
 
 interface AttachmentPointHelperProps {
@@ -32,6 +40,8 @@ interface AttachmentPointHelperProps {
   onUpdate: (updatedPoint: AttachmentPoint) => void;
   onDelete: () => void;
   modelInfo?: { size: THREE.Vector3, center: THREE.Vector3 } | null;
+  sceneLocked?: boolean; // Add sceneLocked prop
+  lockedAxes?: {x: boolean, y: boolean, z: boolean}; // Add lockedAxes prop
 }
 
 // Add this new component to render different attachment point types
@@ -43,6 +53,123 @@ interface AttachmentGeometryProps {
   height?: number;
   depth?: number;
   selected: boolean;
+}
+
+// Custom dragging hooks to replace TransformControls
+function useDraggable(props: {
+  groupRef: React.RefObject<THREE.Group>,
+  lockedAxes?: {x: boolean, y: boolean, z: boolean},
+  enabled: boolean,
+  onDragStart?: () => void,
+  onDrag?: (position: THREE.Vector3) => void,
+  onDragEnd?: (position: THREE.Vector3) => void
+}) {
+  const { groupRef, lockedAxes = { x: false, y: false, z: false }, enabled, onDragStart, onDrag, onDragEnd } = props;
+  const { camera, gl } = useThree();
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartPosition = useRef(new THREE.Vector3());
+  const dragPlane = useRef(new THREE.Plane());
+  const intersection = useRef(new THREE.Vector3());
+  
+  // Set up the drag plane
+  useEffect(() => {
+    if (!groupRef.current) return;
+    
+    // Create a plane perpendicular to the camera direction, passing through the object
+    const position = new THREE.Vector3();
+    groupRef.current.getWorldPosition(position);
+    const normal = new THREE.Vector3();
+    camera.getWorldDirection(normal);
+    dragPlane.current.setFromNormalAndCoplanarPoint(normal.negate(), position);
+  }, [camera, groupRef]);
+  
+  // Handle pointer down
+  const handlePointerDown = useCallback((e: ThreeEvent<PointerEvent>) => {
+    if (!enabled || !groupRef.current) return;
+    
+    // Prevent event from propagating to other objects
+    e.stopPropagation();
+    
+    // Start dragging
+    setIsDragging(true);
+    
+    // Store the initial position
+    groupRef.current.getWorldPosition(dragStartPosition.current);
+    
+    // Set the drag plane
+    const position = new THREE.Vector3();
+    groupRef.current.getWorldPosition(position);
+    const normal = new THREE.Vector3();
+    camera.getWorldDirection(normal);
+    dragPlane.current.setFromNormalAndCoplanarPoint(normal.negate(), position);
+    
+    // Capture pointer
+    gl.domElement.setPointerCapture(e.pointerId);
+    
+    // Call onDragStart
+    if (onDragStart) onDragStart();
+  }, [enabled, groupRef, camera, gl, onDragStart]);
+  
+  // Handle pointer move
+  const handlePointerMove = useCallback((e: ThreeEvent<PointerEvent>) => {
+    if (!isDragging || !groupRef.current) return;
+    
+    // Prevent default behavior
+    e.stopPropagation();
+    
+    // Convert screen coordinates to normalized device coordinates
+    const mouse = new THREE.Vector2(
+      (e.clientX / window.innerWidth) * 2 - 1,
+      -(e.clientY / window.innerHeight) * 2 + 1
+    );
+    
+    // Create a ray from the camera
+    const raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(mouse, camera);
+    
+    // Find intersection with the drag plane
+    raycaster.ray.intersectPlane(dragPlane.current, intersection.current);
+    
+    // Calculate new position with locked axes
+    const newPosition = new THREE.Vector3();
+    groupRef.current.getWorldPosition(newPosition);
+    
+    if (!lockedAxes.x) newPosition.x = intersection.current.x;
+    if (!lockedAxes.y) newPosition.y = intersection.current.y;
+    if (!lockedAxes.z) newPosition.z = intersection.current.z;
+    
+    // Update position
+    groupRef.current.position.copy(newPosition);
+    
+    // Call onDrag
+    if (onDrag) onDrag(newPosition);
+  }, [isDragging, groupRef, camera, lockedAxes, onDrag]);
+  
+  // Handle pointer up
+  const handlePointerUp = useCallback((e: ThreeEvent<PointerEvent>) => {
+    if (!isDragging || !groupRef.current) return;
+    
+    // Stop dragging
+    setIsDragging(false);
+    
+    // Release pointer capture
+    gl.domElement.releasePointerCapture(e.pointerId);
+    
+    // Get final position
+    const finalPosition = new THREE.Vector3();
+    groupRef.current.getWorldPosition(finalPosition);
+    
+    // Call onDragEnd
+    if (onDragEnd) onDragEnd(finalPosition);
+  }, [isDragging, groupRef, gl, onDragEnd]);
+  
+  // Return event handlers
+  return {
+    onPointerDown: handlePointerDown,
+    onPointerMove: handlePointerMove,
+    onPointerUp: handlePointerUp,
+    isDragging
+  };
 }
 
 const AttachmentGeometry: React.FC<AttachmentGeometryProps> = ({
@@ -58,12 +185,14 @@ const AttachmentGeometry: React.FC<AttachmentGeometryProps> = ({
   const effectiveDepth = Math.max(depth || height, 0.5);
   const effectiveRadius = Math.max(radius, 0.1);
   
-  // Debugging - log the geometry parameters to help troubleshoot
+  // Only log in DEV_MODE (using the flag from parent component)
   useEffect(() => {
-    console.log(`Rendering attachment geometry of type: ${type}`);
-    console.log(`Is TUBE_OUTER? ${type === AttachmentPointType.TUBE_OUTER}`);
-    console.log(`Parameters - radius: ${radius}, depth: ${depth}, width: ${width}, height: ${height}`);
-    console.log(`Effective values - radius: ${effectiveRadius}, depth: ${effectiveDepth}`);
+    if (!DEV_MODE) return;
+    
+    logDebug(`Rendering attachment geometry of type: ${type}`);
+    logDebug(`Is TUBE_OUTER? ${type === AttachmentPointType.TUBE_OUTER}`);
+    logDebug(`Parameters - radius: ${radius}, depth: ${depth}, width: ${width}, height: ${height}`);
+    logDebug(`Effective values - radius: ${effectiveRadius}, depth: ${effectiveDepth}`);
   }, [type, radius, depth, width, height, effectiveRadius, effectiveDepth]);
 
   // Determine what geometry to use based on type
@@ -421,36 +550,31 @@ const AttachmentPointHelper: React.FC<AttachmentPointHelperProps> = ({
   onSelect,
   onUpdate,
   onDelete,
-  modelInfo
+  modelInfo,
+  sceneLocked = false, // Default to false
+  lockedAxes
 }) => {
-  const [transformMode, setTransformMode] = useState<'translate' | 'rotate'>('translate');
-  const [snapping, setSnapping] = useState<boolean>(true);
-  const [showControls, setShowControls] = useState<boolean>(false);
-  const controlsRef = useRef<any>(null);
   const groupRef = useRef<THREE.Group>(null);
-  const { camera, scene } = useThree();
+  const isTransforming = useRef<boolean>(false);
+  const lastGoodPosition = useRef<[number, number, number]>(point.position);
   
-  // IMPORTANT: Add debug information to help troubleshoot
+  // Debug log point updates
   useEffect(() => {
-    console.log(`AttachmentPoint Debug - ${point.name || 'Unnamed'}:`);
-    console.log(`- Full point object:`, JSON.stringify(point, null, 2));
-    console.log(`- Type: ${point.type}`);
-    console.log(`- Type check (TUBE_OUTER): ${point.type === AttachmentPointType.TUBE_OUTER}`);
-    console.log(`- Type check (string): ${point.type === 'tube_outer'}`);
-    console.log(`- Position: [${point.position.map(v => v.toFixed(3)).join(', ')}]`);
-    console.log(`- Normal: [${point.normal.map(v => v.toFixed(3)).join(', ')}]`);
-    console.log(`- Dimensions: radius=${point.radius?.toFixed(3)}, depth=${point.depth?.toFixed(3)}`);
+    if (!DEV_MODE) return;
+    logDebug('Point updated:', point.name, point);
+    
+    // Store last good position for reference
+    lastGoodPosition.current = point.position;
   }, [point]);
   
   // Calculate quaternion from rotation array or from normal if rotation is not provided
   const quaternion = useMemo(() => {
-    // Log our calculation method to help debug
-    console.log(`Calculating quaternion for ${point.name || 'Unnamed point'}`);
+    if (DEV_MODE) logDebug(`Calculating quaternion for ${point.name || 'Unnamed point'}`);
     
     // If we have an explicit rotation AND we're dealing with a tube type, prioritize it
     if (point.rotation && (point.rotation[0] !== 0 || point.rotation[1] !== 0 || point.rotation[2] !== 0 || point.rotation[3] !== 1) &&
         (point.type === AttachmentPointType.TUBE_OUTER || point.type === AttachmentPointType.TUBE_INNER)) {
-      console.log(`Using explicit rotation override: [${point.rotation.map(v => v.toFixed(3)).join(', ')}]`);
+      if (DEV_MODE) logDebug(`Using explicit rotation override: [${point.rotation.map(v => v.toFixed(3)).join(', ')}]`);
       return new THREE.Quaternion(
         point.rotation[0],
         point.rotation[1],
@@ -461,11 +585,11 @@ const AttachmentPointHelper: React.FC<AttachmentPointHelperProps> = ({
     
     // Otherwise, calculate from normal (with special handling for tube types)
     const normalVector = new THREE.Vector3(point.normal[0], point.normal[1], point.normal[2]).normalize();
-    console.log(`Using normal vector: [${normalVector.x.toFixed(3)}, ${normalVector.y.toFixed(3)}, ${normalVector.z.toFixed(3)}]`);
+    if (DEV_MODE) logDebug(`Using normal vector: [${normalVector.x.toFixed(3)}, ${normalVector.y.toFixed(3)}, ${normalVector.z.toFixed(3)}]`);
     
     // For tube types, we need special handling to ensure the tube aligns with the normal
     if (point.type === AttachmentPointType.TUBE_OUTER || point.type === AttachmentPointType.TUBE_INNER) {
-      console.log(`Special handling for tube type ${point.type}`);
+      if (DEV_MODE) logDebug(`Special handling for tube type ${point.type}`);
       
       // For tube types, we want the cylinder's axis (Y) to align with the normal direction
       // Create a rotation that maps Y axis to the normal direction
@@ -477,7 +601,7 @@ const AttachmentPointHelper: React.FC<AttachmentPointHelperProps> = ({
       const q = new THREE.Quaternion();
       q.setFromUnitVectors(cylinderUp, normalVector);
       
-      console.log(`Calculated quaternion for tube: [${q.x.toFixed(3)}, ${q.y.toFixed(3)}, ${q.z.toFixed(3)}, ${q.w.toFixed(3)}]`);
+      if (DEV_MODE) logDebug(`Calculated quaternion for tube: [${q.x.toFixed(3)}, ${q.y.toFixed(3)}, ${q.z.toFixed(3)}, ${q.w.toFixed(3)}]`);
       return q;
     }
     
@@ -487,70 +611,128 @@ const AttachmentPointHelper: React.FC<AttachmentPointHelperProps> = ({
     
     if (normalVector.length() > 0.001) {
       quaternion.setFromUnitVectors(upVector, normalVector);
-      console.log(`Standard quaternion: [${quaternion.x.toFixed(3)}, ${quaternion.y.toFixed(3)}, ${quaternion.z.toFixed(3)}, ${quaternion.w.toFixed(3)}]`);
+      if (DEV_MODE) logDebug(`Standard quaternion: [${quaternion.x.toFixed(3)}, ${quaternion.y.toFixed(3)}, ${quaternion.z.toFixed(3)}, ${quaternion.w.toFixed(3)}]`);
     }
     
     return quaternion;
   }, [point.rotation, point.normal, point.type, point.name]);
   
+  // Modify the restrictMovement function to focus on axis locks
+  const restrictMovement = useCallback((position: THREE.Vector3): [number, number, number] => {
+    // Start with current position
+    let restrictedPosition: [number, number, number] = [
+      position.x,
+      position.y,
+      position.z
+    ];
+    
+    // Apply explicit axis locks if provided
+    if (lockedAxes) {
+      if (lockedAxes.x) restrictedPosition[0] = point.position[0];
+      if (lockedAxes.y) restrictedPosition[1] = point.position[1];
+      if (lockedAxes.z) restrictedPosition[2] = point.position[2];
+    }
+    
+    // IMPORTANT: Prevent positions from resetting to 0,0,0
+    // This is a safety check in case something is trying to reset the position
+    const isZeroPosition = restrictedPosition[0] === 0 && restrictedPosition[1] === 0 && restrictedPosition[2] === 0;
+    if (isZeroPosition && (point.position[0] !== 0 || point.position[1] !== 0 || point.position[2] !== 0)) {
+      logDebug(`Prevented reset to 0,0,0 for ${point.name || 'unnamed'}`);
+      return lastGoodPosition.current;
+    }
+    
+    return restrictedPosition;
+  }, [lockedAxes, point.position, point.name]);
+  
   // Handle attachment point selection
-  const handleSelect = (e: ThreeEvent<MouseEvent>) => {
+  const handleSelect = useCallback((e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation();
+    
+    // Check if we're already transforming this point
+    // This helps prevent unnecessary reselection during dragging
+    if (isTransforming.current && selected) {
+      logDebug(`Ignoring click on already selected point while transforming: ${point.name || 'unnamed'}`);
+      return;
+    }
+    
+    logDebug(`Selected point: ${point.name || 'unnamed'} (${point.id})`);
     onSelect();
-  };
+  }, [selected, point.name, point.id, onSelect]);
   
-  // Handle transform changes
-  const handleTransformChange = () => {
-    if (!groupRef.current) return;
-    
-    // Get the current position from the transformed group
-    const position: [number, number, number] = [
-      groupRef.current.position.x,
-      groupRef.current.position.y,
-      groupRef.current.position.z
-    ];
-    
-    // Get the current rotation as quaternion
-    const quaternion = new THREE.Quaternion();
-    groupRef.current.getWorldQuaternion(quaternion);
-    const rotation: [number, number, number, number] = [
-      quaternion.x,
-      quaternion.y,
-      quaternion.z,
-      quaternion.w
-    ];
-    
-    // Calculate the normal from the quaternion
-    const up = new THREE.Vector3(0, 1, 0);
-    const normal = up.clone().applyQuaternion(quaternion);
-    
-    // Update the attachment point
-    onUpdate({
-      ...point,
-      position,
-      rotation,
-      normal: [normal.x, normal.y, normal.z]
-    });
-  };
+  // Handle drag start
+  const handleDragStart = useCallback(() => {
+    try {
+      isTransforming.current = true;
+      logDebug(`Started transforming ${point.name || 'unnamed'}`);
+    } catch (error) {
+      console.error('Error in handleDragStart:', error);
+    }
+  }, [point.name]);
   
-  // Toggle transform mode between translate and rotate
-  const toggleTransformMode = () => {
-    if (transformMode === 'translate') setTransformMode('rotate');
-    else setTransformMode('translate');
-  };
+  // Handle drag
+  const handleDrag = useCallback((position: THREE.Vector3) => {
+    try {
+      // Apply axis restrictions
+      const restrictedPosition = restrictMovement(position);
+      
+      // Store the new position as a last good position
+      lastGoodPosition.current = restrictedPosition;
+    } catch (error) {
+      console.error('Error in handleDrag:', error);
+    }
+  }, [restrictMovement]);
   
-  // Toggle snapping
-  const toggleSnap = () => {
-    setSnapping(!snapping);
-  };
+  // Handle drag end
+  const handleDragEnd = useCallback((position: THREE.Vector3) => {
+    try {
+      // Apply axis restrictions
+      const restrictedPosition = restrictMovement(position);
+      
+      // Get the current rotation as quaternion
+      const quaternion = new THREE.Quaternion();
+      if (groupRef.current) {
+        groupRef.current.getWorldQuaternion(quaternion);
+      }
+      
+      const rotation: [number, number, number, number] = [
+        quaternion.x, quaternion.y, quaternion.z, quaternion.w
+      ];
+      
+      // Calculate the normal from the quaternion
+      const up = new THREE.Vector3(0, 1, 0);
+      const normal = up.clone().applyQuaternion(quaternion);
+      
+      // Apply the final update
+      const updatedPoint = {
+        ...point,
+        position: restrictedPosition,
+        rotation,
+        normal: [normal.x, normal.y, normal.z] as [number, number, number]
+      };
+      
+      onUpdate(updatedPoint);
+      
+      // Store the new position as a last good position
+      lastGoodPosition.current = restrictedPosition;
+      
+      // Reset the transforming flag
+      isTransforming.current = false;
+      logDebug(`Finished transforming ${point.name || 'unnamed'}`);
+    } catch (error) {
+      console.error('Error in handleDragEnd:', error);
+      isTransforming.current = false;
+    }
+  }, [point, restrictMovement, onUpdate]);
   
-  // Snap to the nearest mesh surface
-  const snapToModel = () => {
-    if (!snapping || !modelInfo) return;
-    
-    // Implement snap logic here - simplified for now
-    console.log("Snapping to model surface...");
-  };
+  // Set up dragging
+  const { onPointerDown, onPointerMove, onPointerUp, isDragging } = useDraggable({
+    groupRef,
+    lockedAxes,
+    enabled: selected && !sceneLocked,
+    onDragStart: handleDragStart,
+    onDrag: handleDrag,
+    onDragEnd: handleDragEnd
+  });
   
   // Highlight effect for selected attachment point
   const selectedEffect = useMemo(() => {
@@ -608,91 +790,182 @@ const AttachmentPointHelper: React.FC<AttachmentPointHelperProps> = ({
     );
   }, [selected, point.radius]);
   
-  // Setup transform controls when the attachment point is selected
-  useEffect(() => {
-    if (selected && controlsRef.current && groupRef.current) {
-      // Update transform controls
-      try {
-        controlsRef.current.attach(groupRef.current);
-        controlsRef.current.setMode(transformMode);
-        
-        // Show controls if point is selected
-        setShowControls(true);
-      } catch (err) {
-        console.error("Error attaching transform controls:", err);
-        setShowControls(false);
-      }
-      
-      return () => {
-        if (controlsRef.current) {
-          try {
-            controlsRef.current.detach();
-          } catch (err) {
-            console.error("Error detaching transform controls:", err);
-          }
-        }
-        setShowControls(false);
-      };
-    }
+  // Debug visualization to help see the hierarchy
+  const DebugVisualizer = () => {
+    if (!DEV_MODE || !selected) return null;
     
-    setShowControls(false);
-    return undefined;
-  }, [selected, transformMode]);
+    return (
+      <group>
+        {/* Origin marker */}
+        <mesh>
+          <sphereGeometry args={[0.05, 8, 8]} />
+          <meshBasicMaterial color="red" />
+        </mesh>
+        
+        {/* Small axes */}
+        <axesHelper args={[0.2]} />
+      </group>
+    );
+  };
   
-  // Return the component JSX
-  return (
-    <group position={point.position} onClick={handleSelect}>
-      <group ref={groupRef} quaternion={quaternion}>
-        {/* Debug axes to show orientation */}
-        {selected && (
-          <axesHelper args={[0.5]} />
+  // First, add a useEffect to log a message about the custom implementation
+  useEffect(() => {
+    if (selected) {
+      console.log(
+        '️⚠️ Using custom dragging implementation for attachment points.\n' +
+        'This replaces TransformControls to prevent infinite recursion errors.\n' +
+        'Click and drag directly on the attachment point or use the colored axis handles.'
+      );
+    }
+  }, [selected]);
+  
+  // Then enhance the DragHandles component to be more visible
+  const DragHandles = () => {
+    if (!selected || sceneLocked) return null;
+    
+    return (
+      <group>
+        {/* X-axis handle (red) */}
+        {!lockedAxes?.x && (
+          <group position={[0.7, 0, 0]}>
+            <mesh>
+              <sphereGeometry args={[0.07, 12, 12]} />
+              <meshStandardMaterial color="red" />
+            </mesh>
+            <mesh position={[-0.35, 0, 0]} rotation={[0, 0, Math.PI/2]}>
+              <cylinderGeometry args={[0.02, 0.02, 0.7, 8]} />
+              <meshStandardMaterial color="red" />
+            </mesh>
+            {/* X label */}
+            <Html position={[0.1, 0, 0]}>
+              <div style={{
+                color: 'red',
+                background: 'rgba(0,0,0,0.5)',
+                padding: '2px 5px',
+                borderRadius: '3px',
+                fontSize: '10px',
+                fontWeight: 'bold'
+              }}>X</div>
+            </Html>
+          </group>
         )}
         
-        {/* Add error handling for the geometry to prevent crashes */}
-        <React.Suspense fallback={null}>
-          <AttachmentGeometry 
-            type={point.type || AttachmentPointType.STANDARD}
-            color={point.color} 
-            radius={point.radius}
-            width={point.width}
-            height={point.height}
-            depth={point.depth}
-            selected={selected} 
-          />
-        </React.Suspense>
+        {/* Y-axis handle (green) */}
+        {!lockedAxes?.y && (
+          <group position={[0, 0.7, 0]}>
+            <mesh>
+              <sphereGeometry args={[0.07, 12, 12]} />
+              <meshStandardMaterial color="green" />
+            </mesh>
+            <mesh position={[0, -0.35, 0]}>
+              <cylinderGeometry args={[0.02, 0.02, 0.7, 8]} />
+              <meshStandardMaterial color="green" />
+            </mesh>
+            {/* Y label */}
+            <Html position={[0, 0.1, 0]}>
+              <div style={{
+                color: 'green',
+                background: 'rgba(0,0,0,0.5)',
+                padding: '2px 5px',
+                borderRadius: '3px',
+                fontSize: '10px',
+                fontWeight: 'bold'
+              }}>Y</div>
+            </Html>
+          </group>
+        )}
         
-        {/* Name tag on all points for easier identification */}
-        <Html position={[0, point.radius ? point.radius * 2 : 0.5, 0]} center>
-          <div style={{ 
-            background: 'rgba(0, 0, 0, 0.7)', 
-            color: 'white', 
-            padding: '4px 8px', 
-            borderRadius: '4px',
-            fontSize: '12px',
-            whiteSpace: 'nowrap',
-            transform: 'translate(-50%, -100%)',
-            marginBottom: '8px'
-          }}>
-            {point.name || 'Attachment Point'}
-          </div>
-        </Html>
-        
-        {/* Selection highlight effects - Now with error handling */}
-        <React.Suspense fallback={null}>
-          {selectedEffect}
-          {pulseEffect}
-        </React.Suspense>
+        {/* Z-axis handle (blue) */}
+        {!lockedAxes?.z && (
+          <group position={[0, 0, 0.7]}>
+            <mesh>
+              <sphereGeometry args={[0.07, 12, 12]} />
+              <meshStandardMaterial color="blue" />
+            </mesh>
+            <mesh position={[0, 0, -0.35]} rotation={[Math.PI/2, 0, 0]}>
+              <cylinderGeometry args={[0.02, 0.02, 0.7, 8]} />
+              <meshStandardMaterial color="blue" />
+            </mesh>
+            {/* Z label */}
+            <Html position={[0, 0, 0.1]}>
+              <div style={{
+                color: 'blue',
+                background: 'rgba(0,0,0,0.5)',
+                padding: '2px 5px',
+                borderRadius: '3px',
+                fontSize: '10px',
+                fontWeight: 'bold'
+              }}>Z</div>
+            </Html>
+          </group>
+        )}
       </group>
+    );
+  };
+  
+  // Return the component JSX with FLATTENED hierarchy
+  // IMPORTANT: We now use a single group with position and quaternion,
+  // which eliminates the offset issues
+  return (
+    <group 
+      ref={groupRef} 
+      position={point.position} 
+      quaternion={quaternion}
+      onClick={handleSelect}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+    >
+      {/* Debug visualization to see the actual group position */}
+      <DebugVisualizer />
       
-      {/* Transform controls for manipulating the point - keep these, they don't show the UI buttons */}
+      {/* Debug axes to show orientation */}
       {selected && (
-        <TransformControls
-          ref={controlsRef}
-          object={groupRef.current}
-          mode={transformMode}
-          onObjectChange={handleTransformChange}
-        />
+        <axesHelper args={[0.5]} />
       )}
+      
+      {/* Add error handling for the geometry to prevent crashes */}
+      <React.Suspense fallback={null}>
+        <AttachmentGeometry 
+          type={point.type || AttachmentPointType.STANDARD}
+          color={isDragging ? '#ff8800' : point.color} 
+          radius={point.radius}
+          width={point.width}
+          height={point.height}
+          depth={point.depth}
+          selected={selected} 
+        />
+      </React.Suspense>
+      
+      {/* Custom drag handles for each unlocked axis */}
+      {selected && <DragHandles />}
+      
+      {/* Name tag on all points for easier identification */}
+      <Html position={[0, point.radius ? point.radius * 2 : 0.5, 0]} center>
+        <div style={{ 
+          background: 'rgba(0, 0, 0, 0.7)', 
+          color: 'white', 
+          padding: '4px 8px', 
+          borderRadius: '4px',
+          fontSize: '12px',
+          whiteSpace: 'nowrap',
+          transform: 'translate(-50%, -100%)',
+          marginBottom: '8px'
+        }}>
+          {point.name || 'Attachment Point'}
+          {DEV_MODE && (
+            <div style={{ fontSize: '10px', color: '#aaa' }}>
+              pos: [{point.position.map(v => v.toFixed(2)).join(', ')}]
+            </div>
+          )}
+        </div>
+      </Html>
+      
+      {/* Selection highlight effects - Now with error handling */}
+      <React.Suspense fallback={null}>
+        {selectedEffect}
+        {pulseEffect}
+      </React.Suspense>
     </group>
   );
 };

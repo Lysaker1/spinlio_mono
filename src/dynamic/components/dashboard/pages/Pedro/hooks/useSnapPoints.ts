@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { AttachmentPoint } from '../components/AttachmentPointHelper';
 import { AttachmentPointType } from '../constants/SnapPointConfigurations';
 import snapPointService from '../services/SnapPointService';
+import { AttachmentMode } from '../components/AttachmentModeSelector';
 
 interface UseSnapPointsOptions {
   componentType?: string;
@@ -18,7 +19,7 @@ interface UseSnapPointsOptions {
 export function useSnapPoints(options: UseSnapPointsOptions = {}) {
   const [points, setPoints] = useState<AttachmentPoint[]>([]);
   const [selectedPointId, setSelectedPointId] = useState<string | null>(null);
-  const [attachmentMode, setAttachmentMode] = useState<'manual' | 'automatic' | 'mesh'>('manual');
+  const [attachmentMode, setAttachmentMode] = useState<AttachmentMode>('manual');
   
   // Add a new attachment point
   const addPoint = useCallback((point: Partial<AttachmentPoint> = {}) => {
@@ -198,6 +199,11 @@ export function useSnapPoints(options: UseSnapPointsOptions = {}) {
     );
   }, []);
   
+  // Set all points (for integration with component options)
+  const setAllPoints = useCallback((newPoints: AttachmentPoint[]) => {
+    setPoints(newPoints);
+  }, []);
+  
   return {
     points,
     selectedPointId,
@@ -212,7 +218,8 @@ export function useSnapPoints(options: UseSnapPointsOptions = {}) {
     exportPoints,
     transformPoints,
     attachmentMode,
-    setAttachmentMode
+    setAttachmentMode,
+    setPoints: setAllPoints
   };
 }
 

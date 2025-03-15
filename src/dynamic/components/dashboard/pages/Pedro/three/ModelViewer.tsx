@@ -8,6 +8,10 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import modelLoaderService from '../services/ModelLoaderService';
 import snapPointService from '../services/SnapPointService';
 import { AttachmentPoint } from '../components/AttachmentPointHelper';
+import AttachmentPointHelper from '../components/AttachmentPointHelper';
+
+// Control debugging output - keep false unless debugging transform control issues
+const DEV_MODE = false;
 
 interface ModelViewerProps {
   file: File | null;
@@ -21,6 +25,12 @@ interface ModelViewerProps {
   attachmentMode: 'manual' | 'automatic' | 'mesh';
   onAddAttachmentPoint: (point: AttachmentPoint) => void;
   componentType: string;
+  sceneLocked?: boolean;
+  onToggleSceneLock?: () => void;
+  editMode?: 'translate' | 'rotate' | 'scale';
+  onChangeEditMode?: (mode: 'translate' | 'rotate' | 'scale') => void;
+  lockedAxes?: {x: boolean, y: boolean, z: boolean};
+  disableAutoFocus?: boolean; // Add flag to disable automatic focusing
 }
 
 /**
@@ -37,7 +47,13 @@ export const ModelViewer: React.FC<ModelViewerProps> = ({
   onModelInfoLoaded,
   attachmentMode,
   onAddAttachmentPoint,
-  componentType
+  componentType,
+  sceneLocked = false,
+  onToggleSceneLock,
+  editMode,
+  onChangeEditMode,
+  lockedAxes = { x: false, y: false, z: false },
+  disableAutoFocus = false // Default to false for backward compatibility
 }) => {
   // State for model and loading
   const [modelLoaded, setModelLoaded] = useState(false);
@@ -55,6 +71,13 @@ export const ModelViewer: React.FC<ModelViewerProps> = ({
   const [visibleMeshes, setVisibleMeshes] = useState<{id: string, name: string}[]>([]);
   const [viewMode, setViewMode] = useState<'normal' | 'wireframe' | 'x-ray'>('normal');
   
+  // State for 3D view controls
+  const [isEditing, setIsEditing] = useState(false); // Add state for edit mode
+  const [localEditMode, setLocalEditMode] = useState<'translate' | 'rotate' | 'scale'>(editMode || 'translate'); // Local edit mode state
+  
+  // Use actual edit mode (from props or local state)
+  const activeEditMode = editMode || localEditMode;
+  
   // Refs
   const modelGroupRef = useRef<THREE.Group>(new THREE.Group());
   const modelRef = useRef<THREE.Object3D | null>(null);
@@ -66,6 +89,9 @@ export const ModelViewer: React.FC<ModelViewerProps> = ({
   
   // Get THREE.js context
   const { camera, scene } = useThree();
+  
+  // Store the cameraPosition before locking for restoration when unlocking
+  const previousCameraPosition = useRef<THREE.Vector3 | null>(null);
   
   // Reset auto points generation flag when file changes
   useEffect(() => {
@@ -627,70 +653,16 @@ export const ModelViewer: React.FC<ModelViewerProps> = ({
     });
   };
   
-  // Add these lighting improvements
-  const SceneSetup = () => {
-    return (
-      <group>
-        {/* Ground plane */}
-        <mesh 
-          rotation={[-Math.PI / 2, 0, 0]} 
-          position={[0, 0, 0]}
-          receiveShadow
-        >
-          <planeGeometry args={[50, 50]} />
-          <meshStandardMaterial 
-            color="#f0f0f0" 
-            transparent 
-            opacity={0.6}
-            roughness={0.8}
-          />
-        </mesh>
-
-        {/* Grid helper for better depth perception */}
-        <gridHelper 
-          args={[50, 50, '#bbbbbb', '#dddddd']} 
-          position={[0, 0.01, 0]} 
-        />
-        
-        {/* Improved lighting */}
-        <hemisphereLight args={['#ffffff', '#ddddff', 0.5]} />
-        <directionalLight 
-          position={[5, 5, 5]} 
-          intensity={0.5} 
-          castShadow 
-        />
-        <directionalLight 
-          position={[-5, 5, -5]} 
-          intensity={0.3} 
-        />
-        <directionalLight 
-          position={[0, 5, 0]} 
-          intensity={0.4} 
-        />
-        
-        {/* Contact shadows for better grounding */}
-        <ContactShadows 
-          opacity={0.4} 
-          scale={10} 
-          blur={1} 
-          far={10} 
-          resolution={256} 
-          color="#000000" 
-          position={[0, 0, 0]}
-        />
-      </group>
-    );
-  };
-  
-  // Add a function to focus camera on selected point with fixed OrbitControls reference
-  const focusOnPoint = useCallback((pointId: string | null) => {
-    if (!pointId) return;
+  // Focus camera on attachment point
+  const focusOnPoint = useCallback((point: AttachmentPoint, forceFocus = false) => {
+    // Skip if auto-focus is disabled (unless forceFocus is true)
+    if (disableAutoFocus && !forceFocus) {
+      if (DEV_MODE) console.log(`Auto-focus disabled for point: ${point.id}`);
+      return;
+    }
     
-    // Find the selected point in attachmentPoints
-    const point = attachmentPoints.find(p => p.id === pointId);
-    if (!point) return;
-    
-    console.log(`Focusing camera on attachment point: ${point.name || pointId}`);
+    // Log the point being focused on with additional details
+    console.log(`Focusing camera on attachment point: ${point.name || point.id} (type: ${point.type}, optionId: ${point.optionId || 'none'})`);
     
     // Get the point position
     const pointPosition = new THREE.Vector3(...point.position);
@@ -758,22 +730,164 @@ export const ModelViewer: React.FC<ModelViewerProps> = ({
         // When animation completes, ensure we're looking at the point
         controls.target.copy(pointPosition);
         controls.update();
-        console.log("Camera focus complete");
+        if (DEV_MODE) console.log("Camera focus complete");
       }
     };
     
     // Start animation
     animateCamera();
     
-  }, [attachmentPoints, camera]);
+  }, [attachmentPoints, camera, disableAutoFocus]);
   
   // Add to dependency array for useEffect that watches selectedPoint
   useEffect(() => {
     // When selected point changes, focus on it
     if (selectedPoint) {
-      focusOnPoint(selectedPoint);
+      // Skip auto-focusing if the disableAutoFocus option is turned on
+      if (disableAutoFocus) {
+        if (DEV_MODE) {
+          console.log("Auto-focus is disabled - skipping automatic camera focus");
+        }
+        return;
+      }
+      
+      // Find the matching attachment point
+      const point = attachmentPoints.find(p => p.id === selectedPoint);
+      if (point) {
+        focusOnPoint(point);
+      }
     }
-  }, [selectedPoint, focusOnPoint]);
+  }, [selectedPoint, attachmentPoints, focusOnPoint, disableAutoFocus]);
+  
+  // Add a new effect to listen for custom forceFocus events
+  useEffect(() => {
+    // Create a handler for forceFocus events
+    const handleForceFocus = (event: Event) => {
+      // Check if we have a point ID in the event detail
+      const customEvent = event as CustomEvent;
+      if (customEvent.detail && customEvent.detail.pointId) {
+        // Force focus on the point even if auto-focus is disabled
+        if (DEV_MODE) {
+          console.log("Force focusing on point:", customEvent.detail.pointId);
+        }
+        focusOnPoint(attachmentPoints.find(p => p.id === customEvent.detail.pointId) || attachmentPoints[0]);
+      }
+    };
+    
+    // Add event listener to the canvas element
+    const canvasElement = document.querySelector('.model-canvas');
+    if (canvasElement) {
+      canvasElement.addEventListener('forceFocus', handleForceFocus);
+    }
+    
+    // Clean up when component unmounts
+    return () => {
+      if (canvasElement) {
+        canvasElement.removeEventListener('forceFocus', handleForceFocus);
+      }
+    };
+  }, [focusOnPoint, attachmentPoints]);
+  
+  // Remove the TransformControls event handling and helper
+  // We'll replace it with a message about the new implementation
+  useEffect(() => {
+    console.log('Using custom dragging implementation for attachment points instead of TransformControls');
+    console.log('This should resolve the "Maximum call stack size exceeded" errors');
+    
+    // We'll still keep orbit controls updates for scene locking
+    if (!orbitControlsRef.current) return;
+    
+    // Disable orbit controls when scene is locked
+    orbitControlsRef.current.enabled = !sceneLocked;
+    
+    // Log the scene lock state change
+    if (DEV_MODE) {
+      console.log(`Scene ${sceneLocked ? 'locked' : 'unlocked'} - Camera control ${sceneLocked ? 'disabled' : 'enabled'}`);
+    }
+  }, [sceneLocked]);
+  
+  // Function to toggle the scene lock state
+  const toggleSceneLock = useCallback(() => {
+    // No longer manipulate camera position when locking/unlocking
+    // Just call the parent toggle function
+    if (onToggleSceneLock) {
+      onToggleSceneLock();
+    }
+  }, [onToggleSceneLock]);
+  
+  // Toggle edit mode type
+  const toggleEditMode = useCallback(() => {
+    const newMode = (() => {
+      switch (localEditMode) {
+        case 'translate': return 'rotate';
+        case 'rotate': return 'scale';
+        case 'scale': return 'translate';
+        default: return 'translate';
+      }
+    })();
+    
+    setLocalEditMode(newMode);
+    
+    // Notify parent of edit mode change
+    if (onChangeEditMode) {
+      onChangeEditMode(newMode);
+    }
+  }, [localEditMode, onChangeEditMode]);
+  
+  // Add these lighting improvements
+  const SceneSetup = () => {
+    return (
+      <group>
+        {/* Ground plane */}
+        <mesh 
+          rotation={[-Math.PI / 2, 0, 0]} 
+          position={[0, 0, 0]}
+          receiveShadow
+        >
+          <planeGeometry args={[50, 50]} />
+          <meshStandardMaterial 
+            color="#f0f0f0" 
+            transparent 
+            opacity={0.6}
+            roughness={0.8}
+          />
+        </mesh>
+
+        {/* Grid helper for better depth perception */}
+        <gridHelper 
+          args={[50, 50, '#bbbbbb', '#dddddd']} 
+          position={[0, 0.01, 0]} 
+        />
+        
+        {/* Improved lighting */}
+        <hemisphereLight args={['#ffffff', '#ddddff', 0.5]} />
+        <directionalLight 
+          position={[5, 5, 5]} 
+          intensity={0.5} 
+          castShadow 
+        />
+        <directionalLight 
+          position={[-5, 5, -5]} 
+          intensity={0.3} 
+        />
+        <directionalLight 
+          position={[0, 5, 0]} 
+          intensity={0.4} 
+        />
+        
+        {/* Contact shadows for better grounding */}
+        <ContactShadows 
+          opacity={0.4} 
+          scale={10} 
+          blur={1} 
+          far={10} 
+          resolution={256} 
+          color="#000000" 
+          position={[0, 0, 0]}
+        />
+      </group>
+    );
+  };
   
   // Render the model and helpers
   return (
@@ -850,15 +964,30 @@ export const ModelViewer: React.FC<ModelViewerProps> = ({
         </Html>
       )}
       
-      {/* Camera controls - use drei's OrbitControls */}
-      <DreiOrbitControls 
+      {/* Show orbit controls (disabled when scene is locked) */}
+      <DreiOrbitControls
         ref={orbitControlsRef}
-        enableDamping 
-        dampingFactor={0.1} 
-        rotateSpeed={0.5}
+        enableZoom={!sceneLocked}
+        enableRotate={!sceneLocked}
+        enablePan={!sceneLocked}
         minDistance={1}
         maxDistance={20}
       />
+      
+      {/* Render attachment point helpers */}
+      {modelLoaded && attachmentPoints.map(point => (
+        <AttachmentPointHelper
+          key={point.id}
+          point={point}
+          selected={selectedPoint === point.id}
+          onSelect={() => onSelectPoint(point.id)}
+          onUpdate={(updatedPoint) => onAttachmentPointUpdated(updatedPoint)}
+          onDelete={() => onAttachmentPointUpdated(point)}
+          modelInfo={modelInfo}
+          sceneLocked={sceneLocked}
+          lockedAxes={lockedAxes}
+        />
+      ))}
     </group>
   );
 };

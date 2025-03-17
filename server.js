@@ -28,7 +28,7 @@ const limiter = rateLimit({
 
 // CORS configuration with your specific origins
 app.use(cors({
-  origin: (origin, callback) => {
+  origin: function(origin, callback) {
     const allowedOrigins = [
       'http://localhost:3000',
       'http://localhost:3001',
@@ -42,26 +42,24 @@ app.use(cors({
       'https://design.spinlio.com',
       'https://auth.spinlio.com',
       'https://api.spinlio.com',
-      'https://api.spinlio.com/*',
-      'https://api.spinlio.com/api/*',
-      'https://api.spinlio.com/api/thumbnail/*',
-      'https://buy.stripe.com/*',
-      'https://js.stripe.com/*',
-      'https://js.stripe.com/v3/',
-      'https://js.stripe.com/v3/buy-button.js',
-
+      'https://dev-jxcml1qpmbgabh6v.us.auth0.com'
     ];
+    
+    // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      console.log('Blocked origin:', origin);
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('Blocked origin:', origin);
+      }
       callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  exposedHeaders: ['Cross-Origin-Resource-Policy', 'Cross-Origin-Embedder-Policy']
+  exposedHeaders: ['Cross-Origin-Resource-Policy', 'Cross-Origin-Embedder-Policy', 'Authorization'],
+  optionsSuccessStatus: 200
 }));
 
 // Update the helmet configuration with HubSpot domains
@@ -362,26 +360,6 @@ app.use((req, res, next) => {
   if (!req.secure && req.get('x-forwarded-proto') !== 'https') {
     return res.redirect('https://' + req.get('host') + req.url);
   }
-  next();
-});
-
-// Add this AFTER your existing cors configuration
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  const allowedOrigins = ['https://design.spinlio.com', 'http://localhost:3000'];
-  
-  if (allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-  }
-  
-  // Handle preflight
-  if (req.method === 'OPTIONS') {
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    return res.status(200).json({});
-  }
-  
   next();
 });
 

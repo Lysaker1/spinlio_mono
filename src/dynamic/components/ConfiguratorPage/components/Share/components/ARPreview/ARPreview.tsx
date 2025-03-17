@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { IViewportApi } from '@shapediver/viewer';
 import QRModal from './QRModal';
-import './ARPreview.css';
 
 interface ARPreviewProps {
     onBack: () => void;
@@ -53,13 +52,12 @@ const ARPreview: React.FC<ARPreviewProps> = ({ onBack, viewport }) => {
 
 
     return (
-        <div className="ar-preview">
-            <button className="back-button" onClick={onBack}>
+        <div className="w-full flex flex-col items-center relative">
+            <button className="self-start mb-2" onClick={onBack}>
                 ← Back
             </button>
-            <div className="ar-content">
-                <h3>View in AR</h3>
-                <p>Scan the QR code with your mobile device to view the bike in AR.</p>
+            <div className="w-full flex flex-col items-center gap-4 pb-2">
+                <h3 className="text-lg font-medium text-center text-black">View in AR</h3>
             </div>
             {showQRModal && qrCodeUrl && (
                 <QRModal

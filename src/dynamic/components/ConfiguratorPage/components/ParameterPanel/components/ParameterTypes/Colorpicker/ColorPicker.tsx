@@ -6,8 +6,7 @@ import { ParameterDefinition } from '../../../types';
 import { useMediaQuery } from '@mantine/hooks'; 
 // Import color-related utility functions and color palette data
 import { formatColor, getColorLabel, colorPalette } from '../../../constants/colors';
-// Import component-specific styles
-import './ColorPicker.css';
+
 
 // Define props interface for ColorPicker component
 interface ColorPickerProps {
@@ -58,30 +57,36 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
   }));
 
   return (
-    <div className="parameter-card">
-      <div className="parameter-header">
-        <span className="parameter-label">{definition.name}</span>
+    <div className={`w-full bg-transparent rounded-xl backdrop-blur-md ${isMobile ? 'p-[0.1rem_0.2rem_0.1rem_0.2rem] flex-shrink-0 snap-start overflow-hidden' : ''}`}>
+      <div className="flex items-center justify-between mb-3">
+        <span className="text-gray-500 text-sm">{definition.name}:</span>
       </div>
 
-      <div className="color-options-row">
+      <div className="grid grid-cols-6 gap-2">
         {availableColors.map((color) => (
           <button
             key={color.value}
-            className={`color-option ${normalizedValue === color.value ? 'selected' : ''}`}
+            className="flex flex-col items-center gap-2 bg-transparent border-none cursor-pointer p-0.5"
             onClick={() => handleColorChange(color.value)}
             title={color.label}
           >
-            <div className="color-dot" style={{ backgroundColor: color.hex }} />
+            <div 
+              className={`w-full aspect-square rounded-full border-2 transition-all duration-200 ease-in-out
+                ${normalizedValue === color.value 
+                  ? 'border-white scale-110 shadow-[0_0_0_2px_rgba(0,0,0,0.2)]' 
+                  : 'border-black/20 hover:border-black/40 hover:scale-110'}`} 
+              style={{ backgroundColor: color.hex }} 
+            />
           </button>
         ))}
         
         {showColorWheel && (
-          <div className="color-option">
-            <label className="color-wheel-label">
-              <div className="color-dot rainbow-gradient" />
+          <div className="flex flex-col items-center gap-2 bg-transparent border-none cursor-pointer p-0.5">
+            <label className="relative block w-full aspect-square cursor-pointer">
+              <div className="w-full aspect-square rounded-full border-2 border-white/40 shadow-[0_0_10px_rgba(255,255,255,0.3)] transition-all duration-200 ease-in-out bg-gradient-to-br from-red-500 via-yellow-500 via-green-500 via-blue-500 to-purple-500 animate-[rainbow-spin_8s_linear_infinite] bg-[length:200%_200%]" />
               <input
                 type="color"
-                className="color-wheel-input"
+                className="absolute opacity-0 w-full h-full top-0 left-0 cursor-pointer"
                 value={normalizedValue}
                 onChange={(e) => handleColorChange(e.target.value, true)}
               />
@@ -91,11 +96,17 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
 
         {lastCustomColor && showColorWheel && (
           <button
-            className={`color-option ${normalizedValue === lastCustomColor ? 'selected' : ''}`}
+            className="flex flex-col items-center gap-2 bg-transparent border-none cursor-pointer p-0.5"
             onClick={() => handleColorChange(lastCustomColor)}
             title="Last Used Color"
           >
-            <div className="color-dot" style={{ backgroundColor: lastCustomColor }} />
+            <div 
+              className={`w-full aspect-square rounded-full border-2 transition-all duration-200 ease-in-out
+                ${normalizedValue === lastCustomColor 
+                  ? 'border-white scale-110 shadow-[0_0_0_2px_rgba(0,0,0,0.2)]' 
+                  : 'border-black/20 hover:border-black/40 hover:scale-110'}`}
+              style={{ backgroundColor: lastCustomColor }} 
+            />
           </button>
         )}
       </div>

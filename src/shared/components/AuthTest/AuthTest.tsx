@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import styled from 'styled-components';
+import { logger } from '../../../shared/utils/logger';
 
 // Reuse the same futuristic button styling
 const FuturisticButton = styled.button`
@@ -77,7 +78,7 @@ export const AuthTest = () => {
       if (isAuthenticated) {
         try {
           const token = await getAccessTokenSilently();
-          console.log('Authentication successful, token received');
+          logger.debug('Authentication successful, token received');
           localStorage.setItem('auth_token', token);
         } catch (e) {
           console.error('Error getting access token:', e);

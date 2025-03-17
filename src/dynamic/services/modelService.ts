@@ -24,8 +24,15 @@ export interface ModelMetadata {
   created_at?: string;
   category: number;
   subcategory?: number;
-  price?: number;
-  description?: string;
+  price?: number | null;
+  price_on_request: boolean;
+  minimum_order_quantity?: number | null;
+  moq_on_request: boolean;
+  lead_time?: number | null;
+  lead_time_on_request: boolean;
+  payment_terms?: string | null;
+  payment_terms_on_request: boolean;
+  description?: string | null;
   manufacturer?: string;
   dimensions?: string;
   part_type?: string;
@@ -355,6 +362,33 @@ export const uploadModelToS3 = async (
     return data;
   } catch (error) {
     console.error('Error uploading model to S3:', error);
+    throw error;
+  }
+};
+
+export const uploadThumbnailToS3 = async (file: File, userId?: string): Promise<string> => {
+  try {
+    const s3Key = await getS3KeyForFile(file, userId, { category: 0, subcategory: 0 });
+    const contentType = file.type || getMimeTypeFromExtension(file.name);
+
+    const params = {
+      Bucket: BUCKET_NAME,
+      Key: s3Key,
+      Body: file,
+      ContentType: contentType,
+    };
+
+    await uploadFileToS3(params);
+
+    const command = new GetObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: s3Key,
+    });
+
+    const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+    return signedUrl;
+  } catch (error) {
+    console.error('Error uploading thumbnail:', error);
     throw error;
   }
 };
@@ -707,7 +741,15 @@ export const testS3Upload = async (): Promise<{success: boolean, message: string
         name: 'Test Upload',
         filename: 'test-upload.txt',
         category: 1,
-        is_public: false
+        is_public: false,
+        price: null,
+        price_on_request: false,
+        minimum_order_quantity: null,
+        moq_on_request: false,
+        lead_time: null,
+        lead_time_on_request: false,
+        payment_terms: null,
+        payment_terms_on_request: false
       }
     );
     

@@ -1,14 +1,14 @@
-import { ColorPicker, Loader, Menu, NumberInput, Tabs, Text, TextInput } from '@mantine/core';
-import { IconCheck, IconChevronDown, IconPencil } from '@tabler/icons-react';
+import { Alert, ColorPicker, Loader, Menu, NumberInput, Tabs, Text, Textarea, TextInput } from '@mantine/core';
+import { IconAlertCircle, IconCheck, IconChevronDown, IconPencil, IconPhotoPlus } from '@tabler/icons-react';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ModelMetadata, ModelParameterValue, deleteModel, getModelById, updateModel } from '../../../../../../services/modelService';
+import { ModelMetadata, ModelParameterValue, deleteModel, getModelById, updateModel, uploadThumbnailToS3 } from '../../../../../../services/modelService';
 import { AttachmentPoint, apiToAttachmentPoint, attachmentPointToApi } from '../../../../../../types/attachment-points';
 import ModelViewer from './ModelViewer';
 import Parameters from './Parameters';
 import SnapPointHelper from './SnapPointHelper';
 import SnapPointsTab from './SnapPointsTab';
-
+import GeneralTab, { GeneralTabValues } from './GeneralTab';
 const EditModel: React.FC = () => {
   const [model, setModel] = useState<ModelMetadata | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -19,20 +19,36 @@ const EditModel: React.FC = () => {
   const [isEditingName, setIsEditingName] = useState<boolean>(false);
   const [isPublic, setIsPublic] = useState<boolean>(false);
   const [name, setName] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
-  const [price, setPrice] = useState<number>(0);
 
   const [color, setColor] = useState<string | null>(null);
   const [colorPickerVisible, setColorPickerVisible] = useState<boolean>(false);
 
   const [parameterValues, setParameterValues] = useState<ModelParameterValue[]>([]);
+
+  // General tab values
+  const [missingFields, setMissingFields] = useState<string[]>([]);
+  const [generalValues, setGeneralValues] = useState<GeneralTabValues>({
+    description: null,
+    price: null,
+    priceOnRequest: false,
+    minimumOrderQuantity: null,
+    moqOnRequest: false,
+    leadTime: null,
+    leadTimeOnRequest: false,
+    paymentTerms: null,
+    paymentTermsOnRequest: false,
+    thumbnailFile: null,
+  });
   
   // Snap points state
   const [attachmentPoints, setAttachmentPoints] = useState<AttachmentPoint[]>([]);
   const [selectedPoint, setSelectedPoint] = useState<string | null>(null);
   
   // Active tab state
-  const [activeTab, setActiveTab] = useState<string>("parameters");
+  const [activeTab, setActiveTab] = useState<string>("general");
+
+  const [alertMessage, setAlertMessage] = useState<string | undefined>();
+  const [alertColor, setAlertColor] = useState<string | undefined>();
 
   const navigate = useNavigate();
   
@@ -66,9 +82,42 @@ const EditModel: React.FC = () => {
     fetchModel();
   }, [id]);
 
+  const validateSave = () => {
+    const missing = [];
+    if (!model?.thumbnail_url && !generalValues.thumbnailFile) {
+      missing.push('thumbnail');
+    }
+    if (!generalValues.price && !generalValues.priceOnRequest) {
+      missing.push('price');
+    }
+    if (!generalValues.minimumOrderQuantity && !generalValues.moqOnRequest) {
+      missing.push('minimumOrderQuantity');
+    }
+    if (!generalValues.leadTime && !generalValues.leadTimeOnRequest) {
+      missing.push('leadTime');
+    }
+    if (!generalValues.paymentTerms && !generalValues.paymentTermsOnRequest) {
+      missing.push('paymentTerms');
+    }
+  
+    if (missing.length > 0) {
+      setActiveTab('general');
+      setMissingFields(missing);
+      return false;
+    }
+  
+    setMissingFields([]);
+    return true;
+  };
+  
   const handleSave = async () => {
     if (!id) {
       setError('No model ID provided');
+      return;
+    }
+    if (!validateSave()) {
+      setAlertMessage("Please fill out all required fields.");
+      setAlertColor("red");
       return;
     }
     setSaving(true);
@@ -77,18 +126,48 @@ const EditModel: React.FC = () => {
     // Convert attachment points to API format using our helper
     const apiAttachmentPoints = attachmentPoints.map(attachmentPointToApi);
 
-    console.log("Parameter values:", parameterValues);
-    await updateModel(id, { 
-      ...model,
-      name: name,
-      description: description,
-      is_public: isPublic,
-      price: price,
-/*       attachment_points: apiAttachmentPoints, */
-      color: color || undefined
-    }, parameterValues);
-    console.log("Saved!");
-    setSaving(false);
+    // Upload thumbnail to S3 if a file is selected
+    let thumbnailUrl = model?.thumbnail_url;
+    if (generalValues.thumbnailFile) {
+      try {
+        thumbnailUrl = await uploadThumbnailToS3(generalValues.thumbnailFile);
+      } catch (error) {
+        setError('Failed to upload thumbnail');
+        setSaving(false);
+        return;
+      }
+    }
+
+    try {
+      await updateModel(id, { 
+        ...model,
+        name: name,
+        description: generalValues.description,
+        is_public: isPublic,
+
+        /*  attachment_points: apiAttachmentPoints, */
+        color: color || undefined,
+        thumbnail_url: thumbnailUrl,
+        price: generalValues.price,
+        price_on_request: generalValues.priceOnRequest,
+        minimum_order_quantity: generalValues.minimumOrderQuantity,
+        moq_on_request: generalValues.moqOnRequest,
+        lead_time: generalValues.leadTime,
+        lead_time_on_request: generalValues.leadTimeOnRequest,
+        payment_terms: generalValues.paymentTerms,
+        payment_terms_on_request: generalValues.paymentTermsOnRequest
+      }, parameterValues);
+
+
+      console.log("Saved!");
+      setAlertMessage("Model saved successfully!");
+      setAlertColor("green");
+      setSaving(false);
+    } catch (error) {
+      setAlertMessage("Failed to save model");
+      setAlertColor("red");
+      setSaving(false);
+    }
   };
 
   const handleDelete = async () => {
@@ -136,8 +215,18 @@ const EditModel: React.FC = () => {
     if (model) {
       setIsPublic(model.is_public);
       setName(model.name);
-      setDescription(model.description || '');
-      setPrice(model.price || 0);
+      setGeneralValues({
+        description: model.description ?? null,
+        price: model.price ?? null,
+        priceOnRequest: model.price_on_request,
+        minimumOrderQuantity: model.minimum_order_quantity ?? null,
+        moqOnRequest: model.moq_on_request,
+        leadTime: model.lead_time ?? null,
+        leadTimeOnRequest: model.lead_time_on_request,
+        paymentTerms: model.payment_terms ?? null,
+        paymentTermsOnRequest: model.payment_terms_on_request,
+        thumbnailFile: null,
+      });
     }
   }, [model]);
 
@@ -151,8 +240,33 @@ const EditModel: React.FC = () => {
     }
   };
 
+  const handleGeneralChange = (general: Partial<GeneralTabValues>) => {
+    setGeneralValues(prev => ({
+      ...prev,
+      ...general,
+      price: general.priceOnRequest ? null : general.price ?? prev.price,
+      minimumOrderQuantity: general.moqOnRequest ? null : general.minimumOrderQuantity ?? prev.minimumOrderQuantity,
+      leadTime: general.leadTimeOnRequest ? null : general.leadTime ?? prev.leadTime,
+      paymentTerms: general.paymentTermsOnRequest ? null : general.paymentTerms ?? prev.paymentTerms,
+    }));
+
+    const fieldsToCheck = ['thumbnail', 'price', 'minimumOrderQuantity', 'leadTime', 'paymentTerms'];
+    const removeMissingFields = fieldsToCheck.filter(field => {
+      if (field === 'thumbnail') return (general.thumbnailFile);
+      if (field === 'price') return (general.price || general.priceOnRequest);
+      if (field === 'minimumOrderQuantity') return (general.minimumOrderQuantity || general.moqOnRequest);
+      if (field === 'leadTime') return (general.leadTime || general.leadTimeOnRequest);
+      if (field === 'paymentTerms') return (general.paymentTerms || general.paymentTermsOnRequest);
+      return false;
+    });
+
+    setMissingFields(missingFields.filter(field => !removeMissingFields.includes(field)));
+  };
+
+  console.log(generalValues);
+
   return (
-    <div className='w-full h-[calc(100vh-60px)] bg-white p-4'>
+    <div className='w-full min-h-[calc(100vh-60px)] bg-white p-4'>
       <div className='flex justify-between items-center mb-4'>
         <div className='flex gap-2'>
             {isEditingName ? (
@@ -187,6 +301,11 @@ const EditModel: React.FC = () => {
           <button className='bg-red-500 text-white px-4 py-2 rounded-full' onClick={() => handleDelete()}>Delete</button>
         </div>
       </div>
+      <div className='mb-4'>
+        {alertMessage && (
+          <Alert color={alertColor} icon={<IconAlertCircle size={16} />} title={alertMessage} onClose={() => setAlertMessage(undefined)} withCloseButton />
+        )}
+      </div>
       {loading ? (
         <div className='flex flex-col justify-center items-center h-full'>
           <Loader size="lg" />
@@ -219,8 +338,11 @@ const EditModel: React.FC = () => {
           </div>
           <div className='w-1/2 border-l border-gray-300 h-full overflow-auto'>
             <div className='w-full h-full flex flex-col'>
-              <Tabs defaultValue={"parameters"} value={activeTab} onChange={handleTabChange} className="h-full flex flex-col">
+              <Tabs defaultValue={"general"} value={activeTab} onChange={handleTabChange} className="h-full flex flex-col">
                 <Tabs.List>
+                  <Tabs.Tab value='general' className='w-1/4'>
+                    General
+                  </Tabs.Tab>
                   <Tabs.Tab value='parameters' className='w-1/4'>
                     Parameters
                   </Tabs.Tab>
@@ -230,11 +352,11 @@ const EditModel: React.FC = () => {
                   <Tabs.Tab value='surface' className='w-1/4'>
                     Surface
                   </Tabs.Tab>
-                  <Tabs.Tab value='price' className='w-1/4'>
-                    Price
-                  </Tabs.Tab>
                 </Tabs.List>
                 <div className="flex-1 overflow-auto">
+                  <Tabs.Panel value='general' className='p-4 flex flex-col gap-4 h-full'>
+                    <GeneralTab model={model} generalValues={generalValues} handleGeneralChange={handleGeneralChange} missingFields={missingFields} />
+                  </Tabs.Panel>
                   <Tabs.Panel value='parameters' className='p-4 flex flex-col gap-4 h-full'>
                     <Parameters modelId={id} onParameterChange={setParameterValues} />
                   </Tabs.Panel>
@@ -300,13 +422,6 @@ const EditModel: React.FC = () => {
                         </label>
                       </div>
                     </div>
-                  </Tabs.Panel>
-                  <Tabs.Panel value='price' className='p-4 flex flex-col gap-4 h-full'>
-                    {/* Input fields for Price */}
-                    <NumberInput label='Unit Price' placeholder='Enter unit price' prefix='$' value={price} onChange={(e) => setPrice(Number(e))}/>
-                    <NumberInput label='Minimum Order Quantity' placeholder='Enter minimum order quantity' />
-                    <NumberInput label='Lead Time' placeholder='Enter lead time' suffix=' days'/>
-                    <TextInput label="Payment Terms" placeholder='Enter payment terms' />
                   </Tabs.Panel>
                 </div>
               </Tabs>

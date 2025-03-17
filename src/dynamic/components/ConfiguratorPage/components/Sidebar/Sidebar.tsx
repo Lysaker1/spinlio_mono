@@ -107,7 +107,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             <div className={`template-container`}>
               <div className="template-container-header">
                 <Text className="template-container-title">Prefabs</Text>
-                  <button className="view-all-button" onClick={() => navigate('/dashboard/prefabs')}>
+                  <button className="view-all-button" onClick={() => navigate('/dashboard/marketplace/prefabs')}>
                     View All
                     <IconArrowRight size={20} />
                 </button>

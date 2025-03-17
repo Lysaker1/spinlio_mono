@@ -29,10 +29,14 @@ export class ProfileStorageService {
     }
   }
 
-  static async createProfile(profile: Profile): Promise<Profile> {
+  static async createProfile(profile: Profile, token?: string): Promise<Profile> {
     try {
       console.log(`Creating profile for user ID: ${profile.id}`);
-      const response = await api.post(`/api/profile`, profile);
+      
+      // Create headers if token is provided
+      const config = token ? { headers: { Authorization: `Bearer ${token}` } } : undefined;
+      
+      const response = await api.post(`/api/profile`, profile, config);
       return response.data;
     } catch (error: any) {
       // Check if the error has a response (from the server)
@@ -47,10 +51,14 @@ export class ProfileStorageService {
     }
   }
 
-  static async updateProfile(profile: Profile): Promise<Profile> {
+  static async updateProfile(profile: Profile, token?: string): Promise<Profile> {
     try {
       console.log(`Updating profile for user ID: ${profile.id}`);
-      const response = await api.patch(`/api/profile`, profile);
+      
+      // Create headers if token is provided
+      const config = token ? { headers: { Authorization: `Bearer ${token}` } } : undefined;
+      
+      const response = await api.patch(`/api/profile`, profile, config);
       return response.data;
     } catch (error: any) {
       // Check if the error has a response (from the server)

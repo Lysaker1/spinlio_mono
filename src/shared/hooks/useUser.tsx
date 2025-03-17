@@ -26,6 +26,7 @@ interface UserContextType {
   error: string | null;
   refreshUserProfile: () => Promise<void>;
   updateUserProfile: (data: Partial<UserProfile>) => Promise<boolean>;
+  setProfile: (profile: UserProfile) => void;
 }
 
 // Create context
@@ -185,6 +186,9 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     error,
     refreshUserProfile,
     updateUserProfile,
+    setProfile: (profile: UserProfile) => {
+      setUser(profile);
+    },
   };
 
   return (

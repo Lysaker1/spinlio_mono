@@ -44,6 +44,8 @@ module.exports = (env) => {
         https://*.hsforms.com 
         https://*.hubspot.com
         https://*.auth0.com
+        https://*.cloudflareinsights.com
+        https://static.cloudflareinsights.com
         https://js.hsforms.net; 
       style-src 'self' 'unsafe-inline' 
         https://static.klaviyo.com
@@ -57,6 +59,7 @@ module.exports = (env) => {
         https://www.google-analytics.com
         https://*.shapediver.com
         https://*.auth0.com
+        https://*.cloudflareinsights.com
         https://api.spinlio.com; 
       font-src 'self' data:
         https://static.klaviyo.com

@@ -7,6 +7,8 @@ import { apiUrl } from './config/api';
 import { UserProvider } from '@shared/hooks/useUser';
 import '@mantine/core/styles.css';
 import '../index.css';
+// Import font definitions with fallbacks
+import './assets/fonts/fonts.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root')!);
 

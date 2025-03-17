@@ -296,6 +296,16 @@ app.use(express.static(path.join(__dirname, 'dist/dynamic'), {
     if (path.endsWith('.css')) {
       res.setHeader('Content-Type', 'text/css; charset=UTF-8');
     }
+    // Add proper font MIME types
+    if (path.endsWith('.woff')) {
+      res.setHeader('Content-Type', 'font/woff');
+    }
+    if (path.endsWith('.woff2')) {
+      res.setHeader('Content-Type', 'font/woff2');
+    }
+    if (path.endsWith('.ttf')) {
+      res.setHeader('Content-Type', 'font/ttf');
+    }
     
     res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
   }

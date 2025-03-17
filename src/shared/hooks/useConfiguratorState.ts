@@ -3,7 +3,6 @@ import { ISessionApi, IViewportApi, FLAG_TYPE } from '@shapediver/viewer';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { configuratorConfigs } from '../../dynamic/components/ConfiguratorPage/config/configuratorConfig';
 import { ConfiguratorType } from '../../dynamic/components/ConfiguratorPage/config/configuratorConfig';
-import '../../dynamic/components/ConfiguratorPage/ConfiguratorPage.css';
 import { useAuth0 } from '@auth0/auth0-react';
 
 export const useConfiguratorState = (configuratorType: ConfiguratorType) => {

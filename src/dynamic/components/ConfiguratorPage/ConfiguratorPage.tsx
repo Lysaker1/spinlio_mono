@@ -4,8 +4,7 @@ import React, { useState, Suspense, lazy, useRef, useEffect, useCallback } from 
 import { Modal } from '@mantine/core';
 // Import ShapeDiver viewer interfaces
 import { ISessionApi, IViewportApi, FLAG_TYPE } from '@shapediver/viewer';
-// Import component styles
-import './ConfiguratorPage.css';
+
 // Import error boundary component for error handling
 import ErrorBoundary from '../../../shared/components/ErrorBoundary/ErrorBoundary';
 // Import navigate function from react-router-dom
@@ -16,18 +15,18 @@ import { useNavigate, useLocation } from 'react-router-dom';
 // Import main component dependencies
 import { ParameterPanel } from './components/ParameterPanel';
 import ShapeDiverViewer from './components/ShapeDiverViewer';
-import ShareButton from './components/Share/ShareButton';
 import SupplierButton from './components/SupplierButton/SupplierButton';
 import Sidebar from './components/Sidebar/Sidebar';
 import { bikeTemplates, BikeTemplate } from './components/Sidebar';
-import { SaveDesignButton } from '../../../shared/components/SaveDesignButton/SaveDesignButton';
 import { DesignStorageService } from '@shared/services/designStorage';
 import { MyDesigns } from '../../../shared/components/MyDesigns/MyDesigns';
 import { CONFIGURATOR_TYPES } from '../../../shared/constants/configuratorTypes';
-import { BuyButton } from '../../../shared/components/BuyButton/BuyButton';
+import Header from './components/Header/Header';
+import { BuyButton } from '@shared/components/BuyButton/BuyButton';
+import LoginModal from './components/LoginModal/LoginModal';
 
 // Main configurator component definition
-const ConfiguratorPage: React.FC = () => {
+const ConfiguratorPage: React.FC<{ isAuthenticated: boolean }> = ({ isAuthenticated }) => {
   // State for tracking selected component in the configurator
   const [selectedComponent, setSelectedComponent] = useState<string>('');
   // State for managing ShapeDiver session
@@ -44,12 +43,11 @@ const ConfiguratorPage: React.FC = () => {
   const [showOnlyFrame, setShowOnlyFrame] = useState(false);
   // State for controlling dimensions visibility
   const [showDimensions, setShowDimensions] = useState(false);
+
   const [isShareMenuOpen, setIsShareMenuOpen] = useState(false);
   const [shareMenuHeight, setShareMenuHeight] = useState<number>(15);
-  const [isSaveMenuOpen, setIsSaveMenuOpen] = useState(false);
-  const [saveMenuHeight, setSaveMenuHeight] = useState<number>(15);
   const [isTransitioning, setIsTransitioning] = useState(false);
-
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   // Reference to track component mount state
   const isMounted = useRef(true);
@@ -190,11 +188,26 @@ const ConfiguratorPage: React.FC = () => {
     }
   }, [isTransitioning, session, viewport]);
 
+  const handleConfiguratorClick = () => {
+    if (!isAuthenticated) {
+      setShowLoginModal(true);
+    } else {
+      setShowLoginModal(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      setShowLoginModal(false);
+    }
+  }, [isAuthenticated]);
+
   // Component render
   return (
     // Wrap entire component in error boundary
     <ErrorBoundary>
-      <div className="configurator-page">
+      <Header session={session} viewport={viewport} configuratorType={CONFIGURATOR_TYPES.DEFAULT} />
+      <div className="grid grid-cols-[auto_1fr] grid-rows-[auto_1fr_auto] grid-areas-[sidebar_header_sidebar_viewer_sidebar_panel] h-screen overflow-hidden fixed w-full top-0 left-0">
         <Sidebar
           onTemplateSelect={handleTemplateSelect}
           onDesignSelect={handleDesignSelect}
@@ -210,55 +223,44 @@ const ConfiguratorPage: React.FC = () => {
           />
         </Sidebar>
         
-        {/* Top right buttons container */}
-        <div className="top-right-buttons">
-          <BuyButton 
-            configuratorType={CONFIGURATOR_TYPES.DEFAULT}
-          />
-          <SaveDesignButton 
-            getCurrentParameters={() => session?.parameterValues || {}}
-            configuratorType={CONFIGURATOR_TYPES.DEFAULT}
-            viewport={viewport}
-            onMenuOpen={setIsSaveMenuOpen}
-            onMenuHeightChange={setSaveMenuHeight}
-            session={session}
-          />
-          <ShareButton 
-            session={session} 
-            viewport={viewport}
-            onMenuOpen={setIsShareMenuOpen}
-            onMenuHeightChange={setShareMenuHeight}
-          />
-        </div>
-
         {/* Main content container */}
-        <div className="configurator-content">
+        <div className="flex h-screen w-screen relative">
           {/* 3D viewer container */}
-          <div className="viewer-container">
+          <div className="w-full h-screen flex justify-center items-center overflow-hidden" onClick={() => handleConfiguratorClick()}>
             <Suspense fallback={null}>
+              <LoginModal opened={showLoginModal} setOpened={setShowLoginModal} />
               <ShapeDiverViewer
                 session={session}
                 setSession={setSession}
                 setViewport={setViewport} 
                 isLoading={isLoading}
                 isTransitioning={isTransitioning}
-
               />
             </Suspense>
           </div>
-          
-          {/* Parameter panel container */}
-          <div className={`parameter-panel-container ${isShareMenuOpen && 'share-open'} ${isSaveMenuOpen && 'save-open'}`}>
-            <Suspense fallback={null}>
-              <ParameterPanel
-                  key={JSON.stringify(session?.parameterValues)}
-                  selectedComponent={selectedComponent}
-                session={session}
-                viewport={viewport}
-                configuratorType={CONFIGURATOR_TYPES.DEFAULT}
-              />
-            </Suspense>
-          </div>
+            {/* Parameter panel container */}
+            {isAuthenticated && (
+            <div className={`fixed flex flex-col gap-2 h-screen bottom-0 top-0 right-0 pr-2 pb-2 pt-20 w-80 rounded-3xl transition-transform duration-500 ease-in-out`}>
+              <div className='flex-1 overflow-hidden'>
+                <Suspense fallback={null}>
+                  <ParameterPanel
+                      key={JSON.stringify(session?.parameterValues)}
+                      selectedComponent={selectedComponent}
+                    session={session}
+                    viewport={viewport}
+                    configuratorType={CONFIGURATOR_TYPES.DEFAULT}
+                  />
+                </Suspense>
+              </div>
+              <div className='bg-white w-full h-32 rounded-3xl p-6 flex flex-col justify-between'>
+                <div className='flex flex-row justify-between pb-2'>
+                  <h1 className='text-md text-gray-500'>Total Price:</h1>
+                  <h1 className='text-2xl text-black font-bold'>$550.00</h1>
+                </div>
+                <BuyButton configuratorType={CONFIGURATOR_TYPES.DEFAULT} />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* QR Code Modal */}

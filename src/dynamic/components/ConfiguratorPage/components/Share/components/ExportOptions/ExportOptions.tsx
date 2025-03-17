@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { ISessionApi, IParameterApi, IViewportApi, IExportApi } from '@shapediver/viewer';
 import { sendNotification } from '../../../../../../utils/exportUtils';
 import FileTypeSelect from './FileTypeSelect';
-import './ExportOptions.css';
 
 type FileFormat = 'OBJ' | 'STL' | '3DM';
 type ExportMethod = 'DOWNLOAD' | 'EMAIL';
@@ -156,28 +155,28 @@ const ExportOptions: React.FC<ExportOptionsProps> = ({ onBack, session,viewport 
   };
 
   return (
-    <div className="export-options">
-      <button className="back-button" onClick={onBack}>
+    <div className="w-full flex flex-col items-center">
+      <button className="self-start mb-2" onClick={onBack}>
         ← Back
       </button>
-      <div className="export-content">
-        <h3>Export Model</h3>
+      <div className="w-full flex flex-col items-center gap-4">
+        <h3 className="text-lg font-medium text-center text-black">Export Model</h3>
         <FileTypeSelect value={selectedFormat} onChange={setSelectedFormat} />
-        <div className="export-method-select">
+        <div className="flex gap-3 w-full">
           <button
-            className={`method-button ${exportMethod === 'DOWNLOAD' ? 'active' : ''}`}
+            className={`flex-1 py-3 bg-gray-bg border rounded-lg text-black text-sm transition-colors duration-200 ${exportMethod === 'DOWNLOAD' ? 'border-black' : 'border-gray-bg'}`}
             onClick={() => setExportMethod('DOWNLOAD')}
           >
             Download
           </button>
           <button
-            className={`method-button ${exportMethod === 'EMAIL' ? 'active' : ''}`}
+            className={`flex-1 py-3 bg-gray-bg border rounded-lg text-black text-sm transition-colors duration-200 ${exportMethod === 'EMAIL' ? 'border-black' : 'border-gray-bg'}`}
             onClick={() => setExportMethod('EMAIL')}
           >
             Email
           </button>
         </div>
-
+    
         {exportMethod === 'DOWNLOAD' && (
           <>
             <input
@@ -185,10 +184,10 @@ const ExportOptions: React.FC<ExportOptionsProps> = ({ onBack, session,viewport 
               placeholder="Enter your name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="name-input"
+              className="w-full p-3 bg-gray-bg border border-gray-500 rounded-lg text-black text-sm focus:border-white outline-none"
             />
             <button
-              className="export-button"
+              className="w-full p-3 bg-black border rounded-full text-white text-sm transition-colors duration-200 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={handleExport}
               disabled={isLoading || !name}
             >
@@ -196,24 +195,25 @@ const ExportOptions: React.FC<ExportOptionsProps> = ({ onBack, session,viewport 
             </button>
           </>
         )}
-
+    
         {exportMethod === 'EMAIL' && (
-          <div className="email-input-container">
+          <div className="w-full flex flex-col gap-3">
             <input
               type="text"
               placeholder="Enter your name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="name-input"
+              className="w-full p-3 bg-gray-bg border border-gray-500 rounded-lg text-black text-sm focus:border-white outline-none"
             />
             <input
               type="email"
               placeholder="Enter your email"
               value={email}
               onChange={(e) => handleEmailChange(e.target.value)}
+              className="w-full p-3 bg-gray-bg border border-gray-500 rounded-lg text-black text-sm focus:border-white outline-none"
             />
             <button
-              className="export-button"
+              className="w-full p-3 bg-black border rounded-full text-white text-sm transition-colors duration-200 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={handleExport}
               disabled={isLoading || !email || !!emailError || !name}
             >

@@ -119,56 +119,78 @@ const ProfileDesigns = ({ id }: { id: string | undefined }) => {
 
 const ProfilePage: React.FC = () => {
   const { id } = useParams();
-  const { profile: myProfile } = useUser();
-  const [profile, setProfile] = useState<Profile>();
+  const { user: myProfile, isLoading: userLoading } = useUser();
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [ownProfile, setOwnProfile] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-      const fetchProfile = async () => {
-        let profileId = id;
-        setLoading(true);
-        if (!id && myProfile) {
-          profileId = myProfile?.id;
-        }
-        if (profileId) {
-          try {
-            const profileResponse = await ProfileStorageService.getProfile(profileId);
-            if (profileResponse.id === myProfile?.id) setOwnProfile(true);
-            setProfile(profileResponse);
-          } catch (error) {
-            console.error('Error fetching profile:', error);
-          } finally {
-            setLoading(false);
-          }
-        }
+  useEffect(() => {
+    const fetchProfile = async () => {
+      setLoading(true);
+      setError(null);
+      
+      let profileId = id;
+      
+      // If no ID is provided in the URL but we have a logged-in user,
+      // redirect to the profile with the user's ID
+      if (!profileId && myProfile) {
+        profileId = myProfile.id;
+        // We'll set this manually since we're using the current user's profile
+        setProfile(myProfile as unknown as Profile);
+        setOwnProfile(true);
         setLoading(false);
-      };
-  
+        return;
+      }
+      
+      if (profileId) {
+        try {
+          console.log(`Fetching profile for ID: ${profileId}`);
+          const profileResponse = await ProfileStorageService.getProfile(profileId);
+          
+          setProfile(profileResponse);
+          
+          // Check if this is the user's own profile
+          if (myProfile && profileResponse.id === myProfile.id) {
+            setOwnProfile(true);
+          }
+        } catch (error: any) {
+          console.error('Error fetching profile:', error);
+          setError(error.message || 'Failed to load profile');
+          setProfile(null);
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        // No ID in URL and no logged-in user
+        setError('No profile ID provided');
+        setLoading(false);
+      }
+    };
 
-      fetchProfile();
-    }, [id, myProfile]);
+    fetchProfile();
+  }, [id, myProfile]);
+  
+  if (loading || userLoading) {
+    return (
+      <div className='profile-not-found'>
+        <Loader type="dots" color="#000" size={50} style={{margin: "auto"}} />
+      </div>
+    );
+  }
   
   if (!profile) {
     return (
       <div className='profile-not-found'>
-        {loading ? (
-          <Loader type="dots" color="#000" size={50} style={{margin: "auto"}} />
-        ) : (
-          <>
         <Title order={1}>
           Profile not found
         </Title>
         <Title order={4}>
-          This is probably caused by a misspelled URL or the profile being set to private.
+          {error || 'This profile does not exist or might be private.'}
         </Title>
-        </>
-        )}
       </div>
-
     );
   }
-
 
   return (
     <div>

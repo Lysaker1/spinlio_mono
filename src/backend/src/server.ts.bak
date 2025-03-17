@@ -98,29 +98,8 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   exposedHeaders: ['Authorization'],
-  optionsSuccessStatus: 200,
-  preflightContinue: false // This is important for handling OPTIONS requests properly
+  optionsSuccessStatus: 200
 }));
-
-// Helper function to verify auth tokens in routes where it's optional
-const optionalJwtCheck = (req: Request, res: Response, next: Function) => {
-  if (req.headers.authorization) {
-    // Try to authenticate, but don't block if it fails
-    jwtCheck(req, res, (err: any) => {
-      if (err) {
-        console.log('Optional JWT check failed, continuing as unauthenticated:', err.message);
-        // Continue as unauthenticated
-        next();
-      } else {
-        // Authentication succeeded
-        next();
-      }
-    });
-  } else {
-    // No auth header, continue as unauthenticated
-    next();
-  }
-};
 
 // Then the JWT checks
 app.use('/api/designs', (req, res, next) => {
@@ -139,154 +118,6 @@ app.set('trust proxy', 1);
 app.get('/', (req, res) => {
   res.json({ message: 'Spinlio API is running' });
 });
-
-// User management routes
-app.get('/api/users/:userId', (async (req: Request, res: Response) => {
-  try {
-    const { userId } = req.params;
-    console.log(`Fetching user profile for: ${userId}`);
-    
-    // Query the profiles table in Supabase
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId);
-
-    if (error) {
-      console.error('Error fetching user:', error);
-      return res.status(500).json({ 
-        error: error.message || 'Internal server error',
-        details: 'Failed to fetch user profile due to database error'
-      });
-    }
-    
-    if (!data || data.length === 0) {
-      return res.status(404).json({ 
-        error: 'User not found',
-        message: `No user found with ID: ${userId}`
-      });
-    }
-    
-    res.json(data[0]);
-  } catch (error: any) {
-    console.error('Error in GET /api/users/:userId:', error);
-    res.status(500).json({ 
-      error: error.message || 'Internal server error',
-      details: 'Failed to fetch user profile'
-    });
-  }
-}) as RequestHandler);
-
-app.post('/api/users', (async (req: Request, res: Response) => {
-  try {
-    const userData = req.body;
-    console.log('Creating new user:', userData);
-    
-    // Validate required fields
-    if (!userData.id || !userData.email) {
-      return res.status(400).json({
-        error: 'Missing required fields',
-        message: 'User ID and email are required'
-      });
-    }
-    
-    // Create user object with only the fields that exist in the profiles table
-    const user = {
-      id: userData.id,
-      email: userData.email,
-      name: userData.name || userData.email.split('@')[0],
-      avatar_url: userData.picture || null,
-      location: userData.location || '',
-      description: userData.description || '',
-      website: userData.website || '',
-      is_public: userData.is_public !== undefined ? userData.is_public : true,
-      custom_url: userData.custom_url || null,
-      created_at: new Date().toISOString()
-    };
-    
-    // Insert the user into the Supabase profiles table
-    const { data, error } = await supabase
-      .from('profiles')
-      .insert([user])
-      .select();
-
-    if (error) {
-      console.error('Error creating user:', error);
-      return res.status(500).json({ 
-        error: error.message || 'Internal server error',
-        details: 'Failed to create user profile due to database error'
-      });
-    }
-    
-    if (!data || data.length === 0) {
-      return res.status(500).json({
-        error: 'No data returned',
-        message: 'Failed to create user: No data returned from database'
-      });
-    }
-    
-    console.log('User created successfully:', data[0]);
-    res.status(201).json(data[0]);
-  } catch (error: any) {
-    console.error('Error in POST /api/users:', error);
-    res.status(500).json({ 
-      error: error.message || 'Internal server error',
-      details: 'Failed to create user profile'
-    });
-  }
-}) as RequestHandler);
-
-app.patch('/api/users/:userId', (async (req: Request, res: Response) => {
-  try {
-    const { userId } = req.params;
-    const updates = req.body;
-    console.log(`Updating user ${userId}:`, updates);
-    
-    // Filter updates to only include valid fields for the profiles table
-    const validFields = [
-      'email', 'name', 'avatar_url', 'location', 'description', 
-      'website', 'is_public', 'custom_url'
-    ];
-    
-    const filteredUpdates = Object.keys(updates)
-      .filter(key => validFields.includes(key))
-      .reduce((obj, key) => {
-        obj[key] = updates[key];
-        return obj;
-      }, {} as Record<string, any>);
-    
-    // Update the user in the Supabase profiles table
-    const { data, error } = await supabase
-      .from('profiles')
-      .update(filteredUpdates)
-      .eq('id', userId)
-      .select();
-
-    if (error) {
-      console.error('Error updating user:', error);
-      return res.status(500).json({ 
-        error: error.message || 'Internal server error',
-        details: 'Failed to update user profile due to database error'
-      });
-    }
-    
-    if (!data || data.length === 0) {
-      return res.status(404).json({ 
-        error: 'User not found',
-        message: `No user found with ID: ${userId}`
-      });
-    }
-    
-    console.log('User updated successfully:', data[0]);
-    res.json(data[0]);
-  } catch (error: any) {
-    console.error('Error in PATCH /api/users/:userId:', error);
-    res.status(500).json({ 
-      error: error.message || 'Internal server error',
-      details: 'Failed to update user profile'
-    });
-  }
-}) as RequestHandler);
 
 // Test route
 app.get('/api/test', (async (req: Request, res: Response) => {
@@ -961,20 +792,16 @@ app.delete('/api/models/:modelId', (async (req: Request, res: Response) => {
       return res.status(403).json({ error: 'Access denied: You do not own this model' });
     }
     
-    // Delete from Supabase Storage if key exists
+    // Delete from S3 if key exists
     if (model.s3_key) {
       try {
-        const { error: storageError } = await supabase.storage
-          .from('models')
-          .remove([model.s3_key]);
-          
-        if (storageError) {
-          console.error('Error deleting model from storage:', storageError);
-          // Continue with database deletion even if storage deletion fails
-        }
-      } catch (storageError) {
-        console.error('Error deleting model from storage:', storageError);
-        // Continue with database deletion even if storage deletion fails
+        await s3Client.send(new DeleteObjectCommand({
+          Bucket: process.env.BUCKET_NAME,
+          Key: model.s3_key
+        }));
+      } catch (s3Error) {
+        console.error('Error deleting model from S3:', s3Error);
+        // Continue with database deletion even if S3 deletion fails
       }
     }
     
@@ -994,93 +821,68 @@ app.delete('/api/models/:modelId', (async (req: Request, res: Response) => {
 }) as RequestHandler);
 
 // Get profile by id (or custom url)
-app.get('/api/profile/:id', optionalJwtCheck, async (req: Request, res: Response): Promise<void> => {
+app.get('/api/profile/:id', async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    // Safely extract the requesting user ID if available
-    const requestingUserId = req.auth?.payload?.sub || null;
-
-    console.log(`Profile request for: ${id}, requesting user: ${requestingUserId || 'unauthenticated'}`);
 
     if (!id) {
-      res.status(400).json({ error: 'Profile ID is required' });
+      res.status(400).json({ error: 'User ID is missing in token' });
       return;
     }
 
-    // First try to find by ID
     let { data, error } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', id)
-      .maybeSingle();
+      .single();
 
-    if (error) {
-      console.error('Error fetching profile by id:', {
-        error,
-        message: error.message,
-        details: error.details
-      });
-      res.status(500).json({ 
-        error: 'Database error', 
-        message: 'An error occurred while fetching the profile',
-        details: error.message
-      });
-      return;
-    }
-
-    // If no error but also no data, it means no record was found
-    if (!data) {
-      // Then try to find by custom_url
-      const { data: customUrlData, error: customUrlError } = await supabase
+    if (error && error.code === 'PGRST116') {
+      // If no profile was found with ID, check custom_url
+      let { data: customUrlData, error: customUrlError } = await supabase
         .from('profiles')
         .select('*')
         .eq('custom_url', id)
-        .maybeSingle();
-      
-      if (customUrlError) {
-        console.error('Error fetching profile by custom_url:', customUrlError);
-        res.status(500).json({ 
-          error: 'Database error', 
-          message: 'An error occurred while fetching the profile'
-        });
+        .single();
+
+      if (customUrlError && customUrlError.code === 'PGRST116') {
+        res.status(404).json({ error: 'Profile not found' });
         return;
       }
 
       data = customUrlData;
+
+      if (!data) {
+        res.status(404).json({ error: 'Profile not found' });
+        return;
+      }
+
+      if (!data.is_public && req.auth?.payload?.sub !== data.id) {
+        res.status(403).json({ error: 'Access denied: Profile is private' });
+        return;
+      }
+
+      if (!customUrlError) {
+        res.status(200).json(data)
+        return;
+      }
     }
 
-    // If no profile was found by either ID or custom_url
+    if (error) throw error;
+
     if (!data) {
-      console.log(`Profile not found for ID or custom_url: ${id}`);
-      res.status(404).json({ 
-        error: 'Profile not found',
-        message: 'This profile does not exist or might be private.'
-      });
+      res.status(404).json({ error: 'Profile not found' });
       return;
     }
 
-    // Check if the profile is private and the requesting user is not the owner
-    if (data.is_public === false && requestingUserId !== data.id) {
-      console.log(`Access denied for private profile ${id} - requestor: ${requestingUserId || 'unauthenticated'}`);
-      res.status(403).json({ 
-        error: 'Access denied', 
-        message: 'This profile is private.' 
-      });
+    if (!data.is_public && req.auth?.payload?.sub !== data.id) {
+      res.status(403).json({ error: 'Access denied: Profile is private' });
       return;
     }
 
     res.status(200).json(data);
   } catch (error: any) {
-    console.error('Error fetching profile by id:', {
-      message: error.message || 'Unknown error',
-      details: error.stack || '',
-      hint: '',
-      code: error.code || ''
-    });
-    res.status(500).json({ 
-      error: 'Server error', 
-      message: error.message || 'An unexpected error occurred'
-    });
+    console.error('Error fetching:', error);
+    res.status(500).json({ error: 'Failed to fetch profile' });
   }
 });
 

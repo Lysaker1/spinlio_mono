@@ -20,7 +20,10 @@
     "analyze": "webpack --config webpack.static.js --mode production --analyze",
     "check-versions": "npm ls react && npm ls react-dom",
     "test": "jest",
-    "test:analysis": "jest parameterAnalysis"
+    "test:analysis": "jest parameterAnalysis",
+    "deploy:backend": "git push heroku-backend `git subtree split --prefix src/backend main`:main --force",
+    "deploy:frontend": "git push heroku main",
+    "deploy": "npm run deploy:backend && npm run deploy:frontend"
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.2.4",

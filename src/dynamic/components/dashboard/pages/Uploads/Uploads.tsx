@@ -1,12 +1,15 @@
 import { Alert, Badge, Button, Card, Group, Image, Loader, SimpleGrid, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { useUser } from '@shared/hooks/useUser';
+import { useAuth } from '@shared/hooks/useAuth';
 import React, { useEffect, useState } from 'react';
 import { deleteModel, getModelsPerUser, ModelMetadata, testS3Upload, uploadModelToS3 } from '../../../../services/modelService';
 import { isSupportedModelFormat } from '../../../../utils/fileTypeUtils';
 import PageLayout from '../../components/PageLayout/PageLayout';
 import './Uploads.css';
 import UploadModal from './components/UploadModal/UploadModal';
+import { UserProfile } from '@shared/hooks/useUser';
+import { Profile } from '@shared/types/Profile';
 
 // Import ModelCard component if it exists
 let ModelCard: React.ComponentType<any> | null = null;
@@ -78,6 +81,20 @@ const InlineModelCard = ({ model, onDelete, onRefresh }: {
 // Use either imported ModelCard or inline version
 const ModelCardComponent = ModelCard || InlineModelCard;
 
+// Adapter function to convert UserProfile to the legacy Profile type
+const adaptUserProfileToProfile = (userProfile: UserProfile | null): Profile | null => {
+  if (!userProfile) return null;
+  
+  return {
+    id: userProfile.id,
+    name: userProfile.name || '',
+    email: userProfile.email,
+    avatar_url: userProfile.picture,
+    is_public: true, // Default to true since UserProfile doesn't have this
+    created_at: userProfile.created_at || new Date().toISOString()
+  };
+};
+
 const Uploads: React.FC = () => {
   const [models, setModels] = useState<ModelMetadata[]>([]);
   const [loading, setLoading] = useState(true);
@@ -89,8 +106,13 @@ const Uploads: React.FC = () => {
   const [refreshInterval, setRefreshInterval] = useState<number | null>(null);
   const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
   const [testing, setTesting] = useState(false);
-  const { profile, isAuthenticated } = useUser();  
+  
+  // Updated hooks usage
+  const { user } = useUser();
+  const { isAuthenticated } = useAuth();
 
+  // Converted profile for backward compatibility
+  const adaptedProfile = adaptUserProfileToProfile(user);
 
   // Function to test S3 connectivity
   const handleTestS3 = async () => {
@@ -135,7 +157,7 @@ const Uploads: React.FC = () => {
   const loadModels = async () => {
     setLoading(true);
     try {
-      const fetchedModels = await getModelsPerUser(profile?.id || '');
+      const fetchedModels = await getModelsPerUser(user?.id || '');
       setModels(fetchedModels);
     } catch (error) {
       console.error('Failed to load models:', error);
@@ -225,7 +247,7 @@ const Uploads: React.FC = () => {
   };
 
   
-  if (!profile) {
+  if (!user) {
     return <div>Loading...</div>;
   }
 
@@ -309,7 +331,7 @@ const Uploads: React.FC = () => {
       <UploadModal 
         uploadModalOpened={uploadModalOpened} 
         closeUploadModal={closeUploadModal} 
-        profile={profile}
+        profile={adaptedProfile as Profile} 
       />
     </PageLayout>
   );

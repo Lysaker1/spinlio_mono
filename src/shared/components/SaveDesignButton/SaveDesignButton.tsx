@@ -6,6 +6,7 @@ import './SaveDesignButton.css';
 import { AuthenticatedFeature } from '../AuthenticatedFeature/AuthenticatedFeature';
 import { ISessionApi, IViewportApi } from '@shapediver/viewer';
 import { ConfiguratorType } from '../../../dynamic/components/ConfiguratorPage/config/configuratorConfig';
+import { logger } from '../../../shared/utils/logger';
 
 interface SaveDesignButtonProps {
   getCurrentParameters: () => Record<string, any>;
@@ -135,7 +136,7 @@ export const SaveDesignButton: React.FC<SaveDesignButtonProps> = ({
       }
       console.log('Screenshot data length:', screenshotData.length);
 
-      console.log('3. Getting auth token...');
+      logger.debug('3. Getting auth token...');
       const token = await getAccessTokenSilently();
 
       const design: Omit<SavedDesign, 'id' | 'created_at'> = {
@@ -144,7 +145,8 @@ export const SaveDesignButton: React.FC<SaveDesignButtonProps> = ({
         description: `${configuratorType} bike configuration`,
         parameters,
         configurator_type: configuratorType as ConfiguratorType,
-        thumbnail_url: screenshotData
+        thumbnail_url: screenshotData,
+        is_public: true
       };
 
       console.log('4. Saving design...');

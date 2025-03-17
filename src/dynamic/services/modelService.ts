@@ -5,6 +5,7 @@ import { getFileExtension, getFileCategory, getMimeTypeFromExtension, isSupporte
 import { supabase } from '../utils/supabaseClient';
 import { initiateModelConversion, checkConversionStatus } from './rhinoComputeService';
 import { v4 as uuidv4 } from 'uuid';
+import { logger, truncateKey } from '../../shared/utils/logger';
 
 // Model metadata type
 export interface ModelMetadata {
@@ -472,7 +473,7 @@ export const getModels = async (): Promise<ModelMetadata[]> => {
 
 // Queue a model for conversion using Rhino
 const queueRhinoModelConversion = async (modelId: string, s3Key: string, filename: string): Promise<void> => {
-  console.log(`Queueing Rhino conversion for model ${modelId}, file: ${filename}, S3 key: ${s3Key}`);
+  logger.info(`Queueing Rhino conversion for model ${modelId}, file: ${filename}, S3 key: ${truncateKey(s3Key)}`);
   
   // Update model status in database
   await supabase

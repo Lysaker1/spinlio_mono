@@ -7,6 +7,7 @@ import {
   CompleteMultipartUploadCommand
 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
+import { logger, truncateKey } from '../../shared/utils/logger';
 
 // For React apps, we need to use REACT_APP_ prefix for environment variables
 const ACCESS_KEY_ID = process.env.REACT_APP_AWS_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID || '';
@@ -147,7 +148,7 @@ const uploadLargeFile = async (
   contentType = 'application/octet-stream'
 ): Promise<any> => {
   try {
-    console.log(`Uploading large file: ${key} Size: ${file.size} Type: ${contentType}`);
+    logger.info(`Uploading large file: ${truncateKey(key)} Size: ${file.size} Type: ${contentType}`);
 
     // For large files, convert to buffer first to avoid streaming issues
     const fileBuffer = await new Promise<ArrayBuffer>((resolve, reject) => {

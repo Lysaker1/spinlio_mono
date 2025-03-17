@@ -1,5 +1,6 @@
 import { ModelMetadata } from './modelService';
 import { getConvertedModelS3Key } from './modelService';
+import { logger, truncateKey } from '../../shared/utils/logger';
 
 // Define the Rhino Compute URL and key
 const RHINO_COMPUTE_URL = process.env.REACT_APP_RHINO_COMPUTE_URL || 'http://13.53.137.42:80';
@@ -160,8 +161,8 @@ export async function initiateModelConversion(
   s3Key: string,
   sourceFormat: string
 ): Promise<{ jobId: string }> {
-  console.log('🚀 [rhinoComputeService] Initiating model conversion');
-  console.log(`📊 [rhinoComputeService] Model ID: ${modelId}, S3 Key: ${s3Key}, Format: ${sourceFormat}`);
+  logger.info('🚀 [rhinoComputeService] Initiating model conversion');
+  logger.info(`📊 [rhinoComputeService] Model ID: ${modelId}, S3 Key: ${truncateKey(s3Key)}, Format: ${sourceFormat}`);
 
   // Generate output paths for each target format
   const outputPaths: Record<string, string> = {};

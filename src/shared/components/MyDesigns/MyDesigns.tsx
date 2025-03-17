@@ -7,6 +7,7 @@ import { AuthenticatedFeature } from '../../components/AuthenticatedFeature/Auth
 import { IconArrowRight, IconCheck, IconDotsVertical, IconX } from '@tabler/icons-react';
 import { Text, Title } from '@mantine/core';
 import { CONFIGURATOR_PATHS } from '@shared/constants/configuratorTypes';
+import { logger } from '../../../shared/utils/logger';
 
 interface MyDesignsProps {
   onSelect: (parameters: Record<string, any>) => void;
@@ -104,7 +105,7 @@ export const MyDesigns: React.FC<MyDesignsProps> = ({ onSelect, currentConfigura
         try {
           setIsLoading(true);
           const token = await getAccessTokenSilently();
-          console.log('Auth Token:', token);
+          logger.debug('Authentication completed for MyDesigns');
           const fetchedDesigns = await DesignStorageService.getDesignsByUser(user.sub, token);
           
           // Sort designs by date (newest first)

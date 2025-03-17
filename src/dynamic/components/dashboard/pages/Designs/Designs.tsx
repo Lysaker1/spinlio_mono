@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DesignCard from '../../components/DesignCard/DesignCard';
 import PageLayout from '../../components/PageLayout/PageLayout';
+import { logger } from '../../../../../shared/utils/logger';
 
 const COLUMNS = 4;
 const ROWS = 3;
@@ -30,7 +31,7 @@ const Designs: React.FC = () => {
         setLoading(true);
         try {
           const token = await getAccessTokenSilently();
-          console.log('Auth Token:', token);
+          logger.debug('Authentication completed for Designs');
           const fetchedDesigns = await DesignStorageService.getDesignsByUser(user.sub, token);
           
           // Sort designs by date (newest first)

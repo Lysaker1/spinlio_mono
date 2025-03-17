@@ -63,27 +63,39 @@ const jwtCheck = auth({
 
 // Move CORS before JWT check
 app.use(cors({
-  origin: [
-    ...(process.env.NODE_ENV === 'production' 
-      ? [
-          'https://design.spinlio.com',
-          'https://spinlio.com',
-          'https://configurator.spinlio.com',
-          'https://api.spinlio.com',
-        ]
-      : [
-          'http://localhost:3000',
-          'http://localhost:3001',
-          'http://localhost:3003',
-        ]
-    ),
-    'https://dev-jxcml1qpmbgabh6v.us.auth0.com',
-    'https://auth.spinlio.com'
-
-  ],
+  origin: function(origin, callback) {
+    const allowedOrigins = [
+      // Production origins
+      'https://design.spinlio.com',
+      'https://spinlio.com',
+      'https://configurator.spinlio.com',
+      'https://contact.spinlio.com',
+      'https://api.spinlio.com',
+      'https://auth.spinlio.com',
+      'https://dev-jxcml1qpmbgabh6v.us.auth0.com',
+      'https://www.herokucdn.com',
+      'https://viewer.shapediver.com',
+      'https://res.cloudinary.com',
+      
+      // Development origins
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://localhost:3003'
+    ];
+    
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('Blocked origin:', origin);
+      }
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   exposedHeaders: ['Authorization'],
   optionsSuccessStatus: 200
 }));
@@ -628,9 +640,9 @@ app.post('/api/upload-model', async (req: Request, res: Response) => {
 app.use((err: any, req: Request, res: Response, next: any) => {
   console.error('Unhandled error:', err);
   
-  // Set CORS headers even for errors
-  res.header('Access-Control-Allow-Origin', req.headers.origin);
-  res.header('Access-Control-Allow-Credentials', 'true');
+  // Don't set CORS headers here - the CORS middleware has already set them
+  // res.header('Access-Control-Allow-Origin', req.headers.origin);
+  // res.header('Access-Control-Allow-Credentials', 'true');
   
   res.status(err.status || 500).json({ 
     error: 'Internal server error',

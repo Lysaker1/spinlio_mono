@@ -189,7 +189,7 @@ const LoadingSequence = ({ fileFormat }: { fileFormat?: string }) => {
   
   return {
     element: (
-      <div className="flex flex-col items-center justify-center h-full bg-white">
+      <div className="flex flex-col items-center justify-center h-full bg-white rounded-tl-lg rounded-bl-lg">
         <div className="w-4/5 max-w-lg">
           <div 
             style={{ 
@@ -269,7 +269,7 @@ const ModelViewer = ({
   // Unsupported format message - only shown after loading sequence completes
   if (!isSupported) {
     return (
-      <div className="flex flex-col items-center justify-center h-full bg-white p-8">
+      <div className="flex flex-col items-center justify-center h-full bg-white p-8 rounded-tl-lg rounded-bl-lg">
         <p className="text-2xl text-center mb-4 font-medium">
           Upload successful!
         </p>
@@ -294,7 +294,7 @@ const ModelViewer = ({
 
   // Render the 3D model
   return (
-    <div className="h-full relative">
+    <div className="h-full relative rounded-tl-lg rounded-bl-lg">
       <Canvas shadows camera={{ position: [0, 2, 5], fov: 45 }}>
         {/* Better lighting for enhanced details */}
         <ambientLight intensity={0.3} />

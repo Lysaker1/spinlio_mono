@@ -1,5 +1,5 @@
 import { BikeTemplate } from "@dynamic/components/ConfiguratorPage/components/Sidebar/bikeTemplates";
-import { Title, Text } from "@mantine/core";
+import { Title, Text, Modal } from "@mantine/core";
 import { CONFIGURATOR_PATHS } from "@shared/constants/configuratorTypes";
 import React from "react";
 import { useNavigate } from "react-router-dom";
@@ -21,12 +21,10 @@ export const PrefabModal: React.FC<Props> = ({ prefab, onClose }) => {
   }
 
   return (
-    <div className="w-screen h-screen absolute top-0 left-0 bg-black/50 z-[102]" onClick={onClose}>
-      <div className="z-[103] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-4 rounded-lg bg-white max-w-80vw flex flex-col">
+    <Modal opened={true} onClose={onClose} withOverlay radius="lg" centered withCloseButton={false}>
         <Title>{prefab.name}</Title>
-        <img src={prefab.image || '/placeholder-image.png'} className="prefab-modal-image"/>
+        <img src={prefab.image || '/placeholder-image.png'} className="my-2 rounded-lg"/>
         <button className="w-full bg-black text-white p-2 mt-2 rounded-full" onClick={handleConfigurate}>Customize</button>
-      </div>
-    </div>
+    </Modal>
    )
 }

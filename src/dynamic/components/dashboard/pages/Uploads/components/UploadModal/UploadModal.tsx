@@ -16,12 +16,12 @@ import { measureLoadTime } from "@dynamic/utils/preloadUtils";
 import { useUser } from "@shared/hooks/useUser";
 import { Profile } from "@shared/types/Profile";
 interface UploadModalProps {
-  profile: Profile;
+  profileId: string;
   uploadModalOpened: boolean;
   closeUploadModal: () => void;
 }
 
-const UploadModal = ({ uploadModalOpened, closeUploadModal, profile }: UploadModalProps) => {
+const UploadModal = ({ uploadModalOpened, closeUploadModal, profileId }: UploadModalProps) => {
   const [uploading, setUploading] = useState(false);
 
   const [loadingComponentGroups, setLoadingComponentGroups] = useState(false);
@@ -222,7 +222,7 @@ const UploadModal = ({ uploadModalOpened, closeUploadModal, profile }: UploadMod
     setUploading(true);
     try {
       // Start the upload process and get the model metadata
-      const uploadResponse = await uploadModelToS3(selectedFile, metadata, profile?.id);
+      const uploadResponse = await uploadModelToS3(selectedFile, metadata, profileId);
       
       // Close the modal and reset state
       resetFormState();

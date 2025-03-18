@@ -367,29 +367,29 @@ export const uploadModelToS3 = async (
   }
 };
 
-export const uploadThumbnailToS3 = async (file: File, userId?: string): Promise<string> => {
+export const uploadThumbnail = async (file: File, userId?: string): Promise<string> => {
   try {
-    const s3Key = await getS3KeyForFile(file, userId, { category: 0, subcategory: 0 });
-    const contentType = file.type || getMimeTypeFromExtension(file.name);
+    const uniqueId = uuidv4();
+    const fileName = `${uniqueId}-${file.name}`;
+    const { data, error } = await supabase.storage
+      .from('model-thumbnails')
+      .upload(fileName, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
 
-    const params = {
-      Bucket: BUCKET_NAME,
-      Key: s3Key,
-      Body: file,
-      ContentType: contentType,
-    };
+    if (error) {
+      throw error;
+    }
 
-    await uploadFileToS3(params);
+    const { data: { publicUrl }} = supabase.storage
+      .from('model-thumbnails')
+      .getPublicUrl(fileName);
 
-    const command = new GetObjectCommand({
-      Bucket: BUCKET_NAME,
-      Key: s3Key,
-    });
-
-    const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
-    return signedUrl;
+    return publicUrl;
+    
   } catch (error) {
-    console.error('Error uploading thumbnail:', error);
+    console.error('Error uploading thumbnail to Supabase:', error);
     throw error;
   }
 };

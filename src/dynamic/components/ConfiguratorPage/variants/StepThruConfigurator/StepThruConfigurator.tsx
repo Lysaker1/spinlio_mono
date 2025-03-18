@@ -5,7 +5,7 @@ import ErrorBoundary from '@shared/components/ErrorBoundary/ErrorBoundary';
 import { ParameterPanel } from '../../components/ParameterPanel';
 import ShapeDiverViewer from '../../components/ShapeDiverViewer';
 import Sidebar from '../../components/Sidebar/Sidebar';
-import { MyDesigns } from '@shared/components/MyDesigns/MyDesigns';
+import { MyDesigns } from '@dynamic/components/ConfiguratorPage/components/Sidebar/Sections/MyDesigns';
 import { useConfiguratorState } from '@shared/hooks/useConfiguratorState';
 import { configuratorConfigs } from '../../config/configuratorConfig';
 import { Header } from '@shared/components';

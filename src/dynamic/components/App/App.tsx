@@ -11,7 +11,7 @@ import { pageView } from '../../../shared/utils/analytics';
 import MobileWarning from '../../../shared/components/MobileWarning/MobileWarning';
 import { Toaster } from 'react-hot-toast';
 import { Notifications } from '@mantine/notifications';
-import { MyDesigns } from '@shared/components/MyDesigns/MyDesigns';
+import { MyDesigns } from '@dynamic/components/ConfiguratorPage/components/Sidebar/Sections/MyDesigns';
 import { Success } from '@shared/components/CheckoutResult/Success';
 import { Cancel } from '@shared/components/CheckoutResult/Cancel';
 import CustomLoader from '../Loader/Loader';
@@ -232,7 +232,7 @@ console.log('App: Runtime check:', {
   MyDesigns: MyDesigns,
   importedCorrectly: MyDesigns !== undefined,
   paths: {
-    myDesigns: require.resolve('@shared/components/MyDesigns/MyDesigns'),
+    myDesigns: require.resolve('@dynamic/components/ConfiguratorPage/components/Sidebar/Sections/MyDesigns'),
   }
 });
 

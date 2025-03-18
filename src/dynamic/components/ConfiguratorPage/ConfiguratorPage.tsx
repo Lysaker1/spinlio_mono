@@ -19,7 +19,7 @@ import SupplierButton from './components/SupplierButton/SupplierButton';
 import Sidebar from './components/Sidebar/Sidebar';
 import { bikeTemplates, BikeTemplate } from './components/Sidebar';
 import { DesignStorageService } from '@shared/services/designStorage';
-import { MyDesigns } from '../../../shared/components/MyDesigns/MyDesigns';
+import { MyDesigns } from './components/Sidebar/Sections/MyDesigns';
 import { CONFIGURATOR_TYPES } from '../../../shared/constants/configuratorTypes';
 import Header from './components/Header/Header';
 import { BuyButton } from '@shared/components/BuyButton/BuyButton';

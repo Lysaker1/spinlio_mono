@@ -2,7 +2,7 @@ import { Alert, ColorPicker, Loader, Menu, NumberInput, Tabs, Text, Textarea, Te
 import { IconAlertCircle, IconCheck, IconChevronDown, IconPencil, IconPhotoPlus } from '@tabler/icons-react';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ModelMetadata, ModelParameterValue, deleteModel, getModelById, updateModel, uploadThumbnailToS3 } from '../../../../../../services/modelService';
+import { ModelMetadata, ModelParameterValue, deleteModel, getModelById, updateModel, uploadThumbnail } from '../../../../../../services/modelService';
 import { AttachmentPoint, apiToAttachmentPoint, attachmentPointToApi } from '../../../../../../types/attachment-points';
 import ModelViewer from './ModelViewer';
 import Parameters from './Parameters';
@@ -130,7 +130,7 @@ const EditModel: React.FC = () => {
     let thumbnailUrl = model?.thumbnail_url;
     if (generalValues.thumbnailFile) {
       try {
-        thumbnailUrl = await uploadThumbnailToS3(generalValues.thumbnailFile);
+        thumbnailUrl = await uploadThumbnail(generalValues.thumbnailFile);
       } catch (error) {
         setError('Failed to upload thumbnail');
         setSaving(false);

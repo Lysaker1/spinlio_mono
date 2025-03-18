@@ -7,7 +7,7 @@ import { ParameterPanel } from '../../components/ParameterPanel';
 import ShapeDiverViewer from '../../components/ShapeDiverViewer';
 import { CONFIGURATOR_TYPES } from '@shared/constants/configuratorTypes';
 import { Header } from '@shared/components';
-import { MyDesigns } from '@shared/components/MyDesigns/MyDesigns';
+import { MyDesigns } from '@dynamic/components/ConfiguratorPage/components/Sidebar/Sections/MyDesigns';
 import { configuratorConfigs } from '../../config/configuratorConfig';
 import Sidebar from '../../components/Sidebar/Sidebar';
 

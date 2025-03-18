@@ -331,7 +331,7 @@ const Uploads: React.FC = () => {
       <UploadModal 
         uploadModalOpened={uploadModalOpened} 
         closeUploadModal={closeUploadModal} 
-        profile={adaptedProfile as Profile} 
+        profileId={user.id} 
       />
     </PageLayout>
   );

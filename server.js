@@ -279,7 +279,7 @@ app.use((req, res, next) => {
 });
 
 // Update static file serving for better iOS caching
-app.use(express.static(path.join(__dirname, 'dist/dynamic'), {
+app.use(express.static(path.join(__dirname, 'dist/frontend'), {
   maxAge: '1y',
   etag: true,
   lastModified: true,
@@ -311,12 +311,12 @@ app.use(express.static(path.join(__dirname, 'dist/dynamic'), {
 
 // Add proper handling for apple-touch-icon requests
 app.get(['/apple-touch-icon.png', '/apple-touch-icon-precomposed.png'], (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist/dynamic/assets/icons/apple-touch-icon.png'));
+  res.sendFile(path.join(__dirname, 'dist/frontend/assets/icons/apple-touch-icon.png'));
 });
 
 // Add proper handling for favicon
 app.get('/favicon.ico', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist/dynamic/assets/icons/favicon.ico'));
+  res.sendFile(path.join(__dirname, 'dist/frontend/assets/icons/favicon.ico'));
 });
 
 app.use((req, res, next) => {
@@ -342,7 +342,7 @@ app.get('*', (req, res) => {
   
   // If it's an allowed route or we're on design.spinlio.com, serve the app
   if (allowedRoutes.includes(req.path) || req.hostname === 'design.spinlio.com') {
-    return res.sendFile(path.join(__dirname, 'dist/dynamic', 'index.html'));
+    return res.sendFile(path.join(__dirname, 'dist/frontend', 'index.html'));
   }
   
   // Otherwise redirect to root

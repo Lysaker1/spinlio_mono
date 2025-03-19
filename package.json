@@ -3,7 +3,7 @@
   "private": true,
   "workspaces": [
     "src/static",
-    "src/dynamic"
+    "src/frontend"
   ],
   "resolutions": {
     "react": "^18.3.1",
@@ -12,18 +12,18 @@
   },
   "scripts": {
     "start:static": "webpack serve --config webpack.static.js --mode development",
-    "start:dynamic": "cross-env NODE_ENV=development webpack serve --config webpack.dynamic.js --mode development --hot",
-    "start": "concurrently \"npm run start:static\" \"npm run start:dynamic\"",
+    "start:frontend": "cross-env NODE_ENV=development webpack serve --config webpack.frontend.js --mode development --hot",
+    "start": "concurrently \"npm run start:static\" \"npm run start:frontend\"",
     "build:static": "webpack --config webpack.static.js --mode production",
-    "build:dynamic": "webpack --config webpack.dynamic.js --mode production",
-    "heroku-postbuild": "npm run build:dynamic",
+    "build:frontend": "webpack --config webpack.frontend.js --mode production",
+    "heroku-postbuild": "npm run build:frontend",
     "analyze": "webpack --config webpack.static.js --mode production --analyze",
     "check-versions": "npm ls react && npm ls react-dom",
     "test": "jest",
     "test:analysis": "jest parameterAnalysis",
-    "deploy:backend": "git push heroku-backend `git subtree split --prefix src/backend main`:main --force",
+    "deploy:api": "git push heroku-backend `git subtree split --prefix src/api main`:main --force",
     "deploy:frontend": "git push heroku main",
-    "deploy": "npm run deploy:backend && npm run deploy:frontend"
+    "deploy": "npm run deploy:api && npm run deploy:frontend"
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.2.4",

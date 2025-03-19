@@ -26,9 +26,7 @@
     "paths": {
       "three": ["./node_modules/@types/three"],
       "three/*": ["./node_modules/@types/three/*"],
-      "@shared/*": ["./src/shared/*"],
-      "@static/*": ["./src/static/*"],
-      "@dynamic/*": ["./src/dynamic/*"],
+      "@frontend/*": ["./src/frontend/*"],
       "@/*": ["./src/*"]
     },
     "typeRoots": ["./node_modules/@types", "./src/types"]
@@ -40,7 +38,7 @@
   ],
   "exclude": [
     "node_modules",
-    "src/dynamic/constants",
+    "src/frontend/constants",
     "dist"
   ]
 }

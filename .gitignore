@@ -9,7 +9,7 @@ node_modules/
 .env
 .env*            # This catches all .env files
 !.env.template   # This correctly excludes the template
-!src/backend/.env.template
+!src/api/.env.template
 
 # IDE files
 .idea/

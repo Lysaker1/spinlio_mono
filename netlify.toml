@@ -1,16 +1,25 @@
 [build]
-  command = "npm run build:static"  
-  publish = "dist/static"           
+  publish = "dist"           
+
+[context.design]
+  command = "npm run build:design"
+  publish = "src/apps/design/dist"
+  base = "/"
+
+[context.marketplace]
+  command = "npm run build:marketplace"
+  publish = "src/apps/marketplace/dist"
+  base = "/"
 
 [[redirects]]
-  from = "/design/*"
-  to = "https://design.spinlio.com/:splat"
+  from = "https://bazaar.it/*"
+  to = "https://marketplace.bazaar.it/:splat"
   status = 301
   force = true
 
 [[redirects]]
-  from = "/contact/*"
-  to = "https://contact.spinlio.com/:splat"
+  from = "https://www.bazaar.it/*"
+  to = "https://marketplace.bazaar.it/:splat"
   status = 301
   force = true
 

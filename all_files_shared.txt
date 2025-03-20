@@ -1,0 +1,4 @@
+src/shared/components/Button.tsx
+src/shared/components/ErrorBoundary.tsx
+src/shared/hooks/useAuth.tsx
+src/shared/hooks/useUser.tsx

@@ -10,6 +10,8 @@ import Stripe from 'stripe';
 import path from 'path';
 import { setupModelRoutes } from './routes/models';
 
+// No need to redefine the Request interface as it's already defined in express-oauth2-jwt-bearer
+
 dotenv.config();
 
 const requiredEnvVars = [
@@ -64,7 +66,7 @@ const jwtCheck = auth({
 
 // Move CORS before JWT check
 app.use(cors({
-  origin: function(origin, callback) {
+  origin: function(origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
     const allowedOrigins = [
       // Production origins
       'https://design.spinlio.com',
@@ -81,6 +83,7 @@ app.use(cors({
       // Development origins
       'http://localhost:3000',
       'http://localhost:3001',
+      'http://localhost:3002',
       'http://localhost:3003'
     ];
     
@@ -123,7 +126,7 @@ const optionalJwtCheck = (req: Request, res: Response, next: Function) => {
 };
 
 // Then the JWT checks
-app.use('/api/designs', (req, res, next) => {
+app.use('/api/designs', (req: Request, res: Response, next: Function) => {
   console.log('Auth header:', req.headers.authorization);
   next();
 }, jwtCheck);
@@ -404,7 +407,7 @@ app.post('/api/designs', (async (req: Request, res: Response) => {
     console.log('Received design name:', design.name);
     
     const designId = crypto.randomUUID();
-    let thumbnailFilename = null;
+    let thumbnailFilename: string | null = null;
 
     console.log('Design save flow:', {
       designId,
@@ -425,24 +428,26 @@ app.post('/api/designs', (async (req: Request, res: Response) => {
         console.log('Uploading image, size:', imageBuffer.length);
         
         // Save screenshot to storage with increased timeout
-        const { error: uploadError } = await supabase.storage
-          .from('design-thumbnail')
-          .upload(thumbnailFilename, imageBuffer, {
-            contentType: 'image/png',
-            upsert: true,
-            duplex: 'half'
-          });
+        if (thumbnailFilename) {
+          const { error: uploadError } = await supabase.storage
+            .from('design-thumbnail')
+            .upload(thumbnailFilename, imageBuffer, {
+              contentType: 'image/png',
+              upsert: true,
+              duplex: 'half'
+            });
 
-        if (uploadError) {
-          console.error('Screenshot upload failed:', uploadError);
-          // Continue without thumbnail rather than failing completely
-          thumbnailFilename = null;
-        } else {
-          console.log('Thumbnail saved:', {
-            filename: thumbnailFilename,
-            size: imageBuffer.length,
-            storageBucket: 'design-thumbnail'
-          });
+          if (uploadError) {
+            console.error('Screenshot upload failed:', uploadError);
+            // Continue without thumbnail rather than failing completely
+            thumbnailFilename = null;
+          } else {
+            console.log('Thumbnail saved:', {
+              filename: thumbnailFilename,
+              size: imageBuffer.length,
+              storageBucket: 'design-thumbnail'
+            });
+          }
         }
       } catch (imgError) {
         console.error('Image processing error:', imgError);
@@ -532,7 +537,7 @@ app.get('/api/thumbnail/:filename', (async (req: Request, res: Response) => {
     res.status(404).json({ error: 'Thumbnail not found' });
   }
 }) as RequestHandler);
-
+/*
 // Add this new endpoint after the existing ones
 app.patch('/api/fix-thumbnails', async (req: Request, res: Response) => {
   try {
@@ -603,6 +608,7 @@ app.patch('/api/fix-thumbnails', async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 });
+*/
 
 const getBaseUrl = (req: Request) => {
   if (process.env.NODE_ENV === 'production') {
@@ -811,7 +817,7 @@ app.get('/api/models/public', (async (req: Request, res: Response) => {
       .order('created_at', { ascending: false });
       
     if (error) throw error;
-    res.json(data);
+    res.json(data || []);
   } catch (error) {
     console.error('Error fetching public models:', error);
     res.status(500).json({ error: 'Failed to fetch public models' });
@@ -966,7 +972,7 @@ app.delete('/api/models/:modelId', (async (req: Request, res: Response) => {
       try {
         const { error: storageError } = await supabase.storage
           .from('models')
-          .remove([model.s3_key]);
+          .remove([model.s3_key as string]);
           
         if (storageError) {
           console.error('Error deleting model from storage:', storageError);

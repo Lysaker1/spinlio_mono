@@ -12,16 +12,19 @@ const isDevelopment = process.env.NODE_ENV !== 'production';
 
 module.exports = (env) => {
   // Environment handling
-  const rootPath = path.join(__dirname, '../../..');
   const currentPath = path.join(__dirname);
-  const rootEnvPath = rootPath + '/.env';
-  const envPath = rootEnvPath + '.' + (env.ENVIRONMENT || process.env.NODE_ENV || 'development');
+  const basePath = currentPath + '/.env';
+  const envPath = basePath + '.' + (env.ENVIRONMENT || process.env.NODE_ENV || 'development');
+  // Fallback to .env if .env.environment doesn't exist
+  const finalPath = fs.existsSync(envPath) ? envPath : basePath;
+  const fileEnv = fs.existsSync(finalPath) ? dotenv.config({ path: finalPath }).parsed : {};
   
-  // Load environment variables
-  const rootEnv = dotenv.config({ path: rootEnvPath }).parsed || {};
-  const environmentEnv = fs.existsSync(envPath) 
-    ? dotenv.config({ path: envPath }).parsed 
-    : {};
+  // fallback to empty object if no .env file exists
+  const envKeys = fileEnv ? 
+    Object.keys(fileEnv).reduce((prev, next) => {
+      prev[`process.env.${next}`] = JSON.stringify(fileEnv[next]);
+      return prev;
+    }, {}) : {};
   
   // Process-provided env vars (e.g. from Heroku)
   const processEnv = {
@@ -32,7 +35,7 @@ module.exports = (env) => {
   };
   
   // Merge all environment variables with priority to process env vars
-  const finalEnv = { ...rootEnv, ...environmentEnv, ...processEnv };
+  const finalEnv = { ...processEnv, ...envKeys };
   
   const isProd = env.ENVIRONMENT === 'production';
 
@@ -213,12 +216,7 @@ module.exports = (env) => {
       new CopyWebpackPlugin({
         patterns: copyPluginPatterns
       }),
-      new webpack.DefinePlugin({
-        'process.env': Object.keys(finalEnv).reduce((env, key) => {
-          env[key] = JSON.stringify(finalEnv[key]);
-          return env;
-        }, {})
-      }),
+      new webpack.DefinePlugin(envKeys),
       new CompressionPlugin({
         test: /\.(js|css|html|svg)$/,
         algorithm: 'gzip'

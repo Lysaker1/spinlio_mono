@@ -33,7 +33,7 @@ const AuthCallback: React.FC = () => {
         navigate(redirectPath, { replace: true });
       } else {
         // If no stored path, navigate to dashboard or home based on authentication
-        const defaultPath = isAuthenticated ? '/' : '/';
+        const defaultPath = isAuthenticated ? '/dashboard' : '/';
         console.log('Auth callback - No stored path, navigating to default:', defaultPath);
         navigate(defaultPath, { replace: true });
       }

@@ -50,12 +50,12 @@
     "dev:server": "nodemon server.js",
     "build": "webpack --config webpack.config.js --env mode=production",
     "build:prod": "npm run copy-shared && webpack --mode production",
-    "copy-shared": "rm -rf ./src/shared && mkdir -p ./src/shared && cp -r ../../shared/* ./src/shared/",
+    "copy-shared": "mkdir -p ./src/shared && cp -r ../../shared/* ./src/shared/ || echo 'No shared directory to copy'",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint . --ext .ts,.tsx",
     "analyze": "webpack --mode production --env ENVIRONMENT=production ANALYZE=true",
     "postinstall": "npm run build",
-    "heroku-postbuild": "npm run copy-shared && npm run build"
+    "heroku-postbuild": "mkdir -p ./src/shared && cp -r ../../shared/* ./src/shared/ || echo 'Creating empty shared dir' && mkdir -p ./src/shared && npm run build"
   },
   "devDependencies": {
     "@babel/core": "^7.25.8",

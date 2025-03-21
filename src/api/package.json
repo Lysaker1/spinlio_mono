@@ -6,7 +6,8 @@
     "build": "tsc",
     "start": "node -r dotenv/config dist/server.js dotenv_config_path=.env.production",
     "dev": "nodemon --exec ts-node -r dotenv/config src/server.ts dotenv_config_path=.env.development",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "npm run build"
   },
   "keywords": [],
   "author": "",

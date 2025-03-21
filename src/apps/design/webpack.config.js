@@ -1,27 +1,10 @@
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const webpack = require('webpack');
 const dotenv = require('dotenv');
 const fs = require('fs');
-const CompressionPlugin = require('compression-webpack-plugin');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-
-const isDevelopment = process.env.NODE_ENV !== 'production';
-
-// Get environment and set appropriate .env file
-const isProd = process.env.NODE_ENV === 'production';
-const envPath = isProd ? '.env.production' : '.env.development';
-
-// Load environment variables from .env file
-const envVars = dotenv.config({ path: envPath }).parsed || {};
-
-// Convert environment variables to a format that can be used by webpack
-const envKeys = Object.keys(envVars).reduce((prev, next) => {
-  prev[`process.env.${next}`] = JSON.stringify(envVars[next]);
-  return prev;
-}, {});
 
 module.exports = (env) => {
   const isProd = env?.production || process.env.NODE_ENV === 'production';
@@ -222,14 +205,6 @@ module.exports = (env) => {
         patterns: copyPluginPatterns
       }),
       new webpack.DefinePlugin(envKeys),
-      new CompressionPlugin({
-        test: /\.(js|css|html|svg)$/,
-        algorithm: 'gzip'
-      }),
-      env.ANALYZE && new BundleAnalyzerPlugin({
-        analyzerMode: 'static',
-        openAnalyzer: false
-      }),
     ].filter(Boolean),
     optimization: {
       splitChunks: {

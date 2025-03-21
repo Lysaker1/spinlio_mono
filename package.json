@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "heroku-prebuild": "cd src/apps/design && npm install --no-package-lock --include=dev --no-optional",
-    "heroku-postbuild": "cd src/apps/design && npm run build",
+    "heroku-postbuild": "mkdir -p src/apps/design/src/shared && cp -r src/shared/* src/apps/design/src/shared/ && cd src/apps/design && npm run build",
     "start": "cd src/apps/design && node server.js"
   },
   "engines": {

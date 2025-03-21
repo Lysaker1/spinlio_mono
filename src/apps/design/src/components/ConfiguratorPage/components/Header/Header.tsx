@@ -24,7 +24,7 @@ const Header: React.FC<HeaderProps> = ({ session, viewport, configuratorType }) 
   const [menuOpen, setMenuOpen] = useState(false);
 
   // Define base URLs
-  const MAIN_URL = 'https://www.spinlio.com';
+  const MAIN_URL = 'https://www.bazaar.it';
 
 
   // Toggle dropdown menu
@@ -62,7 +62,7 @@ const Header: React.FC<HeaderProps> = ({ session, viewport, configuratorType }) 
           className="text-black font-['Helvetica_Neue',_sans-serif] text-4xl font-bold leading-7 no-underline ml-[0.7rem] cursor-pointer"
           onClick={handleLogoClick}
         >
-          Spinlio
+          Bazaar
         </a>
         <nav className="flex items-center gap-4 mr-[0.7rem]">          
           {isAuthenticated ? (

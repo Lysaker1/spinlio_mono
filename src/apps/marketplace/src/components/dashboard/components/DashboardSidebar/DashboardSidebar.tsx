@@ -6,30 +6,33 @@ import {
   IconUpload, 
   IconShoppingCart,
   IconTools,
-  IconBuildingStore
+  IconBuildingStore,
+  IconHomeHeart,
+  IconCode,
+  IconBox
 } from '@tabler/icons-react';
 import '../../Dashboard.css'
 
 const menuItems = [
   { 
-    icon: <IconBuildingStore size={32} stroke={1}/>, 
+    icon: <IconHomeHeart style={{ width: '1.5rem', height: '1.5rem' }} stroke={1.5} />, 
     label: 'Marketplace', 
-    path: '/dashboard/marketplace' 
+    path: '/marketplace' 
   },
   { 
-    icon: <IconBike size={32} stroke={1}/>, 
+    icon: <IconCode style={{ width: '1.5rem', height: '1.5rem' }} stroke={1.5} />, 
     label: 'My Designs', 
-    path: '/dashboard/designs' 
+    path: '/designs' 
   },
   { 
-    icon: <IconUpload size={32} stroke={1}/>, 
+    icon: <IconUpload style={{ width: '1.5rem', height: '1.5rem' }} stroke={1.5} />, 
     label: 'My Uploads', 
-    path: '/dashboard/uploads' 
+    path: '/uploads' 
   },
   { 
-    icon: <IconShoppingCart size={32} stroke={1}/>, 
+    icon: <IconBox style={{ width: '1.5rem', height: '1.5rem' }} stroke={1.5} />, 
     label: 'My Orders', 
-    path: '/dashboard/orders' 
+    path: '/orders' 
   },
   // { 
   //   icon: <IconTools size={32} stroke={1}/>, 

@@ -10,22 +10,36 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
+// Get environment and set appropriate .env file
+const isProd = process.env.NODE_ENV === 'production';
+const envPath = isProd ? '.env.production' : '.env.development';
+
+// Load environment variables from .env file
+const envVars = dotenv.config({ path: envPath }).parsed || {};
+
+// Convert environment variables to a format that can be used by webpack
+const envKeys = Object.keys(envVars).reduce((prev, next) => {
+  prev[`process.env.${next}`] = JSON.stringify(envVars[next]);
+  return prev;
+}, {});
+
 module.exports = (env) => {
-  // Environment handling
-  const currentPath = path.join(__dirname);
-  const basePath = currentPath + '/.env';
-  const envPath = basePath + '.' + (env.ENVIRONMENT || process.env.NODE_ENV || 'development');
-  // Fallback to .env if .env.environment doesn't exist
-  const finalPath = fs.existsSync(envPath) ? envPath : basePath;
-  const fileEnv = fs.existsSync(finalPath) ? dotenv.config({ path: finalPath }).parsed : {};
+  const isProd = env?.production || process.env.NODE_ENV === 'production';
+  const isWebpackServe = env?.WEBPACK_SERVE || process.env.WEBPACK_SERVE;
   
-  // fallback to empty object if no .env file exists
-  const envKeys = fileEnv ? 
-    Object.keys(fileEnv).reduce((prev, next) => {
-      prev[`process.env.${next}`] = JSON.stringify(fileEnv[next]);
-      return prev;
-    }, {}) : {};
+  // Define paths for the project
+  const currentPath = __dirname;
+
+  // Prepare the environment variables
+  const envPath = path.resolve(currentPath, isProd ? '.env.production' : '.env.development');
+  const fileEnv = dotenv.config({ path: envPath }).parsed || {};
   
+  // Prepare the environment variables for webpack
+  const envKeys = Object.keys(fileEnv).reduce((prev, next) => {
+    prev[`process.env.${next}`] = JSON.stringify(fileEnv[next]);
+    return prev;
+  }, {});
+
   // Process-provided env vars (e.g. from Heroku)
   const processEnv = {
     NODE_ENV: process.env.NODE_ENV,
@@ -37,8 +51,6 @@ module.exports = (env) => {
   // Merge all environment variables with priority to process env vars
   const finalEnv = { ...processEnv, ...envKeys };
   
-  const isProd = env.ENVIRONMENT === 'production';
-
   // CSP headers
   const cspHeaders = {
     'Content-Security-Policy': `
@@ -90,15 +102,15 @@ module.exports = (env) => {
   // Public assets to copy
   const copyPluginPatterns = [
     {
-      from: path.resolve(rootPath, 'public/assets/icons'),
+      from: path.resolve(currentPath, 'public/assets/icons'),
       to: 'assets/icons'
     },
     {
-      from: path.resolve(rootPath, 'src/shared/assets'),
+      from: path.resolve(currentPath, 'src/shared/assets'),
       to: 'assets'
     },
     {
-      from: path.resolve(rootPath, 'public/_redirects'),
+      from: path.resolve(currentPath, 'public/_redirects'),
       to: '_redirects'
     }
   ];
@@ -106,19 +118,12 @@ module.exports = (env) => {
   return {
     mode: isProd ? 'production' : 'development',
     entry: {
-      main: [
-        // Add this only in development
-        isDevelopment && 'webpack-dev-server/client?hot=true',
-        './src/index.tsx'
-      ].filter(Boolean)
+      main: path.resolve(currentPath, 'src/index.tsx'),
     },
     output: {
+      filename: isProd ? '[name].[contenthash].js' : '[name].js',
       path: path.resolve(currentPath, 'dist'),
-      filename: isProd ? '[name].[contenthash].js' : '[name].bundle.js',
-      chunkFilename: isProd ? '[name].[contenthash].chunk.js' : '[name].chunk.js',
       publicPath: '/',
-      clean: true,
-      crossOriginLoading: 'anonymous'
     },
     module: {
       rules: [
@@ -159,22 +164,22 @@ module.exports = (env) => {
     resolve: {
       extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs'],
       alias: {
-        '@shared': path.resolve(rootPath, 'src/shared'),
+        '@shared': path.resolve(currentPath, 'src/shared'),
         '@': path.resolve(currentPath, 'src'),
-        'three': path.resolve(rootPath, 'node_modules/three'),
-        'react': path.resolve(rootPath, 'node_modules/react'),
-        'react-dom': path.resolve(rootPath, 'node_modules/react-dom'),
-        '@shapediver/viewer': path.resolve(rootPath, 'node_modules/@shapediver/viewer'),
-        '@mantine/form': path.resolve(rootPath, 'node_modules/@mantine/form'),
-        '@mantine/core': path.resolve(rootPath, 'node_modules/@mantine/core'),
-        '@mantine/hooks': path.resolve(rootPath, 'node_modules/@mantine/hooks'),
-        '@mantine/notifications': path.resolve(rootPath, 'node_modules/@mantine/notifications'),
-        '@tabler/icons-react': path.resolve(rootPath, 'node_modules/@tabler/icons-react'),
-        '@emotion/react': path.resolve(rootPath, 'node_modules/@emotion/react'),
-        '@emotion/styled': path.resolve(rootPath, 'node_modules/@emotion/styled'),
-        '@react-three/drei': path.resolve(rootPath, 'node_modules/@react-three/drei'),
-        '@react-three/fiber': path.resolve(rootPath, 'node_modules/@react-three/fiber'),
-        'node_modules': path.resolve(rootPath, 'node_modules')
+        'three': path.resolve(currentPath, 'node_modules/three'),
+        'react': path.resolve(currentPath, 'node_modules/react'),
+        'react-dom': path.resolve(currentPath, 'node_modules/react-dom'),
+        '@shapediver/viewer': path.resolve(currentPath, 'node_modules/@shapediver/viewer'),
+        '@mantine/form': path.resolve(currentPath, 'node_modules/@mantine/form'),
+        '@mantine/core': path.resolve(currentPath, 'node_modules/@mantine/core'),
+        '@mantine/hooks': path.resolve(currentPath, 'node_modules/@mantine/hooks'),
+        '@mantine/notifications': path.resolve(currentPath, 'node_modules/@mantine/notifications'),
+        '@tabler/icons-react': path.resolve(currentPath, 'node_modules/@tabler/icons-react'),
+        '@emotion/react': path.resolve(currentPath, 'node_modules/@emotion/react'),
+        '@emotion/styled': path.resolve(currentPath, 'node_modules/@emotion/styled'),
+        '@react-three/drei': path.resolve(currentPath, 'node_modules/@react-three/drei'),
+        '@react-three/fiber': path.resolve(currentPath, 'node_modules/@react-three/fiber'),
+        'node_modules': path.resolve(currentPath, 'node_modules')
       },
       fallback: {
         "fs": false,
@@ -182,13 +187,13 @@ module.exports = (env) => {
       },
       modules: [
         'node_modules',
-        path.resolve(rootPath, 'node_modules')
+        path.resolve(currentPath, 'node_modules')
       ]
     },
     plugins: [
       new CleanWebpackPlugin(),
       new HtmlWebpackPlugin({
-        template: path.resolve(rootPath, 'public/index.html'),
+        template: path.resolve(currentPath, 'public/index.html'),
         templateParameters: {
           BASE_URL: isProd 
             ? 'https://design.bazaar.it' 
@@ -282,49 +287,14 @@ module.exports = (env) => {
         directory: path.join(currentPath, 'public'),
       },
       compress: true,
-      port: finalEnv.PORT_FRONTEND || 3001,
-      historyApiFallback: {
-        disableDotRule: true,
-        rewrites: [
-          { from: /^\/vulz/, to: '/index.html' },
-          { from: /^\/supplier/, to: '/index.html' },
-          { from: /^\/configurator/, to: '/index.html' },
-          { from: /./, to: '/index.html' }
-        ]
-      },
-      hot: false,
-      liveReload: false,
-      client: {
-        overlay: {
-          errors: true,
-          warnings: false,
-        },
-        progress: true,
-        reconnect: false
-      },
+      hot: true,
+      historyApiFallback: true,
+      port: 3000,
       headers: {
-        ...cspHeaders,
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
-        "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization"
+        'Content-Security-Policy': cspHeaders['Content-Security-Policy'],
+        'X-Content-Security-Policy': cspHeaders['Content-Security-Policy'],
+        'X-WebKit-CSP': cspHeaders['Content-Security-Policy'],
       },
-      proxy: [
-        {
-          context: ['/shapediver'],
-          target: 'https://sdr8euc1.eu-central-1.shapediver.com',
-          changeOrigin: true,
-          secure: false,
-        }
-      ],
-      devMiddleware: {
-        writeToDisk: false,
-      },
-      watchFiles: {
-        paths: ['src/**/*'],
-        options: {
-          usePolling: false,
-        }
-      }
     }
   };
 }; 

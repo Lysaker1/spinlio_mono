@@ -168,6 +168,7 @@ module.exports = (env) => {
         '@mantine/notifications': path.resolve(rootPath, 'node_modules/@mantine/notifications'),
         '@tabler/icons-react': path.resolve(rootPath, 'node_modules/@tabler/icons-react'),
         '@emotion/react': path.resolve(rootPath, 'node_modules/@emotion/react'),
+        '@emotion/styled': path.resolve(rootPath, 'node_modules/@emotion/styled'),
         '@react-three/drei': path.resolve(rootPath, 'node_modules/@react-three/drei'),
         '@react-three/fiber': path.resolve(rootPath, 'node_modules/@react-three/fiber'),
         'node_modules': path.resolve(rootPath, 'node_modules')

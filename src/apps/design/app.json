@@ -1,0 +1,21 @@
+{
+  "name": "PREFAB Design App",
+  "description": "3D configurator application for furniture and other products",
+  "keywords": ["node", "express", "react", "three.js"],
+  "repository": "https://github.com/Lysaker1/spinlio_mono",
+  "success_url": "/",
+  "env": {
+    "NODE_ENV": {
+      "description": "Environment setting",
+      "value": "production"
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "scripts": {
+    "postdeploy": "npm run build"
+  }
+} 

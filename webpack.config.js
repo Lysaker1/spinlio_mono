@@ -121,10 +121,10 @@ module.exports = (env) => {
       ],
     },
     resolve: {
-      extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs'],
+      extensions: ['.tsx', '.ts', '.js'],
       alias: {
         '@marketplace': path.resolve(currentPath, 'src'),
-        '@shared': path.resolve(currentPath, 'src/shared'),
+        '@shared': path.resolve(__dirname, '../../shared'),
         '@shared/components': path.resolve(currentPath, 'src/shared/components'),
         '@shared/hooks': path.resolve(currentPath, 'src/shared/hooks'),
         '@shared/assets': path.resolve(currentPath, 'src/shared/assets'),
@@ -137,6 +137,9 @@ module.exports = (env) => {
         '@tabler/icons-react': path.resolve(__dirname, '../../../node_modules/@tabler/icons-react'),
         '@emotion/react': path.resolve(__dirname, '../../../node_modules/@emotion/react'),
         '@emotion/styled': path.resolve(__dirname, '../../../node_modules/@emotion/styled'),
+        ...(fs.existsSync(path.resolve(__dirname, './src/shared')) ? {
+          '@shared': path.resolve(__dirname, './src/shared')
+        } : {})
       },
       fallback: {
         "fs": false,

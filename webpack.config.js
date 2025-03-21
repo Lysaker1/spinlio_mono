@@ -84,18 +84,18 @@ module.exports = (env) => {
 
   // Public assets to copy
   const copyPluginPatterns = [
-    {
+    /*{
       from: path.resolve(currentPath, 'public/assets/icons'),
       to: 'assets/icons'
-    },
+    },*/
     {
       from: path.resolve(currentPath, 'shared/assets'),
       to: 'assets'
-    },
+    }/*,
     {
       from: path.resolve(currentPath, 'public/_redirects'),
       to: '_redirects'
-    }
+    }*/
   ];
 
   return {

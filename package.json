@@ -4,7 +4,7 @@
   "description": "PREFAB monorepo root for Heroku deployment",
   "private": true,
   "scripts": {
-    "heroku-prebuild": "cd src/apps/design && npm install --no-package-lock",
+    "heroku-prebuild": "cd src/apps/design && npm install --no-package-lock --include=dev",
     "heroku-postbuild": "mkdir -p src/apps/design/src/shared && cp -r src/shared/* src/apps/design/src/shared/ && cd src/apps/design && npm run build",
     "start": "cd src/apps/design && npm start"
   },

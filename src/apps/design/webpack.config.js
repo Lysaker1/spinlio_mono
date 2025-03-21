@@ -89,7 +89,7 @@ module.exports = (env) => {
       to: 'assets/icons'
     },
     {
-      from: path.resolve(currentPath, 'src/shared/assets'),
+      from: path.resolve(currentPath, 'shared/assets'),
       to: 'assets'
     },
     {
@@ -147,7 +147,7 @@ module.exports = (env) => {
     resolve: {
       extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs'],
       alias: {
-        '@shared': path.resolve(currentPath, 'src/shared'),
+        '@shared': path.resolve(currentPath, 'shared'),
         '@': path.resolve(currentPath, 'src'),
         'three': path.resolve(currentPath, 'node_modules/three'),
         'react': path.resolve(currentPath, 'node_modules/react'),

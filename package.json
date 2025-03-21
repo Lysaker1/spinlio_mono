@@ -1,6 +1,7 @@
 {
-  "name": "@bazaar/design",
+  "name": "design",
   "version": "1.0.0",
+  "description": "PREFAB Design App",
   "private": true,
   "dependencies": {
     "@auth0/auth0-react": "^2.2.4",
@@ -44,17 +45,17 @@
   },
   "scripts": {
     "start": "node server.js",
-    "dev": "webpack serve --mode development",
+    "dev": "webpack serve --config webpack.config.js --env mode=development",
     "dev:webpack": "webpack serve --mode development",
     "dev:server": "nodemon server.js",
-    "build": "webpack --mode production",
+    "build": "webpack --config webpack.config.js --env mode=production",
     "build:prod": "npm run copy-shared && webpack --mode production",
     "copy-shared": "rm -rf ./src/shared && mkdir -p ./src/shared && cp -r ../../shared/* ./src/shared/",
-    "test": "jest",
+    "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint . --ext .ts,.tsx",
     "analyze": "webpack --mode production --env ENVIRONMENT=production ANALYZE=true",
     "postinstall": "npm run build",
-    "heroku-postbuild": "npm run build:prod"
+    "heroku-postbuild": "npm run build"
   },
   "devDependencies": {
     "@babel/core": "^7.25.8",

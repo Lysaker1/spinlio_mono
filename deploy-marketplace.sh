@@ -23,8 +23,8 @@ cp -r src/shared src/apps/marketplace/
 
 # Check webpack.config.js for proper shared folder references
 echo "Updating webpack.config.js for shared folder..."
-sed -i '' 's|path.resolve(currentPath, '\''src/shared/assets'\'')|path.resolve(currentPath, '\''shared/assets'\'')|g' src/apps/marketplace/webpack.config.js
-sed -i '' 's|@shared'\'': path.resolve(currentPath, '\''src/shared'\'')|@shared'\'': path.resolve(currentPath, '\''shared'\'')|g' src/apps/marketplace/webpack.config.js
+sed -i '' 's|path.resolve(.*'\''src/shared/assets'\'')|path.resolve(currentPath, '\''shared/assets'\'')|g' src/apps/marketplace/webpack.config.js
+sed -i '' 's|@shared'\'': path.resolve(.*'\''src/shared'\'')|@shared'\'': path.resolve(currentPath, '\''shared'\'')|g' src/apps/marketplace/webpack.config.js
 
 # Update webpack config
 git add src/apps/marketplace/webpack.config.js

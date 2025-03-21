@@ -17,7 +17,7 @@ const DashboardRoutes: React.FC = () => {
   return (
     <Dashboard>
       <Routes>
-        <Route path="/" element={<Navigate to="/dashboard/marketplace" replace />} />
+        <Route path="/" element={<Navigate to="/marketplace" replace />} />
         <Route path="marketplace" element={<Marketplace />} />
         <Route path="marketplace/prefabs" element={<Prefabs />} />
         <Route path="marketplace/components" element={<Components />} />

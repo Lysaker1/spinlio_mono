@@ -29,15 +29,11 @@ const AppContent: React.FC = () => {
     <div className="app">
       <main className="main-content">
         <Routes>
-          <Route path="/" element={<Navigate to="/dashboard" />} />
-          <Route 
-            path="/dashboard/*" 
-            element={
-              <React.Suspense fallback={<div className="loading-placeholder" />}>
-                <DashboardRoutes />
-              </React.Suspense>
-            } 
-          />
+          <Route path="/" element={
+            <React.Suspense fallback={<div className="loading-placeholder" />}>
+              <DashboardRoutes />
+            </React.Suspense>
+          } />
           <Route 
             path="/callback" 
             element={
@@ -46,7 +42,7 @@ const AppContent: React.FC = () => {
               </React.Suspense>
             } 
           />         
-          <Route path="*" element={<Navigate to="/dashboard" />} />
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </main>
       <footer className="footer">

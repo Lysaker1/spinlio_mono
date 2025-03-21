@@ -46,11 +46,11 @@
     "build": "webpack --config webpack.config.js --env mode=production",
     "build:prod": "npm run copy-shared && npm run build:css && webpack --mode production --env ENVIRONMENT=production",
     "build:css": "tailwindcss -i ./index.css -o ./public/tailwind.css --minify",
-    "copy-shared": "rm -rf ./src/shared && mkdir -p ./src/shared && cp -r ../../shared/* ./src/shared/",
+    "copy-shared": "mkdir -p ./src/shared && cp -r ../../shared/* ./src/shared/ || echo 'No shared directory to copy'",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint src",
     "analyze": "webpack --mode production --env ENVIRONMENT=production ANALYZE=true",
-    "heroku-postbuild": "npm run copy-shared && npm run build"
+    "heroku-postbuild": "mkdir -p ./src/shared && cp -r ../../shared/* ./src/shared/ || echo 'Creating empty shared dir' && mkdir -p ./src/shared && npm run build"
   },
   "devDependencies": {
     "@babel/core": "^7.25.8",

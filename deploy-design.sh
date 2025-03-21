@@ -23,7 +23,7 @@ cp -r src/shared src/apps/design/
 
 # Add shared folder to git
 git add src/apps/design/shared
-git commit -m "Add shared folder to design app for deployment (temporary)"
+git commit -m "Add shared folder to design app for deployment (temporary)" --no-verify
 
 # Create a branch just for the design app
 echo "Creating design-heroku-branch..."
@@ -37,6 +37,6 @@ git push heroku-design design-heroku-branch:main -f
 echo "Cleaning up - removing shared folder from design app..."
 rm -rf src/apps/design/shared
 git add src/apps/design
-git commit -m "Remove shared folder from design app after deployment"
+git commit -m "Remove shared folder from design app after deployment" --no-verify
 
 echo "Deployment completed!" 

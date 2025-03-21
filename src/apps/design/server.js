@@ -1,12 +1,21 @@
 const express = require('express');
 const path = require('path');
-const helmet = require('helmet');
-const cors = require('cors');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
+const cors = require('cors');
+const helmet = require('helmet');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Check if dist directory exists
+const distDir = path.join(__dirname, 'dist');
+if (!fs.existsSync(distDir)) {
+  console.warn('Warning: dist directory does not exist!');
+  console.warn('You may need to run "npm run build" first');
+  fs.mkdirSync(distDir, { recursive: true });
+}
 
 // Enable if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
 app.set('trust proxy', 1);
@@ -38,7 +47,12 @@ app.use(express.static(path.join(__dirname, 'dist')));
 
 // For all other requests, send `index.html` from the dist directory
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+  const indexPath = path.join(__dirname, 'dist', 'index.html');
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.status(404).send('Application is not built properly. Please check the deployment logs.');
+  }
 });
 
 // Error handling middleware

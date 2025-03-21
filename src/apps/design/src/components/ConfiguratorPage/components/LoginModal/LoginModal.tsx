@@ -6,7 +6,7 @@ const LoginModal = ({ opened, setOpened }: { opened: boolean, setOpened: (opened
   return (
     <>
       <Modal opened={opened} onClose={() => setOpened(false)} withCloseButton={false} className="rounded-xl">
-        <h2 className="text-3xl font-bold mb-4 text-center">Welcome to Spinlio</h2>
+        <h2 className="text-3xl font-bold mb-4 text-center">Welcome to Bazaar</h2>
         <p className="text-xl mb-4 text-center">Please log in to start customizing!</p>
         <button className="bg-black text-white py-2 px-4 rounded-full w-full" onClick={() => loginWithPopup()}>
           Log in

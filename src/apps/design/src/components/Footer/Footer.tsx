@@ -29,20 +29,6 @@ export const Footer: React.FC<FooterProps> = ({ style }) => {
     return () => observer.disconnect();
   }, []);
 
-  useEffect(() => {
-    // Klaviyo script loading
-    const script = document.createElement('script');
-    script.src = 'https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=UYRE7k';
-    script.async = true;
-    document.body.appendChild(script);
-
-    return () => {
-      if (document.body.contains(script)) {
-        document.body.removeChild(script);
-      }
-    };
-  }, []);
-
   return (
     <>
       {/* Invisible trigger element at the top */}
@@ -53,10 +39,6 @@ export const Footer: React.FC<FooterProps> = ({ style }) => {
           <Text className="footer-text">
             © NeuralHub Limited
           </Text>
-          
-          <div className="newsletter-container">
-            <div className="klaviyo-form-RqHT8c"></div>
-          </div>
         </Container>
       </footer>
     </>

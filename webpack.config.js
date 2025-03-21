@@ -126,6 +126,7 @@ module.exports = (env) => {
         '@mantine/notifications': path.resolve(__dirname, '../../../node_modules/@mantine/notifications'),
         '@tabler/icons-react': path.resolve(__dirname, '../../../node_modules/@tabler/icons-react'),
         '@emotion/react': path.resolve(__dirname, '../../../node_modules/@emotion/react'),
+        '@emotion/styled': path.resolve(__dirname, '../../../node_modules/@emotion/styled'),
         'node_modules': path.resolve(__dirname, '../../../node_modules')
       },
       fallback: {

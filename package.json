@@ -1,12 +1,12 @@
 {
-  "name": "prefab-root",
+  "name": "prefab-monorepo",
   "version": "1.0.0",
-  "description": "PREFAB monorepo root for Heroku deployment",
+  "description": "PREFAB Design and Marketplace Platform",
   "private": true,
   "scripts": {
-    "heroku-prebuild": "cd src/apps/design && npm install --no-package-lock --include=dev",
-    "heroku-postbuild": "mkdir -p src/apps/design/src/shared && cp -r src/shared/* src/apps/design/src/shared/ && cd src/apps/design && npm run build",
-    "start": "cd src/apps/design && npm start"
+    "heroku-prebuild": "cd src/apps/design && npm install --no-package-lock --include=dev --no-optional",
+    "heroku-postbuild": "cd src/apps/design && npm run build",
+    "start": "cd src/apps/design && node server.js"
   },
   "engines": {
     "node": "18.x",

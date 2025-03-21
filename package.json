@@ -1,101 +1,28 @@
 {
-  "name": "@bazaar/design",
+  "name": "prefab-monorepo",
   "version": "1.0.0",
   "private": true,
-  "dependencies": {
-    "@auth0/auth0-react": "^2.2.4",
-    "@aws-sdk/client-s3": "^3.369.0",
-    "@aws-sdk/s3-request-presigner": "^3.369.0",
-    "@emotion/react": "^11.11.4",
-    "@emotion/styled": "^11.11.3",
-    "@mantine/core": "^7.17.1",
-    "@mantine/form": "^7.17.1",
-    "@mantine/hooks": "^7.16.2",
-    "@mantine/notifications": "^7.16.2",
-    "@mui/material": "^5.15.13",
-    "@react-three/drei": "^9.102.5",
-    "@react-three/fiber": "^8.16.0",
-    "@shapediver/viewer": "3.3.10",
-    "@shapediver/viewer.features.attribute-visualization": "3.3.10",
-    "@stripe/stripe-js": "^5.5.0",
-    "@supabase/supabase-js": "^2.47.12",
-    "@tabler/icons-react": "^3.22.0",
-    "axios": "^1.6.8",
-    "cors": "^2.8.5",
-    "clean-webpack-plugin": "^4.0.0",
-    "compression-webpack-plugin": "^10.0.0",
-    "copy-webpack-plugin": "^12.0.2",
-    "dotenv": "^16.4.5",
-    "express": "^4.19.2",
-    "helmet": "^7.1.0",
-    "compression": "^1.7.4",
-    "react": "^18.3.1",
-    "react-colorful": "^5.6.1",
-    "react-dom": "^18.3.1",
-    "react-error-boundary": "^5.0.0",
-    "react-hot-toast": "^2.4.1",
-    "react-router-dom": "^6.22.3",
-    "three": "^0.162.0",
-    "three-mesh-bvh": "^0.7.0",
-    "uuid": "^9.0.1",
-    "webpack-bundle-analyzer": "^4.10.1",
-    "html-webpack-plugin": "^5.6.0"
-  },
+  "workspaces": [
+    "src/apps/*",
+    "src/api",
+    "src/shared"
+  ],
   "scripts": {
-    "start": "node server.js",
-    "dev": "concurrently \"npm run dev:webpack\" \"npm run dev:server\"",
-    "dev:webpack": "webpack serve --mode development",
-    "dev:server": "nodemon server.js",
-    "build": "webpack --mode production",
-    "test": "jest",
-    "lint": "eslint . --ext .ts,.tsx",
-    "analyze": "webpack --mode production --env ENVIRONMENT=production ANALYZE=true",
-    "postinstall": "npm run build"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.25.8",
-    "@babel/preset-env": "^7.25.8",
-    "@babel/preset-react": "^7.25.7",
-    "@babel/preset-typescript": "^7.25.8",
-    "@types/jest": "^29.5.14",
-    "@types/node": "^22.13.10",
-    "@types/react": "^18.3.19",
-    "@types/react-dom": "^18.3.5",
-    "@types/three": "^0.169.0",
-    "autoprefixer": "^10.4.20",
-    "babel-loader": "^9.2.1",
-    "css-loader": "^7.1.2",
-    "file-loader": "^6.2.0",
-    "html-webpack-plugin": "^5.6.0",
-    "postcss": "^8.5.3",
-    "postcss-loader": "^8.1.1",
-    "style-loader": "^4.0.0",
-    "tailwindcss": "^3.4.17",
-    "ts-loader": "^9.5.1",
-    "typescript": "^5.7.2",
-    "webpack": "^5.95.0",
-    "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^5.1.0"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "dev:design": "cd src/apps/design && npm run dev",
+    "dev:marketplace": "cd src/apps/marketplace && npm run dev",
+    "dev:api": "cd src/api && npm run dev",
+    "build:design": "cd src/apps/design && npm run build",
+    "build:marketplace": "cd src/apps/marketplace && npm run build",
+    "build:api": "cd src/api && npm run build",
+    "start:design": "cd src/apps/design && npm start",
+    "start:marketplace": "cd src/apps/marketplace && npm start",
+    "start:api": "cd src/api && npm start"
   },
   "engines": {
     "node": "18.x",
     "npm": "10.x"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
   }
 }

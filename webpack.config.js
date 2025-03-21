@@ -90,15 +90,15 @@ module.exports = (env) => {
   // Public assets to copy
   const copyPluginPatterns = [
     {
-      from: path.resolve(rootPath, 'public/assets/icons'),
+      from: path.resolve(__dirname, 'public/assets/icons'),
       to: 'assets/icons'
     },
     {
-      from: path.resolve(rootPath, 'src/shared/assets'),
+      from: path.resolve(__dirname, 'shared/assets'),
       to: 'assets'
     },
     {
-      from: path.resolve(rootPath, 'public/_redirects'),
+      from: path.resolve(__dirname, 'public/_redirects'),
       to: '_redirects'
     }
   ];
@@ -113,7 +113,7 @@ module.exports = (env) => {
       ].filter(Boolean)
     },
     output: {
-      path: path.resolve(currentPath, 'dist'),
+      path: path.resolve(__dirname, 'dist'),
       filename: isProd ? '[name].[contenthash].js' : '[name].bundle.js',
       chunkFilename: isProd ? '[name].[contenthash].chunk.js' : '[name].chunk.js',
       publicPath: '/',
@@ -159,22 +159,22 @@ module.exports = (env) => {
     resolve: {
       extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs'],
       alias: {
-        '@shared': path.resolve(rootPath, 'src/shared'),
-        '@': path.resolve(currentPath, 'src'),
-        'three': path.resolve(rootPath, 'node_modules/three'),
-        'react': path.resolve(rootPath, 'node_modules/react'),
-        'react-dom': path.resolve(rootPath, 'node_modules/react-dom'),
-        '@shapediver/viewer': path.resolve(rootPath, 'node_modules/@shapediver/viewer'),
-        '@mantine/form': path.resolve(rootPath, 'node_modules/@mantine/form'),
-        '@mantine/core': path.resolve(rootPath, 'node_modules/@mantine/core'),
-        '@mantine/hooks': path.resolve(rootPath, 'node_modules/@mantine/hooks'),
-        '@mantine/notifications': path.resolve(rootPath, 'node_modules/@mantine/notifications'),
-        '@tabler/icons-react': path.resolve(rootPath, 'node_modules/@tabler/icons-react'),
-        '@emotion/react': path.resolve(rootPath, 'node_modules/@emotion/react'),
-        '@emotion/styled': path.resolve(rootPath, 'node_modules/@emotion/styled'),
-        '@react-three/drei': path.resolve(rootPath, 'node_modules/@react-three/drei'),
-        '@react-three/fiber': path.resolve(rootPath, 'node_modules/@react-three/fiber'),
-        'node_modules': path.resolve(rootPath, 'node_modules')
+        '@shared': path.resolve(__dirname, 'shared'),
+        '@': path.resolve(__dirname, 'src'),
+        'three': path.resolve(__dirname, 'node_modules/three'),
+        'react': path.resolve(__dirname, 'node_modules/react'),
+        'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
+        '@shapediver/viewer': path.resolve(__dirname, 'node_modules/@shapediver/viewer'),
+        '@mantine/form': path.resolve(__dirname, 'node_modules/@mantine/form'),
+        '@mantine/core': path.resolve(__dirname, 'node_modules/@mantine/core'),
+        '@mantine/hooks': path.resolve(__dirname, 'node_modules/@mantine/hooks'),
+        '@mantine/notifications': path.resolve(__dirname, 'node_modules/@mantine/notifications'),
+        '@tabler/icons-react': path.resolve(__dirname, 'node_modules/@tabler/icons-react'),
+        '@emotion/react': path.resolve(__dirname, 'node_modules/@emotion/react'),
+        '@emotion/styled': path.resolve(__dirname, 'node_modules/@emotion/styled'),
+        '@react-three/drei': path.resolve(__dirname, 'node_modules/@react-three/drei'),
+        '@react-three/fiber': path.resolve(__dirname, 'node_modules/@react-three/fiber'),
+        'node_modules': path.resolve(__dirname, 'node_modules')
       },
       fallback: {
         "fs": false,
@@ -182,13 +182,13 @@ module.exports = (env) => {
       },
       modules: [
         'node_modules',
-        path.resolve(rootPath, 'node_modules')
+        path.resolve(__dirname, 'node_modules')
       ]
     },
     plugins: [
       new CleanWebpackPlugin(),
       new HtmlWebpackPlugin({
-        template: path.resolve(rootPath, 'public/index.html'),
+        template: path.resolve(__dirname, 'public/index.html'),
         templateParameters: {
           BASE_URL: isProd 
             ? 'https://design.bazaar.it' 
@@ -279,7 +279,7 @@ module.exports = (env) => {
     },
     devServer: {
       static: {
-        directory: path.join(currentPath, 'public'),
+        directory: path.join(__dirname, 'public'),
       },
       compress: true,
       port: finalEnv.PORT_FRONTEND || 3001,

@@ -4,9 +4,6 @@
   "private": true,
   "dependencies": {
     "@auth0/auth0-react": "^2.2.4",
-    "@bazaar/shared": "1.0.0",
-    "@bazaar/supabase": "1.0.0",
-    "@bazaar/types": "1.0.0",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.3",
     "@mantine/core": "^7.17.1",

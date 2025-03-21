@@ -1,0 +1,146 @@
+/* Card Layout Component */
+.parameter-card {
+  border-radius: 0.75rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  background: transparent;
+  padding: 0;
+}
+
+/* Dropdown Container */
+.dropdown-container {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Dropdown trigger button */
+.dropdown-trigger {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 0.08rem transparent solid;
+}
+
+.dropdown-trigger:hover,
+.dropdown-trigger.open {
+  background: transparent;  /* Change this */
+  backdrop-filter: blur(0.625rem);
+  border: 0.08rem solid rgba(255, 255, 255, 0.1);
+
+}
+
+.dropdown-value {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.875rem;
+}
+
+.dropdown-arrow {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.75rem;
+  transition: transform 0.2s ease;
+}
+
+.dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+/* Options menu */
+.dropdown-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  background: rgba(40, 40, 40, 0.95);
+  backdrop-filter: blur(0.625rem);
+  border-radius: 0.5rem;
+  border: 0.0625rem solid rgba(255, 255, 255, 0.1);
+  padding: 0.3rem;
+  z-index: 1000;
+  display: none;
+  max-height: none;
+  overflow: visible;
+}
+
+.dropdown-options.open {
+  margin-top: .2rem;
+  display: block;
+}
+
+.dropdown-option {
+  padding: 0.5rem 0.75rem;
+  color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  font-size: 0.875rem;
+  border-radius: 0.375rem;
+  transition: all 0.2s ease;
+  white-space: normal;
+  word-wrap: break-word;
+  width: 100%; /* Add this */
+  max-width: 100%; /* Add this */
+  box-sizing: border-box; /* Add this */
+
+}
+
+.dropdown-option:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Mobile-specific styles */
+@media screen and (max-width: 48rem) {
+  .parameter-card.mobile {
+    width: 100%;
+    flex-shrink: 0;
+    scroll-snap-align: start;
+    margin-right: 0;
+    margin-bottom: 0;
+    background: transparent;
+    padding: 0.1rem 0.2rem 0.1rem 0.2rem; /* top right bottom left */
+
+  }
+
+  .dropdown-options {
+    position: absolute;
+    top: auto;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-height: none;
+    background: rgba(40, 40, 40, 0.95);
+    backdrop-filter: blur(0.625rem);
+    border: 0.0625rem solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+    z-index: 1000;
+    overflow: visible;
+  }
+
+  .dropdown-option {
+    padding: 0.75rem;
+    min-height: 3rem;
+    display: flex;
+    align-items: center;
+  }
+
+  /* When at bottom of screen, show options above */
+  .dropdown-container:last-child .dropdown-options,
+  .dropdown-container:nth-last-child(2) .dropdown-options {
+    top: auto;
+    bottom: 100%;
+    margin-top: 0;
+    margin-bottom: .2rem;
+  }
+}

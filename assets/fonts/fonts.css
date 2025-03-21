@@ -1,0 +1,16 @@
+/* Font definitions with fallbacks */
+@font-face {
+  font-family: 'HelveticaNeueSystem';
+  src: local('Helvetica Neue'),
+       local('HelveticaNeue');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* System font stack */
+body {
+  font-family: 'HelveticaNeueSystem', -apple-system, BlinkMacSystemFont, 'Segoe UI', 
+               Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', 
+               Arial, sans-serif;
+} 

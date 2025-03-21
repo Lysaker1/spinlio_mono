@@ -1,0 +1,73 @@
+/* Main container for the ShapeDiver viewer component */
+.viewerContainer {
+  width: 100%;                /* Takes full width of parent */
+  height: 100%;               /* Takes full height of parent */
+  position: relative;         /* Creates positioning context for absolute children */
+  min-height: 300px;         /* Ensures minimum height even when parent is smaller */
+}
+
+/* Canvas element where the 3D model is rendered */
+.viewerCanvas {
+  width: 100% !important;     /* Forces full width, overriding inline styles */
+  height: 100% !important;    /* Forces full height, overriding inline styles */
+  position: absolute;         /* Positions relative to viewerContainer */
+  top: 0;                     /* Aligns to top of container */
+  left: 0;                    /* Aligns to left of container */
+  min-height: inherit;        /* Inherits min-height from parent */
+  touch-action: none;         /* Prevents default touch behaviors like scrolling */
+}
+
+/* Mobile-specific styles for screens smaller than 768px */
+@media screen and (max-width: 768px) {
+  /* Container adjustments for mobile view */
+  .viewer-container {
+    position: fixed;          /* Fixed position relative to viewport */
+    top: 0;                   /* Aligns to top of screen */
+    left: 0;                  /* Aligns to left of screen */
+    width: 100%;             /* Takes full screen width */
+    height: calc(100% - 200px); /* Leaves space for parameter panel at bottom */
+  }
+  
+  /* Global class for ShapeDiver canvas container */
+  :global(.sd-canvas-container) {
+    transform: scale(0.8);    /* Reduces size to 80% for better mobile viewing */
+  }
+
+  /* Mobile-specific canvas adjustments */
+  .viewerCanvas {
+    height: 100% !important;  /* Forces full height on mobile */
+    width: 100% !important;   /* Forces full width on mobile */
+    position: fixed;          /* Fixed position relative to viewport */
+    top: 0;                   /* Aligns to top of screen */
+    left: 0;                  /* Aligns to left of screen */
+    z-index: 1;              /* Sets stacking context */
+  }
+
+  /* Loading overlay positioning for mobile */
+  .loadingOverlay {
+    position: fixed;          /* Fixed position relative to viewport */
+    top: 0;                   /* Aligns to top of screen */
+    left: 0;                  /* Aligns to left of screen */
+    right: 0;                 /* Extends to right edge */
+    bottom: 200px;           /* Matches parameter panel height */
+    z-index: 2;              /* Appears above canvas */
+  }
+}
+
+/* Loading overlay styling */
+.loadingOverlay {
+  display: flex;              /* Uses flexbox for centering */
+  justify-content: center;    /* Centers horizontally */
+  align-items: center;        /* Centers vertically */
+  background-color: rgba(245, 240, 235, 0.2); /* Semi-transparent background */
+  backdrop-filter: blur(5px); /* Applies blur effect to content behind overlay */
+}
+
+/* Loading GIF styling */
+.loadingGif {
+  width: auto;               /* Auto width based on content */
+  height: auto;              /* Auto height based on content */
+  max-width: 100%;          /* Prevents overflow beyond container */
+  max-height: 100%;         /* Prevents overflow beyond container */
+  object-fit: contain;      /* Maintains aspect ratio while fitting in container */
+}

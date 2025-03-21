@@ -32,7 +32,8 @@
     "build": "webpack --mode production --env ENVIRONMENT=production",
     "test": "jest",
     "lint": "eslint src",
-    "analyze": "webpack --mode production --env ENVIRONMENT=production ANALYZE=true"
+    "analyze": "webpack --mode production --env ENVIRONMENT=production ANALYZE=true",
+    "postinstall": "npm run build"
   },
   "devDependencies": {
     "@babel/core": "^7.25.8",

@@ -10,18 +10,23 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 
 module.exports = (env) => {
   // Environment handling
-  const currentPath = path.join(__dirname, '../..');
-  const basePath = currentPath + '/.env';
-  const envPath = basePath + '.' + (env.ENVIRONMENT || process.env.NODE_ENV || 'development');
+  const currentPath = __dirname;
+  const envPath = path.join(currentPath, env?.ENVIRONMENT === 'production' ? '.env.production' : '.env.development');
   
   // Load environment variables
-  const baseEnv = dotenv.config({ path: basePath }).parsed || {};
-  const environmentEnv = fs.existsSync(envPath) 
-    ? dotenv.config({ path: envPath }).parsed 
-    : {};
+  const envConfig = dotenv.config({ path: envPath }).parsed || {};
   
-  const finalEnv = { ...baseEnv, ...environmentEnv };
-  const isProd = env.ENVIRONMENT === 'production';
+  // Process-provided env vars (e.g. from Heroku)
+  const processEnv = {
+    NODE_ENV: process.env.NODE_ENV,
+    CORS_ORIGIN: process.env.CORS_ORIGIN,
+    API_URL: process.env.API_URL,
+    AUTH0_DOMAIN: process.env.AUTH0_DOMAIN
+  };
+  
+  // Merge all environment variables with priority to process env vars
+  const finalEnv = { ...envConfig, ...processEnv };
+  const isProd = env?.ENVIRONMENT === 'production' || process.env.NODE_ENV === 'production';
 
   // CSP headers
   const cspHeaders = {
@@ -116,18 +121,18 @@ module.exports = (env) => {
     resolve: {
       extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs'],
       alias: {
-        '@marketplace': path.resolve(__dirname, 'src'),
-        '@shared': path.resolve(__dirname, '../../shared'),
-        'react': path.resolve(__dirname, '../../../node_modules/react'),
-        'react-dom': path.resolve(__dirname, '../../../node_modules/react-dom'),
-        '@mantine/form': path.resolve(__dirname, '../../../node_modules/@mantine/form'),
-        '@mantine/core': path.resolve(__dirname, '../../../node_modules/@mantine/core'),
-        '@mantine/hooks': path.resolve(__dirname, '../../../node_modules/@mantine/hooks'),
-        '@mantine/notifications': path.resolve(__dirname, '../../../node_modules/@mantine/notifications'),
-        '@tabler/icons-react': path.resolve(__dirname, '../../../node_modules/@tabler/icons-react'),
-        '@emotion/react': path.resolve(__dirname, '../../../node_modules/@emotion/react'),
-        '@emotion/styled': path.resolve(__dirname, '../../../node_modules/@emotion/styled'),
-        'node_modules': path.resolve(__dirname, '../../../node_modules')
+        '@marketplace': path.resolve(currentPath, 'src'),
+        '@shared': path.resolve(currentPath, 'shared'),
+        'react': path.resolve(currentPath, 'node_modules/react'),
+        'react-dom': path.resolve(currentPath, 'node_modules/react-dom'),
+        '@mantine/form': path.resolve(currentPath, 'node_modules/@mantine/form'),
+        '@mantine/core': path.resolve(currentPath, 'node_modules/@mantine/core'),
+        '@mantine/hooks': path.resolve(currentPath, 'node_modules/@mantine/hooks'),
+        '@mantine/notifications': path.resolve(currentPath, 'node_modules/@mantine/notifications'),
+        '@tabler/icons-react': path.resolve(currentPath, 'node_modules/@tabler/icons-react'),
+        '@emotion/react': path.resolve(currentPath, 'node_modules/@emotion/react'),
+        '@emotion/styled': path.resolve(currentPath, 'node_modules/@emotion/styled'),
+        'node_modules': path.resolve(currentPath, 'node_modules')
       },
       fallback: {
         "fs": false,
@@ -141,7 +146,7 @@ module.exports = (env) => {
     plugins: [
       new CleanWebpackPlugin(),
       new HtmlWebpackPlugin({
-        template: path.resolve(__dirname, 'public/index.html'),
+        template: path.resolve(currentPath, 'public/index.html'),
         templateParameters: {
           BASE_URL: isProd 
             ? 'https://marketplace.bazaar.it' 
@@ -169,7 +174,11 @@ module.exports = (env) => {
       new CopyWebpackPlugin({
         patterns: [
           {
-            from: path.resolve(__dirname, 'public/assets'),
+            from: path.resolve(currentPath, 'public/assets'),
+            to: 'assets'
+          },
+          {
+            from: path.resolve(currentPath, 'shared/assets'),
             to: 'assets'
           }
         ]
@@ -222,7 +231,7 @@ module.exports = (env) => {
     },
     devServer: {
       static: {
-        directory: path.join(__dirname, 'public'),
+        directory: path.join(currentPath, 'public'),
       },
       compress: true,
       port: 3002,

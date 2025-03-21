@@ -13,8 +13,7 @@ import {
   getCachedSubcategories
 } from "@shared/utils/cacheUtils";
 import { measureLoadTime } from "@shared/utils/preloadUtils";
-import { useUser } from "@shared/hooks/useUser";
-import { Profile } from "@shared/types/Profile";
+
 interface UploadModalProps {
   profileId: string;
   uploadModalOpened: boolean;

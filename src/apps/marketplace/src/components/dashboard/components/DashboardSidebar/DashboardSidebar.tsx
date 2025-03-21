@@ -17,7 +17,7 @@ const menuItems = [
   { 
     icon: <IconHomeHeart style={{ width: '1.5rem', height: '1.5rem' }} stroke={1.5} />, 
     label: 'Marketplace', 
-    path: '/marketplace' 
+    path: '/' 
   },
   { 
     icon: <IconCode style={{ width: '1.5rem', height: '1.5rem' }} stroke={1.5} />, 

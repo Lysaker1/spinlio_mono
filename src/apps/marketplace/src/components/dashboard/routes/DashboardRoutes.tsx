@@ -17,19 +17,19 @@ const DashboardRoutes: React.FC = () => {
   return (
     <Dashboard>
       <Routes>
-        <Route path="/" element={<Navigate to="/marketplace" replace />} />
-        <Route path="marketplace" element={<Marketplace />} />
-        <Route path="marketplace/prefabs" element={<Prefabs />} />
-        <Route path="marketplace/components" element={<Components />} />
-        <Route path="marketplace/prefab/:id" element={<PrefabDetailPage />} />
-        <Route path="marketplace/component/:id" element={<ComponentDetailPage />} />
+        <Route index element={<Marketplace />} />
+        <Route path="marketplace" element={<Navigate to="/" replace />} />
+        <Route path="products/prefabs" element={<Prefabs />} />
+        <Route path="products/components" element={<Components />} />
+        <Route path="products/prefabs/:id" element={<PrefabDetailPage />} />
+        <Route path="products/components/:id" element={<ComponentDetailPage />} />
         <Route path="designs" element={<Designs />} />
         <Route path="uploads" element={<Uploads />} />
         <Route path="uploads/:id" element={<EditModel />} />
         <Route path="orders" element={<Orders />} />
+        <Route path="profiles" element={<ProfilePage />} />
+        <Route path="profiles/:id" element={<ProfilePage />} />
         <Route path="pedro" element={<Pedro />} />
-        <Route path="profile" element={<ProfilePage />} />
-        <Route path="profile/:id" element={<ProfilePage />} />
       </Routes>
     </Dashboard>
   );

@@ -91,7 +91,7 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ profile, onSubmit }) 
         <TextInput label="Website" {...form.getInputProps('website')} />
         <TextInput 
           label="Custom URL" {...form.getInputProps('custom_url')} 
-          description="This will be the URL of your Spinlio profile. The URL will be https://design.spinlio.com/dashboard/profile/[custom_url]"
+          description="This will be the URL of your Bazaar profile. The URL will be https://marketplace.bazaar.it/profiles/[custom_url]"
         />
         <Text style={{fontWeight: 500}}>Profile visibility</Text>
         <Switch

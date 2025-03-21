@@ -24,11 +24,11 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ opened, toggle }) => 
   // Handler for profile navigation
   const handleProfileClick = () => {
     if (user?.id) {
-      navigate(`/dashboard/profile/${user.id}`);
+      navigate(`/profiles/${user.id}`);
     } else {
       console.warn('Cannot navigate to profile: user ID is missing');
       // Fallback to base profile page
-      navigate('/dashboard/profile');
+      navigate('/profiles');
     }
   };
 
@@ -37,7 +37,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ opened, toggle }) => 
       <div className="dashboard-header-container">
         <Group>
           <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="md" />
-          <Title order={1} className='dashboard-header-title' onClick={()=>navigate("/dashboard")}>Bazaar</Title>
+          <Title order={1} className='dashboard-header-title' onClick={()=>navigate("/")}>Bazaar</Title>
         </Group>
         <Group className="dashboard-header-group" gap="xs">
           {isAuthenticated ? (

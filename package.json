@@ -55,7 +55,7 @@
     "lint": "eslint . --ext .ts,.tsx",
     "analyze": "webpack --mode production --env ENVIRONMENT=production ANALYZE=true",
     "postinstall": "npm run build",
-    "heroku-postbuild": "npm run build"
+    "heroku-postbuild": "npm run copy-shared && npm run build"
   },
   "devDependencies": {
     "@babel/core": "^7.25.8",

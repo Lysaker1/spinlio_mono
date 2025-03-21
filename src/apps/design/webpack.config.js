@@ -145,9 +145,9 @@ module.exports = (env) => {
       ],
     },
     resolve: {
-      extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs'],
+      extensions: ['.tsx', '.ts', '.js'],
       alias: {
-        '@shared': path.resolve(currentPath, 'src/shared'),
+        '@shared': path.resolve(__dirname, '../../shared'),
         '@': path.resolve(currentPath),
         'three': path.resolve(currentPath, '../../../node_modules/three'),
         'react': path.resolve(currentPath, '../../../node_modules/react'),
@@ -166,7 +166,10 @@ module.exports = (env) => {
         '@emotion/styled': path.resolve(currentPath, '../../../node_modules/@emotion/styled'),
         '@react-three/drei': path.resolve(currentPath, '../../../node_modules/@react-three/drei'),
         '@react-three/fiber': path.resolve(currentPath, '../../../node_modules/@react-three/fiber'),
-        'node_modules': path.resolve(currentPath, '../../../node_modules')
+        'node_modules': path.resolve(currentPath, '../../../node_modules'),
+        ...(fs.existsSync(path.resolve(__dirname, './src/shared')) ? {
+          '@shared': path.resolve(__dirname, './src/shared')
+        } : {})
       },
       fallback: {
         "fs": false,

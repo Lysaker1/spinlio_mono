@@ -147,7 +147,7 @@ module.exports = (env) => {
     resolve: {
       extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs'],
       alias: {
-        '@shared': path.resolve(currentPath, '../../shared'),
+        '@shared': path.resolve(currentPath, 'src/shared'),
         '@': path.resolve(currentPath),
         'three': path.resolve(currentPath, '../../../node_modules/three'),
         'react': path.resolve(currentPath, '../../../node_modules/react'),

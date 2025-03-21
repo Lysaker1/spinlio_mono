@@ -6,7 +6,7 @@ const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3002;
 
 // Configure trust proxy properly for Heroku
 app.set('trust proxy', 1);
@@ -66,7 +66,7 @@ app.use(helmet({
         "wss://*.shapediver.com",
         "https://api.bazaar.it",
         "https://api.bazaar.it/*",
-        "https://marketplace.bazaar.it",
+        "https://design.bazaar.it",
         "https://auth.bazaar.it",
         "https://*.auth0.com",
         "https://*.supabase.co",
@@ -184,5 +184,5 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Design app server running on port ${PORT}`);
+  console.log(`Marketplace app server running on port ${PORT}`);
 }); 

@@ -19,9 +19,14 @@
     "@tabler/icons-react": "^2.30.0",
     "axios": "^1.7.7",
     "clean-webpack-plugin": "^4.0.0",
+    "compression": "^1.7.4",
     "compression-webpack-plugin": "^10.0.0",
     "copy-webpack-plugin": "^12.0.2",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^7.1.0",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -31,10 +36,6 @@
     "three": "^0.162.0",
     "three-mesh-bvh": "^0.7.0",
     "uuid": "^11.1.0",
-    "express": "^4.18.2",
-    "cors": "^2.8.5",
-    "helmet": "^7.1.0",
-    "compression": "^1.7.4",
     "webpack-bundle-analyzer": "^4.10.1"
   },
   "scripts": {
@@ -42,10 +43,13 @@
     "dev": "concurrently \"npm run dev:css\" \"webpack serve --mode development --env ENVIRONMENT=development\"",
     "dev:css": "tailwindcss -i ./index.css -o ./public/tailwind.css --watch",
     "build": "npm run build:css && webpack --mode production --env ENVIRONMENT=production",
+    "build:prod": "npm run copy-shared && npm run build:css && webpack --mode production --env ENVIRONMENT=production",
     "build:css": "tailwindcss -i ./index.css -o ./public/tailwind.css --minify",
+    "copy-shared": "rm -rf ./src/shared && mkdir -p ./src/shared && cp -r ../../shared/* ./src/shared/",
     "test": "jest",
     "lint": "eslint src",
-    "analyze": "webpack --mode production --env ENVIRONMENT=production ANALYZE=true"
+    "analyze": "webpack --mode production --env ENVIRONMENT=production ANALYZE=true",
+    "heroku-postbuild": "npm run build:prod"
   },
   "devDependencies": {
     "@babel/core": "^7.25.8",

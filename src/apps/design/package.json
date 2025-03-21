@@ -21,14 +21,16 @@
     "@supabase/supabase-js": "^2.47.12",
     "@tabler/icons-react": "^2.30.0",
     "axios": "^1.6.8",
-    "cors": "^2.8.5",
     "clean-webpack-plugin": "^4.0.0",
+    "compression": "^1.7.4",
     "compression-webpack-plugin": "^10.0.0",
     "copy-webpack-plugin": "^12.0.2",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "express-rate-limit": "^7.5.0",
     "helmet": "^7.1.0",
-    "compression": "^1.7.4",
+    "html-webpack-plugin": "^5.6.0",
     "react": "^18.2.0",
     "react-colorful": "^5.6.1",
     "react-dom": "^18.2.0",
@@ -38,8 +40,7 @@
     "three": "^0.162.0",
     "three-mesh-bvh": "^0.7.0",
     "uuid": "^9.0.1",
-    "webpack-bundle-analyzer": "^4.10.1",
-    "html-webpack-plugin": "^5.6.0"
+    "webpack-bundle-analyzer": "^4.10.1"
   },
   "scripts": {
     "start": "node server.js",
@@ -47,10 +48,13 @@
     "dev:webpack": "webpack serve --mode development",
     "dev:server": "nodemon server.js",
     "build": "webpack --mode production",
+    "build:prod": "npm run copy-shared && webpack --mode production",
+    "copy-shared": "rm -rf ./src/shared && mkdir -p ./src/shared && cp -r ../../shared/* ./src/shared/",
     "test": "jest",
     "lint": "eslint . --ext .ts,.tsx",
     "analyze": "webpack --mode production --env ENVIRONMENT=production ANALYZE=true",
-    "postinstall": "npm run build"
+    "postinstall": "npm run build",
+    "heroku-postbuild": "npm run build:prod"
   },
   "devDependencies": {
     "@babel/core": "^7.25.8",

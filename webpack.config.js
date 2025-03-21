@@ -205,6 +205,9 @@ module.exports = (env) => {
         patterns: copyPluginPatterns
       }),
       new webpack.DefinePlugin(envKeys),
+      new webpack.DefinePlugin({
+        'process.env': JSON.stringify(process.env)
+      }),
     ].filter(Boolean),
     optimization: {
       splitChunks: {

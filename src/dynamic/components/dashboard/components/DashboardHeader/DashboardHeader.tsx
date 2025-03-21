@@ -13,12 +13,23 @@ interface DashboardHeaderProps {
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({ opened, toggle }) => {
   const { loginWithRedirect, isAuthenticated, logout } = useAuth0();
-  const { profile } = useUser();
+  const { user } = useUser();
   const navigate = useNavigate();
   const getInitials = (name: string): string => {
     const nameParts = name.split(' ');
     if (nameParts.length === 1) return nameParts[0][0]?.toUpperCase() || '';
     return (nameParts[0][0] + nameParts[nameParts.length - 1][0]).toUpperCase();
+  };
+
+  // Handler for profile navigation
+  const handleProfileClick = () => {
+    if (user?.id) {
+      navigate(`/dashboard/profile/${user.id}`);
+    } else {
+      console.warn('Cannot navigate to profile: user ID is missing');
+      // Fallback to base profile page
+      navigate('/dashboard/profile');
+    }
   };
 
   return (
@@ -38,17 +49,17 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ opened, toggle }) => 
                 radius="xl"
                 color="initials"
                 size="md"
-                src={profile?.avatar_url}
+                src={user?.picture || user?.avatar_url}
                 imageProps={{ onError: (e) => {
                   (e.target as HTMLImageElement).style.display = 'none';
                 }}}
               >
-                {getInitials(profile?.name || '')}
+                {getInitials(user?.name || '')}
               </Avatar>
               <Menu shadow="md" width={200} position="bottom-end" zIndex={1000}>
                 <Menu.Target>
                   <Group style={{ cursor: 'pointer' }}>
-                    <Text size="sm" fw={500}>{profile?.name}</Text>
+                    <Text size="sm" fw={500}>{user?.name}</Text>
                     <IconChevronDown size={14} />
                   </Group>
                 </Menu.Target>
@@ -56,7 +67,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ opened, toggle }) => 
                 <Menu.Dropdown>
                   <Menu.Item
                     leftSection={<IconUser size={14} />}
-                    onClick={() => navigate('/dashboard/profile/')}
+                    onClick={handleProfileClick}
                   >
                     My Profile
                   </Menu.Item>

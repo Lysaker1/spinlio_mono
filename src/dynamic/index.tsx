@@ -5,6 +5,7 @@ import App from './components/App';
 import '../shared/styles/global.css';
 import { apiUrl } from './config/api';
 import { UserProvider } from '@shared/hooks/useUser';
+import { AuthProvider } from '@shared/hooks/useAuth';
 import '@mantine/core/styles.css';
 import '../index.css';
 // Import font definitions with fallbacks
@@ -48,9 +49,11 @@ root.render(
       useRefreshTokens={true}
       useRefreshTokensFallback={true}
     >
-      <UserProvider>
-        <App />
-      </UserProvider>
+      <AuthProvider>
+        <UserProvider>
+          <App />
+        </UserProvider>
+      </AuthProvider>
     </Auth0Provider>
   </React.StrictMode>
 );

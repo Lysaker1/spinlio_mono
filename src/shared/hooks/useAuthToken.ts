@@ -1,64 +1,37 @@
 import { useEffect, useCallback } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { jwtDecode } from "jwt-decode"; 
-
-interface TokenData {
-  exp: number;  // Expiration timestamp
-  iat: number;  // Issued at timestamp
-}
+import { AuthService } from '../services/authService';
 
 export const useAuthToken = () => {
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
 
-  const isTokenExpired = useCallback((token: string): boolean => {
-    try {
-      const decoded = jwtDecode<TokenData>(token);
-      // Check if token expires in less than 5 minutes
-      const fiveMinutes = 5 * 60 * 1000;
-      return Date.now() >= (decoded.exp * 1000) - fiveMinutes;
-    } catch (error) {
-      console.error('Error decoding token:', error);
-      return true;
-    }
-  }, []);
-
-  const refreshToken = useCallback(async () => {
-    try {
-      const token = await getAccessTokenSilently();
-      localStorage.setItem('auth_token', token);
-      return token;
-    } catch (error) {
-      console.error('Error refreshing token:', error);
-      throw error;
-    }
+  // Use the getAccessTokenSilently from Auth0 as the token provider function
+  const setupTokenRefresh = useCallback(async () => {
+    await AuthService.setupTokenRefresh(getAccessTokenSilently);
   }, [getAccessTokenSilently]);
 
   useEffect(() => {
-    const manageToken = async () => {
-      if (isAuthenticated) {
-        try {
-          const currentToken = localStorage.getItem('auth_token');
-          
-          // If no token or token is expired, get a new one
-          if (!currentToken || isTokenExpired(currentToken)) {
-            await refreshToken();
-          }
+    if (isAuthenticated) {
+      setupTokenRefresh().catch(error => {
+        console.error('Failed to set up token refresh:', error);
+      });
 
-          // Set up refresh interval (every 30 minutes)
-          const refreshInterval = setInterval(async () => {
-            const token = localStorage.getItem('auth_token');
-            if (token && isTokenExpired(token)) {
-              await refreshToken();
-            }
-          }, 30 * 60 * 1000);
+      // Clean up on unmount
+      return () => {
+        // No need to clear here, as the AuthService handles this internally
+      };
+    }
+  }, [isAuthenticated, setupTokenRefresh]);
 
-          return () => clearInterval(refreshInterval);
-        } catch (error) {
-          console.error('Error in token management:', error);
-        }
-      }
-    };
-
-    manageToken();
-  }, [isAuthenticated, refreshToken, isTokenExpired]);
+  return {
+    getToken: AuthService.getToken,
+    isAuthenticated: () => {
+      const token = AuthService.getToken();
+      return !!token && !AuthService.isTokenExpired(token);
+    },
+    getUserId: () => {
+      const token = AuthService.getToken();
+      return token ? AuthService.getUserIdFromToken(token) : null;
+    }
+  };
 }; 

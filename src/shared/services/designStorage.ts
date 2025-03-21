@@ -1,27 +1,11 @@
+import api from '../config/api';
 import { SavedDesign } from '../types/SavedDesign';
-import axios from 'axios';
-
-const apiClient = axios.create({
-  // If we're in production, use https://api.spinlio.com
-  // If we're in development, use http://localhost:3003
-  baseURL: process.env.NODE_ENV === 'production' 
-    ? process.env.REACT_APP_API_URL || 'https://api.spinlio.com'
-    : 'http://localhost:3003',
-  withCredentials: true,
-  headers: {
-    'Content-Type': 'application/json'
-  }
-});
+import { AuthService } from './authService';
 
 export class DesignStorageService {
-  static async saveDesign(design: Omit<SavedDesign, 'id' | 'created_at'>, token: string): Promise<SavedDesign> {
+  static async saveDesign(design: Omit<SavedDesign, 'id' | 'created_at'>, token?: string): Promise<SavedDesign> {
     try {
-      const response = await apiClient.post('/api/designs', design, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      const response = await api.post('/api/designs', design);
       return response.data;
     } catch (error) {
       console.error('Error in saveDesign:', error);
@@ -29,14 +13,9 @@ export class DesignStorageService {
     }
   }
 
-  static async getDesignsByUser(userId: string, token: string): Promise<SavedDesign[]> {
+  static async getDesignsByUser(userId: string, token?: string): Promise<SavedDesign[]> {
     try {
-      const response = await apiClient.get(`/api/designs/${userId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      const response = await api.get(`/api/designs/${userId}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching designs:', error);
@@ -44,35 +23,25 @@ export class DesignStorageService {
     }
   }
 
-  static async deleteDesign(designId: string, token: string): Promise<void> {
+  static async deleteDesign(designId: string, token?: string): Promise<void> {
     try {
-      await apiClient.delete(`/api/designs/${designId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      await api.delete(`/api/designs/${designId}`);
     } catch (error) {
       console.error('Error deleting design:', error);
       throw error;
     }
   }
 
-  static async updateDesign(designId: string, updates: Partial<SavedDesign>, token: string): Promise<void> {
+  static async updateDesign(designId: string, updates: Partial<SavedDesign>, token?: string): Promise<void> {
     try {
-      await apiClient.patch(`/api/designs/${designId}`, updates, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      await api.patch(`/api/designs/${designId}`, updates);
     } catch (error) {
       console.error('Error updating design:', error);
       throw error;
     }
   }
 
-  static async duplicateDesign(design: SavedDesign, token: string): Promise<SavedDesign> {
+  static async duplicateDesign(design: SavedDesign, token?: string): Promise<SavedDesign> {
     try {
       const duplicatedDesign: Omit<SavedDesign, 'id' | 'created_at'> = {
         name: `${design.name} (Copy)`,
@@ -84,9 +53,9 @@ export class DesignStorageService {
         is_public: design.is_public
       };
 
-      const savedDesign = await this.saveDesign(duplicatedDesign, token);
+      const savedDesign = await this.saveDesign(duplicatedDesign);
       if (design.thumbnail_url && !savedDesign.thumbnail_url) {
-        await this.updateDesign(savedDesign.id, { thumbnail_url: design.thumbnail_url }, token);
+        await this.updateDesign(savedDesign.id, { thumbnail_url: design.thumbnail_url });
         return { ...savedDesign, thumbnail_url: design.thumbnail_url };
       }
       return savedDesign;

@@ -55,7 +55,14 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ profile, onSubmit }) 
       const token = await getAccessTokenSilently();
       await ProfileStorageService.updateProfile(values, token);
       onSubmit(values);
-      setProfile(values);
+      
+      // Ensure values is compatible with UserProfile by ensuring email is not undefined
+      const userProfileValues = {
+        ...values,
+        email: values.email || ''  // Ensure email is never undefined
+      };
+      setProfile(userProfileValues as any);
+      
       setNotification({ type: 'success', title: 'Success', message: 'Profile updated successfully.' });
     } catch (error) {
       console.error('Error updating profile:', error);

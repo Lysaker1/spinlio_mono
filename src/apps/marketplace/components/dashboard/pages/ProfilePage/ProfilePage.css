@@ -1,0 +1,38 @@
+.profile-page-content {
+  padding: 20px 40px;
+  width: 100%;
+  min-height: calc(100vh - 60px);
+  background-color: var(--mantine-color-body);
+}
+
+.profile-subpage-content {
+  padding: 20px 0;
+  width: 100%;
+}
+
+.submit-button {
+  margin-top: 1rem;
+  background-color: var(--mantine-color-bright);
+  color: var(--mantine-color-body);
+  border: none;
+  padding: 0.5rem 2.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.submit-button:hover {
+  font-weight: 700;
+}
+
+.profile-not-found {
+  width: 100vw;
+  min-height: calc(100vh - 60px);
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--mantine-color-body);
+  position: absolute;
+  left: 0;
+  padding: 20px;
+}

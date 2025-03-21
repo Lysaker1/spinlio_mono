@@ -5,9 +5,11 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const dotenv = require('dotenv');
 const fs = require('fs');
+const TerserPlugin = require('terser-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-module.exports = (env) => {
-  const isProd = env?.production || process.env.NODE_ENV === 'production';
+module.exports = (env, options) => {
+  const isProd = options.mode === 'production';
   const isWebpackServe = env?.WEBPACK_SERVE || process.env.WEBPACK_SERVE;
   
   // Define paths for the project
@@ -89,7 +91,7 @@ module.exports = (env) => {
       to: 'assets/icons'
     },*/
     {
-      from: path.resolve(currentPath, 'shared/assets'),
+      from: path.resolve(currentPath, '../../shared/assets'),
       to: 'assets'
     }/*,
     {
@@ -98,8 +100,13 @@ module.exports = (env) => {
     }*/
   ];
 
-  return {
-    mode: isProd ? 'production' : 'development',
+  // Get mode from options
+  const mode = options.mode || 'development';
+  const analyze = process.env.ANALYZE === 'true';
+
+  // Base configuration
+  const config = {
+    mode: mode,
     entry: {
       main: path.resolve(currentPath, 'src/index.tsx'),
     },
@@ -145,64 +152,58 @@ module.exports = (env) => {
       ],
     },
     resolve: {
-      extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs'],
+      extensions: ['.tsx', '.ts', '.js', '.jsx'],
       alias: {
-        '@shared': path.resolve(currentPath, 'shared'),
+        '@shared': path.resolve(currentPath, '../../shared'),
         '@': path.resolve(currentPath, 'src'),
-        'three': path.resolve(currentPath, 'node_modules/three'),
-        'react': path.resolve(currentPath, 'node_modules/react'),
-        'react-dom': path.resolve(currentPath, 'node_modules/react-dom'),
-        '@shapediver/viewer': path.resolve(currentPath, 'node_modules/@shapediver/viewer'),
-        '@mantine/form': path.resolve(currentPath, 'node_modules/@mantine/form'),
-        '@mantine/core': path.resolve(currentPath, 'node_modules/@mantine/core'),
-        '@mantine/hooks': path.resolve(currentPath, 'node_modules/@mantine/hooks'),
-        '@mantine/notifications': path.resolve(currentPath, 'node_modules/@mantine/notifications'),
-        '@tabler/icons-react': path.resolve(currentPath, 'node_modules/@tabler/icons-react'),
-        '@emotion/react': path.resolve(currentPath, 'node_modules/@emotion/react'),
-        '@emotion/styled': path.resolve(currentPath, 'node_modules/@emotion/styled'),
-        '@react-three/drei': path.resolve(currentPath, 'node_modules/@react-three/drei'),
-        '@react-three/fiber': path.resolve(currentPath, 'node_modules/@react-three/fiber'),
-        'node_modules': path.resolve(currentPath, 'node_modules')
-      },
-      fallback: {
-        "fs": false,
-        "path": false
+        'three': path.resolve(process.cwd(), 'node_modules/three'),
+        'react': path.resolve(process.cwd(), 'node_modules/react'),
+        'react-dom': path.resolve(process.cwd(), 'node_modules/react-dom'),
+        '@shapediver/viewer': path.resolve(process.cwd(), 'node_modules/@shapediver/viewer'),
+        '@mantine/form': path.resolve(process.cwd(), 'node_modules/@mantine/form'),
+        '@mantine/core': path.resolve(process.cwd(), 'node_modules/@mantine/core'),
+        '@mantine/hooks': path.resolve(process.cwd(), 'node_modules/@mantine/hooks'),
+        '@mantine/notifications': path.resolve(process.cwd(), 'node_modules/@mantine/notifications'),
+        '@tabler/icons-react': path.resolve(process.cwd(), 'node_modules/@tabler/icons-react'),
+        '@emotion/react': path.resolve(process.cwd(), 'node_modules/@emotion/react'),
+        '@emotion/styled': path.resolve(process.cwd(), 'node_modules/@emotion/styled'),
+        '@react-three/drei': path.resolve(process.cwd(), 'node_modules/@react-three/drei'),
+        '@react-three/fiber': path.resolve(process.cwd(), 'node_modules/@react-three/fiber'),
       },
       modules: [
+        path.resolve(process.cwd(), 'node_modules'),
+        path.resolve(currentPath, 'node_modules'),
         'node_modules',
-        path.resolve(currentPath, 'node_modules')
-      ]
+      ],
+      fallback: {
+        "fs": false,
+        "path": false,
+        "tls": false,
+        "net": false,
+        "zlib": false,
+        "http": false,
+        "https": false,
+        "stream": false,
+        "crypto": false,
+        "util": false,
+        "url": false,
+        "assert": false,
+        "os": false,
+      }
     },
     plugins: [
       new CleanWebpackPlugin(),
       new HtmlWebpackPlugin({
-        template: path.resolve(currentPath, 'public/index.html'),
-        templateParameters: {
-          BASE_URL: isProd 
-            ? 'https://design.bazaar.it' 
-            : 'http://localhost:3001'
-        },
-        minify: isProd ? {
-          removeComments: true,
-          collapseWhitespace: true,
-          removeRedundantAttributes: true,
-          useShortDoctype: true,
-          removeEmptyAttributes: true,
-          removeStyleLinkTypeAttributes: true,
-          keepClosingSlash: true,
-          minifyJS: true,
-          minifyCSS: true,
-          minifyURLs: true,
-        } : false,
-        meta: {
-          'Content-Security-Policy': {
-            'http-equiv': 'Content-Security-Policy',
-            content: cspHeaders['Content-Security-Policy']
-          }
-        }
+        template: path.join(currentPath, 'public', 'index.html'),
+        filename: 'index.html',
       }),
       new CopyWebpackPlugin({
-        patterns: copyPluginPatterns
+        patterns: [
+          { from: path.resolve(currentPath, 'public/favicon.ico'), to: '' },
+          { from: path.resolve(currentPath, 'public/logo192.png'), to: '' },
+          { from: path.resolve(currentPath, 'public/logo512.png'), to: '' },
+          { from: path.resolve(currentPath, '../../shared/assets'), to: 'shared/assets' },
+        ],
       }),
       new webpack.DefinePlugin(envKeys),
       new webpack.DefinePlugin({
@@ -210,6 +211,16 @@ module.exports = (env) => {
       }),
     ].filter(Boolean),
     optimization: {
+      minimize: isProd,
+      minimizer: [
+        new TerserPlugin({
+          terserOptions: {
+            compress: {
+              drop_console: isProd,
+            },
+          },
+        }),
+      ],
       splitChunks: {
         chunks: 'all',
         maxInitialRequests: 4,
@@ -275,4 +286,11 @@ module.exports = (env) => {
       },
     }
   };
+
+  // Add Bundle Analyzer Plugin in analyze mode
+  if (analyze) {
+    config.plugins.push(new BundleAnalyzerPlugin());
+  }
+
+  return config;
 }; 

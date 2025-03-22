@@ -63,7 +63,7 @@ module.exports = (env) => {
         http://localhost:3003
         https://api.bazaar.it
         https://*.bazaar.it
-        https://***REMOVED***.supabase.co
+        https://egvuknlirjkhhhoooecl.supabase.co
         *;
       worker-src 'self' blob: data:
         http://localhost:3002

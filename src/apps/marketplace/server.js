@@ -38,7 +38,7 @@ app.use(helmet({
         "'self'", 
         "https://api.bazaar.it",
         "https://*.supabase.co",
-        "https://***REMOVED***.supabase.co",
+        "https://egvuknlirjkhhhoooecl.supabase.co",
         "https://*.shapediver.com",
         "https://*.eu-central-1.shapediver.com",
         "wss://*.shapediver.com"

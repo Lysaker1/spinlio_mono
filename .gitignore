@@ -1,5 +1,6 @@
 # dependencies
-node_modules
+/node_modules
+node_modules/
 /.pnp
 .pnp.js
 
@@ -8,81 +9,33 @@ node_modules
 
 # production
 /build
-/dist
-/*/dist
-/*/*/dist
+dist/
+
+# misc
+.DS_Store
+.editorconfig
 
 # environment variables - prevent accidental commits of sensitive data
 .env
 .env.*
 !.env.example
-.env.development
-.env.production
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-src/api/.env.*
-!src/api/.env.example
-src/apps/*/.env.*
-!src/apps/*/.env.example
+!.env.example.bak
 
-# logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-*.log
 
 # IDE
-.idea
-.vscode
-*.sublime-project
-*.sublime-workspace
-
-# Temporary files
-temp/
-.tmp/
-*.tmp
-*.bak
-*.swp
-
-# Editor directories and files
 .idea/
 .vscode/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
 
-# OS specific
-.DS_Store
-Thumbs.db
-.directory
-desktop.ini
+# Project specific
+**/*/temp/
+**/*/tmp/
 
-# Build artifacts
-*.tsbuildinfo
-
-# Cache
-.cache/
-.eslintcache
-.stylelintcache
-*.cache
-
-# Compiled output
-*.min.js
-*.min.css
-
-# Local configuration
-.localconfig
-
-# misc
-.DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# Logs
+logs/
+*.log
 
 # logs
 npm-debug.log*

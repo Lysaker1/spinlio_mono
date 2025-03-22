@@ -128,15 +128,6 @@ module.exports = (env) => {
         '@shared/components': path.resolve(currentPath, 'src/shared/components'),
         '@shared/hooks': path.resolve(currentPath, 'src/shared/hooks'),
         '@shared/assets': path.resolve(currentPath, 'src/shared/assets'),
-        'react': path.resolve(__dirname, '../../../node_modules/react'),
-        'react-dom': path.resolve(__dirname, '../../../node_modules/react-dom'),
-        '@mantine/form': path.resolve(__dirname, '../../../node_modules/@mantine/form'),
-        '@mantine/core': path.resolve(__dirname, '../../../node_modules/@mantine/core'),
-        '@mantine/hooks': path.resolve(__dirname, '../../../node_modules/@mantine/hooks'),
-        '@mantine/notifications': path.resolve(__dirname, '../../../node_modules/@mantine/notifications'),
-        '@tabler/icons-react': path.resolve(__dirname, '../../../node_modules/@tabler/icons-react'),
-        '@emotion/react': path.resolve(__dirname, '../../../node_modules/@emotion/react'),
-        '@emotion/styled': path.resolve(__dirname, '../../../node_modules/@emotion/styled'),
         ...(fs.existsSync(path.resolve(__dirname, './src/shared')) ? {
           '@shared': path.resolve(__dirname, './src/shared')
         } : {})
@@ -146,10 +137,9 @@ module.exports = (env) => {
         "path": false
       },
       modules: [
-        path.resolve(process.cwd(), 'node_modules'),
+        'node_modules',
         path.resolve(currentPath, 'node_modules'),
         path.resolve(__dirname, '../../../node_modules'),
-        'node_modules',
       ]
     },
     plugins: [

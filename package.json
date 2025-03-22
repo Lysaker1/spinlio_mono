@@ -5,8 +5,8 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "heroku-prebuild": "cd src/apps/design && npm install --production=false",
-    "heroku-postbuild": "mkdir -p src/apps/design/src/shared && cp -r src/shared/* src/apps/design/src/shared/ && cd src/apps/design && npm run build",
+    "heroku-prebuild": "mkdir -p src/apps/design/src/shared && cp -r src/shared/* src/apps/design/src/shared/ || echo 'No shared directory to copy'",
+    "heroku-postbuild": "cd src/apps/design && npm install --no-audit --include=dev && npm run build",
     "start": "cd src/apps/design && npm start"
   },
   "engines": {

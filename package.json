@@ -1,0 +1,25 @@
+{
+  "name": "prefab-monorepo",
+  "version": "1.0.0",
+  "description": "PREFAB Design and Marketplace Platform",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "heroku-prebuild": "mkdir -p src/apps/marketplace/src/shared && cp -r src/shared/* src/apps/marketplace/src/shared/ || echo 'No shared directory to copy'",
+    "heroku-postbuild": "cd src/apps/marketplace && npm install --production=false && npm run build",
+    "start": "cd src/apps/marketplace && npm start"
+  },
+  "engines": {
+    "node": "18.x",
+    "npm": "10.x"
+  },
+  "cacheDirectories": [
+    "src/apps/marketplace/node_modules"
+  ],
+  "dependencies": {
+    "babel-plugin-module-resolver": "^5.0.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zustand": "^3.7.2"
+  }
+}

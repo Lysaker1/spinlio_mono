@@ -1,0 +1,15 @@
+{
+  "name": "prefab-root",
+  "version": "1.0.0",
+  "description": "PREFAB monorepo root for Heroku deployment",
+  "private": true,
+  "scripts": {
+    "heroku-prebuild": "cd src/apps/design && npm install --production=false",
+    "heroku-postbuild": "cd src/apps/design && npm run heroku-postbuild",
+    "start": "cd src/apps/design && npm start"
+  },
+  "engines": {
+    "node": "18.x",
+    "npm": "10.x"
+  }
+} 

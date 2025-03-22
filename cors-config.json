@@ -1,0 +1,1 @@
+{"CORSRules": [{"AllowedOrigins": ["http://localhost:3002", "http://localhost:3004", "https://marketplace.bazaar.it", "https://design.bazaar.it"], "AllowedHeaders": ["*"], "AllowedMethods": ["GET", "HEAD", "PUT", "POST", "DELETE"], "MaxAgeSeconds": 3000, "ExposeHeaders": ["ETag"]}]}

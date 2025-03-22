@@ -1,0 +1,2 @@
+export { AccessoriesPanel } from './AccessoriesPanel';
+

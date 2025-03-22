@@ -1,0 +1,21 @@
+{
+  "name": "PREFAB Marketplace App",
+  "description": "Platform for users to browse, purchase, and manage designs",
+  "keywords": ["node", "express", "react", "ecommerce"],
+  "repository": "https://github.com/Lysaker1/spinlio_mono",
+  "success_url": "/",
+  "env": {
+    "NODE_ENV": {
+      "description": "Environment setting",
+      "value": "production"
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "scripts": {
+    "postdeploy": "npm run build"
+  }
+} 

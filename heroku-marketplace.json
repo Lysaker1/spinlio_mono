@@ -1,0 +1,15 @@
+{
+  "name": "prefab-marketplace-root",
+  "version": "1.0.0",
+  "description": "PREFAB Marketplace monorepo root for Heroku deployment",
+  "private": true,
+  "scripts": {
+    "heroku-prebuild": "cd src/apps/marketplace && npm install --production=false",
+    "heroku-postbuild": "cd src/apps/marketplace && npm run heroku-postbuild",
+    "start": "cd src/apps/marketplace && npm start"
+  },
+  "engines": {
+    "node": "18.x",
+    "npm": "10.x"
+  }
+} 

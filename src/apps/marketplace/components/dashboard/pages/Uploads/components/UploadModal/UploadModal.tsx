@@ -221,14 +221,27 @@ const UploadModal = ({ uploadModalOpened, closeUploadModal, profileId }: UploadM
     setUploading(true);
     try {
       // Start the upload process and get the model metadata
+      console.log("Starting upload with metadata:", metadata);
       const uploadResponse = await uploadModelToS3(selectedFile, metadata, profileId);
+      console.log("Upload response:", uploadResponse);
       
       // Close the modal and reset state
-      resetFormState();
+      closeUploadModal();
       
-      // Navigate to the edit page immediately
-      if (uploadResponse.id) {
-        navigate(`/dashboard/uploads/${uploadResponse.id}`);
+      // Make sure the ID is available before redirecting
+      if (uploadResponse && uploadResponse.id) {
+        console.log("Model uploaded successfully with ID:", uploadResponse.id);
+        
+        // Use a small timeout to ensure the state updates finish before navigation
+        // This can help avoid race conditions that might cause the redirect to fail
+        setTimeout(() => {
+          const editUrl = `${window.location.origin}/uploads/${uploadResponse.id}`;
+          console.log("Redirecting to:", editUrl);
+          window.location.href = editUrl;
+        }, 100);
+      } else {
+        console.error("Upload response missing ID:", uploadResponse);
+        alert("Upload completed but couldn't navigate to edit page. Please check your uploads section.");
       }
     } catch (error) {
       console.error('Upload failed:', error);
@@ -277,7 +290,7 @@ const UploadModal = ({ uploadModalOpened, closeUploadModal, profileId }: UploadM
               >
                 <IconCloudUpload size={48} />
                 <p className="text-lg">Drag and drop or click to choose your 3D file here</p>
-                <p className="text-sm text-gray-500">Max file size: 10MB</p> 
+                <p className="text-sm text-gray-500">Max file size: unlimited</p> 
                 <input
                   id="file-upload"
                   type="file"

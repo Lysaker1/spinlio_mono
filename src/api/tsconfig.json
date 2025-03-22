@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "es2017",
     "module": "commonjs",
+    "lib": ["es2017", "es2019", "es2020", "esnext"],
     "outDir": "./dist",
     "rootDir": "./src",
     "strict": true,
@@ -9,16 +10,19 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
+    "downlevelIteration": true,
     "baseUrl": ".",
     "paths": {
-      "*": ["node_modules/*"]
+      "@shared/*": ["../shared/*"]
     },
-    "typeRoots": [
-      "./node_modules/@types",
-      "./src/types"
-    ],
-    "noImplicitAny": false
+    "typeRoots": ["./node_modules/@types"],
+    "jsx": "react"
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    "src/shared/components/**/*",
+    "src/shared/hooks/**/*.tsx",
+    "**/*.spec.ts"
+  ]
 } 

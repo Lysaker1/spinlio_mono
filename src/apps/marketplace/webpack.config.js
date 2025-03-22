@@ -130,7 +130,9 @@ module.exports = (env) => {
         '@shared/assets': path.resolve(currentPath, 'src/shared/assets'),
         ...(fs.existsSync(path.resolve(__dirname, './src/shared')) ? {
           '@shared': path.resolve(__dirname, './src/shared')
-        } : {})
+        } : {}),
+        'react': path.resolve(currentPath, 'node_modules/react'),
+        'react-dom': path.resolve(currentPath, 'node_modules/react-dom'),
       },
       fallback: {
         "fs": false,

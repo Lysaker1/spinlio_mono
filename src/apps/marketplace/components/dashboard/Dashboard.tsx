@@ -19,13 +19,16 @@ interface DashboardProps {
 const Dashboard: React.FC<DashboardProps> = ({ children }) => {
   const [opened, { toggle }] = useDisclosure();
   const location = useLocation();
-  const { isAuthenticated, user } = useAuth0();
+  const { isAuthenticated, user, loginWithRedirect } = useAuth0();
   const showDashboardNavbar = !location.pathname.includes('/profile');
   
   // State for the user role modal
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [isNewUser, setIsNewUser] = useState(false);
+
+  // Authentication check is now handled by the sidebar component
+  // No need to redirect here
   
   // Check if user is new and show role selection modal if needed
   useEffect(() => {
@@ -104,7 +107,7 @@ const Dashboard: React.FC<DashboardProps> = ({ children }) => {
 
         {showDashboardNavbar && (
           <AppShell.Navbar>
-            <DashboardSidebar />
+            <DashboardSidebar isAuthenticated={isAuthenticated} />
           </AppShell.Navbar>
         )}
 

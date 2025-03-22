@@ -4,11 +4,12 @@ import { Notifications } from '@mantine/notifications';
 import React, { lazy, useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
-import TestComponent from './src/components/TestComponent';
 import { UserProvider } from '@shared/hooks/useUser';
+import { AuthProvider } from '@shared/hooks/useAuth';
 
 // Import the AuthCallback component
 const AuthCallback = lazy(() => import('./components/Auth/AuthCallback'));
+const TestComponent = lazy(() => import('./components/Auth/TestComponent'));
 
 // Import Dashboard Routes
 const DashboardRoutes = lazy(() => 
@@ -44,7 +45,11 @@ const AppContent: React.FC = () => {
           />
           <Route 
             path="/test" 
-            element={<TestComponent />} 
+            element={
+              <React.Suspense fallback={<div className="loading-placeholder">Loading test component...</div>}>
+                <TestComponent />
+              </React.Suspense>
+            } 
           />
         </Routes>
       </main>
@@ -66,9 +71,11 @@ const App: React.FC = () => {
     <MantineProvider theme={theme}>
       <Notifications />
       <Toaster position="top-right" />
-      <UserProvider>
-        <AppContent />
-      </UserProvider>
+      <AuthProvider>
+        <UserProvider>
+          <AppContent />
+        </UserProvider>
+      </AuthProvider>
     </MantineProvider>
   );
 };

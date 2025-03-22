@@ -10,9 +10,21 @@ import Stripe from 'stripe';
 import path from 'path';
 import { setupModelRoutes } from './routes/models';
 
-// No need to redefine the Request interface as it's already defined in express-oauth2-jwt-bearer
+// Enhanced environment variable loading with better path resolution
+const envPath = path.resolve(__dirname, '../.env.development');
+console.log('Loading environment variables from:', envPath);
+dotenv.config({ path: envPath });
 
-dotenv.config();
+// Add debug logs for environment troubleshooting
+console.log('Environment variables check:', {
+  nodeEnv: process.env.NODE_ENV,
+  supabaseUrl: process.env.SUPABASE_URL ? 'defined' : 'undefined',
+  supabaseAnonKey: process.env.SUPABASE_ANON_KEY ? 'defined' : 'undefined',
+  auth0Audience: process.env.AUTH0_AUDIENCE ? 'defined' : 'undefined',
+  auth0IssuerBaseUrl: process.env.AUTH0_ISSUER_BASE_URL ? 'defined' : 'undefined',
+});
+
+// No need to redefine the Request interface as it's already defined in express-oauth2-jwt-bearer
 
 const requiredEnvVars = [
     'SUPABASE_URL',
@@ -33,7 +45,10 @@ requiredEnvVars.forEach(varName => {
   }
 });
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+// Initialize Stripe
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2023-08-16',
+});
 
 const app = express();
 
@@ -54,13 +69,16 @@ const supabase = createClient(
   process.env.SUPABASE_ANON_KEY!
 );
 
+// Output Supabase connection details for debugging
+console.log(`Initialized Supabase client with URL: ${process.env.SUPABASE_URL?.substring(0, 25)}...`);
+
 // Middleware
 app.use(limiter);
 
 // Move these to the top, right after imports and before routes
 const jwtCheck = auth({
   audience: process.env.AUTH0_AUDIENCE || 'http://localhost:3003',
-  issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL || 'https://auth.spinlio.com',
+  issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL || 'https://auth.bazaar.it',
   tokenSigningAlg: 'RS256'
 });
 

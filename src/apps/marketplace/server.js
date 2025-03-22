@@ -37,11 +37,19 @@ app.use(helmet({
       connectSrc: [
         "'self'", 
         "https://api.bazaar.it",
+        "http://localhost:3003",
         "https://*.supabase.co",
         "https://egvuknlirjkhhhoooecl.supabase.co",
         "https://*.shapediver.com",
         "https://*.eu-central-1.shapediver.com",
-        "wss://*.shapediver.com"
+        "wss://*.shapediver.com",
+        "https://*.auth0.com",
+        "https://dev-jxcml1qpmbgabh6v.us.auth0.com",
+        "https://*.amazonaws.com",
+        "https://*.s3.amazonaws.com",
+        "https://*.s3.eu-north-1.amazonaws.com",
+        "https://3d-models-spinlio.s3.eu-north-1.amazonaws.com",
+        "https://*.execute-api.eu-north-1.amazonaws.com"
       ],
       imgSrc: [
         "'self'", 
@@ -49,7 +57,14 @@ app.use(helmet({
         "blob:", 
         "https://res.cloudinary.com",
         "https://*.shapediver.com",
-        "https://viewer.shapediver.com"
+        "https://viewer.shapediver.com",
+        "https://storage.googleapis.com",
+        "https://s.gravatar.com",
+        "https://lh3.googleusercontent.com",
+        "https://*.amazonaws.com",
+        "https://*.s3.amazonaws.com",
+        "https://*.s3.eu-north-1.amazonaws.com",
+        "https://3d-models-spinlio.s3.eu-north-1.amazonaws.com"
       ],
       scriptSrc: [
         "'self'", 
@@ -57,12 +72,21 @@ app.use(helmet({
         "'unsafe-eval'",
         "https://static.klaviyo.com"
       ],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      fontSrc: ["'self'", "data:"],
+      styleSrc: [
+        "'self'", 
+        "'unsafe-inline'",
+        "https://fonts.googleapis.com"
+      ],
+      fontSrc: [
+        "'self'", 
+        "data:",
+        "https://fonts.gstatic.com"
+      ],
       mediaSrc: ["'self'", "data:", "blob:"],
       workerSrc: ["'self'", "blob:"],
-      frameSrc: ["'self'"],
-      formAction: ["'self'"]
+      frameSrc: ["'self'", "https://*.auth0.com"],
+      formAction: ["'self'", "https://*.auth0.com"],
+      navigateTo: ["'self'", "https://*.auth0.com", "https://marketplace.bazaar.it"]
     }
   }
 }));
@@ -76,6 +100,14 @@ app.use(cors({
 
 // Compression
 app.use(compression());
+
+// Set correct MIME types
+app.use((req, res, next) => {
+  if (req.path.endsWith('.css')) {
+    res.set('Content-Type', 'text/css');
+  }
+  next();
+});
 
 // Serve static files from the dist directory
 app.use(express.static(path.join(__dirname, 'dist')));

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, useGLTF, Grid, Environment } from '@react-three/drei';
 import * as THREE from 'three';
@@ -10,104 +10,104 @@ import { Loader, Text, Progress } from '@mantine/core';
  */
 const Model = ({ url }: { url: string }) => {
   const [loading, setLoading] = useState(true);
-  const { scene } = useGLTF(url, true); // Added 'true' to enable detailed loading
+  const [error, setError] = useState<string | null>(null);
   
-  useEffect(() => {
-    if (scene) {
-      // Auto-center and scale model
-      const box = new THREE.Box3().setFromObject(scene);
-      const center = box.getCenter(new THREE.Vector3());
-      const size = box.getSize(new THREE.Vector3());
-      
-      // Center the model
-      scene.position.set(-center.x, -center.y, -center.z);
-      
-      // Scale model to reasonable size
-      const maxDim = Math.max(size.x, size.y, size.z);
-      if (maxDim > 10 || maxDim < 0.5) {
-        const scale = maxDim > 10 ? 5 / maxDim : 2 / maxDim;
-        scene.scale.set(scale, scale, scale);
-      }
-      
-      // Enhance materials for better rendering
-      scene.traverse((child: any) => {
-        if (child instanceof THREE.Mesh) {
-          child.castShadow = true;
-          child.receiveShadow = true;
-          
-          if (child.material) {
-            // Increase material quality
-            if (child.material instanceof THREE.MeshStandardMaterial || 
-                child.material instanceof THREE.MeshPhysicalMaterial || 
-                child.material instanceof THREE.MeshBasicMaterial) {
-              if (child.material.map) {
-                child.material.map.anisotropy = 16;
-              }
-              
-              // Enable transparency if material has opacity or alphaMap
-              if (child.material.opacity < 1.0 || child.material.alphaMap) {
-                child.material.transparent = true;
-              }
-            }
-            
-            // Enhance material rendering
-            child.material.needsUpdate = true;
-            
-            // Apply to array of materials if needed
-            if (Array.isArray(child.material)) {
-              child.material.forEach((mat: THREE.Material) => {
-                if (mat instanceof THREE.MeshStandardMaterial || 
-                    mat instanceof THREE.MeshPhysicalMaterial || 
-                    mat instanceof THREE.MeshBasicMaterial) {
-                  if (mat.map) {
-                    mat.map.anisotropy = 16;
-                  }
-                  if (mat.opacity < 1.0 || mat.alphaMap) {
-                    mat.transparent = true;
-                  }
-                }
-                mat.needsUpdate = true;
-              });
-            }
-          }
-        }
-      });
-      
-      // Log mesh information for debugging
-      console.log('Model structure:', getMeshInfo(scene));
-      
+  // IMPORTANT: Handle both success and error cases from useGLTF
+  try {
+    // Use GLTF loader with proper error handling - callbacks need to be passed as options object
+    const { scene } = useGLTF(url, undefined, undefined, (e: Error) => {
+      console.error('Error loading model:', e);
+      setError(`Failed to load model: ${e.message || 'Unknown error'}`);
       setLoading(false);
-    }
-  }, [scene]);
-  
-  // Helper function to get mesh information from the model
-  const getMeshInfo = (model: THREE.Object3D) => {
-    const meshes: any[] = [];
-    
-    model.traverse((child: THREE.Object3D) => {
-      if (child instanceof THREE.Mesh) {
-        meshes.push({
-          name: child.name,
-          type: 'Mesh',
-          position: [child.position.x, child.position.y, child.position.z],
-          materialType: child.material ? 
-            (Array.isArray(child.material) ? 
-              child.material.map((m: any) => m.type) : 
-              child.material.type) : 
-            'None'
-        });
-      }
     });
     
-    return { 
-      totalMeshes: meshes.length,
-      meshes 
-    };
-  };
-  
-  if (loading) return null;
-  
-  return <primitive object={scene} />;
+    // Handle loading success
+    useEffect(() => {
+      if (!scene) {
+        setError('Scene is empty or undefined');
+        setLoading(false);
+        return;
+      }
+      
+      try {
+        // Auto-center and scale model
+        const box = new THREE.Box3().setFromObject(scene);
+        const center = box.getCenter(new THREE.Vector3());
+        const size = box.getSize(new THREE.Vector3());
+        
+        // Center the model
+        scene.position.set(-center.x, -center.y, -center.z);
+        
+        // Scale model to reasonable size
+        const maxDim = Math.max(size.x, size.y, size.z);
+        if (maxDim > 10 || maxDim < 0.5) {
+          const scale = maxDim > 10 ? 5 / maxDim : 2 / maxDim;
+          scene.scale.set(scale, scale, scale);
+        }
+        
+        // Enhance materials for better rendering
+        scene.traverse((child: any) => {
+          if (child instanceof THREE.Mesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+            
+            if (child.material) {
+              // Enhance material rendering logic
+              if (Array.isArray(child.material)) {
+                child.material.forEach((mat: THREE.Material) => {
+                  // Use type assertion to handle material maps
+                  const standardMat = mat as THREE.MeshStandardMaterial;
+                  if (standardMat.map) standardMat.map.anisotropy = 16;
+                  mat.needsUpdate = true;
+                });
+              } else {
+                // Use type assertion to handle material maps
+                const standardMat = child.material as THREE.MeshStandardMaterial;
+                if (standardMat.map) standardMat.map.anisotropy = 16;
+                child.material.needsUpdate = true;
+              }
+            }
+          }
+        });
+        
+        setLoading(false);
+      } catch (err) {
+        console.error('Error processing model:', err);
+        setError(`Error processing model: ${(err as Error).message}`);
+        setLoading(false);
+      }
+    }, [scene]);
+    
+    if (error) {
+      return (
+        <mesh position={[0, 0, 0]}>
+          <boxGeometry args={[1, 1, 1]} />
+          <meshStandardMaterial color="red" />
+        </mesh>
+      );
+    }
+    
+    if (loading) {
+      return (
+        <mesh position={[0, 0, 0]}>
+          <sphereGeometry args={[0.5, 16, 16]} />
+          <meshStandardMaterial color="gray" wireframe />
+        </mesh>
+      );
+    }
+    
+    return <primitive object={scene} />;
+    
+  } catch (err) {
+    // Handle any errors thrown by useGLTF
+    console.error("Fatal error loading model:", err);
+    return (
+      <mesh position={[0, 0, 0]}>
+        <boxGeometry args={[1, 1, 1]} />
+        <meshStandardMaterial color="red" />
+      </mesh>
+    );
+  }
 };
 
 /**
@@ -246,9 +246,51 @@ const ModelViewer = ({
   
   // State to track if loading sequence has completed
   const [showLoadingSequence, setShowLoadingSequence] = useState(true);
+  const [processedUrl, setProcessedUrl] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
   
   // Get loading sequence component and completion status
   const { element: loadingSequence, isComplete: loadingSequenceComplete } = LoadingSequence({ fileFormat });
+  
+  // Process URL to handle blob URLs properly
+  useEffect(() => {
+    if (!url || !isSupported) {
+      setProcessedUrl(null);
+      return;
+    }
+    
+    const handleUrl = async () => {
+      try {
+        console.log('Processing model URL:', url);
+        
+        // Better blob URL handling
+        if (url.startsWith('blob:')) {
+          try {
+            // Test if the blob is accessible
+            const response = await fetch(url, { method: 'HEAD' });
+            if (!response.ok) {
+              throw new Error(`Blob URL fetch failed with status: ${response.status}`);
+            }
+            setProcessedUrl(url);
+          } catch (error) {
+            console.error('Error accessing blob URL:', error);
+            setLoadError(`Cannot access the model file. ${(error as Error).message}`);
+            // Still set the URL to allow model component to handle its own errors
+            setProcessedUrl(url);
+          }
+        } else {
+          // For regular URLs, use as is
+          setProcessedUrl(url);
+        }
+      } catch (error) {
+        console.error('Error handling URL:', error);
+        setLoadError(`Error handling model URL: ${(error as Error).message}`);
+        setProcessedUrl(url); // Fall back to original URL
+      }
+    };
+    
+    handleUrl();
+  }, [url, isSupported]);
   
   // When loading sequence completes, stop showing it
   useEffect(() => {
@@ -282,12 +324,29 @@ const ModelViewer = ({
     );
   }
 
+  // If there's a load error, show a friendly error message
+  if (loadError) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full bg-white p-8 rounded-tl-lg rounded-bl-lg">
+        <IconAlertCircle size={48} color="red" />
+        <p className="text-xl text-center mt-4 mb-2 font-medium text-red-600">
+          Couldn't preview the 3D model
+        </p>
+        <p className="text-base text-center text-gray-700">
+          Don't worry! Your model has been uploaded successfully.
+          <br />
+          You can still edit its properties.
+        </p>
+      </div>
+    );
+  }
+
   // Loading state while waiting for the model URL
-  if (!url) {
+  if (!processedUrl) {
     return (
       <div className="flex flex-col items-center justify-center h-full">
         <Loader size="lg" />
-        <Text className="mt-4">Loading model...</Text>
+        <Text className="mt-4">Processing model data...</Text>
       </div>
     );
   }
@@ -329,8 +388,15 @@ const ModelViewer = ({
         {/* Environment map for better material rendering */}
         <Environment preset="studio" />
         
-        {/* Render the model */}
-        <Model url={url} />
+        {/* Render the model with error handling */}
+        <Suspense fallback={
+          <mesh position={[0, 0, 0]}>
+            <sphereGeometry args={[0.5, 16, 16]} />
+            <meshStandardMaterial color="gray" wireframe />
+          </mesh>
+        }>
+          <Model url={processedUrl} />
+        </Suspense>
         
         {/* Controls */}
         <OrbitControls 

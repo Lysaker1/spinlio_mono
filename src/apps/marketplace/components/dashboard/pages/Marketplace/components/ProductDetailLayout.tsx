@@ -44,6 +44,10 @@ const ProductDetailLayout: React.FC<ProductDetailLayoutProps> = ({
   features = [],
   manufacturer,
   manufacturerId,
+  shippingContent,
+  warrantyContent,
+  similarItems,
+  aboutContent,
 }) => {
   const fallbackImage = '/placeholder-image.png';
 
@@ -84,7 +88,7 @@ const ProductDetailLayout: React.FC<ProductDetailLayoutProps> = ({
               <Text className="text-gray-700 mb-2">
                 Produced by: {manufacturerId ? (
                   <a 
-                    href={`/dashboard/profile/${manufacturerId}`}
+                    href={`/profile/${manufacturerId}`}
                     className="text-primary-600 hover:underline"
                     onClick={(e) => {
                       e.stopPropagation();
@@ -163,12 +167,39 @@ const ProductDetailLayout: React.FC<ProductDetailLayoutProps> = ({
               Specifications
             </Tabs.Tab>
             
+            {aboutContent && (
+              <Tabs.Tab 
+                value="about" 
+                className="font-semibold px-4 py-3 transition-colors"
+              >
+                About
+              </Tabs.Tab>
+            )}
+            
             {componentsContent && (
               <Tabs.Tab 
                 value="components" 
                 className="font-semibold px-4 py-3 transition-colors"
               >
                 Components
+              </Tabs.Tab>
+            )}
+            
+            {shippingContent && (
+              <Tabs.Tab 
+                value="shipping" 
+                className="font-semibold px-4 py-3 transition-colors"
+              >
+                Shipping
+              </Tabs.Tab>
+            )}
+            
+            {warrantyContent && (
+              <Tabs.Tab 
+                value="warranty" 
+                className="font-semibold px-4 py-3 transition-colors"
+              >
+                Warranty
               </Tabs.Tab>
             )}
             
@@ -187,9 +218,27 @@ const ProductDetailLayout: React.FC<ProductDetailLayoutProps> = ({
               {specificationsContent || <Text>No specifications available</Text>}
             </Tabs.Panel>
             
+            {aboutContent && (
+              <Tabs.Panel value="about">
+                {aboutContent}
+              </Tabs.Panel>
+            )}
+            
             {componentsContent && (
               <Tabs.Panel value="components">
                 {componentsContent}
+              </Tabs.Panel>
+            )}
+            
+            {shippingContent && (
+              <Tabs.Panel value="shipping">
+                {shippingContent}
+              </Tabs.Panel>
+            )}
+            
+            {warrantyContent && (
+              <Tabs.Panel value="warranty">
+                {warrantyContent}
               </Tabs.Panel>
             )}
             
@@ -201,6 +250,13 @@ const ProductDetailLayout: React.FC<ProductDetailLayoutProps> = ({
           </div>
         </Tabs>
       </div>
+      
+      {similarItems && (
+        <div className="mt-12">
+          <Text size="xl" fw={600} className="mb-6">Similar Products</Text>
+          {similarItems}
+        </div>
+      )}
     </div>
   );
 };

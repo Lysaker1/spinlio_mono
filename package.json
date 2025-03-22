@@ -5,15 +5,15 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "heroku-prebuild": "mkdir -p src/apps/design/src/shared && cp -r src/shared/* src/apps/design/src/shared/ || echo 'No shared directory to copy'",
-    "heroku-postbuild": "cd src/apps/design && npm install --no-audit --include=dev && npm run build",
-    "start": "cd src/apps/design && npm start"
+    "heroku-prebuild": "mkdir -p src/apps/marketplace/src/shared && cp -r src/shared/* src/apps/marketplace/src/shared/ || echo 'No shared directory to copy'",
+    "heroku-postbuild": "cd src/apps/marketplace && npm install --no-audit --include=dev && npm run build",
+    "start": "cd src/apps/marketplace && npm start"
   },
   "engines": {
     "node": "18.x",
     "npm": "10.x"
   },
   "cacheDirectories": [
-    "src/apps/design/node_modules"
+    "src/apps/marketplace/node_modules"
   ]
 } 

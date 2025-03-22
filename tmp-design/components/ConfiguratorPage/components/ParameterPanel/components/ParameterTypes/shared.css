@@ -1,0 +1,20 @@
+/* Common styles for parameter type components */
+.parameter-type-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .parameter-type-label {
+    color: #FFF;
+    font-family: "Helvetica Neue";
+    font-size: 1rem;
+    font-weight: 400;
+  }
+  
+  .parameter-type-component {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }

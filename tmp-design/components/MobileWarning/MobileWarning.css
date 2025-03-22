@@ -1,0 +1,35 @@
+.mobile-warning {
+    height: 100vh;
+    width: 90vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+  }
+  
+  .mobile-warning-content {
+    background: rgba(30, 30, 30, 0.123);
+    padding: 2rem;
+    border-radius: 1rem;
+    max-width: 90%;
+    text-align: center;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .mobile-warning h2 {
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+  }
+  
+  .mobile-warning p {
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+  
+  .coming-soon {
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.7);
+  }

@@ -5,7 +5,7 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "heroku-prebuild": "mkdir -p src/api/src/shared && cp -r src/shared/* src/api/src/shared/ || echo 'No shared directory to copy'",
+    "heroku-prebuild": "echo 'Skipping shared file copy for API deployment'",
     "heroku-postbuild": "cd src/api && npm install --production=false && npm run build",
     "start": "cd src/api && npm start"
   },

@@ -69,12 +69,12 @@ app.use(cors({
   origin: function(origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
     const allowedOrigins = [
       // Production origins
-      'https://design.spinlio.com',
-      'https://spinlio.com',
-      'https://configurator.spinlio.com',
-      'https://contact.spinlio.com',
-      'https://api.spinlio.com',
-      'https://auth.spinlio.com',
+      'https://design.bazaar.it',
+      'https://bazaar.it',
+      'https://marketplace.bazaar.it',
+      'https://contact.bazaar.it',
+      'https://api.bazaar.it',
+      'https://auth.bazaar.it',
       'https://dev-jxcml1qpmbgabh6v.us.auth0.com',
       'https://www.herokucdn.com',
       'https://viewer.shapediver.com',
@@ -612,7 +612,7 @@ app.patch('/api/fix-thumbnails', async (req: Request, res: Response) => {
 
 const getBaseUrl = (req: Request) => {
   if (process.env.NODE_ENV === 'production') {
-    return 'https://api.spinlio.com';
+    return 'https://api.bazaar.it';
   }
   return `${req.protocol}://${req.get('host')}`;
 };

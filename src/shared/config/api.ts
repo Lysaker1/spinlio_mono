@@ -4,7 +4,7 @@ import { AuthService } from '@shared/services/authService';
 
 // Define base URL based on environment
 export const apiUrl = process.env.NODE_ENV === 'production'
-  ? 'https://api.spinlio.com'
+  ? 'https://api.bazaar.it'
   : 'http://localhost:3003';
 
 // Types for TS inference

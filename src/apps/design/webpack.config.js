@@ -149,24 +149,6 @@ module.exports = (env) => {
       alias: {
         '@shared': path.resolve(__dirname, '../../shared'),
         '@': path.resolve(currentPath),
-        'three': path.resolve(currentPath, '../../../node_modules/three'),
-        'react': path.resolve(currentPath, '../../../node_modules/react'),
-        'react-dom': path.resolve(currentPath, '../../../node_modules/react-dom'),
-        'react-router': path.resolve(currentPath, '../../../node_modules/react-router'),
-        'react-router-dom': path.resolve(currentPath, '../../../node_modules/react-router-dom'),
-        'react-hot-toast': path.resolve(currentPath, '../../../node_modules/react-hot-toast'),
-        '@auth0/auth0-react': path.resolve(currentPath, '../../../node_modules/@auth0/auth0-react'),
-        '@shapediver/viewer': path.resolve(currentPath, '../../../node_modules/@shapediver/viewer'),
-        '@mantine/form': path.resolve(currentPath, '../../../node_modules/@mantine/form'),
-        '@mantine/core': path.resolve(currentPath, '../../../node_modules/@mantine/core'),
-        '@mantine/hooks': path.resolve(currentPath, '../../../node_modules/@mantine/hooks'),
-        '@mantine/notifications': path.resolve(currentPath, '../../../node_modules/@mantine/notifications'),
-        '@tabler/icons-react': path.resolve(currentPath, '../../../node_modules/@tabler/icons-react'),
-        '@emotion/react': path.resolve(currentPath, '../../../node_modules/@emotion/react'),
-        '@emotion/styled': path.resolve(currentPath, '../../../node_modules/@emotion/styled'),
-        '@react-three/drei': path.resolve(currentPath, '../../../node_modules/@react-three/drei'),
-        '@react-three/fiber': path.resolve(currentPath, '../../../node_modules/@react-three/fiber'),
-        'node_modules': path.resolve(currentPath, '../../../node_modules'),
         ...(fs.existsSync(path.resolve(__dirname, './src/shared')) ? {
           '@shared': path.resolve(__dirname, './src/shared')
         } : {})
@@ -176,8 +158,8 @@ module.exports = (env) => {
         "path": false
       },
       modules: [
-        'node_modules',
         path.resolve(currentPath, 'node_modules'),
+        'node_modules',
         path.resolve(currentPath, '../../../node_modules')
       ]
     },

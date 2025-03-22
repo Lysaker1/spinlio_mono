@@ -1,6 +1,6 @@
-import { Alert, ColorPicker, Loader, Menu, NumberInput, Tabs, Text, Textarea, TextInput } from '@mantine/core';
+import { Alert, ColorPicker, Loader, Menu, NumberInput, Tabs, Text, Textarea, TextInput, MultiSelect } from '@mantine/core';
 import { IconAlertCircle, IconCheck, IconChevronDown, IconPencil, IconPhotoPlus } from '@tabler/icons-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, CSSProperties } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ModelMetadata, ModelParameterValue, deleteModel, getModelById, updateModel, uploadThumbnail } from '@shared/services/modelService';
 import { AttachmentPoint, apiToAttachmentPoint, attachmentPointToApi } from '@shared/types/attachment-points';
@@ -52,6 +52,33 @@ const EditModel: React.FC = () => {
 
   const navigate = useNavigate();
   
+  // Color state
+  const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  
+  // Common colors for bike components
+  const bikeColors = [
+    { value: 'black', label: 'Black', color: '#000000' },
+    { value: 'white', label: 'White', color: '#FFFFFF' },
+    { value: 'red', label: 'Red', color: '#FF0000' },
+    { value: 'blue', label: 'Blue', color: '#0000FF' },
+    { value: 'green', label: 'Green', color: '#008000' },
+    { value: 'yellow', label: 'Yellow', color: '#FFFF00' },
+    { value: 'orange', label: 'Orange', color: '#FFA500' },
+    { value: 'purple', label: 'Purple', color: '#800080' },
+    { value: 'pink', label: 'Pink', color: '#FFC0CB' },
+    { value: 'brown', label: 'Brown', color: '#A52A2A' },
+    { value: 'gray', label: 'Gray', color: '#808080' },
+    { value: 'silver', label: 'Silver', color: '#C0C0C0' },
+    { value: 'gold', label: 'Gold', color: '#FFD700' },
+    { value: 'bronze', label: 'Bronze', color: '#CD7F32' },
+    { value: 'titanium', label: 'Titanium', color: '#878681' },
+    { value: 'carbon', label: 'Carbon', color: '#333333' },
+    { value: 'navy', label: 'Navy Blue', color: '#000080' },
+    { value: 'cream', label: 'Cream', color: '#FFFDD0' },
+    { value: 'olive', label: 'Olive', color: '#808000' },
+    { value: 'teal', label: 'Teal', color: '#008080' }
+  ];
+
   useEffect(() => {
     const fetchModel = async () => {
       setLoading(true);
@@ -144,9 +171,9 @@ const EditModel: React.FC = () => {
         name: name,
         description: generalValues.description,
         is_public: isPublic,
-
         /*  attachment_points: apiAttachmentPoints, */
-        color: color || undefined,
+        // Store the selected colors in the colors field
+        colors: selectedColors.length > 0 ? selectedColors.join(',') : undefined,
         thumbnail_url: thumbnailUrl,
         price: generalValues.price,
         price_on_request: generalValues.priceOnRequest,
@@ -158,12 +185,12 @@ const EditModel: React.FC = () => {
         payment_terms_on_request: generalValues.paymentTermsOnRequest
       }, parameterValues);
 
-
       console.log("Saved!");
       setAlertMessage("Model saved successfully!");
       setAlertColor("green");
       setSaving(false);
     } catch (error) {
+      console.error("Error updating model:", error);
       setAlertMessage("Failed to save model");
       setAlertColor("red");
       setSaving(false);
@@ -211,10 +238,15 @@ const EditModel: React.FC = () => {
     }
   };
 
+  // Initialize selectedColors from model.colors on load
   useEffect(() => {
     if (model) {
       setIsPublic(model.is_public);
       setName(model.name);
+      // Split the colors string into an array of colors if it exists
+      if (model.colors) {
+        setSelectedColors(model.colors.split(','));
+      }
       setGeneralValues({
         description: model.description ?? null,
         price: model.price ?? null,
@@ -239,6 +271,14 @@ const EditModel: React.FC = () => {
       setActiveTab(value);
     }
   };
+
+  // Update activeTab state definition to match tab values used in component
+  useEffect(() => {
+    // Convert 'snap-points' to 'snapPoints' if that's the current value
+    if (activeTab === 'snap-points') {
+      setActiveTab('snapPoints');
+    }
+  }, [activeTab]);
 
   const handleGeneralChange = (general: Partial<GeneralTabValues>) => {
     setGeneralValues(prev => ({
@@ -317,114 +357,244 @@ const EditModel: React.FC = () => {
         </div>
       ) : (
         <>
-        <div className='flex border border-gray-300 rounded-lg h-[calc(100vh-140px)]'>
-          <div className='w-1/2 h-full relative'>
-            {/* Single ModelViewer with conditional SnapPointHelper */}
-            <ModelViewer 
-              url={model?.url} 
-              fileFormat={fileExtension} 
-              status={model?.conversion_status}
-            >
-              {/* Only show SnapPointHelper when on the snap-points tab and format is supported */}
-              {activeTab === 'snap-points' && isSupported && (
-                <SnapPointHelper 
+        <div className='flex border border-gray-300 rounded-lg h-[calc(100vh-140px)]' style={{ minHeight: '600px' }}>
+          {/* Left side - 3D model viewer and description */}
+          <div className='w-3/5 h-full bg-white p-6 flex flex-col' style={{ minWidth: '600px' }}>
+            {/* 3D model viewer area */}
+            <div className="h-3/5 mb-6">
+              {isSupported ? (
+                <ModelViewer 
+                  url={model?.url} 
+                  fileFormat={fileExtension}
+                  status={model?.conversion_status}
+                >
+                  {activeTab === 'snapPoints' && (
+                    <SnapPointHelper 
+                      attachmentPoints={attachmentPoints}
+                      selectedPoint={selectedPoint}
+                      onSelectPoint={setSelectedPoint}
+                      onAttachmentPointUpdated={handleAttachmentPointUpdated}
+                    />
+                  )}
+                </ModelViewer>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full p-4 bg-white rounded-lg border border-gray-200">
+                  <p className="text-lg font-medium mb-2">
+                    {fileExtension?.toUpperCase()} file preview not available
+                  </p>
+                  <p className="text-sm text-gray-500 text-center">
+                    This file format doesn't support 3D preview.
+                    You can still edit its properties.
+                  </p>
+                </div>
+              )}
+            </div>
+            
+            {/* Description area */}
+            <div className="h-2/5">
+              <h3 className="font-medium text-xl mb-3">Description</h3>
+              <Textarea
+                placeholder="Enter a detailed description of your model"
+                minRows={5}
+                maxRows={8}
+                value={generalValues.description || ''}
+                onChange={(e) => handleGeneralChange({ description: e.target.value })}
+                className="w-full"
+              />
+            </div>
+          </div>
+          
+          {/* Right side - tabs and form fields */}
+          <div className='w-2/5 h-full border-l border-gray-300'>
+            {/* Tabs navigation - horizontal tabs at the top of the right side */}
+            <div className="flex border-b border-gray-300">
+              <button 
+                className={`px-6 py-3 text-center ${activeTab === 'general' ? 'bg-black text-white font-medium rounded-t-lg' : 'text-gray-600 hover:bg-gray-100'}`}
+                onClick={() => handleTabChange('general')}
+              >
+                General
+              </button>
+              <button 
+                className={`px-6 py-3 text-center ${activeTab === 'parameters' ? 'bg-black text-white font-medium rounded-t-lg' : 'text-gray-600 hover:bg-gray-100'}`}
+                onClick={() => handleTabChange('parameters')}
+              >
+                Parameters
+              </button>
+              <button 
+                className={`px-6 py-3 text-center ${activeTab === 'snapPoints' ? 'bg-black text-white font-medium rounded-t-lg' : 'text-gray-600 hover:bg-gray-100'}`}
+                onClick={() => handleTabChange('snapPoints')}
+              >
+                Snap Points
+              </button>
+              <button 
+                className={`px-6 py-3 text-center ${activeTab === 'surface' ? 'bg-black text-white font-medium rounded-t-lg' : 'text-gray-600 hover:bg-gray-100'}`}
+                onClick={() => handleTabChange('surface')}
+              >
+                Surface
+              </button>
+            </div>
+            
+            {/* Tab content */}
+            <div className="overflow-auto h-[calc(100%-48px)] p-6">
+              {activeTab === 'general' && (
+                <>
+                  {/* Name editing field in general tab */}
+                  <div className="mb-6">
+                    <Text className="font-medium mb-2">Name</Text>
+                    <TextInput
+                      placeholder="Enter model name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                    />
+                  </div>
+                  
+                  <GeneralTab 
+                    model={model} 
+                    generalValues={{
+                      ...generalValues,
+                      // Remove description from this tab since it's moved to the left side
+                      description: null 
+                    }}
+                    handleGeneralChange={handleGeneralChange} 
+                    missingFields={missingFields}
+                    hideDescription={true} // Add prop to hide description field
+                  />
+                </>
+              )}
+              
+              {activeTab === 'parameters' && (
+                <Parameters modelId={id} onParameterChange={setParameterValues} />
+              )}
+              
+              {activeTab === 'snapPoints' && (
+                <SnapPointsTab
+                  fileFormat={fileExtension}
+                  conversionStatus={model?.conversion_status}
                   attachmentPoints={attachmentPoints}
                   onAttachmentPointUpdated={handleAttachmentPointUpdated}
+                  onAddAttachmentPoint={handleAddAttachmentPoint}
+                  onRemoveAttachmentPoint={handleRemoveAttachmentPoint}
                   selectedPoint={selectedPoint}
                   onSelectPoint={setSelectedPoint}
                 />
               )}
-            </ModelViewer>
-          </div>
-          <div className='w-1/2 border-l border-gray-300 h-full overflow-auto'>
-            <div className='w-full h-full flex flex-col'>
-              <Tabs defaultValue={"general"} value={activeTab} onChange={handleTabChange} className="h-full flex flex-col">
-                <Tabs.List>
-                  <Tabs.Tab value='general' className='w-1/4'>
-                    General
-                  </Tabs.Tab>
-                  <Tabs.Tab value='parameters' className='w-1/4'>
-                    Parameters
-                  </Tabs.Tab>
-                  <Tabs.Tab value='snap-points' className='w-1/4'>
-                    Snap Points
-                  </Tabs.Tab>
-                  <Tabs.Tab value='surface' className='w-1/4'>
-                    Surface
-                  </Tabs.Tab>
-                </Tabs.List>
-                <div className="flex-1 overflow-auto">
-                  <Tabs.Panel value='general' className='p-4 flex flex-col gap-4 h-full'>
-                    <GeneralTab model={model} generalValues={generalValues} handleGeneralChange={handleGeneralChange} missingFields={missingFields} />
-                  </Tabs.Panel>
-                  <Tabs.Panel value='parameters' className='p-4 flex flex-col gap-4 h-full'>
-                    <Parameters modelId={id} onParameterChange={setParameterValues} />
-                  </Tabs.Panel>
-                  <Tabs.Panel value='snap-points' className='p-4 h-full'>
-                    {/* Use the simplified SnapPointsTab component */}
-                    <SnapPointsTab
-                      fileFormat={fileExtension}
-                      conversionStatus={model?.conversion_status}
-                      attachmentPoints={attachmentPoints}
-                      onAttachmentPointUpdated={handleAttachmentPointUpdated}
-                      onAddAttachmentPoint={handleAddAttachmentPoint}
-                      onRemoveAttachmentPoint={handleRemoveAttachmentPoint}
-                      selectedPoint={selectedPoint}
-                      onSelectPoint={setSelectedPoint}
+              
+              {activeTab === 'surface' && (
+                <div>
+                  <div className="mb-6">
+                    <Text className="font-medium mb-2">Available Colors & Materials</Text>
+                    <MultiSelect
+                      data={bikeColors.map(color => ({
+                        value: color.value,
+                        label: color.label
+                      }))}
+                      value={selectedColors}
+                      onChange={setSelectedColors}
+                      placeholder="Select available colors"
+                      label="Select all colors that apply"
+                      searchable
+                      clearable
+                      styles={(theme) => ({
+                        input: { minHeight: '42px' },
+                        item: { 
+                          '&[data-selected]': {
+                            '&, &:hover': {
+                              backgroundColor: '#000',
+                              color: '#fff',
+                            },
+                          },
+                        }
+                      })}
                     />
-                  </Tabs.Panel>
-                  <Tabs.Panel value='surface' className='p-4 relative h-full'>
-                    <div className='mb-4 flex justify-between'>
-                      <Text>Color</Text>
-                      <div 
-                        className='h-6 w-6 rounded-md border border-gray-300 cursor-pointer'
-                        onClick={() => setColorPickerVisible(!colorPickerVisible)}
-                        style={{ backgroundColor: color || '#000000' }}
-                      />
-                      {colorPickerVisible && (
-                        <div className='absolute top-10 right-0 bg-white rounded-md p-2 border border-gray-300'>
-                          <ColorPicker
-                            format="hex"
-                            value={color || '#000000'}
-                            onChange={(value) => setColor(value)}
-                          />
-                          <button 
-                            className='bg-black text-white w-full mt-2 px-2 py-1 rounded-full'
-                            onClick={() => setColorPickerVisible(false)}
-                          >
-                            OK
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                    <div className='mb-4'>
-                      <Text>Surface</Text>
-                      <div className='flex gap-4'>
-                        <label>
-                          <input type='radio' name='surface' value='smooth' /> Smooth
-                        </label>
-                        <label>
-                          <input type='radio' name='surface' value='rough' /> Rough
-                        </label>
+                    
+                    {selectedColors.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mt-3">
+                        {selectedColors.map(colorValue => {
+                          const colorInfo = bikeColors.find(c => c.value === colorValue);
+                          return colorInfo ? (
+                            <div 
+                              key={colorValue}
+                              className="flex items-center px-2 py-1 rounded border border-gray-200"
+                            >
+                              <div 
+                                style={{ 
+                                  backgroundColor: colorInfo.color, 
+                                  width: '12px', 
+                                  height: '12px', 
+                                  marginRight: '6px',
+                                  borderRadius: '2px'
+                                }}
+                              />
+                              <span className="text-sm">{colorInfo.label}</span>
+                            </div>
+                          ) : null;
+                        })}
                       </div>
+                    )}
+                    
+                    <Text size="xs" color="dimmed" className="mt-1">
+                      These are the colors and materials customers can choose from when ordering
+                    </Text>
+                  </div>
+                  
+                  <div className="mb-6">
+                    <Text className="font-medium mb-2">Surface</Text>
+                    <div className="flex gap-6 mt-2">
+                      <label className="flex items-center cursor-pointer">
+                        <input 
+                          type="radio" 
+                          name="surface" 
+                          value="smooth" 
+                          className="mr-2 w-4 h-4 accent-black" 
+                        /> 
+                        <span>Smooth</span>
+                      </label>
+                      <label className="flex items-center cursor-pointer">
+                        <input 
+                          type="radio" 
+                          name="surface" 
+                          value="rough" 
+                          className="mr-2 w-4 h-4 accent-black" 
+                        /> 
+                        <span>Rough</span>
+                      </label>
                     </div>
-                    <div className='mb-4'>
-                      <Text>Paint Finish</Text>
-                      <div className='flex gap-4'>
-                        <label>
-                          <input type='radio' name='paint-finish' value='matte' /> Matte
-                        </label>
-                        <label>
-                          <input type='radio' name='paint-finish' value='glossy' /> Glossy
-                        </label>
-                        <label>
-                          <input type='radio' name='paint-finish' value='metallic' /> Metallic
-                        </label>
-                      </div>
+                  </div>
+                  
+                  <div className="mb-6">
+                    <Text className="font-medium mb-2">Paint Finish</Text>
+                    <div className="flex flex-wrap gap-6 mt-2">
+                      <label className="flex items-center cursor-pointer">
+                        <input 
+                          type="radio" 
+                          name="paint-finish" 
+                          value="matte" 
+                          className="mr-2 w-4 h-4 accent-black" 
+                        /> 
+                        <span>Matte</span>
+                      </label>
+                      <label className="flex items-center cursor-pointer">
+                        <input 
+                          type="radio" 
+                          name="paint-finish" 
+                          value="glossy" 
+                          className="mr-2 w-4 h-4 accent-black" 
+                        /> 
+                        <span>Glossy</span>
+                      </label>
+                      <label className="flex items-center cursor-pointer">
+                        <input 
+                          type="radio" 
+                          name="paint-finish" 
+                          value="metallic" 
+                          className="mr-2 w-4 h-4 accent-black" 
+                        /> 
+                        <span>Metallic</span>
+                      </label>
                     </div>
-                  </Tabs.Panel>
+                  </div>
                 </div>
-              </Tabs>
+              )}
             </div>
           </div>
         </div>

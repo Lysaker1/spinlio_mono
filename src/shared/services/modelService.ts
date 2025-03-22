@@ -52,6 +52,7 @@ export interface ModelMetadata {
   converted_formats?: string[];
   conversion_job_id?: string;
   color?: string;
+  colors?: string;
   thumbnail_url?: string;
   is_public: boolean;
 }

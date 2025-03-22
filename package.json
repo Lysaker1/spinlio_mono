@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "heroku-prebuild": "mkdir -p src/apps/marketplace/src/shared && cp -r src/shared/* src/apps/marketplace/src/shared/ || echo 'No shared directory to copy'",
-    "heroku-postbuild": "cd src/apps/marketplace && npm install --no-audit --include=dev && npm run build",
+    "heroku-postbuild": "cd src/apps/marketplace && npm install --production=false && npm run build",
     "start": "cd src/apps/marketplace && npm start"
   },
   "engines": {

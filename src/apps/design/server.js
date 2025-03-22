@@ -29,8 +29,45 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-// Security headers
-app.use(helmet());
+// Security headers with custom CSP
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      connectSrc: [
+        "'self'", 
+        "https://api.bazaar.it",
+        "https://api.spinlio.com",
+        "https://*.supabase.co",
+        "https://***REMOVED***.supabase.co",
+        "https://*.shapediver.com",
+        "https://*.eu-central-1.shapediver.com",
+        "wss://*.shapediver.com",
+        "https://sdr8euc1.eu-central-1.shapediver.com"
+      ],
+      imgSrc: [
+        "'self'", 
+        "data:", 
+        "blob:", 
+        "https://res.cloudinary.com",
+        "https://*.shapediver.com",
+        "https://viewer.shapediver.com"
+      ],
+      scriptSrc: [
+        "'self'", 
+        "'unsafe-inline'", 
+        "'unsafe-eval'",
+        "https://static.klaviyo.com"
+      ],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      fontSrc: ["'self'", "data:"],
+      mediaSrc: ["'self'", "data:", "blob:"],
+      workerSrc: ["'self'", "blob:"],
+      frameSrc: ["'self'"],
+      formAction: ["'self'"]
+    }
+  }
+}));
 
 // Enable CORS
 app.use(cors({

@@ -72,9 +72,7 @@ module.exports = (env) => {
     resolve: {
       extensions: ['.tsx', '.ts', '.js', '.jsx'],
       alias: {
-        '@shared': path.resolve(__dirname, 'src/shared'),
-        '@static': path.resolve(__dirname, 'src/static'),
-        '@dynamic': path.resolve(__dirname, 'src/dynamic'),
+        '@frontend': path.resolve(__dirname, 'src/frontend'),
         react: path.resolve('./node_modules/react'),
         'react-dom': path.resolve('./node_modules/react-dom'),
       }

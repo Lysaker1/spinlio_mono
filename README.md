@@ -1,10 +1,14 @@
-# PREFAB
+# bazaar Platform
+
+> **DEVELOPMENT BRANCH** - This is the marketplace development branch for active development.
+
+Welcome to the bazaar Platform monorepo.
 
 A modern web application for 3D design configurators and marketplace functionality.
 
 ## Project Overview
 
-PREFAB is a monorepo containing multiple applications:
+bazaar is a monorepo containing multiple applications:
 
 1. **Design App**: A 3D configurator application allowing users to customize various products (furniture, etc.) with real-time visual feedback
 2. **Marketplace App**: A platform for users to browse, purchase, and manage designs
@@ -49,18 +53,7 @@ PREFAB is a monorepo containing multiple applications:
 - Node.js 18.x
 - npm 10.x
 
-### Installation
 
-1. Clone the repository:
-   ```
-   git clone <repository-url>
-   cd PREFAB
-   ```
-
-2. Install dependencies:
-   ```
-   npm install
-   ```
 
 3. Set up environment variables:
    - Copy example environment files to create your own configurations:

@@ -23,7 +23,6 @@ const PRESERVED_FILES = [
   'services/modelService.ts', // Contains our S3 upload improvements
   'utils/s3Client.ts',       // Contains file upload fixes
   'services/designStorage.ts', // Contains marketplace-specific design storage logic
-  'services/profileStorage.ts', // Contains business profile creation fixes
   'types/Profile.ts',        // Contains business profile type definitions
 ];
 

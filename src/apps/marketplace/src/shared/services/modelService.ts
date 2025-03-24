@@ -507,12 +507,13 @@ export const uploadModelToS3 = async (
     const backgroundUpload = metadata._backgroundUpload || false;
     
     // Remove the special flags from metadata before saving to database
-    const { 
-      _waitForUploadCompletion, 
-      _createRecordFirst, 
-      _backgroundUpload, 
-      ...cleanMetadata 
-    } = metadata;
+    // Make a clean copy that removes underscore fields
+    const cleanMetadata: any = {};
+    Object.keys(metadata).forEach(key => {
+      if (!key.startsWith('_')) {
+        cleanMetadata[key] = metadata[key as keyof typeof metadata];
+      }
+    });
     
     // Generate a proper UUID for the model if not provided
     if (!cleanMetadata.id) {

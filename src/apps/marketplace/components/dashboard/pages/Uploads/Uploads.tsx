@@ -10,6 +10,7 @@ import './Uploads.css';
 import UploadModal from './components/UploadModal/UploadModal';
 import { UserProfile } from '@shared/hooks/useUser';
 import { Profile } from '@shared/types/Profile';
+import { v4 as uuidv4 } from 'uuid';
 
 // Import ModelCard component if it exists
 let ModelCard: React.ComponentType<any> | null = null;
@@ -107,13 +108,15 @@ const Uploads: React.FC = () => {
   const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
   const [testing, setTesting] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
+  const [testingConnection, setTestingConnection] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   
   // Updated hooks usage
   const { user } = useUser();
   const { isAuthenticated } = useAuth();
 
   // Converted profile for backward compatibility
-  const adaptedProfile = adaptUserProfileToProfile(user);
+  const userProfile = adaptUserProfileToProfile(user);
 
   // Function to test S3 connectivity
   const handleTestS3 = async () => {
@@ -234,17 +237,64 @@ const Uploads: React.FC = () => {
   };
 
   const handleUpload = async (metadata: any) => {
-    if (!selectedFile) return;
-    
-    // Add file size warning for large files
-    if (selectedFile.size > 50 * 1024 * 1024) {
-      const fileSizeMB = (selectedFile.size / (1024 * 1024)).toFixed(2);
-      alert(`Warning: You are uploading a large file (${fileSizeMB}MB). The upload may take some time to complete. Please don't close the browser tab during the upload.`);
-    }
-    
     setUploading(true);
+    setUploadError(null);
+    
+    console.log('Starting upload with metadata:', metadata);
+
+    if (!selectedFile || !userProfile) {
+      setUploadError('No file selected or user not logged in');
+      setUploading(false);
+      return;
+    }
+
     try {
-      await uploadModelToS3(selectedFile, metadata);
+      // First test S3 connectivity
+      setTestingConnection(true);
+      const isConnected = await testS3Connection();
+      setTestingConnection(false);
+      
+      if (!isConnected) {
+        throw new Error('Cannot connect to S3. Please check your network connection.');
+      }
+      
+      // Generate a nice URL-friendly filename from the original
+      const cleanFilename = selectedFile.name
+        .toLowerCase()
+        .replace(/[^a-z0-9-.]/g, '_');
+      
+      // Add system-generated UUID and cleaned filename to metadata
+      const modelId = uuidv4();
+      
+      // Use the ID from the user profile as user_id for the model
+      const userId = userProfile.id;
+      
+      // Get the file extension
+      const fileExt = selectedFile.name.split('.').pop()?.toLowerCase();
+      
+      // Create s3 key based on calculated paths
+      const s3Key = `users/${userId}/models/${modelId}/${fileExt}/${modelId}-${cleanFilename}`;
+      console.log('Generated S3 key:', s3Key);
+      
+      console.log('Uploading file:', selectedFile.name, 'Size:', selectedFile.size, 'Type:', selectedFile.type || 'unknown');
+      
+      // Upload model to S3 with all metadata and the userId for proper organization
+      // Add special flags for upload behavior
+      await uploadModelToS3(
+        selectedFile, 
+        {
+          ...metadata,
+          id: modelId,
+          filename: selectedFile.name,
+          is_public: true,
+          price_on_request: false,
+          moq_on_request: false,
+          lead_time_on_request: false,
+          payment_terms_on_request: false
+        }, 
+        userId
+      );
+
       await loadModels();
       closeUploadModal();
       setSelectedFile(null);
@@ -257,7 +307,7 @@ const Uploads: React.FC = () => {
         errorMessage = `Upload failed: ${error.message}`;
       }
       
-      alert(errorMessage);
+      setUploadError(errorMessage);
     } finally {
       setUploading(false);
     }
@@ -323,7 +373,7 @@ const Uploads: React.FC = () => {
         {/* S3 Test Button */}
         <Button 
           onClick={testS3Connection}
-          loading={testing}
+          loading={testingConnection}
           style={{ 
             backgroundColor: '#fd7e14', // Orange background
             color: 'white',
@@ -362,6 +412,16 @@ const Uploads: React.FC = () => {
           <h3 className="font-bold mb-2">Status:</h3>
           {status}
         </div>
+      )}
+
+      {uploadError && (
+        <Alert 
+          color="red" 
+          title="Upload Error"
+          mb="md"
+        >
+          {uploadError}
+        </Alert>
       )}
 
       {loading ? (

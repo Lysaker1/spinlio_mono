@@ -39,7 +39,7 @@ app.use(limiter);
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
-      defaultSrc: ["'self'", "data:"],
+      defaultSrc: ["'self'", "data:", "https://auth.bazaar.it"],
       connectSrc: [
         "'self'", 
         "https://api.bazaar.it",
@@ -108,6 +108,7 @@ app.use(helmet({
         "'self'",
         "https://*.auth0.com",
         "https://auth.bazaar.it",
+        "https://auth.bazaar.it/*",
         "https://dev-jxcml1qpmbgabh6v.us.auth0.com"
       ],
       formAction: ["'self'", "https://*.auth0.com", "https://auth.bazaar.it"],

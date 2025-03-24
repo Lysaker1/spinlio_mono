@@ -4,7 +4,7 @@ import { logger } from '../utils/logger';
 
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
   ? 'https://api.bazaar.it' 
-  : 'http://localhost:3000';
+  : 'http://localhost:3003';
 
 export class DesignStorageService {
   static async saveDesign(
@@ -32,23 +32,55 @@ export class DesignStorageService {
     }
   }
 
-  static async getDesigns(token: string): Promise<SavedDesign[]> {
+  static async getDesigns(token?: string): Promise<SavedDesign[] | null> {
     try {
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${API_BASE_URL}/designs`, {
         method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        headers
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch designs: ${response.statusText}`);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       return await response.json();
     } catch (error) {
-      logger.error('Error fetching designs:', error);
-      throw error;
+      logger.error('Error getting designs:', error);
+      return null;
+    }
+  }
+
+  static async getDesignsByUser(userId: string, token?: string): Promise<SavedDesign[] | null> {
+    try {
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const response = await fetch(`${API_BASE_URL}/designs/${userId}`, {
+        method: 'GET',
+        headers
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      logger.error('Error getting designs by user:', error);
+      return null;
     }
   }
 

@@ -19,12 +19,12 @@ const backupDir = path.join(rootDir, 'tmp-backup');
 
 // Files to preserve (skip during copy)
 const PRESERVED_FILES = [
-  'hooks/useUser.tsx',       // Already customized
   'services/modelService.ts', // Contains our S3 upload improvements and backgroundUpload flag
   'utils/s3Client.ts',       // Contains file upload fixes
   'services/designStorage.ts', // Contains marketplace-specific design storage logic
   'types/Profile.ts',        // Contains business profile type definitions
   'services/profileStorage.ts', // Contains profile storage logic
+  'hooks/useUser.tsx', // Contains user hook
 ];
 
 // Files to clean up (these shouldn't be in the target dir)

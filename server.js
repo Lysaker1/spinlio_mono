@@ -44,6 +44,7 @@ app.use(helmet({
         "https://api.bazaar.it/*",
         "https://marketplace.bazaar.it",
         "https://auth.bazaar.it",
+        "https://auth.bazaar.it/oauth/token",
         "https://auth.bazaar.it/*", 
         "https://*.auth0.com",
         "https://*.supabase.co",

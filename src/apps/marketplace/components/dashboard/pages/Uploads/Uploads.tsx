@@ -190,10 +190,9 @@ const Uploads: React.FC = () => {
     }
   };
 
+  // Auto-refresh models if any are in processing state
   useEffect(() => {
-    loadModels();
-
-    // Auto-refresh models if any are in processing state
+    // Set up the interval for auto-refreshing processing models
     const interval = window.setInterval(() => {
       const hasProcessingModels = models.some(model => model.conversion_status === 'processing');
       if (hasProcessingModels) {
@@ -208,15 +207,25 @@ const Uploads: React.FC = () => {
         window.clearInterval(refreshInterval);
       }
     };
+  }, [models]); // Depend on models to reset interval when models change
+
+  // Initial data load
+  useEffect(() => {
+    loadModels();
   }, []);
 
   const loadModels = async () => {
     setLoading(true);
     try {
-      const fetchedModels = await getModelsPerUser(user?.id || '');
+      // Don't wait for user profile to be fully loaded, just use the ID if available
+      const userId = user?.id || (user as any)?.sub || '';
+      console.log('Loading models for user ID:', userId);
+      const fetchedModels = await getModelsPerUser(userId);
       setModels(fetchedModels);
+      return fetchedModels; // Return the models for potential use, but never in a truthiness check
     } catch (error) {
       console.error('Failed to load models:', error);
+      return [];
     } finally {
       setLoading(false);
     }
@@ -251,12 +260,8 @@ const Uploads: React.FC = () => {
     try {
       // First test S3 connectivity
       setTestingConnection(true);
-      const isConnected = await testS3Connection();
+      await testS3Connection();
       setTestingConnection(false);
-      
-      if (!isConnected) {
-        throw new Error('Cannot connect to S3. Please check your network connection.');
-      }
       
       // Generate a nice URL-friendly filename from the original
       const cleanFilename = selectedFile.name
@@ -349,7 +354,14 @@ const Uploads: React.FC = () => {
     // Removed actions prop if it's not supported
   };
 
-  
+  const handleUploadSuccess = (model: any) => {
+    // Refresh the models list immediately
+    loadModels();
+    
+    // Optionally show the edit modal for the new model
+    // This functionality would require additional state and a new modal component
+  };
+
   if (!user) {
     return <div>Loading...</div>;
   }
@@ -452,6 +464,7 @@ const Uploads: React.FC = () => {
         uploadModalOpened={uploadModalOpened} 
         closeUploadModal={closeUploadModal} 
         profileId={user.id} 
+        onUploadSuccess={handleUploadSuccess}
       />
     </PageLayout>
   );

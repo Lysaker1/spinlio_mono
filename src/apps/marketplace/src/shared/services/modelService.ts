@@ -630,7 +630,7 @@ export const uploadModelToS3 = async (
               })
               .eq('id', data.id)
               .then(() => console.log(`Updated model ${data.id} with final S3 URL`))
-              .catch(err => console.error(`Failed to update model ${data.id} with S3 URL:`, err));
+              .catch((err: Error) => console.error(`Failed to update model ${data.id} with S3 URL:`, err));
           }
         } else {
           console.error(`Background upload failed for model ${data.id}:`, result.error);
@@ -641,7 +641,7 @@ export const uploadModelToS3 = async (
             .update({ conversion_status: 'failed' })
             .eq('id', data.id)
             .then(() => console.log(`Updated model ${data.id} status to failed`))
-            .catch(err => console.error(`Failed to update model ${data.id} status:`, err));
+            .catch((err: Error) => console.error(`Failed to update model ${data.id} status:`, err));
         }
       }).catch(err => {
         console.error(`Background upload process error for model ${data.id}:`, err);

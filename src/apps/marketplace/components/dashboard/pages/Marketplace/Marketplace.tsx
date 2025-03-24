@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { SimpleGrid, Text, Button, Loader, TextInput, Select, Tabs, Title, Divider } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import { IconArrowRight, IconSearch } from '@tabler/icons-react';
@@ -38,6 +38,11 @@ const Marketplace: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState<Map<string, Profile>>(new Map());
   
+  // Keep track of users we've attempted to fetch to prevent loops
+  const fetchedUserIdsRef = useRef<Set<string>>(new Set());
+  // Track if profile batch fetching is already in progress
+  const isFetchingProfilesRef = useRef<boolean>(false);
+  
   // State for modals
   const [selectedPrefab, setSelectedPrefab] = useState<BikeTemplate | null>(null);
   const [selectedComponent, setSelectedComponent] = useState<ModelMetadata | null>(null);
@@ -51,6 +56,11 @@ const Marketplace: React.FC = () => {
   const fetchUser = async (userId: string): Promise<Profile | null> => {
     if (!userId) return null;
     if (users.has(userId)) return users.get(userId) || null;
+    if (fetchedUserIdsRef.current.has(userId)) return null; // Skip already attempted fetches
+    
+    // Mark this user as attempted even before the fetch completes
+    fetchedUserIdsRef.current.add(userId);
+    
     try {
       const user = await ProfileStorageService.getProfile(userId);
       setUsers(prev => new Map(prev.set(userId, user)));
@@ -79,22 +89,80 @@ const Marketplace: React.FC = () => {
 
   // Fetch user profiles
   useEffect(() => {
-    const uniqueComponentUserIds = Array.from(new Set(components.map(c => c.user_id).filter((id): id is string => Boolean(id))));
-    const uniquePrefabManufacturerIds = Array.from(new Set(prefabs.map(p => p.manufacturer_id).filter((id): id is string => Boolean(id))));
-
-    const uniqueUserIds = Array.from(new Set([...uniqueComponentUserIds, ...uniquePrefabManufacturerIds]));
-
-    uniqueUserIds.forEach(async (userId) => {
-      try {
-        const user = await fetchUser(userId);
-        if (user) {
-          setUsers(prev => new Map(prev.set(userId, user)));
-        }
-      } catch (error) {
-        console.error(`Failed to fetch user ${userId}:`, error);
+    // Skip if already fetching profiles to prevent concurrent batch operations
+    if (isFetchingProfilesRef.current) return;
+    
+    const fetchUserProfiles = async () => {
+      // Get unique user IDs from components and prefabs
+      const uniqueComponentUserIds = Array.from(
+        new Set(components.map(c => c.user_id).filter((id): id is string => Boolean(id)))
+      );
+      
+      const uniquePrefabManufacturerIds = Array.from(
+        new Set(prefabs.map(p => p.id).filter(Boolean))
+      );
+      
+      const uniqueUserIds = Array.from(new Set([...uniqueComponentUserIds, ...uniquePrefabManufacturerIds]));
+      
+      // Only fetch profiles we don't already have and haven't attempted to fetch
+      const userIdsToFetch = uniqueUserIds.filter(id => 
+        !users.has(id) && !fetchedUserIdsRef.current.has(id)
+      );
+      
+      // Skip if no new users to fetch
+      if (userIdsToFetch.length === 0) {
+        isFetchingProfilesRef.current = false;
+        return;
       }
+      
+      console.log(`Fetching ${userIdsToFetch.length} user profiles in batches`);
+      
+      // Process in small batches to avoid overwhelming the server
+      const batchSize = 2;
+      let newUsers = new Map(users);
+      let updated = false;
+      
+      // Mark all these IDs as attempted to prevent future fetch attempts
+      userIdsToFetch.forEach(id => fetchedUserIdsRef.current.add(id));
+      
+      // Process each batch sequentially
+      for (let i = 0; i < userIdsToFetch.length; i += batchSize) {
+        const batch = userIdsToFetch.slice(i, i + batchSize);
+        
+        // Add delay between batches (except for first batch)
+        if (i > 0) {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+        
+        // Process each user in the batch
+        for (const userId of batch) {
+          try {
+            const user = await ProfileStorageService.getProfile(userId);
+            if (user) {
+              newUsers.set(userId, user);
+              updated = true;
+            }
+          } catch (error) {
+            console.error(`Failed to fetch user ${userId}:`, error);
+          }
+        }
+      }
+      
+      // Only update state once at the end if we have new data
+      if (updated) {
+        setUsers(newUsers);
+      }
+      
+      isFetchingProfilesRef.current = false;
+    };
+    
+    isFetchingProfilesRef.current = true;
+    fetchUserProfiles().catch(error => {
+      console.error('Error fetching user profiles:', error);
+      isFetchingProfilesRef.current = false;
     });
-  }, [components, prefabs]);
+    
+  }, [components, prefabs]); // Remove 'users' from dependencies
 
   // Filtered bike data based on search and category
   const filteredPrefabs = prefabs.filter(prefab => {
@@ -103,7 +171,7 @@ const Marketplace: React.FC = () => {
     
     // Use activeCategory for broad filtering
     const matchesCategory = activeCategory === BIKE_CATEGORIES.ALL || 
-      prefab.type === activeCategory || 
+      prefab.category === activeCategory || 
       // For subcategories, check if the bike type matches the category
       (activeCategory === BIKE_CATEGORIES.EBIKE && prefab.name.toLowerCase().includes('e-bike')) ||
       (activeCategory === BIKE_CATEGORIES.ROAD && prefab.name.toLowerCase().includes('road'));
@@ -114,13 +182,13 @@ const Marketplace: React.FC = () => {
   // Get E-bikes
   const eBikes = filteredPrefabs.filter(prefab => 
     prefab.name.toLowerCase().includes('e-') || 
-    prefab.type === BIKE_CATEGORIES.EBIKE
+    prefab.category === BIKE_CATEGORIES.EBIKE
   );
 
   // Get road bikes
   const roadBikes = filteredPrefabs.filter(prefab => 
     prefab.name.toLowerCase().includes('road') || 
-    prefab.type === BIKE_CATEGORIES.ROAD
+    prefab.category === BIKE_CATEGORIES.ROAD
   );
 
   // Get other bikes (those not in e-bikes or road bikes)
@@ -218,13 +286,13 @@ const Marketplace: React.FC = () => {
         
         <SimpleGrid cols={{ base: 1, xs: 2, sm: 3, md: 5 }} spacing="lg">
           {bikes.slice(0, 5).map(prefab => {
-            const user = users.get(prefab.manufacturer_id || '');
+            const user = users.get(prefab.id);
             return (
               <ProductCard
                 key={prefab.id}
                 id={prefab.id}
                 type="prefab"
-                image={prefab.image}
+                image={prefab.imageUrl}
                 name={prefab.name}
                 price={prefab.price || 0}
                 user={user}

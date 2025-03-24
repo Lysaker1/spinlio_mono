@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useAuth } from './useAuth';
 import api from '@shared/config/api';
@@ -39,10 +39,22 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [fetchAttempts, setFetchAttempts] = useState<number>(0);
+  const [shouldRetry, setShouldRetry] = useState<boolean>(true);
+
+  // Track if the component is mounted to prevent state updates after unmount
+  const isMountedRef = useRef(true);
+  
+  useEffect(() => {
+    return () => {
+      // Set to false when component unmounts
+      isMountedRef.current = false;
+    };
+  }, []);
 
   // Fetch user profile from API
   const fetchUserProfile = async (): Promise<void> => {
-    if (!isAuthenticated || !userId) {
+    if (!isAuthenticated || !userId || !shouldRetry) {
       setUser(null);
       setIsLoading(false);
       return;
@@ -50,16 +62,31 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     try {
       setIsLoading(true);
-      console.log(`Fetching user profile for ID: ${userId}`);
-      const response = await api.get(`/api/users/${userId}`);
+      console.log(`Fetching user profile for ID: ${userId}, attempt: ${fetchAttempts + 1}`);
+      
+      // Increment fetch attempts
+      setFetchAttempts(prev => prev + 1);
+      
+      const response = await api.get(`/api/profile/${userId}`);
       setUser({
         ...response.data,
         // Ensure picture is set for components that might use it
         picture: response.data.avatar_url || response.data.picture
       });
       setError(null);
+      // Reset fetch attempts on success
+      setFetchAttempts(0);
     } catch (err: any) {
       console.error('Error fetching user profile:', err);
+      
+      // Check if we've exceeded max retry attempts (5)
+      if (fetchAttempts >= 5) {
+        console.log('Maximum profile fetch attempts reached. Stopping retries.');
+        setShouldRetry(false);
+        setError('Could not load user profile after multiple attempts');
+        setIsLoading(false);
+        return;
+      }
       
       // Check if Axios error with response
       if (err.response) {
@@ -71,19 +98,30 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           try {
             console.log('User profile not found, attempting to create one');
             await createUserProfile();
+            // Reset fetch attempts after successful profile creation
+            setFetchAttempts(0);
           } catch (createErr: any) {
             const errorMessage = createErr.response?.data?.error || createErr.message || 'Unknown error';
             console.error('Error creating user profile:', createErr);
             setError(`Failed to create user profile: ${errorMessage}`);
+            
+            // If profile creation fails, don't try again
+            setShouldRetry(false);
           }
         } else {
           // For errors other than 404 (not found)
           const errorMessage = err.response.data?.error || err.message || 'Unknown error';
           setError(`Failed to load user profile: ${errorMessage}`);
+          
+          // If we get consistent errors that aren't 404, stop retrying
+          if (status !== 404) {
+            setShouldRetry(false);
+          }
         }
       } else {
         // Network error or other non-response error
         setError(`Network error loading profile: ${err.message || 'Unknown error'}`);
+        // For network errors, we might want to retry but with a limit
       }
     } finally {
       setIsLoading(false);
@@ -107,7 +145,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       };
 
       console.log('Creating new user profile:', newUser);
-      const response = await api.post('/api/users', newUser);
+      const response = await api.post('/api/profile', newUser);
       setUser({
         ...response.data,
         picture: response.data.avatar_url || response.data.picture
@@ -133,7 +171,12 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     try {
       setIsLoading(true);
-      const response = await api.patch(`/api/users/${userId}`, data);
+      // Include the user ID in the data for the PATCH request
+      const updateData = {
+        ...data,
+        id: userId
+      };
+      const response = await api.patch('/api/profile', updateData);
       setUser({
         ...response.data,
         picture: response.data.avatar_url || response.data.picture
@@ -164,9 +207,13 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // Fetch user profile when auth state changes
   useEffect(() => {
     if (!auth0Loading) {
+      // Reset retry state when auth state changes
+      setFetchAttempts(0);
+      setShouldRetry(true);
+      
       // Add a slight delay to ensure authentication is complete
       const timeoutId = setTimeout(() => {
-        if (isAuthenticated && userId) {
+        if (isAuthenticated && userId && shouldRetry) {
           console.log('Auth state ready, fetching user profile');
           fetchUserProfile();
         } else if (!isAuthenticated) {

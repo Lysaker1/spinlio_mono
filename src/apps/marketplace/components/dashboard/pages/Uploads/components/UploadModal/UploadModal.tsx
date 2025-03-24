@@ -18,10 +18,12 @@ interface UploadModalProps {
   profileId: string;
   uploadModalOpened: boolean;
   closeUploadModal: () => void;
+  onUploadSuccess?: (model: any) => void;
 }
 
-const UploadModal = ({ uploadModalOpened, closeUploadModal, profileId }: UploadModalProps) => {
+const UploadModal = ({ uploadModalOpened, closeUploadModal, profileId, onUploadSuccess }: UploadModalProps) => {
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const [loadingComponentGroups, setLoadingComponentGroups] = useState(false);
   const [loadingCategories, setLoadingCategories] = useState(false);
@@ -223,34 +225,31 @@ const UploadModal = ({ uploadModalOpened, closeUploadModal, profileId }: UploadM
       // Instead of waiting for upload completion, modify metadata to indicate background processing
       console.log("Starting upload with metadata:", metadata);
       
-      // Use special flag to tell API we want the model record created immediately
-      // but don't wait for upload completion
+      // Add flag to use XHR upload directly (bypass streaming upload attempts)
       const uploadResponse = await uploadModelToS3(selectedFile, {
         ...metadata,
         _createRecordFirst: true, // Special flag to create DB record first
-        _backgroundUpload: true   // Continue upload in background
+        _backgroundUpload: true,  // Continue upload in background
+        _useDirectXhrUpload: true // Skip streaming upload attempts and use XHR directly
       }, profileId);
       
       console.log("Model record created:", uploadResponse);
       
-      // Close the modal immediately
+      // Close the modal
       closeUploadModal();
       
-      // Navigate to edit page immediately if we have an ID
       if (uploadResponse && uploadResponse.id) {
-        console.log("Redirecting to edit page for model ID:", uploadResponse.id);
+        console.log("Upload successful for model ID:", uploadResponse.id);
         
-        // Navigate to edit page while upload continues in background
-        navigate(`/dashboard/uploads/${uploadResponse.id}`);
+        // Call the onUploadSuccess callback to refresh the models list
+        if (onUploadSuccess) {
+          onUploadSuccess(uploadResponse);
+        }
         
-        // Show a notification about background upload - use a simple alert for now
-        // This can be replaced with a proper notification system or toast later
-        setTimeout(() => {
-          alert("Your model is being uploaded in the background. The preview will appear when ready.");
-        }, 500);
+        // Navigate to the edit model page for the uploaded model
+        navigate(`/uploads/${uploadResponse.id}`);
       } else {
         console.error("Upload response missing ID:", uploadResponse);
-        alert("Error creating model record. Please try again.");
       }
     } catch (error) {
       console.error('Upload failed:', error);
@@ -264,7 +263,8 @@ const UploadModal = ({ uploadModalOpened, closeUploadModal, profileId }: UploadM
         errorMessage = 'Upload failed due to browser compatibility issues. Please try again.';
       }
       
-      alert(errorMessage);
+      // No alert here either, just set error state
+      setUploadError(errorMessage);
     } finally {
       setUploading(false);
     }

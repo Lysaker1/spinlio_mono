@@ -7,7 +7,7 @@ export class ProfileStorageService {
     try {
       console.log(`Fetching profile for user ID: ${userId}`);
       // Use the axios instance which already handles auth headers
-      const response = await api.get(`/api/users/${userId}`);
+      const response = await api.get(`/api/profile/${userId}`);
       return response.data;
     } catch (error: any) {
       // Check if the error has a response (from the server)
@@ -36,8 +36,8 @@ export class ProfileStorageService {
       // Create headers if token is provided
       const config = token ? { headers: { Authorization: `Bearer ${token}` } } : undefined;
       
-      // This endpoint now handles both creating new profiles and updating existing ones
-      const response = await api.post(`/api/users`, profile, config);
+      // Change the endpoint to /api/profile which properly handles both creation and updates
+      const response = await api.post(`/api/profile`, profile, config);
       
       const status = response.status;
       console.log(`Profile ${status === 201 ? 'created' : 'updated'} successfully`);
@@ -69,7 +69,8 @@ export class ProfileStorageService {
       // Create headers if token is provided
       const config = token ? { headers: { Authorization: `Bearer ${token}` } } : undefined;
       
-      const response = await api.patch(`/api/users/${profile.id}`, profile, config);
+      // Use /api/profile instead, which needs the ID in the body
+      const response = await api.patch(`/api/profile`, profile, config);
       return response.data;
     } catch (error: any) {
       // Check if the error has a response (from the server)
@@ -92,7 +93,8 @@ export class ProfileStorageService {
       // Create headers if token is provided
       const config = token ? { headers: { Authorization: `Bearer ${token}` } } : undefined;
       
-      const response = await api.post(`/api/business-profiles`, businessProfile, config);
+      // Change from plural to singular to match API endpoint
+      const response = await api.post(`/api/business-profile`, businessProfile, config);
       return response.data;
     } catch (error: any) {
       // Check if the error has a response (from the server)
@@ -111,7 +113,8 @@ export class ProfileStorageService {
     try {
       console.log(`Fetching business profile for user ID: ${userId}`);
       // Use the axios instance which already handles auth headers
-      const response = await api.get(`/api/business-profiles/${userId}`);
+      // Change from plural to singular to match API endpoint
+      const response = await api.get(`/api/business-profile/${userId}`);
       return response.data;
     } catch (error: any) {
       // Check if the error has a response (from the server)

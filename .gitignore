@@ -1,26 +1,29 @@
 # dependencies
-/node_modules
 node_modules/
-/.pnp
+.pnp/
 .pnp.js
 
 # testing
-/coverage
+coverage/
 
 # production
-/build
+build/
 dist/
+public/build/
 
 # misc
 .DS_Store
 .editorconfig
 
-# ENVIRONMENT VARIABLES - EXCLUDE ALL ENV FILES, EVERYWHERE
+# ENVIRONMENT VARIABLES - IMPORTANT: Exclude ALL env files to prevent credential leaks
 .env
 .env.*
 **/.env
 **/.env.*
+# Allow examples only 
+!.env.example
 !**/.env.example
+!.env.example.bak
 !**/.env.example.bak
 
 npm-debug.log*
@@ -63,4 +66,7 @@ temp/
 *.sw?
 
 # OS specific
-Thumbs.db 
+Thumbs.db
+
+# Build artifacts
+*.tsbuildinfo 

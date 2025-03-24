@@ -50,6 +50,9 @@ app.use(helmet({
         "https://*.eu-central-1.shapediver.com",
         "wss://*.shapediver.com",
         "https://*.auth0.com",
+        "https://auth.bazaar.it",
+        "https://auth.bazaar.it/oauth/token",
+        "https://auth.bazaar.it/*",
         "https://dev-jxcml1qpmbgabh6v.us.auth0.com",
         "https://*.amazonaws.com",
         "https://*.s3.amazonaws.com",
@@ -71,7 +74,10 @@ app.use(helmet({
         "https://*.amazonaws.com",
         "https://*.s3.amazonaws.com",
         "https://*.s3.eu-north-1.amazonaws.com",
-        "https://3d-models-spinlio.s3.eu-north-1.amazonaws.com"
+        "https://3d-models-spinlio.s3.eu-north-1.amazonaws.com",
+        "https://egvuknlirjkhhhoooecl.supabase.co",
+        "https://*.wp.com",
+        "https://cdn.auth0.com"
       ],
       scriptSrc: [
         "'self'", 
@@ -92,8 +98,7 @@ app.use(helmet({
       mediaSrc: ["'self'", "data:", "blob:"],
       workerSrc: ["'self'", "blob:"],
       frameSrc: ["'self'", "https://*.auth0.com"],
-      formAction: ["'self'", "https://*.auth0.com"],
-      navigateTo: ["'self'", "https://*.auth0.com", "https://marketplace.bazaar.it"]
+      formAction: ["'self'", "https://*.auth0.com"]
     }
   }
 }));

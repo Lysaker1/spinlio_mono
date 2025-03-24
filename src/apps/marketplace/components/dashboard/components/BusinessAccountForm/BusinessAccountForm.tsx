@@ -51,8 +51,24 @@ const BusinessAccountForm: React.FC<BusinessAccountFormProps> = ({ userId, onSuc
     setError(null);
     
     try {
-      // Get Auth0 token for authentication
-      const token = await getAccessTokenSilently();
+      console.log('Creating business profile for user:', userId);
+      
+      // Get Auth0 token for authentication with better error handling
+      let token;
+      try {
+        token = await getAccessTokenSilently({
+          authorizationParams: {
+            audience: process.env.REACT_APP_AUTH0_AUDIENCE || 'http://localhost:3003',
+            scope: 'openid profile email'
+          }
+        });
+        console.log('Successfully obtained auth token');
+      } catch (tokenError) {
+        console.error('Failed to obtain Auth0 token:', tokenError);
+        setError('Authentication error: Unable to obtain access token. Please try logging in again.');
+        setLoading(false);
+        return;
+      }
       
       // Create business profile
       const businessProfile: Profile = {
@@ -63,16 +79,48 @@ const BusinessAccountForm: React.FC<BusinessAccountFormProps> = ({ userId, onSuc
         created_at: new Date().toISOString(),
         location: values.companyAddress,
         website: values.website,
-        // Additional business fields could be added to a metadata object
-        // or to the Profile type if needed
+        // Add business-specific fields in the proper format for the API
+        business: {
+          company_name: values.legalCompanyName,
+          business_type: 'manufacturer', // Default to manufacturer
+          address: values.companyAddress,
+          country: values.countryOfIncorporation,
+          website: values.website,
+          tax_id: values.registrationNumber
+        }
       };
       
+      console.log('Sending profile creation request with token');
+      
       // Pass token to the createProfile method
-      await ProfileStorageService.createProfile(businessProfile, token);
+      const createdProfile = await ProfileStorageService.createProfile(businessProfile, token);
+      console.log('Profile created successfully:', createdProfile);
       onSuccess();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error creating business account:', err);
-      setError(err instanceof Error ? err.message : 'Failed to create business account');
+      
+      // Provide more detailed error information
+      let errorMessage = 'Failed to create business account';
+      
+      if (err.response) {
+        // Server responded with an error
+        const status = err.response.status;
+        const serverError = err.response.data?.error || err.response.data?.message;
+        
+        if (status === 401) {
+          errorMessage = 'Authentication error: Your session may have expired. Please try logging in again.';
+        } else if (status === 400) {
+          errorMessage = `Invalid data: ${serverError || 'Please check your input and try again.'}`;
+        } else if (status === 409) {
+          errorMessage = 'A profile for this user already exists.';
+        } else if (serverError) {
+          errorMessage = `Error: ${serverError}`;
+        }
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

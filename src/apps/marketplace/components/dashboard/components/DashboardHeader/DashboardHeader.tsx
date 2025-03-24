@@ -24,11 +24,11 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ opened, toggle }) => 
   // Handler for profile navigation
   const handleProfileClick = () => {
     if (user?.id) {
-      navigate(`/dashboard/profile/${user.id}`);
+      navigate(`/profile/${user.id}`);
     } else {
       console.warn('Cannot navigate to profile: user ID is missing');
       // Fallback to base profile page
-      navigate('/dashboard/profile');
+      navigate('/profile');
     }
   };
 

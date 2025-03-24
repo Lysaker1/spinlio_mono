@@ -76,6 +76,9 @@ app.use(helmet({
         "https://*.s3.eu-north-1.amazonaws.com",
         "https://3d-models-spinlio.s3.eu-north-1.amazonaws.com",
         "https://egvuknlirjkhhhoooecl.supabase.co",
+        "https://*.supabase.co",
+        "https://egvuknlirjkhhhoooecl.supabase.in",
+        "https://storage.googleapis.com",
         "https://*.wp.com",
         "https://cdn.auth0.com"
       ],

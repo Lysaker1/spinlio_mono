@@ -112,10 +112,16 @@ app.use(helmet({
         "https://*.auth0.com",
         "https://auth.bazaar.it",
         "https://auth.bazaar.it/*",
-        "https://dev-jxcml1qpmbgabh6v.us.auth0.com"
+        "https://dev-jxcml1qpmbgabh6v.us.auth0.com",
+        "https://marketplace.bazaar.it"
       ],
       formAction: ["'self'", "https://*.auth0.com", "https://auth.bazaar.it"],
-      frameAncestors: ["'self'"]
+      frameAncestors: ["'self'"],
+      childSrc: [
+        "'self'",
+        "https://*.auth0.com", 
+        "https://auth.bazaar.it"
+      ]
     }
   },
   // Make sure to explicitly allow frames 

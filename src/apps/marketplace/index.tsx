@@ -43,8 +43,6 @@ root.render(
         redirect_uri: callbackUrl,
         audience: audience,
         scope: "openid profile email",
-        prompt: "login", // Force login prompt
-        response_mode: "query", // Ensure consistent response format
       }}
       cacheLocation="localstorage"
       useRefreshTokens={true}

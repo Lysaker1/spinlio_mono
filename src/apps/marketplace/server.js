@@ -100,8 +100,8 @@ app.use(helmet({
       ],
       mediaSrc: ["'self'", "data:", "blob:"],
       workerSrc: ["'self'", "blob:"],
-      frameSrc: ["'self'", "https://*.auth0.com"],
-      formAction: ["'self'", "https://*.auth0.com"]
+      frameSrc: ["'self'", "https://*.auth0.com", "https://auth.bazaar.it"],
+      formAction: ["'self'", "https://*.auth0.com", "https://auth.bazaar.it"]
     }
   }
 }));

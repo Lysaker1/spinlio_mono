@@ -71,29 +71,28 @@ const BusinessAccountForm: React.FC<BusinessAccountFormProps> = ({ userId, onSuc
       }
       
       // Create business profile
-      const businessProfile: Profile = {
+      const profileData: Profile = {
         id: userId,
         name: values.publicDisplayName,
         user_type: 'manufacturer',
         is_public: true,
         created_at: new Date().toISOString(),
-        location: values.companyAddress,
         website: values.website,
-        // Add business-specific fields in the proper format for the API
+        // Use the business field for the API to handle properly
         business: {
           company_name: values.legalCompanyName,
-          business_type: 'manufacturer', // Default to manufacturer
+          business_type: 'manufacturer',
           address: values.companyAddress,
           country: values.countryOfIncorporation,
-          website: values.website,
-          tax_id: values.registrationNumber
+          tax_id: values.registrationNumber,
+          website: values.website
         }
       };
       
       console.log('Sending profile creation request with token');
       
       // Pass token to the createProfile method
-      const createdProfile = await ProfileStorageService.createProfile(businessProfile, token);
+      const createdProfile = await ProfileStorageService.createProfile(profileData, token);
       console.log('Profile created successfully:', createdProfile);
       onSuccess();
     } catch (err: any) {

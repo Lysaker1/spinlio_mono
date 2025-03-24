@@ -9,6 +9,12 @@ const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Load environment variables during runtime
+// This is necessary to ensure AWS credentials are properly passed to the client
+require('dotenv').config({
+  path: path.resolve(__dirname, process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development')
+});
+
 // Check if dist directory exists
 const distDir = path.join(__dirname, 'dist');
 if (!fs.existsSync(distDir)) {
@@ -47,6 +53,7 @@ app.use(helmet({
         "https://dev-jxcml1qpmbgabh6v.us.auth0.com",
         "https://*.amazonaws.com",
         "https://*.s3.amazonaws.com",
+        "https://s3.eu-north-1.amazonaws.com",
         "https://*.s3.eu-north-1.amazonaws.com",
         "https://3d-models-spinlio.s3.eu-north-1.amazonaws.com",
         "https://*.execute-api.eu-north-1.amazonaws.com"

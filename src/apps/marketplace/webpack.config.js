@@ -21,7 +21,17 @@ module.exports = (env) => {
     NODE_ENV: process.env.NODE_ENV,
     CORS_ORIGIN: process.env.CORS_ORIGIN,
     API_URL: process.env.API_URL,
-    AUTH0_DOMAIN: process.env.AUTH0_DOMAIN
+    AUTH0_DOMAIN: process.env.AUTH0_DOMAIN,
+    // Add AWS credentials from process.env
+    AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
+    AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
+    AWS_REGION: process.env.AWS_REGION,
+    BUCKET_NAME: process.env.BUCKET_NAME,
+    // Also include React prefixed versions
+    REACT_APP_AWS_ACCESS_KEY_ID: process.env.REACT_APP_AWS_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID,
+    REACT_APP_AWS_SECRET_ACCESS_KEY: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY,
+    REACT_APP_AWS_REGION: process.env.REACT_APP_AWS_REGION || process.env.AWS_REGION,
+    REACT_APP_S3_BUCKET_NAME: process.env.REACT_APP_S3_BUCKET_NAME || process.env.BUCKET_NAME
   };
   
   // Merge all environment variables with priority to process env vars
@@ -128,6 +138,7 @@ module.exports = (env) => {
         '@shared/components': path.resolve(currentPath, 'src/shared/components'),
         '@shared/hooks': path.resolve(currentPath, 'src/shared/hooks'),
         '@shared/assets': path.resolve(currentPath, 'src/shared/assets'),
+        '@shared/utils': path.resolve(currentPath, 'src/shared/utils'),
         ...(fs.existsSync(path.resolve(__dirname, './src/shared')) ? {
           '@shared': path.resolve(__dirname, './src/shared')
         } : {}),
@@ -136,7 +147,15 @@ module.exports = (env) => {
       },
       fallback: {
         "fs": false,
-        "path": false
+        "path": false,
+        "crypto": require.resolve('crypto-browserify'),
+        "stream": require.resolve('stream-browserify'),
+        "buffer": require.resolve('buffer/'),
+        "util": require.resolve('util/'),
+        "http": require.resolve('stream-http'),
+        "https": require.resolve('https-browserify'),
+        "zlib": require.resolve('browserify-zlib'),
+        "process": require.resolve('process/browser.js')
       },
       modules: [
         'node_modules',
@@ -191,6 +210,15 @@ module.exports = (env) => {
           env[key] = JSON.stringify(finalEnv[key]);
           return env;
         }, {})
+      }),
+      // Enable AWS SDK polyfills for browser compatibility
+      new webpack.ProvidePlugin({
+        Buffer: ['buffer', 'Buffer'],
+        process: 'process/browser.js',
+      }),
+      // Add global definitions for polyfills
+      new webpack.DefinePlugin({
+        'process.env.NODE_DEBUG': JSON.stringify(process.env.NODE_DEBUG),
       }),
       new CompressionPlugin({
         test: /\.(js|css|html|svg)$/,

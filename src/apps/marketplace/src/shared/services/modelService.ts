@@ -197,23 +197,25 @@ const getS3KeyForFile = async (file: File, userId?: string, metadata?: Partial<M
   const safeCategory = `${categoryName.replace(/[^a-z0-9]/gi, '_')}_${categoryId}`;
   const safeSubcategory = `${subcategoryName.replace(/[^a-z0-9]/gi, '_')}_${subcategoryId}`;
   
-  // Primary user path (always store under user ID for ownership)
-  const userPath = userId ? `users/${userId}/models/${componentId}` : `models/${componentId}`;
+  // Organize by model format
+  let basePath = '';
   
-  // Secondary categorical path (for organizational purposes)
-  const categoryPath = `categories/${safeCategory}/${safeSubcategory}/${fileExtension}`;
-  
-  // Store files both by user ownership and by category
   if (isSupportedModelFormat(file.name)) {
-    // Store primary copy under user's folder
-    return `${userPath}/${fileExtension}/${componentId}-${sanitizedFileName}`;
+    // Category/Subcategory/Format structure
+    basePath = `models/${safeCategory}/${safeSubcategory}/${fileExtension}`;
   } else if (getFileCategory(file.name) === 'image') {
     // For thumbnails, keep them with the model they belong to
-    return `${userPath}/thumbnails/${componentId}-${sanitizedFileName}`;
+    basePath = `thumbnails/${safeCategory}/${safeSubcategory}`;
   } else {
     // Other files get their own organization
-    return `${userPath}/other/${getFileCategory(file.name)}/${componentId}-${sanitizedFileName}`;
+    basePath = `other/${getFileCategory(file.name)}/${safeCategory}`;
   }
+  
+  // Add user prefix if needed
+  const userPrefix = userId ? `users/${userId}/` : '';
+  
+  // Final path that's both unique and logically organized
+  return `${userPrefix}${basePath}/${componentId}-${sanitizedFileName}`;
 };
 
 // Generate S3 key for converted model formats
@@ -270,7 +272,6 @@ export const uploadModelToS3 = async (
     
     // Generate S3 key using our new structured approach
     const s3Key = await getS3KeyForFile(file, userId, metadata);
-    console.log('Generated S3 key:', s3Key);
     
     console.log('Uploading file:', file.name, 'Size:', file.size, 'Type:', file.type || 'unknown');
     
@@ -299,7 +300,6 @@ export const uploadModelToS3 = async (
       .single();
       
     if (error) throw error;
-    console.log('Model metadata saved to database with ID:', data.id);
 
     // Start S3 upload in the background without blocking
     (async () => {
@@ -314,9 +314,6 @@ export const uploadModelToS3 = async (
         if (metadata.manufacturer) cleanedMetadata['x-amz-meta-manufacturer'] = metadata.manufacturer;
         if (metadata.part_type) cleanedMetadata['x-amz-meta-part-type'] = metadata.part_type;
         if (file.name) cleanedMetadata['x-amz-meta-original-filename'] = file.name;
-        
-        // Add user ID to metadata for ownership tracking
-        if (userId) cleanedMetadata['x-amz-meta-user-id'] = userId;
 
         // S3 upload parameters with sanitized metadata
         const params = {
@@ -324,15 +321,12 @@ export const uploadModelToS3 = async (
           Key: s3Key,
           Body: file,
           ContentType: contentType,
-          Metadata: cleanedMetadata,
-          // Add tagging to make management easier
-          Tagging: `modelId=${metadata.id}&category=${metadata.category || 0}&userId=${userId || 'public'}`
+          Metadata: cleanedMetadata
         };
 
-        console.log('Starting S3 upload to bucket:', BUCKET_NAME);
         // Upload file to S3 using our improved uploadFileToS3 function
         const uploadResult = await uploadFileToS3(params);
-        console.log('S3 upload successful:', uploadResult);
+        console.log('S3 upload successful');
         
         // Generate a signed URL for the uploaded object
         const command = new GetObjectCommand({
@@ -341,7 +335,6 @@ export const uploadModelToS3 = async (
         });
         
         const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
-        console.log('Generated signed URL for model access');
         
         // Update the database with the new signed URL and mark upload as completed
         await supabase
@@ -351,11 +344,6 @@ export const uploadModelToS3 = async (
             conversion_status: 'completed' // Mark as completed since we're not doing conversions yet
           })
           .eq('id', data.id);
-        
-        console.log('Database updated with signed URL and completed status');
-        
-        // Create category references in database rather than duplicating files
-        await createCategoryReference(data.id, metadata.category, metadata.subcategory);
       
         // COMMENTED OUT: Queue conversion job with Rhino Compute
         // The Rhino compute API is not working currently and costs money to run
@@ -377,69 +365,6 @@ export const uploadModelToS3 = async (
   } catch (error) {
     console.error('Error uploading model to S3:', error);
     throw error;
-  }
-};
-
-// Create a category reference for a model without duplicating the file
-const createCategoryReference = async (
-  modelId: string, 
-  categoryId?: number, 
-  subcategoryId?: number
-): Promise<void> => {
-  if (!categoryId) return;
-  
-  try {
-    // Store a reference in the category_model_references table
-    const { error } = await supabase
-      .from('category_model_references')
-      .insert({
-        model_id: modelId,
-        category_id: categoryId,
-        subcategory_id: subcategoryId || null
-      });
-      
-    if (error) {
-      console.error('Error creating category reference:', error);
-    } else {
-      console.log(`Created category reference for model ${modelId} in category ${categoryId}`);
-    }
-  } catch (error) {
-    console.error('Error in createCategoryReference:', error);
-  }
-};
-
-// Get models by category using the references table
-export const getModelsByCategory = async (categoryId: number): Promise<ModelMetadata[]> => {
-  try {
-    // Query the references table to get model IDs in this category
-    const { data: references, error: refError } = await supabase
-      .from('category_model_references')
-      .select('model_id')
-      .eq('category_id', categoryId);
-      
-    if (refError) throw refError;
-    
-    // If no models in this category, return empty array
-    if (!references || references.length === 0) {
-      return [];
-    }
-    
-    // Extract the model IDs
-    const modelIds = references.map(ref => ref.model_id);
-    
-    // Query the models table to get full model data
-    const { data: models, error: modelError } = await supabase
-      .from('models')
-      .select('*')
-      .in('id', modelIds)
-      .order('created_at', { ascending: false });
-      
-    if (modelError) throw modelError;
-    
-    return models || [];
-  } catch (error) {
-    console.error('Error fetching models by category:', error);
-    return [];
   }
 };
 

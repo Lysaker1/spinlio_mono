@@ -3,11 +3,12 @@ import ReactDOM from 'react-dom/client';
 import { Auth0Provider } from '@auth0/auth0-react';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
-// CSS is now loaded via standalone file in public/index.html
-// import './index.css';
+// Make sure CSS is loaded
+import './index.css';
+import '@mantine/core/styles.css';
 
 // Load shared assets if needed
-// import '@shared/assets/styles/common.css';
+import '@shared/assets/styles/common.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root')!);
 

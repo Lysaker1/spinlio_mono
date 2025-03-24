@@ -106,6 +106,7 @@ const Uploads: React.FC = () => {
   const [refreshInterval, setRefreshInterval] = useState<number | null>(null);
   const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
   const [testing, setTesting] = useState(false);
+  const [status, setStatus] = useState<string | null>(null);
   
   // Updated hooks usage
   const { user } = useUser();
@@ -131,6 +132,37 @@ const Uploads: React.FC = () => {
       setTestResult({ success: false, message });
     } finally {
       setTesting(false);
+    }
+  };
+
+  // Test S3 connectivity function with clear feedback
+  const testS3Connection = async () => {
+    setStatus('Testing S3 connectivity...');
+    try {
+      const result = await testS3Upload();
+      if (result.success) {
+        setStatus(`S3 connection successful: ${result.message}`);
+        
+        // Get current user's uploaded models to verify DB connectivity
+        const userId = user?.id || (user as any)?.sub;
+        if (userId) {
+          const userModels = await getModelsPerUser(userId);
+          setStatus(prev => `${prev}\nFound ${userModels.length} models in your account.`);
+          
+          // Show S3 paths of first 3 models
+          if (userModels.length > 0) {
+            const modelPaths = userModels.slice(0, 3).map(model => 
+              `- ${model.name}: ${model.s3_key}`
+            ).join('\n');
+            setStatus(prev => `${prev}\nYour recent models:\n${modelPaths}`);
+          }
+        }
+      } else {
+        setStatus(`S3 connection failed: ${result.message}`);
+      }
+    } catch (error) {
+      console.error('Error testing S3:', error);
+      setStatus(`S3 test error: ${error instanceof Error ? error.message : String(error)}`);
     }
   };
 
@@ -269,7 +301,7 @@ const Uploads: React.FC = () => {
         
         {/* S3 Test Button */}
         <Button 
-          onClick={handleTestS3}
+          onClick={testS3Connection}
           loading={testing}
           style={{ 
             backgroundColor: '#fd7e14', // Orange background
@@ -302,6 +334,13 @@ const Uploads: React.FC = () => {
         >
           {testResult.message}
         </Alert>
+      )}
+
+      {status && (
+        <div className="mt-4 p-3 bg-gray-100 rounded-md whitespace-pre-wrap">
+          <h3 className="font-bold mb-2">Status:</h3>
+          {status}
+        </div>
       )}
 
       {loading ? (

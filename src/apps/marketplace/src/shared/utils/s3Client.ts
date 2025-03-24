@@ -12,19 +12,13 @@ import { logger, truncateKey } from './logger';
 // For React apps, we need to use REACT_APP_ prefix for environment variables
 const ACCESS_KEY_ID = process.env.REACT_APP_AWS_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID || '';
 const SECRET_ACCESS_KEY = process.env.REACT_APP_AWS_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY || '';
-const REGION = process.env.REACT_APP_AWS_REGION || process.env.AWS_REGION || 'eu-north-1';
-
-// Validate credentials are available
-if (!ACCESS_KEY_ID || !SECRET_ACCESS_KEY) {
-  console.error('AWS credentials are missing! S3 operations will fail.');
-  console.error('Make sure REACT_APP_AWS_ACCESS_KEY_ID and REACT_APP_AWS_SECRET_ACCESS_KEY are defined in environment');
-}
+const REGION = process.env.REACT_APP_AWS_REGION || 'eu-north-1';
 
 // Avoid logging configuration details unless in development mode
 if (process.env.NODE_ENV === 'development') {
   console.log('S3 Configuration:', {
     region: REGION,
-    bucket: process.env.REACT_APP_S3_BUCKET_NAME || process.env.BUCKET_NAME || '3d-models-spinlio',
+    bucket: process.env.REACT_APP_S3_BUCKET_NAME || '3d-models-spinlio',
     hasCredentials: Boolean(ACCESS_KEY_ID && SECRET_ACCESS_KEY)
   });
 }
@@ -48,7 +42,7 @@ const s3Config: S3ClientConfig = {
 const s3Client = new S3Client(s3Config);
 
 // S3 bucket name
-export const BUCKET_NAME = process.env.REACT_APP_S3_BUCKET_NAME || process.env.BUCKET_NAME || '3d-models-spinlio';
+export const BUCKET_NAME = process.env.REACT_APP_S3_BUCKET_NAME || '3d-models-spinlio';
 
 /**
  * Upload a file to S3, with browser compatibility in mind
@@ -215,27 +209,31 @@ const uploadLargeFile = async (
  */
 export const testS3Connection = async (): Promise<boolean> => {
   try {
-    console.log('Testing S3 connection with credentials:', {
-      hasAccessKey: Boolean(ACCESS_KEY_ID),
-      hasSecretKey: Boolean(SECRET_ACCESS_KEY),
+    // Log configuration for debugging
+    console.log('S3 Client Configuration:', {
+      hasAccessKeyId: Boolean(ACCESS_KEY_ID),
+      hasSecretAccessKey: Boolean(SECRET_ACCESS_KEY),
       region: REGION,
       bucket: BUCKET_NAME
     });
     
+    // Perform a simple write operation
     const testContent = 'This is a connectivity test';
     const testKey = `test/connectivity-test-${Date.now()}.txt`;
     
+    // Create a command with explicit settings
     const command = new PutObjectCommand({
       Bucket: BUCKET_NAME,
       Key: testKey,
       Body: testContent,
       ContentType: 'text/plain',
-      // Explicitly disable checksum
+      // Explicitly disable checksum which can cause issues in some browsers
       ChecksumAlgorithm: undefined
     });
     
+    // Send the command with detailed error handling
     await s3Client.send(command);
-    console.log('S3 connection test successful!');
+    console.log('S3 connection successful');
     return true;
   } catch (error) {
     console.error('S3 connection test failed, details:', error);
@@ -245,16 +243,12 @@ export const testS3Connection = async (): Promise<boolean> => {
       console.error('Error message:', error.message);
       console.error('Error stack:', error.stack);
       
-      // Provide specific troubleshooting for common errors
-      if (error.name === 'AuthorizationHeaderMalformed') {
-        console.error('AWS credentials error: The authorization header is malformed. Check that AWS credentials are properly configured.');
-        console.error('1. Verify REACT_APP_AWS_ACCESS_KEY_ID and REACT_APP_AWS_SECRET_ACCESS_KEY are set in .env files');
-        console.error('2. Ensure environment variables are properly loaded at runtime');
-        console.error('3. Check webpack.config.js DefinePlugin configuration');
-      }
-      
-      if (error.name === 'AccessDenied') {
-        console.error('AWS Access Denied: The credentials are valid but do not have permission to access the bucket or resource.');
+      // Special handling for common credential issues
+      if (error.name === 'CredentialsProviderError' || error.name === 'AuthorizationHeaderMalformed') {
+        console.error('AWS credential error detected. Please check:');
+        console.error('- Environment variables are properly set (REACT_APP_AWS_ACCESS_KEY_ID and REACT_APP_AWS_SECRET_ACCESS_KEY)');
+        console.error('- Webpack is correctly passing environment variables to the client');
+        console.error('- Your AWS credentials are valid and have permissions for S3 operations');
       }
     }
     

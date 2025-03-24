@@ -7,7 +7,7 @@ export class ProfileStorageService {
     try {
       console.log(`Fetching profile for user ID: ${userId}`);
       // Use the axios instance which already handles auth headers
-      const response = await api.get(`/api/profile/${userId}`);
+      const response = await api.get(`/api/users/${userId}`);
       return response.data;
     } catch (error: any) {
       // Check if the error has a response (from the server)
@@ -37,7 +37,7 @@ export class ProfileStorageService {
       const config = token ? { headers: { Authorization: `Bearer ${token}` } } : undefined;
       
       // This endpoint now handles both creating new profiles and updating existing ones
-      const response = await api.post(`/api/profile`, profile, config);
+      const response = await api.post(`/api/users`, profile, config);
       
       const status = response.status;
       console.log(`Profile ${status === 201 ? 'created' : 'updated'} successfully`);
@@ -69,7 +69,7 @@ export class ProfileStorageService {
       // Create headers if token is provided
       const config = token ? { headers: { Authorization: `Bearer ${token}` } } : undefined;
       
-      const response = await api.patch(`/api/profile`, profile, config);
+      const response = await api.patch(`/api/users/${profile.id}`, profile, config);
       return response.data;
     } catch (error: any) {
       // Check if the error has a response (from the server)
@@ -80,6 +80,55 @@ export class ProfileStorageService {
       }
       
       console.error('Error updating profile:', error);
+      throw error;
+    }
+  }
+
+  // Business Profile methods
+  static async createBusinessProfile(businessProfile: any, token?: string): Promise<any> {
+    try {
+      console.log(`Creating business profile for user ID: ${businessProfile.id}`);
+      
+      // Create headers if token is provided
+      const config = token ? { headers: { Authorization: `Bearer ${token}` } } : undefined;
+      
+      const response = await api.post(`/api/business-profiles`, businessProfile, config);
+      return response.data;
+    } catch (error: any) {
+      // Check if the error has a response (from the server)
+      if (error.response) {
+        const errorMessage = error.response.data?.message || error.response.data?.error || error.message;
+        console.error(`Error creating business profile: ${errorMessage}`);
+        throw new Error(errorMessage || 'Failed to create business profile');
+      }
+      
+      console.error('Error creating business profile:', error);
+      throw error;
+    }
+  }
+
+  static async getBusinessProfile(userId: string): Promise<any> {
+    try {
+      console.log(`Fetching business profile for user ID: ${userId}`);
+      // Use the axios instance which already handles auth headers
+      const response = await api.get(`/api/business-profiles/${userId}`);
+      return response.data;
+    } catch (error: any) {
+      // Check if the error has a response (from the server)
+      if (error.response) {
+        if (error.response.status === 404) {
+          console.error(`Business profile not found for user ID: ${userId}`);
+          throw new Error('Business profile not found');
+        }
+        
+        // Handle other response errors
+        const errorMessage = error.response.data?.message || error.response.data?.error || error.message;
+        console.error(`Error fetching business profile: ${errorMessage}`);
+        throw new Error(errorMessage || 'Failed to fetch business profile');
+      }
+      
+      // Handle network errors or other issues
+      console.error('Error fetching business profile:', error);
       throw error;
     }
   }

@@ -88,14 +88,11 @@ const BusinessAccountForm: React.FC<BusinessAccountFormProps> = ({ userId, onSuc
         
         console.log('Updating base profile with manufacturer role:', profileData);
         
-        // This endpoint now supports upsert (create or update)
+        // Create or update the base user profile
         const updatedProfile = await ProfileStorageService.createProfile(profileData, token);
         console.log('Profile updated:', updatedProfile);
         
-        // Create the business profile with a direct fetch to the API
-        const apiUrl = `${process.env.REACT_APP_API_URL || 'https://api.bazaar.it'}/api/business-profile`;
-        console.log('Creating business profile via API:', apiUrl);
-        
+        // Create the business profile with the ProfileStorageService
         const businessProfileData = {
           id: userId,
           company_name: values.legalCompanyName,
@@ -104,34 +101,16 @@ const BusinessAccountForm: React.FC<BusinessAccountFormProps> = ({ userId, onSuc
           country: values.countryOfIncorporation,
           tax_id: values.registrationNumber,
           website: values.website,
+          email: user?.email || '',
           is_verified: false,
           created_at: new Date().toISOString()
         };
         
-        const response = await fetch(apiUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify(businessProfileData)
-        });
+        console.log('Creating business profile:', businessProfileData);
         
-        if (!response.ok) {
-          const errorData = await response.json();
-          
-          // If business profile already exists, this isn't necessarily an error
-          if (response.status === 409) {
-            console.log('Business profile already exists, registration successful');
-            onSuccess();
-            return;
-          }
-          
-          throw new Error(errorData.message || `API error: ${response.status}`);
-        }
-        
-        const result = await response.json();
-        console.log('Business profile created successfully:', result);
+        // Use the ProfileStorageService method instead of direct fetch
+        const businessProfile = await ProfileStorageService.createBusinessProfile(businessProfileData, token);
+        console.log('Business profile created successfully:', businessProfile);
         
         onSuccess();
       } catch (profileError: any) {

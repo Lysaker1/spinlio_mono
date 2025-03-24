@@ -39,7 +39,7 @@ app.use(limiter);
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
-      defaultSrc: ["'self'"],
+      defaultSrc: ["'self'", "data:"],
       connectSrc: [
         "'self'", 
         "https://api.bazaar.it",
@@ -86,17 +86,21 @@ app.use(helmet({
         "'self'", 
         "'unsafe-inline'", 
         "'unsafe-eval'",
-        "https://static.klaviyo.com"
+        "https://static.klaviyo.com",
+        "https://cdn.auth0.com",
+        "https://*.auth0.com"
       ],
       styleSrc: [
         "'self'", 
         "'unsafe-inline'",
-        "https://fonts.googleapis.com"
+        "https://fonts.googleapis.com",
+        "https://cdn.auth0.com"
       ],
       fontSrc: [
         "'self'", 
         "data:",
-        "https://fonts.gstatic.com"
+        "https://fonts.gstatic.com",
+        "https://cdn.auth0.com"
       ],
       mediaSrc: ["'self'", "data:", "blob:"],
       workerSrc: ["'self'", "blob:"],
@@ -106,9 +110,14 @@ app.use(helmet({
         "https://auth.bazaar.it",
         "https://dev-jxcml1qpmbgabh6v.us.auth0.com"
       ],
-      formAction: ["'self'", "https://*.auth0.com", "https://auth.bazaar.it"]
+      formAction: ["'self'", "https://*.auth0.com", "https://auth.bazaar.it"],
+      frameAncestors: ["'self'"]
     }
-  }
+  },
+  // Make sure to explicitly allow frames 
+  crossOriginEmbedderPolicy: false,
+  crossOriginOpenerPolicy: false,
+  crossOriginResourcePolicy: false
 }));
 
 // Enable CORS

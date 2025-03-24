@@ -27,7 +27,7 @@ interface BusinessFormValues {
 const BusinessAccountForm: React.FC<BusinessAccountFormProps> = ({ userId, onSuccess, onCancel }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently, user } = useAuth0();
   
   const form = useForm<BusinessFormValues>({
     initialValues: {
@@ -53,13 +53,15 @@ const BusinessAccountForm: React.FC<BusinessAccountFormProps> = ({ userId, onSuc
     try {
       console.log('Creating business profile for user:', userId);
       
-      // Get Auth0 token for authentication with better error handling
+      // Get Auth0 token with proper audience from environment
       let token;
       try {
-        console.log('Auth0 audience:', process.env.REACT_APP_AUTH0_AUDIENCE);
+        const audience = process.env.REACT_APP_AUTH0_AUDIENCE || 'https://api.bazaar.it';
+        console.log('Using Auth0 audience:', audience);
+        
         token = await getAccessTokenSilently({
           authorizationParams: {
-            audience: 'https://api.bazaar.it', // Hardcode the correct audience
+            audience: audience,
             scope: 'openid profile email'
           }
         });
@@ -71,39 +73,78 @@ const BusinessAccountForm: React.FC<BusinessAccountFormProps> = ({ userId, onSuc
         return;
       }
       
-      // Create business profile
-      const profileData = {
-        id: userId,
-        name: values.publicDisplayName,
-        user_type: 'manufacturer',
-        is_public: true,
-        created_at: new Date().toISOString(),
-        website: values.website,
-        // Use the business field for the API to handle properly
-        business: {
+      // Update the profile with manufacturer role and display name
+      try {
+        // Create/update profile first
+        const profileData: Profile = {
+          id: userId,
+          name: values.publicDisplayName,
+          email: user?.email || '',
+          user_type: 'manufacturer', // Set user type to manufacturer
+          is_public: true,
+          created_at: new Date().toISOString(),
+          website: values.website
+        };
+        
+        console.log('Updating base profile with manufacturer role:', profileData);
+        
+        // This endpoint now supports upsert (create or update)
+        const updatedProfile = await ProfileStorageService.createProfile(profileData, token);
+        console.log('Profile updated:', updatedProfile);
+        
+        // Create the business profile with a direct fetch to the API
+        const apiUrl = `${process.env.REACT_APP_API_URL || 'https://api.bazaar.it'}/api/business-profile`;
+        console.log('Creating business profile via API:', apiUrl);
+        
+        const businessProfileData = {
+          id: userId,
           company_name: values.legalCompanyName,
           business_type: 'manufacturer',
           address: values.companyAddress,
           country: values.countryOfIncorporation,
           tax_id: values.registrationNumber,
-          website: values.website
+          website: values.website,
+          is_verified: false,
+          created_at: new Date().toISOString()
+        };
+        
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(businessProfileData)
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          
+          // If business profile already exists, this isn't necessarily an error
+          if (response.status === 409) {
+            console.log('Business profile already exists, registration successful');
+            onSuccess();
+            return;
+          }
+          
+          throw new Error(errorData.message || `API error: ${response.status}`);
         }
-      } as Profile; // Use type assertion to bypass TypeScript check
+        
+        const result = await response.json();
+        console.log('Business profile created successfully:', result);
+        
+        onSuccess();
+      } catch (profileError: any) {
+        console.error('Error in profile/business creation:', profileError);
+        throw profileError;
+      }
       
-      console.log('Sending profile creation request with token');
-      
-      // Pass token to the createProfile method
-      const createdProfile = await ProfileStorageService.createProfile(profileData, token);
-      console.log('Profile created successfully:', createdProfile);
-      onSuccess();
     } catch (err: any) {
       console.error('Error creating business account:', err);
       
-      // Provide more detailed error information
       let errorMessage = 'Failed to create business account';
       
       if (err.response) {
-        // Server responded with an error
         const status = err.response.status;
         const serverError = err.response.data?.error || err.response.data?.message;
         

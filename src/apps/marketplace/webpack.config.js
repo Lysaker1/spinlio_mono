@@ -7,6 +7,7 @@ const dotenv = require('dotenv');
 const fs = require('fs');
 const CompressionPlugin = require('compression-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = (env) => {
   // Environment handling
@@ -84,10 +85,10 @@ module.exports = (env) => {
     `.replace(/\s+/g, ' ')
   };
 
-  return {
+  const config = {
     mode: isProd ? 'production' : 'development',
     entry: {
-      main: path.resolve(__dirname, 'index.tsx')
+      main: './index.tsx',
     },
     output: {
       path: path.resolve(__dirname, 'dist'),
@@ -284,4 +285,28 @@ module.exports = (env) => {
       ]
     }
   };
+
+  // Performance settings and optimizations for production
+  if (isProd) {
+    config.optimization = {
+      ...config.optimization,
+      minimize: true,
+      minimizer: [
+        new TerserPlugin({
+          terserOptions: {
+            // Keep console.logs in production builds for debugging
+            compress: {
+              drop_console: false,
+            },
+            // Preserve important comments
+            format: {
+              comments: /@license|@preserve|copyright|license/i,
+            },
+          },
+        }),
+      ],
+    };
+  }
+
+  return config;
 }; 

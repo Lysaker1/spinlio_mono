@@ -51,7 +51,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       setIsLoading(true);
       console.log(`Fetching user profile for ID: ${userId}`);
-      const response = await api.get(`/api/profile/${userId}`);
+      const response = await api.get(`/api/users/${userId}`);
       setUser({
         ...response.data,
         // Ensure picture is set for components that might use it
@@ -107,7 +107,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       };
 
       console.log('Creating new user profile:', newUser);
-      const response = await api.post('/api/profile', newUser);
+      const response = await api.post('/api/users', newUser);
       setUser({
         ...response.data,
         picture: response.data.avatar_url || response.data.picture
@@ -133,7 +133,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     try {
       setIsLoading(true);
-      const response = await api.patch(`/api/profile/${userId}`, data);
+      const response = await api.patch(`/api/users/${userId}`, data);
       setUser({
         ...response.data,
         picture: response.data.avatar_url || response.data.picture

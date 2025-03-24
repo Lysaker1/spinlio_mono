@@ -11,96 +11,88 @@ import { Loader, Text, Progress } from '@mantine/core';
 const Model = ({ url }: { url: string }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [loadedScene, setLoadedScene] = useState<THREE.Group | null>(null);
   
-  // IMPORTANT: Handle both success and error cases from useGLTF
-  try {
-    // Use GLTF loader with proper error handling - callbacks need to be passed as options object
-    const { scene } = useGLTF(url, undefined, undefined, (e: Error) => {
-      console.error('Error loading model:', e);
-      setError(`Failed to load model: ${e.message || 'Unknown error'}`);
-      setLoading(false);
-    });
+  // Load the model with error handling
+  useEffect(() => {
+    let isMounted = true;
     
-    // Handle loading success
-    useEffect(() => {
-      if (!scene) {
-        setError('Scene is empty or undefined');
-        setLoading(false);
-        return;
+    const loadModel = async () => {
+      try {
+        // Direct error handling with try/catch instead of callback
+        const gltf = await useGLTF.load(url);
+        
+        if (isMounted) {
+          setLoadedScene(gltf.scene);
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error('Error loading model:', err);
+        if (isMounted) {
+          setError(`Failed to load model: ${err instanceof Error ? err.message : 'Unknown error'}`);
+          setLoading(false);
+        }
+      }
+    };
+    
+    loadModel();
+    
+    return () => {
+      isMounted = false;
+    };
+  }, [url]);
+  
+  // Process the loaded scene
+  useEffect(() => {
+    if (!loadedScene) return;
+    
+    try {
+      // Auto-center and scale model
+      const box = new THREE.Box3().setFromObject(loadedScene);
+      const center = box.getCenter(new THREE.Vector3());
+      const size = box.getSize(new THREE.Vector3());
+      
+      // Center the model
+      loadedScene.position.set(-center.x, -center.y, -center.z);
+      
+      // Scale model to reasonable size
+      const maxDim = Math.max(size.x, size.y, size.z);
+      if (maxDim > 10 || maxDim < 0.5) {
+        const scale = maxDim > 10 ? 5 / maxDim : 2 / maxDim;
+        loadedScene.scale.set(scale, scale, scale);
       }
       
-      try {
-        // Auto-center and scale model
-        const box = new THREE.Box3().setFromObject(scene);
-        const center = box.getCenter(new THREE.Vector3());
-        const size = box.getSize(new THREE.Vector3());
-        
-        // Center the model
-        scene.position.set(-center.x, -center.y, -center.z);
-        
-        // Scale model to reasonable size
-        const maxDim = Math.max(size.x, size.y, size.z);
-        if (maxDim > 10 || maxDim < 0.5) {
-          const scale = maxDim > 10 ? 5 / maxDim : 2 / maxDim;
-          scene.scale.set(scale, scale, scale);
-        }
-        
-        // Enhance materials for better rendering
-        scene.traverse((child: any) => {
-          if (child instanceof THREE.Mesh) {
-            child.castShadow = true;
-            child.receiveShadow = true;
-            
-            if (child.material) {
-              // Enhance material rendering logic
-              if (Array.isArray(child.material)) {
-                child.material.forEach((mat: THREE.Material) => {
-                  // Use type assertion to handle material maps
-                  const standardMat = mat as THREE.MeshStandardMaterial;
-                  if (standardMat.map) standardMat.map.anisotropy = 16;
-                  mat.needsUpdate = true;
-                });
-              } else {
+      // Enhance materials for better rendering
+      loadedScene.traverse((child: any) => {
+        if (child instanceof THREE.Mesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+          
+          if (child.material) {
+            // Enhance material rendering logic
+            if (Array.isArray(child.material)) {
+              child.material.forEach((mat: THREE.Material) => {
                 // Use type assertion to handle material maps
-                const standardMat = child.material as THREE.MeshStandardMaterial;
+                const standardMat = mat as THREE.MeshStandardMaterial;
                 if (standardMat.map) standardMat.map.anisotropy = 16;
-                child.material.needsUpdate = true;
-              }
+                mat.needsUpdate = true;
+              });
+            } else {
+              // Use type assertion to handle material maps
+              const standardMat = child.material as THREE.MeshStandardMaterial;
+              if (standardMat.map) standardMat.map.anisotropy = 16;
+              child.material.needsUpdate = true;
             }
           }
-        });
-        
-        setLoading(false);
-      } catch (err) {
-        console.error('Error processing model:', err);
-        setError(`Error processing model: ${(err as Error).message}`);
-        setLoading(false);
-      }
-    }, [scene]);
-    
-    if (error) {
-      return (
-        <mesh position={[0, 0, 0]}>
-          <boxGeometry args={[1, 1, 1]} />
-          <meshStandardMaterial color="red" />
-        </mesh>
-      );
+        }
+      });
+    } catch (err) {
+      console.error('Error processing model:', err);
+      setError(`Error processing model: ${(err as Error).message}`);
     }
-    
-    if (loading) {
-      return (
-        <mesh position={[0, 0, 0]}>
-          <sphereGeometry args={[0.5, 16, 16]} />
-          <meshStandardMaterial color="gray" wireframe />
-        </mesh>
-      );
-    }
-    
-    return <primitive object={scene} />;
-    
-  } catch (err) {
-    // Handle any errors thrown by useGLTF
-    console.error("Fatal error loading model:", err);
+  }, [loadedScene]);
+  
+  if (error) {
     return (
       <mesh position={[0, 0, 0]}>
         <boxGeometry args={[1, 1, 1]} />
@@ -108,6 +100,17 @@ const Model = ({ url }: { url: string }) => {
       </mesh>
     );
   }
+  
+  if (loading || !loadedScene) {
+    return (
+      <mesh position={[0, 0, 0]}>
+        <sphereGeometry args={[0.5, 16, 16]} />
+        <meshStandardMaterial color="gray" wireframe />
+      </mesh>
+    );
+  }
+  
+  return <primitive object={loadedScene} />;
 };
 
 /**
@@ -275,22 +278,40 @@ const ModelViewer = ({
           } catch (error) {
             console.error('Error accessing blob URL:', error);
             setLoadError(`Cannot access the model file. ${(error as Error).message}`);
-            // Still set the URL to allow model component to handle its own errors
-            setProcessedUrl(url);
+            // Just set processed URL to null instead of trying to use a placeholder file
+            setProcessedUrl(null);
           }
-        } else {
-          // For regular URLs, use as is
+        } else if (url.startsWith('data:')) {
+          // Handle data URLs directly
           setProcessedUrl(url);
+        } else if (url.startsWith('/assets/')) {
+          // Don't try to load static assets that might not exist
+          setProcessedUrl(null);
+          setLoadError('Missing model file');
+        } else {
+          // For regular URLs, check if they're accessible
+          try {
+            const response = await fetch(url, { method: 'HEAD' });
+            if (!response.ok) {
+              throw new Error(`URL fetch failed with status: ${response.status}`);
+            }
+            setProcessedUrl(url);
+          } catch (error) {
+            console.error('Error accessing URL:', error);
+            setLoadError(`Cannot access the model file. ${(error as Error).message}`);
+            // Just set processed URL to null instead of trying to use a placeholder file
+            setProcessedUrl(null);
+          }
         }
       } catch (error) {
-        console.error('Error handling URL:', error);
-        setLoadError(`Error handling model URL: ${(error as Error).message}`);
-        setProcessedUrl(url); // Fall back to original URL
+        console.error('Error processing URL:', error);
+        setLoadError(`Failed to process model URL: ${(error as Error).message}`);
+        setProcessedUrl(null);
       }
     };
     
     handleUrl();
-  }, [url, isSupported]);
+  }, [url, isSupported, fileFormat]);
   
   // When loading sequence completes, stop showing it
   useEffect(() => {

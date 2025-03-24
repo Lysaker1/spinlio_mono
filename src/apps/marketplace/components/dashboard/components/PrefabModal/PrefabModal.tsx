@@ -44,7 +44,7 @@ export const PrefabModal: React.FC<Props> = ({ prefab, onClose }) => {
 
   const toggleDetails = () => {
     onClose();
-    navigate(`/dashboard/marketplace/prefab/${prefab.id}`);
+    navigate(`/marketplace/prefab/${prefab.id}`);
   }
 
   // Quick preview modal

@@ -2,11 +2,8 @@ import {
   S3Client, 
   PutObjectCommand, 
   S3ClientConfig,
-  CreateMultipartUploadCommand,
-  UploadPartCommand,
-  CompleteMultipartUploadCommand
 } from '@aws-sdk/client-s3';
-import { Upload } from '@aws-sdk/lib-storage';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { logger, truncateKey } from './logger';
 
 // For React apps, we need to use REACT_APP_ prefix for environment variables
@@ -29,7 +26,7 @@ if (process.env.NODE_ENV === 'development') {
   });
 }
 
-// Browser-focused configuration for S3Client that avoids streaming issues
+// CRITICAL: Create a browser-compatible S3 client
 const s3Config: S3ClientConfig = {
   region: REGION,
   credentials: {
@@ -38,7 +35,7 @@ const s3Config: S3ClientConfig = {
   },
   // Browser compatibility settings
   forcePathStyle: false,
-  // CRITICAL: Disable HTTP/2 which causes stream issues in browsers
+  // Disable HTTP/2 which causes stream issues in browsers
   requestHandler: {
     http2: false
   }
@@ -51,9 +48,8 @@ const s3Client = new S3Client(s3Config);
 export const BUCKET_NAME = process.env.REACT_APP_S3_BUCKET_NAME || process.env.BUCKET_NAME || '3d-models-spinlio';
 
 /**
- * Upload a file to S3, with browser compatibility in mind
- * This implementation avoids using the checksum middleware that causes
- * the readableStream.getReader error in browsers
+ * Browser-friendly file upload implementation
+ * Completely avoids AWS SDK streaming issues by using direct uploads for binary files
  */
 export const uploadFileToS3 = async (params: any): Promise<any> => {
   try {
@@ -61,82 +57,45 @@ export const uploadFileToS3 = async (params: any): Promise<any> => {
     const bucket = params.Bucket || BUCKET_NAME;
     const key = params.Key;
     const contentType = params.ContentType || 'application/octet-stream';
+    const useDirectXhr = params.useDirectXhrUpload === true;
     
-    // For larger files (over 5MB), use our optimized large file upload
-    if (file instanceof Blob && file.size > 5 * 1024 * 1024) {
-      // For extremely large files (over 100MB), alert the user
-      if (file.size > 100 * 1024 * 1024) {
-        console.warn(`Very large file detected (${(file.size / (1024 * 1024)).toFixed(2)}MB). Upload may take some time.`);
-      }
-      return uploadLargeFile(bucket, key, file, contentType);
-    }
+    console.log(`Starting S3 upload: ${key} to bucket: ${bucket}`);
     
-    // Handle strings directly - these don't need conversion
+    // For string content (simplest case)
     if (typeof file === 'string') {
-      const command = new PutObjectCommand({
-        Bucket: bucket,
-        Key: key,
-        Body: file,
-        ContentType: 'text/plain',
-        // Explicitly disable checksum
-        ChecksumAlgorithm: undefined
-      });
-      
-      try {
-        const result = await s3Client.send(command);
-        return result;
-      } catch (error) {
-        console.error('String upload failed:', error);
-        throw error;
-      }
+      return await uploadStringContent(bucket, key, file);
     }
     
-    // For all File/Blob objects, use the ArrayBuffer approach that we know works
+    // For File/Blob objects, check if we should use direct XHR method
     if (file instanceof Blob || file instanceof File) {
-      try {
-        // Convert file to ArrayBuffer to avoid streaming issues
-        const fileBuffer = await new Promise<ArrayBuffer>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result as ArrayBuffer);
-          reader.onerror = reject;
-          reader.readAsArrayBuffer(file);
-        });
-        
-        // Create a minimal command with only the essential properties
-        const command = new PutObjectCommand({
-          Bucket: bucket,
-          Key: key,
-          Body: new Uint8Array(fileBuffer),
-          ContentType: contentType,
-          // Explicitly disable checksum
-          ChecksumAlgorithm: undefined
-        });
-        
-        const result = await s3Client.send(command);
-        return result;
-      } catch (error) {
-        console.error('File upload failed, error details:', error);
-        throw new Error('Cannot upload file to S3. There was an error processing your file.');
+      // Use XHR for large files or when explicitly requested 
+      if (useDirectXhr || file.size > 5 * 1024 * 1024) {
+        console.log(`Using direct XHR upload for ${key} (${(file.size / (1024 * 1024)).toFixed(2)}MB)`);
+        return await uploadBlobWithXHR(bucket, key, file, contentType);
+      } else {
+        // For smaller files, try AWS SDK with ArrayBuffer approach first
+        try {
+          const buffer = await blobToArrayBuffer(file);
+          
+          const command = new PutObjectCommand({
+            Bucket: bucket,
+            Key: key,
+            Body: new Uint8Array(buffer),
+            ContentType: contentType
+          });
+          
+          return await s3Client.send(command);  
+        } catch (error) {
+          // If SDK method fails, fall back to XHR method
+          console.warn(`AWS SDK upload failed, falling back to XHR method: ${error instanceof Error ? error.message : 'Unknown error'}`);
+          return await uploadBlobWithXHR(bucket, key, file, contentType);
+        }
       }
     }
     
-    // Fallback for any other data types
-    try {
-      const command = new PutObjectCommand({
-        Bucket: bucket,
-        Key: key,
-        Body: file,
-        ContentType: contentType,
-        // Explicitly disable checksum
-        ChecksumAlgorithm: undefined
-      });
-      
-      const result = await s3Client.send(command);
-      return result;
-    } catch (error) {
-      console.error('Upload failed, error details:', error);
-      throw new Error('Cannot connect to S3. Please check your credentials and network connection.');
-    }
+    // For any other data type, try direct upload
+    return await uploadDirectContent(bucket, key, file, contentType);
+    
   } catch (error) {
     console.error('Error in uploadFileToS3:', error);
     throw error;
@@ -144,74 +103,185 @@ export const uploadFileToS3 = async (params: any): Promise<any> => {
 };
 
 /**
- * Handle large file uploads using S3 multipart upload
- * This is a cleaner implementation that avoids the middleware issues
+ * Helper for uploading string content
  */
-const uploadLargeFile = async (
-  bucket: string, 
-  key: string, 
-  file: Blob, 
-  contentType = 'application/octet-stream'
-): Promise<any> => {
-  try {
-    logger.info(`Uploading large file: ${truncateKey(key)} Size: ${file.size} Type: ${contentType}`);
+const uploadStringContent = async (bucket: string, key: string, content: string): Promise<any> => {
+  const command = new PutObjectCommand({
+    Bucket: bucket,
+    Key: key,
+    Body: content,
+    ContentType: 'text/plain'
+  });
+  
+  return await s3Client.send(command);
+};
 
-    // For large files, convert to buffer first to avoid streaming issues
-    const fileBuffer = await new Promise<ArrayBuffer>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as ArrayBuffer);
-      reader.onerror = reject;
-      reader.readAsArrayBuffer(file);
-    });
+/**
+ * Upload a file using XMLHttpRequest directly to S3
+ * This bypasses the AWS SDK completely to avoid streaming issues
+ */
+const uploadBlobWithXHR = (bucket: string, key: string, blob: Blob, contentType: string): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    // Create XHR request
+    const xhr = new XMLHttpRequest();
+    
+    // Generate signed URL for PUT operation
+    const getSignedUrlForPut = async () => {
+      try {
+        // Create a presigned URL for PUT
+        // We use AWS SDK just for the signing, not for the actual upload
+        const command = new PutObjectCommand({
+          Bucket: bucket,
+          Key: key,
+          ContentType: contentType,
+        });
+        
+        // Generate URL with short expiration
+        const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 900 }); // 15 minutes
+        return signedUrl;
+      } catch (err) {
+        console.error('Error generating signed URL:', err);
+        throw err;
+      }
+    };
+    
+    // Handle XHR progress and completion
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable) {
+        const percentComplete = (event.loaded / event.total) * 100;
+        console.log(`Upload progress: ${percentComplete.toFixed(2)}%`);
+      }
+    };
+    
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        // S3 responds with empty 200 response on success
+        resolve({
+          ETag: xhr.getResponseHeader('ETag'),
+          $metadata: {
+            httpStatusCode: xhr.status,
+          }
+        });
+      } else {
+        reject(new Error(`XHR upload failed with status: ${xhr.status}, response: ${xhr.responseText}`));
+      }
+    };
+    
+    xhr.onerror = () => {
+      reject(new Error('XHR upload failed with network error'));
+    };
+    
+    xhr.onabort = () => {
+      reject(new Error('XHR upload was aborted'));
+    };
+    
+    // Start the upload process
+    getSignedUrlForPut()
+      .then(signedUrl => {
+        console.log(`Using direct XHR upload with presigned URL for ${key}`);
+        xhr.open('PUT', signedUrl, true);
+        xhr.setRequestHeader('Content-Type', contentType);
+        xhr.send(blob);
+      })
+      .catch(err => {
+        reject(err);
+      });
+  });
+};
 
-    // Create a single PutObjectCommand instead of using multipart upload
-    // This avoids the checksum issues completely
-    const command = new PutObjectCommand({
-      Bucket: bucket,
-      Key: key,
-      Body: new Uint8Array(fileBuffer),
-      ContentType: contentType,
-      // Explicitly disable checksum
-      ChecksumAlgorithm: undefined
-    });
+/**
+ * Helper for direct uploads of other data types
+ */
+const uploadDirectContent = async (bucket: string, key: string, data: any, contentType: string): Promise<any> => {
+  const command = new PutObjectCommand({
+    Bucket: bucket,
+    Key: key,
+    Body: data,
+    ContentType: contentType
+  });
+  
+  return await s3Client.send(command);
+};
+
+/**
+ * Convert a Blob to ArrayBuffer safely with timeout and progress tracking
+ */
+const blobToArrayBuffer = (blob: Blob): Promise<ArrayBuffer> => {
+  return new Promise((resolve, reject) => {
+    // Add a timeout for very large files
+    const timeoutDuration = Math.max(30000, blob.size / 10000); // Min 30s, larger for bigger files
+    const timeoutId = setTimeout(() => {
+      reject(new Error(`File reading timed out after ${timeoutDuration/1000}s. File may be too large (${(blob.size/1024/1024).toFixed(2)}MB)`));
+    }, timeoutDuration);
     
-    // Upload the file in a single request - this is more reliable for web browsers
-    const result = await s3Client.send(command);
-    return result;
-  } catch (error) {
-    console.error('Large file upload failed:', error);
+    console.log(`Converting file (${(blob.size/1024/1024).toFixed(2)}MB) to ArrayBuffer...`);
     
-    // Provide more details about the error
-    if (error instanceof Error) {
-      console.error('Error name:', error.name);
-      console.error('Error message:', error.message);
-      console.error('Error stack:', error.stack);
-      
-      // Provide more user-friendly error messages for common S3 errors
-      if (error.name === 'AccessDenied') {
-        throw new Error('Access denied. Please check your S3 credentials and bucket permissions.');
+    const reader = new FileReader();
+    
+    reader.onload = () => {
+      clearTimeout(timeoutId);
+      if (!reader.result) {
+        return reject(new Error('Empty result from FileReader'));
       }
       
-      if (error.name === 'NoSuchBucket') {
-        throw new Error(`The bucket "${bucket}" does not exist. Please check your S3 configuration.`);
-      }
-      
-      if (error.name === 'EntityTooLarge') {
-        throw new Error(`File is too large (${(file.size / (1024 * 1024)).toFixed(2)}MB). Maximum file size allowed is 5GB.`);
-      }
-      
-      if (error.name === 'SlowDown' || error.name === 'RequestTimeTooSkewed') {
-        throw new Error('Upload throttled by S3. Please try again in a few moments.');
-      }
+      console.log(`Successfully converted ${(blob.size/1024/1024).toFixed(2)}MB file to ArrayBuffer`);
+      resolve(reader.result as ArrayBuffer);
+    };
+    
+    reader.onerror = () => {
+      clearTimeout(timeoutId);
+      reject(new Error(`FileReader error: ${reader.error?.message || 'Unknown error'}`));
+    };
+    
+    reader.onabort = () => {
+      clearTimeout(timeoutId);
+      reject(new Error('File reading was aborted'));
+    };
+    
+    // For very large files (>100MB), show a warning
+    if (blob.size > 100 * 1024 * 1024) {
+      console.warn(`Very large file (${(blob.size/1024/1024).toFixed(2)}MB) being processed. This may take some time and could fail with low memory.`);
     }
     
-    throw new Error(`Cannot upload large file to S3. ${error instanceof Error ? error.message : 'Unknown error'}`);
+    try {
+      // Start reading the file
+      reader.readAsArrayBuffer(blob);
+    } catch (err) {
+      clearTimeout(timeoutId);
+      reject(new Error(`Failed to start reading file: ${err instanceof Error ? err.message : String(err)}`));
+    }
+  });
+};
+
+/**
+ * Send a command with retry logic
+ */
+const sendWithRetry = async (command: PutObjectCommand, maxRetries = 3): Promise<any> => {
+  let attempt = 0;
+  
+  while (attempt < maxRetries) {
+    try {
+      console.log(`S3 upload attempt ${attempt + 1}/${maxRetries}`);
+      const result = await s3Client.send(command);
+      console.log('S3 upload successful');
+      return result;
+    } catch (error) {
+      attempt++;
+      console.error(`Upload attempt ${attempt} failed:`, error);
+      
+      if (attempt < maxRetries) {
+        const delay = Math.pow(2, attempt) * 1000;
+        console.log(`Retrying in ${delay}ms...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      } else {
+        throw error;
+      }
+    }
   }
 };
 
 /**
  * Test S3 connectivity by uploading a small string
- * This avoids using File/Blob objects which can trigger streaming issues
  */
 export const testS3Connection = async (): Promise<boolean> => {
   try {
@@ -229,9 +299,7 @@ export const testS3Connection = async (): Promise<boolean> => {
       Bucket: BUCKET_NAME,
       Key: testKey,
       Body: testContent,
-      ContentType: 'text/plain',
-      // Explicitly disable checksum
-      ChecksumAlgorithm: undefined
+      ContentType: 'text/plain'
     });
     
     await s3Client.send(command);
@@ -243,19 +311,6 @@ export const testS3Connection = async (): Promise<boolean> => {
     if (error instanceof Error) {
       console.error('Error name:', error.name);
       console.error('Error message:', error.message);
-      console.error('Error stack:', error.stack);
-      
-      // Provide specific troubleshooting for common errors
-      if (error.name === 'AuthorizationHeaderMalformed') {
-        console.error('AWS credentials error: The authorization header is malformed. Check that AWS credentials are properly configured.');
-        console.error('1. Verify REACT_APP_AWS_ACCESS_KEY_ID and REACT_APP_AWS_SECRET_ACCESS_KEY are set in .env files');
-        console.error('2. Ensure environment variables are properly loaded at runtime');
-        console.error('3. Check webpack.config.js DefinePlugin configuration');
-      }
-      
-      if (error.name === 'AccessDenied') {
-        console.error('AWS Access Denied: The credentials are valid but do not have permission to access the bucket or resource.');
-      }
     }
     
     return false;

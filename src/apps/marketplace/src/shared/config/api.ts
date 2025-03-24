@@ -7,8 +7,6 @@ export const apiUrl = process.env.NODE_ENV === 'production'
   ? 'https://api.bazaar.it'
   : 'http://localhost:3003';
 
-console.log(`API URL configured as: ${apiUrl}`);
-
 // Types for TS inference
 interface RequestConfig {
   headers?: Record<string, string>;
@@ -41,43 +39,44 @@ api.interceptors.request.use(
   }
 );
 
-// Response interceptor for handling common errors
+// Response interceptor for API calls
 api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
   async (error) => {
     const originalRequest = error.config;
     
-    // Handle 401 errors (unauthorized) by attempting to refresh the token
-    if (error.response && error.response.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      
+    // If the error is due to an expired token (401) and we haven't tried to refresh yet
+    if (error.response?.status === 401 && !(originalRequest as any)._retry) {
       try {
-        // Attempt to refresh token if we have the refresh function
-        if (AuthService.refreshTokenFunction) {
-          console.log('Attempting to refresh expired token...');
-          const newToken = await AuthService.refreshTokenFunction();
-          
-          if (newToken) {
-            console.log('Token refreshed successfully');
-            AuthService.setToken(newToken);
-            
-            // Update the Authorization header with the new token
-            originalRequest.headers.Authorization = `Bearer ${newToken}`;
-            return api(originalRequest);
-          }
+        // Mark that we've tried to refresh the token
+        (originalRequest as any)._retry = true;
+        
+        // Try to refresh the token using the useAuth hook's refreshToken method
+        // This is a workaround since we can't directly access the hook here
+        // We'll dispatch an event to request token refresh
+        const refreshEvent = new CustomEvent('auth:refresh-requested');
+        window.dispatchEvent(refreshEvent);
+        
+        // Wait a moment for the token to be refreshed
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Update the authorization header
+        const authHeader = AuthService.getAuthHeader();
+        if (authHeader && originalRequest.headers) {
+          originalRequest.headers.Authorization = authHeader.Authorization;
         }
+        
+        // Retry the original request
+        return api(originalRequest);
       } catch (refreshError) {
-        console.error('Error refreshing token:', refreshError);
-        // Handle refresh error (e.g., redirect to login)
+        console.error('Token refresh failed:', refreshError);
+        
+        // Dispatch an event to notify that authentication has failed
+        const event = new CustomEvent('auth:refresh-failed');
+        window.dispatchEvent(event);
+        
         return Promise.reject(refreshError);
       }
-    }
-    
-    // Network errors
-    if (!error.response) {
-      console.error('Network error occurred. Check your internet connection or API availability.');
     }
     
     return Promise.reject(error);

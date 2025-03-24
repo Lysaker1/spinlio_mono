@@ -38,7 +38,7 @@ export const ComponentModal: React.FC<Props> = ({ component, onClose }) => {
 
   const toggleDetails = () => {
     onClose();
-    navigate(`/dashboard/marketplace/component/${component.id}`);
+    navigate(`/marketplace/component/${component.id}`);
   };
 
   // Quick preview modal

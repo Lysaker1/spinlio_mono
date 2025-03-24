@@ -220,32 +220,51 @@ const UploadModal = ({ uploadModalOpened, closeUploadModal, profileId }: UploadM
     
     setUploading(true);
     try {
-      // Start the upload process and get the model metadata
+      // Instead of waiting for upload completion, modify metadata to indicate background processing
       console.log("Starting upload with metadata:", metadata);
-      const uploadResponse = await uploadModelToS3(selectedFile, metadata, profileId);
-      console.log("Upload response:", uploadResponse);
       
-      // Close the modal and reset state
+      // Use special flag to tell API we want the model record created immediately
+      // but don't wait for upload completion
+      const uploadResponse = await uploadModelToS3(selectedFile, {
+        ...metadata,
+        _createRecordFirst: true, // Special flag to create DB record first
+        _backgroundUpload: true   // Continue upload in background
+      }, profileId);
+      
+      console.log("Model record created:", uploadResponse);
+      
+      // Close the modal immediately
       closeUploadModal();
       
-      // Make sure the ID is available before redirecting
+      // Navigate to edit page immediately if we have an ID
       if (uploadResponse && uploadResponse.id) {
-        console.log("Model uploaded successfully with ID:", uploadResponse.id);
+        console.log("Redirecting to edit page for model ID:", uploadResponse.id);
         
-        // Use a small timeout to ensure the state updates finish before navigation
-        // This can help avoid race conditions that might cause the redirect to fail
+        // Navigate to edit page while upload continues in background
+        navigate(`/dashboard/uploads/${uploadResponse.id}`);
+        
+        // Show a notification about background upload - use a simple alert for now
+        // This can be replaced with a proper notification system or toast later
         setTimeout(() => {
-          const editUrl = `${window.location.origin}/uploads/${uploadResponse.id}`;
-          console.log("Redirecting to:", editUrl);
-          window.location.href = editUrl;
-        }, 100);
+          alert("Your model is being uploaded in the background. The preview will appear when ready.");
+        }, 500);
       } else {
         console.error("Upload response missing ID:", uploadResponse);
-        alert("Upload completed but couldn't navigate to edit page. Please check your uploads section.");
+        alert("Error creating model record. Please try again.");
       }
     } catch (error) {
       console.error('Upload failed:', error);
-      alert('Failed to upload model. Please try again.');
+      
+      let errorMessage = 'Failed to upload model. Please try again.';
+      
+      // Check for specific streaming error
+      if (error instanceof Error && 
+          (error.message.includes('readableStream.getReader') || 
+           error.message.includes('streaming'))) {
+        errorMessage = 'Upload failed due to browser compatibility issues. Please try again.';
+      }
+      
+      alert(errorMessage);
     } finally {
       setUploading(false);
     }

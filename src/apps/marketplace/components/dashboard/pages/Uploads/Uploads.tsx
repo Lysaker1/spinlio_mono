@@ -146,15 +146,20 @@ const Uploads: React.FC = () => {
         // Get current user's uploaded models to verify DB connectivity
         const userId = user?.id || (user as any)?.sub;
         if (userId) {
-          const userModels = await getModelsPerUser(userId);
-          setStatus(prev => `${prev}\nFound ${userModels.length} models in your account.`);
-          
-          // Show S3 paths of first 3 models
-          if (userModels.length > 0) {
-            const modelPaths = userModels.slice(0, 3).map(model => 
-              `- ${model.name}: ${model.s3_key}`
-            ).join('\n');
-            setStatus(prev => `${prev}\nYour recent models:\n${modelPaths}`);
+          try {
+            const userModels = await getModelsPerUser(userId);
+            setStatus(prev => `${prev}\nFound ${userModels.length} models in your account.`);
+            
+            // Show S3 paths of first 3 models
+            if (userModels.length > 0) {
+              const modelPaths = userModels.slice(0, 3).map(model => 
+                `- ${model.name}: ${model.s3_key}`
+              ).join('\n');
+              setStatus(prev => `${prev}\nYour recent models:\n${modelPaths}`);
+            }
+          } catch (dbError) {
+            console.error('Error fetching models from database:', dbError);
+            setStatus(prev => `${prev}\nConnection to S3 successful, but couldn't fetch models from database.`);
           }
         }
       } else {
@@ -162,7 +167,23 @@ const Uploads: React.FC = () => {
       }
     } catch (error) {
       console.error('Error testing S3:', error);
-      setStatus(`S3 test error: ${error instanceof Error ? error.message : String(error)}`);
+      
+      let errorMessage = 'S3 test error: Unknown error occurred';
+      
+      if (error instanceof Error) {
+        errorMessage = `S3 test error: ${error.message}`;
+        
+        // Check for specific errors
+        if (error.message.includes('readableStream.getReader')) {
+          errorMessage = 'S3 test error: Browser streaming issue detected. We\'re working to fix this compatibility issue.';
+        } else if (error.message.includes('credentials')) {
+          errorMessage = 'S3 test error: Invalid AWS credentials. Please check your AWS access keys.';
+        } else if (error.message.includes('NetworkError')) {
+          errorMessage = 'S3 test error: Network error. Please check your internet connection.';
+        }
+      }
+      
+      setStatus(errorMessage);
     }
   };
 

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Button, Loader, Text, Table } from '@mantine/core';
+import { Button, Loader, Text, Table, Group, Badge, Rating } from '@mantine/core';
+import { IconBike, IconUser, IconTruck, IconCertificate, IconMapPin, IconTools } from '@tabler/icons-react';
 import { bikeTemplates, BikeTemplate } from '@shared/constants/bikeTemplates';
 import { CONFIGURATOR_PATHS } from '@shared/constants/configuratorTypes';
 import { ProfileStorageService } from '@shared/services/profileStorage';
@@ -13,11 +14,11 @@ import { getPrefabComponents } from './data/prefabComponents';
 
 // Sample features for demonstration purposes
 const FEATURES = [
-  { name: "Handlebar Display", value: true },
-  { name: "Integrated Lighting", value: true },
-  { name: "Hydraulic Brakes", value: true },
-  { name: "700C", value: true },
-  { name: "15Ah Battery", value: true },
+  "Handlebar Display",
+  "Integrated Lighting",
+  "Hydraulic Brakes",
+  "700C",
+  "15Ah Battery"
 ];
 
 // Sample specifications for demonstration purposes
@@ -36,6 +37,7 @@ const PrefabDetailPage: React.FC = () => {
   const [manufacturer, setManufacturer] = useState<Profile | null>(null);
   const [users, setUsers] = useState<Map<string, Profile>>(new Map());
   const [similarPrefabs, setSimilarPrefabs] = useState<BikeTemplate[]>([]);
+  const [components, setComponents] = useState<any[]>([]);
   
   useEffect(() => {
     // Find the prefab with the matching id
@@ -46,50 +48,54 @@ const PrefabDetailPage: React.FC = () => {
       
       // Find similar prefabs (same type or similar price range)
       const similar = bikeTemplates
-        .filter(p => p.id !== id && (p.type === foundPrefab.type || Math.abs(p.price || 0 - foundPrefab.price || 0) < 100))
+        .filter(p => p.id !== id && (p.type === foundPrefab.type || Math.abs((p.price || 0) - (foundPrefab.price || 0)) < 100))
         .slice(0, 5);
       
       setSimilarPrefabs(similar);
       
-      // Fetch manufacturer
+      // Load component data
+      setComponents(getPrefabComponents());
+
+      // Fetch manufacturer profile
       const fetchManufacturer = async () => {
         if (foundPrefab.manufacturer_id) {
           try {
             const profile = await ProfileStorageService.getProfile(foundPrefab.manufacturer_id);
             setManufacturer(profile);
-            setUsers(prev => new Map(prev.set(foundPrefab.manufacturer_id || '', profile)));
+            setUsers(prev => new Map(prev.set(foundPrefab.manufacturer_id, profile)));
           } catch (error) {
             console.error('Failed to fetch manufacturer profile:', error);
           }
         }
+        
+        // Fetch profiles for similar prefabs
+        for (const p of similar) {
+          if (p.manufacturer_id && !users.has(p.manufacturer_id)) {
+            try {
+              const profile = await ProfileStorageService.getProfile(p.manufacturer_id);
+              setUsers(prev => new Map(prev.set(p.manufacturer_id, profile)));
+            } catch (error) {
+              console.error(`Failed to fetch profile for ${p.manufacturer_id}:`, error);
+            }
+          }
+        }
+        
         setLoading(false);
       };
       
       fetchManufacturer();
-      
-      // Fetch users for similar prefabs
-      similar.forEach(async (p) => {
-        if (p.manufacturer_id && !users.has(p.manufacturer_id)) {
-          try {
-            const profile = await ProfileStorageService.getProfile(p.manufacturer_id);
-            setUsers(prev => new Map(prev.set(p.manufacturer_id || '', profile)));
-          } catch (error) {
-            console.error(`Failed to fetch profile for ${p.manufacturer_id}:`, error);
-          }
-        }
-      });
     } else {
       setLoading(false);
     }
   }, [id]);
   
   const handleConfigurate = () => {
-    if (prefab) {
-      const path = CONFIGURATOR_PATHS[prefab.type as keyof typeof CONFIGURATOR_PATHS] || '/';
-      navigate(path, {
-        state: { designParameters: prefab.parameters }
-      });
-    }
+    if (!prefab) return;
+    
+    const path = CONFIGURATOR_PATHS[prefab.type as keyof typeof CONFIGURATOR_PATHS] || '/';
+    navigate(path, {
+      state: { designParameters: prefab.parameters }
+    });
   };
   
   if (loading) {
@@ -111,183 +117,245 @@ const PrefabDetailPage: React.FC = () => {
     );
   }
   
+  // About content tab
   const aboutContent = (
-    <div className="flex flex-col md:flex-row gap-6">
-      <div className="md:w-1/3">
-        <img
-          src={prefab.image || '/placeholder-image.png'}
-          className="w-full h-auto rounded-lg object-cover mb-4"
-          alt={prefab.name}
-        />
-      </div>
-      <div className="md:w-2/3">
-        <ul className="list-disc pl-5 space-y-2">
-          <li>9-speed gearing for versatility across city streets and open roads</li>
-          <li>Disc brakes for powerful stopping in all weather conditions</li>
-          <li>Lightweight alloy frame for a smooth, agile ride</li>
-          <li>Comfortable geometry designed for daily commutes and long rides</li>
-          <li>Wide tire clearance for riding on varied terrain</li>
-          <li>Internal cable routing for a clean, sleek look</li>
-          <li>Wide handlebars for better control and stability</li>
-          <li>Hydraulic disc brakes for reliable stopping power</li>
-          <li>Customizable color options to match your style</li>
-          <li>Low-maintenance drivetrain keeps things simple and efficient</li>
-          <li>Perfect balance of speed, comfort, and control for urban riders</li>
-        </ul>
+    <div className="p-4 space-y-4">
+      <Text className="text-gray-700 mb-4">
+        {prefab.description || "This premium bike is designed for urban commuting and recreational riding, combining style and functionality."}
+      </Text>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <h3 className="text-lg font-medium mb-3">Manufacturing Details</h3>
+          <div className="space-y-2">
+            <Group>
+              <IconMapPin size={18} className="text-gray-500" />
+              <Text size="sm">Manufactured in Taiwan</Text>
+            </Group>
+            <Group>
+              <IconTruck size={18} className="text-gray-500" />
+              <Text size="sm">Ships 75% Assembled</Text>
+            </Group>
+            <Group>
+              <IconCertificate size={18} className="text-gray-500" />
+              <Text size="sm">ISO 9001 Certified</Text>
+            </Group>
+          </div>
+        </div>
+        
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <h3 className="text-lg font-medium mb-3">Supplier Info</h3>
+          <div className="space-y-2">
+            <Group>
+              <IconUser size={18} className="text-gray-500" />
+              <Text size="sm">{manufacturer?.name || prefab.manufacturer || 'Unknown Manufacturer'}</Text>
+            </Group>
+            <Text size="sm">Supplier Rating:</Text>
+            <Rating value={4.5} fractions={2} readOnly size="sm" />
+            <Text size="xs" c="dimmed">5+ years in business</Text>
+          </div>
+        </div>
       </div>
     </div>
   );
   
-  const componentsContent = (
-    <div>
-      {id && getPrefabComponents(id).length > 0 ? (
-        <div>
-          <Text size="lg" fw={600} className="mb-4">{prefab?.name} Components</Text>
-          <Table 
-            striped 
-            highlightOnHover 
-            withTableBorder={false} 
-            className="border-collapse rounded-lg overflow-hidden"
-          >
-            <Table.Thead className="bg-gray-50">
-              <Table.Tr>
-                <Table.Th className="font-semibold py-3 px-4 border-b border-gray-200 text-gray-600 text-sm">Component</Table.Th>
-                <Table.Th className="font-semibold py-3 px-4 border-b border-gray-200 text-gray-600 text-sm">Manufacturer</Table.Th>
-                <Table.Th className="font-semibold py-3 px-4 border-b border-gray-200 text-gray-600 text-sm">Model</Table.Th>
-                <Table.Th className="font-semibold py-3 px-4 border-b border-gray-200 text-gray-600 text-sm">Production Time</Table.Th>
-                <Table.Th className="font-semibold py-3 px-4 border-b border-gray-200 text-gray-600 text-sm">Country</Table.Th>
-                <Table.Th className="font-semibold py-3 px-4 border-b border-gray-200 text-gray-600 text-sm">Price</Table.Th>
-                {getPrefabComponents(id).some(c => c.productionTimeDays) && (
-                  <Table.Th className="font-semibold py-3 px-4 border-b border-gray-200 text-gray-600 text-sm">Production Time (days)</Table.Th>
-                )}
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>
-              {getPrefabComponents(id).map((component, index) => (
-                <Table.Tr key={index} className="hover:bg-gray-50">
-                  <Table.Td className="py-3 px-4 border-b border-gray-200 font-medium">{component.component}</Table.Td>
-                  <Table.Td className="py-3 px-4 border-b border-gray-200">{component.manufacturer}</Table.Td>
-                  <Table.Td className="py-3 px-4 border-b border-gray-200">{component.model}</Table.Td>
-                  <Table.Td className="py-3 px-4 border-b border-gray-200">{component.productionTime}</Table.Td>
-                  <Table.Td className="py-3 px-4 border-b border-gray-200">{component.country}</Table.Td>
-                  <Table.Td className="py-3 px-4 border-b border-gray-200 font-medium">${component.price}</Table.Td>
-                  {getPrefabComponents(id).some(c => c.productionTimeDays) && (
-                    <Table.Td className="py-3 px-4 border-b border-gray-200">{component.productionTimeDays}</Table.Td>
-                  )}
-                </Table.Tr>
+  // Specifications content tab with enhanced layout
+  const specificationsContent = (
+    <div className="p-4">
+      <div className="bg-white rounded-lg overflow-hidden">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <h3 className="text-lg font-medium mb-3">Technical Specifications</h3>
+            <div className="space-y-2">
+              {[
+                { name: "Frame Type", value: prefab.type },
+                { name: "Frame Material", value: "Aluminum Alloy" },
+                { name: "Motor", value: "250W Mid-Drive" },
+                { name: "Battery", value: "36V 15Ah Lithium-ion" },
+                { name: "Range", value: "80-100km" },
+                { name: "Weight", value: "22kg" }
+              ].map((spec, index) => (
+                <ProductSpecification key={index} name={spec.name} value={spec.value} />
               ))}
-            </Table.Tbody>
-          </Table>
+            </div>
+          </div>
+          
+          <div>
+            <h3 className="text-lg font-medium mb-3">Features</h3>
+            <div className="space-y-2">
+              {SPECS.map((spec, index) => (
+                <ProductSpecification 
+                  key={index} 
+                  name={typeof spec.value === 'boolean' ? spec.name : spec.name}
+                  value={typeof spec.value === 'boolean' ? true : spec.value}
+                />
+              ))}
+            </div>
+          </div>
         </div>
-      ) : (
+      </div>
+    </div>
+  );
+  
+  // Components tab showing the bike's parts
+  const componentsContent = (
+    <div className="p-4">
+      <Text className="mb-4">This bike includes the following premium components:</Text>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        {components.map((component, index) => (
+          <div key={index} className="bg-gray-50 p-3 rounded-lg flex items-center gap-2">
+            <IconTools size={16} className="text-gray-500" />
+            <div>
+              <Text size="sm" fw={500}>{component.name}</Text>
+              <Text size="xs" c="dimmed">{component.manufacturer}</Text>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+  
+  // Shipping content tab
+  const shippingContent = (
+    <div className="p-4 space-y-4">
+      <div className="bg-gray-50 p-4 rounded-lg">
+        <h3 className="text-lg font-medium mb-3">Shipping Information</h3>
+        <Text className="mb-3">This bike ships 75% assembled to reduce shipping damage and ensure proper setup.</Text>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Text fw={600} className="mb-2">Frame</Text>
-            <ul className="list-disc pl-5 space-y-1">
-              <li>Carbon fiber construction</li>
-              <li>Internal cable routing</li>
-              <li>Disc brake mounts</li>
-            </ul>
+            <h4 className="font-medium mb-2">Estimated Delivery</h4>
+            <Text size="sm">• Europe: 2-3 weeks</Text>
+            <Text size="sm">• North America: 3-4 weeks</Text>
+            <Text size="sm">• Asia Pacific: 1-2 weeks</Text>
+            <Text size="sm">• Rest of World: 4-6 weeks</Text>
           </div>
           <div>
-            <Text fw={600} className="mb-2">Groupset</Text>
-            <ul className="list-disc pl-5 space-y-1">
-              <li>Shimano 11-speed</li>
-              <li>Hydraulic disc brakes</li>
-              <li>Electronic shifting</li>
-            </ul>
-          </div>
-          <div>
-            <Text fw={600} className="mb-2">Wheels</Text>
-            <ul className="list-disc pl-5 space-y-1">
-              <li>700c carbon rims</li>
-              <li>Tubeless ready</li>
-              <li>Thru-axle hubs</li>
-            </ul>
-          </div>
-          <div>
-            <Text fw={600} className="mb-2">Cockpit</Text>
-            <ul className="list-disc pl-5 space-y-1">
-              <li>Carbon handlebars</li>
-              <li>Ergonomic grips</li>
-              <li>Adjustable stem</li>
-            </ul>
+            <h4 className="font-medium mb-2">Shipping Notes</h4>
+            <Text size="sm">• Requires assembly upon arrival</Text>
+            <Text size="sm">• Includes detailed assembly instructions</Text>
+            <Text size="sm">• Assembly service available upon request</Text>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
   
-  const shippingContent = (
-    <div>
-      <Text>Free shipping worldwide on all orders over $100. Standard delivery takes 3-5 business days.</Text>
-      <Text className="mt-4">Expedited shipping options are available at checkout.</Text>
-    </div>
-  );
-  
+  // Warranty content tab
   const warrantyContent = (
-    <div>
-      <Text>All bikes come with a 2-year manufacturer's warranty covering defects in materials and workmanship.</Text>
-      <Text className="mt-4">Extended warranty options available for purchase.</Text>
+    <div className="p-4">
+      <div className="bg-gray-50 p-4 rounded-lg">
+        <h3 className="text-lg font-medium mb-3">Warranty Information</h3>
+        <Text className="mb-3">All bikes come with comprehensive warranty coverage.</Text>
+        <div className="space-y-2">
+          <Text size="sm">• 5-year warranty on frame</Text>
+          <Text size="sm">• 2-year warranty on electrical components</Text>
+          <Text size="sm">• 1-year warranty on mechanical components</Text>
+          <Text size="sm" className="mt-4">For warranty claims, please contact the service center in your region.</Text>
+        </div>
+      </div>
     </div>
   );
   
+  // Reviews content tab
+  const reviewsContent = (
+    <div className="p-4">
+      <div className="flex items-center mb-4">
+        <div className="flex items-center mr-4">
+          <Rating value={4.5} fractions={1} readOnly />
+          <Text className="ml-2 font-medium">4.5</Text>
+        </div>
+        <Text className="text-gray-600">Based on 127 reviews</Text>
+      </div>
+      
+      <div className="space-y-4">
+        {[
+          { name: "Thomas K.", rating: 5, comment: "Beautiful bike, smooth ride, and the battery lasts even longer than advertised!" },
+          { name: "Sarah L.", rating: 4, comment: "Assembly was straightforward. Great value for the price, though the seat could be more comfortable." },
+          { name: "Michael B.", rating: 5, comment: "Perfect for my commute. The integrated lights are a great safety feature." }
+        ].map((review, index) => (
+          <div key={index} className="border-b border-gray-200 pb-4">
+            <div className="flex items-center mb-2">
+              <Rating value={review.rating} readOnly size="sm" />
+              <Text className="ml-2 font-medium">{review.name}</Text>
+            </div>
+            <Text size="sm">{review.comment}</Text>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+  
+  // Action buttons for the product
   const actionButtons = (
-    <>
+    <Group className="mt-4">
       <Button
         variant="filled"
         color="dark"
-        className="w-full sm:w-auto"
+        size="md"
         radius="xl"
+        onClick={() => {
+          alert('Added to cart!');
+        }}
+      >
+        Buy Now
+      </Button>
+      
+      <Button
+        variant="outline"
+        color="dark"
+        size="md"
+        radius="xl"
+        onClick={() => {
+          window.open(`mailto:${manufacturer?.email || 'sales@bazaar.it'}?subject=Inquiry about ${prefab.name}`, '_blank');
+        }}
+      >
+        Contact Supplier
+      </Button>
+      
+      <Button
+        variant="light"
+        color="dark"
+        size="md"
+        radius="xl"
+        leftSection={<IconBike size={18} />}
         onClick={handleConfigurate}
       >
         Customize
       </Button>
-      <Button
-        variant="outline"
-        color="dark"
-        className="w-full sm:w-auto"
-        radius="xl"
-      >
-        Contact Supplier
-      </Button>
-    </>
-  );
-  
-  const featureBadges = (
-    <div className="flex flex-wrap gap-2 my-3">
-      {FEATURES.map(feature => (
-        <ProductFeatureBadge key={feature.name} feature={feature.name} />
-      ))}
-    </div>
+    </Group>
   );
   
   return (
-    <ProductDetailLayout
-      name={prefab.name}
-      manufacturer={manufacturer?.name || prefab.manufacturer_id || 'Vulz'}
-      manufacturerId={prefab.manufacturer_id}
-      price={prefab.price || 0}
-      rating={4.5}
-      reviews={392}
-      image={prefab.image || '/placeholder-image.png'}
-      specificationsContent={SPECS.map(spec => (
-        <ProductSpecification key={spec.name} name={spec.name} value={spec.value} />
-      ))}
-      aboutContent={aboutContent}
-      componentsContent={componentsContent}
-      shippingContent={shippingContent}
-      warrantyContent={warrantyContent}
-      similarItems={
-        <SimilarProducts 
-          products={similarPrefabs} 
-          users={users} 
-          productType="prefab" 
-        />
-      }
-    >
-      {actionButtons}
-    </ProductDetailLayout>
+    <div className="bg-gray-50 min-h-screen pb-12">
+      <ProductDetailLayout
+        name={prefab.name}
+        image={prefab.image}
+        manufacturer={manufacturer?.name || prefab.manufacturer || 'Unknown Manufacturer'}
+        manufacturerId={prefab.manufacturer_id}
+        price={prefab.price_on_request ? null : prefab.price}
+        priceOnRequest={prefab.price_on_request || false}
+        rating={4.5}
+        reviews={127}
+        description={prefab.description}
+        features={FEATURES}
+        specificationsContent={specificationsContent}
+        aboutContent={aboutContent}
+        componentsContent={componentsContent}
+        shippingContent={shippingContent}
+        warrantyContent={warrantyContent}
+        reviewsContent={reviewsContent}
+        similarItems={
+          <SimilarProducts 
+            products={similarPrefabs} 
+            users={users} 
+            productType="prefab" 
+          />
+        }
+        onAddToCart={() => alert('Item added to cart!')}
+      >
+        {actionButtons}
+      </ProductDetailLayout>
+    </div>
   );
 };
 

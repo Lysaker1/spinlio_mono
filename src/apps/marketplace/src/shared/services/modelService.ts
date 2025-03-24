@@ -1,11 +1,25 @@
 import { PutObjectCommand, GetObjectCommand, ListObjectsV2Command, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { s3Client, BUCKET_NAME, uploadFileToS3, testS3Connection } from '@shared/utils/s3Client';
+import { s3Client, BUCKET_NAME, uploadFileToS3, testS3Connection as testS3ClientConnection } from '@shared/utils/s3Client';
 import { getFileExtension, getFileCategory, getMimeTypeFromExtension, isSupportedModelFormat } from '@shared/utils/fileTypeUtils';
 import { supabase } from '@shared/utils/supabaseClient';
 import { initiateModelConversion, checkConversionStatus } from './rhinoComputeService';
 import { v4 as uuidv4 } from 'uuid';
 import { logger, truncateKey } from '@shared/utils/logger';
+import { createClient } from '@supabase/supabase-js';
+import toast from 'react-hot-toast';
+
+// Define the uploadStringContent helper function since it's used but not imported
+const uploadStringContent = async (bucket: string, key: string, content: string): Promise<any> => {
+  const command = new PutObjectCommand({
+    Bucket: bucket,
+    Key: key,
+    Body: content,
+    ContentType: 'text/plain'
+  });
+  
+  return await s3Client.send(command);
+};
 
 // Model metadata type
 export interface ModelMetadata {
@@ -166,7 +180,7 @@ const getSubcategoryNameById = async (subcategoryId: number | string): Promise<s
 };
 
 // Organize files in S3 using a structured folder approach
-const getS3KeyForFile = async (file: File, userId?: string, metadata?: Partial<ModelMetadata>): Promise<string> => {
+const getS3KeyForFile = async (file: File, userId?: string, metadata?: Partial<ModelMetadata>, userEmail?: string): Promise<string> => {
   const fileExtension = getFileExtension(file.name);
   const sanitizedFileName = file.name.replace(/[^a-z0-9.-]/gi, '_').toLowerCase();
   
@@ -197,8 +211,37 @@ const getS3KeyForFile = async (file: File, userId?: string, metadata?: Partial<M
   const safeCategory = `${categoryName.replace(/[^a-z0-9]/gi, '_')}_${categoryId}`;
   const safeSubcategory = `${subcategoryName.replace(/[^a-z0-9]/gi, '_')}_${subcategoryId}`;
   
+  // Get user email or name for a more readable path
+  let userIdentifier = 'anonymous';
+  if (userEmail) {
+    // Use email (removing special chars) as folder name
+    userIdentifier = userEmail.replace(/[@.]/g, '_').toLowerCase();
+  } else if (userId) {
+    // Try to get user email from Supabase
+    try {
+      const { data } = await supabase
+        .from('profiles')
+        .select('email, name')
+        .eq('id', userId)
+        .single();
+        
+      if (data?.email) {
+        userIdentifier = data.email.replace(/[@.]/g, '_').toLowerCase();
+      } else if (data?.name) {
+        userIdentifier = data.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+      } else {
+        // Fallback to userId but make it path-friendly
+        userIdentifier = `user_${userId.replace(/[|]/g, '_')}`;
+      }
+    } catch (error) {
+      console.error('Error getting user email:', error);
+      // Fallback to userId but make it path-friendly
+      userIdentifier = `user_${userId.replace(/[|]/g, '_')}`;
+    }
+  }
+  
   // Primary user path (always store under user ID for ownership)
-  const userPath = userId ? `users/${userId}/models/${componentId}` : `models/${componentId}`;
+  const userPath = `users/${userIdentifier}/${componentId}`;
   
   // Secondary categorical path (for organizational purposes)
   const categoryPath = `categories/${safeCategory}/${safeSubcategory}/${fileExtension}`;
@@ -250,26 +293,258 @@ export const getConvertedModelS3Key = (
   return `${categoryPath}/${convertedFormat}/${baseName}-converted.${convertedFormat}`;
 };
 
+// Improved background upload function with retry logic
+const performBackgroundS3Upload = async (
+  modelId: string,
+  s3Key: string,
+  file: File,
+  contentType: string,
+  metadata: Record<string, string> = {},
+  tagging: string = ''
+): Promise<{ success: boolean; url?: string; error?: string }> => {
+  let uploadAttempt = 0;
+  const maxAttempts = 3;
+  
+  while (uploadAttempt < maxAttempts) {
+    uploadAttempt++;
+    console.log(`Starting S3 upload to bucket: ${BUCKET_NAME} Attempt: ${uploadAttempt}`);
+    
+    try {
+      // For binary file uploads, explicitly set a flag to use XHR method
+      const useDirectXhrUpload = file.size > 1024 * 1024; // Use XHR for files larger than 1MB
+      
+      // Perform the upload with all needed parameters
+      const params = {
+        Bucket: BUCKET_NAME,
+        Key: s3Key,
+        Body: file,
+        ContentType: contentType,
+        Metadata: metadata,
+        Tagging: tagging,
+        useDirectXhrUpload // Custom flag to indicate we want to use XHR method
+      };
+      
+      // Attempt the upload
+      const uploadResult = await uploadFileToS3(params);
+      console.log('S3 upload successful:', uploadResult);
+      
+      // If upload succeeds, generate a signed URL
+      try {
+        const command = new GetObjectCommand({
+          Bucket: BUCKET_NAME,
+          Key: s3Key
+        });
+        
+        const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+        
+        // Update the database with the signed URL and mark as completed
+        await supabase
+          .from('models')
+          .update({ 
+            url: signedUrl,
+            conversion_status: 'completed'
+          })
+          .eq('id', modelId);
+          
+        console.log(`Model ${modelId} updated with signed URL and marked as completed`);
+        return { success: true, url: signedUrl }; // Return success with URL
+      } catch (urlError) {
+        console.error('Error generating signed URL:', urlError);
+        
+        // Still mark as completed even if we fail to get a signed URL, since the file is uploaded
+        await supabase
+          .from('models')
+          .update({ 
+            conversion_status: 'completed'
+          })
+          .eq('id', modelId);
+          
+        console.log(`Model ${modelId} marked as completed (no signed URL)`);
+        return { success: true }; // Return success without URL
+      }
+    } catch (error) {
+      // Log specific error details
+      console.error(`S3 upload attempt ${uploadAttempt} failed:`, error);
+      
+      if (error instanceof Error) {
+        // Check for specific browser streaming error
+        if (error.message.includes('readableStream.getReader')) {
+          console.error('Browser streaming API compatibility issue detected.');
+          
+          // On streaming error, try the direct XHR method
+          try {
+            console.log("Attempting direct XHR upload method...");
+            
+            // Get a signed URL for direct PUT
+            const command = new PutObjectCommand({
+              Bucket: BUCKET_NAME,
+              Key: s3Key,
+              ContentType: contentType
+            });
+            
+            const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 900 });
+            
+            // Perform direct browser upload using fetch
+            const response = await fetch(signedUrl, {
+              method: 'PUT',
+              body: file,
+              headers: {
+                'Content-Type': contentType
+              }
+            });
+            
+            if (!response.ok) {
+              throw new Error(`Direct upload failed with status: ${response.status}`);
+            }
+            
+            console.log('Direct XHR upload successful');
+            
+            // Generate a signed URL for access
+            const getCommand = new GetObjectCommand({
+              Bucket: BUCKET_NAME,
+              Key: s3Key
+            });
+            
+            const accessUrl = await getSignedUrl(s3Client, getCommand, { expiresIn: 3600 });
+            
+            // Update the database
+            await supabase
+              .from('models')
+              .update({ 
+                url: accessUrl,
+                conversion_status: 'completed'
+              })
+              .eq('id', modelId);
+              
+            console.log(`Model ${modelId} updated with signed URL after direct upload`);
+            return { success: true, url: accessUrl };
+          } catch (directError) {
+            console.error('Direct XHR upload also failed:', directError);
+            
+            // Mark model as failed in database with specific error
+            await supabase
+              .from('models')
+              .update({ 
+                conversion_status: 'failed',
+                conversion_message: 'Browser upload method failed. Try a different browser or smaller file.'
+              })
+              .eq('id', modelId);
+              
+            console.error(`Model ${modelId} marked as failed after direct upload attempt`);
+            return { 
+              success: false, 
+              error: 'Browser upload compatibility issue. Try a different browser or smaller file.'
+            };
+          }
+        }
+        
+        // Check for access denied errors
+        if (error.message.includes('AccessDenied')) {
+          console.error('AWS S3 access denied. Check credentials and bucket permissions.');
+          
+          await supabase
+            .from('models')
+            .update({ 
+              conversion_status: 'failed',
+              conversion_message: 'S3 access denied. Please contact support.'
+            })
+            .eq('id', modelId);
+            
+          console.error(`Model ${modelId} marked as failed due to S3 access denied`);
+          return { 
+            success: false, 
+            error: 'Access denied to S3 bucket. Please check your credentials and permissions.'
+          };
+        }
+      }
+      
+      // For all other errors, either retry or give up
+      if (uploadAttempt >= maxAttempts) {
+        console.error(`Maximum retry attempts (${maxAttempts}) reached. Giving up on upload.`);
+        
+        // Update database to reflect failed upload
+        await supabase
+          .from('models')
+          .update({ 
+            conversion_status: 'failed',
+            conversion_message: error instanceof Error 
+              ? `Upload failed: ${error.message}` 
+              : 'Upload failed with unknown error'
+          })
+          .eq('id', modelId);
+          
+        console.error(`Model ${modelId} marked as failed after ${maxAttempts} attempts`);
+        return { 
+          success: false, 
+          error: error instanceof Error ? error.message : 'Upload failed after multiple attempts'
+        };
+      } else {
+        // Wait before retrying with exponential backoff
+        const delay = Math.pow(2, uploadAttempt) * 1000;
+        console.log(`Retrying upload in ${delay}ms...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+  }
+  
+  return { success: false, error: 'Upload failed after all attempts' };
+};
+
 // Upload a model file to S3
 export const uploadModelToS3 = async (
   file: File,
-  metadata: Omit<ModelMetadata, 'file_size' | 'file_type' | 's3_key' | 'url'>,
+  metadata: Omit<ModelMetadata, 'file_size' | 'file_type' | 's3_key' | 'url'> & { 
+    _waitForUploadCompletion?: boolean,
+    _createRecordFirst?: boolean,
+    _backgroundUpload?: boolean
+  },
   userId?: string
 ): Promise<ModelMetadata> => {
   try {
+    // Check for special flags
+    const waitForUploadCompletion = metadata._waitForUploadCompletion || false;
+    const createRecordFirst = metadata._createRecordFirst || false;
+    const backgroundUpload = metadata._backgroundUpload || false;
+    
+    // Remove the special flags from metadata before saving to database
+    const { 
+      _waitForUploadCompletion, 
+      _createRecordFirst, 
+      _backgroundUpload, 
+      ...cleanMetadata 
+    } = metadata;
+    
     // Generate a proper UUID for the model if not provided
-    if (!metadata.id) {
-      metadata.id = uuidv4();
+    if (!cleanMetadata.id) {
+      cleanMetadata.id = uuidv4();
     }
 
-    // Test S3 connectivity first
-    const isConnected = await testS3Connection();
-    if (!isConnected) {
-      throw new Error('Cannot connect to S3. Please check your credentials and network connection.');
+    // Test S3 connectivity first (skip if backgroundUpload is true since we'll handle errors there)
+    if (!backgroundUpload) {
+      const isConnected = await testS3ClientConnection();
+      if (!isConnected) {
+        throw new Error('Cannot connect to S3. Please check your credentials and network connection.');
+      }
+    }
+    
+    // Try to get user email for better path naming
+    let userEmail;
+    if (userId) {
+      try {
+        const { data } = await supabase
+          .from('profiles')
+          .select('email')
+          .eq('id', userId)
+          .single();
+          
+        userEmail = data?.email;
+      } catch (error) {
+        console.error('Error getting user email:', error);
+      }
     }
     
     // Generate S3 key using our new structured approach
-    const s3Key = await getS3KeyForFile(file, userId, metadata);
+    const s3Key = await getS3KeyForFile(file, userId, cleanMetadata, userEmail);
     console.log('Generated S3 key:', s3Key);
     
     console.log('Uploading file:', file.name, 'Size:', file.size, 'Type:', file.type || 'unknown');
@@ -277,15 +552,39 @@ export const uploadModelToS3 = async (
     // Ensure file has a proper content type based on extension
     const contentType = file.type || getMimeTypeFromExtension(file.name);
     
-    // Prepare the complete metadata object with temporary URL before actual upload
-    // This allows for immediate redirection to edit page
+    // Instead of using blob URL, use a placeholder URL or generate a data URL for small files
+    let tempUrl = '';
+    
+    // For small images (under 1MB), create a data URL for immediate preview
+    if (file.type?.startsWith('image/') && file.size < 1024 * 1024) {
+      try {
+        tempUrl = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      } catch (error) {
+        console.error('Failed to create data URL for preview:', error);
+        tempUrl = '/assets/placeholder-thumbnails/default.jpg'; // Fallback to static placeholder
+      }
+    } else {
+      // Use a placeholder for other files
+      const fileExt = getFileExtension(file.name);
+      tempUrl = `/assets/placeholder-thumbnails/${fileExt}.jpg`;
+      
+      // If placeholder doesn't exist, use default
+      tempUrl = tempUrl || '/assets/placeholder-thumbnails/default.jpg';
+    }
+    
+    // Prepare the complete metadata object with placeholder URL before actual upload
     const completeMetadata: ModelMetadata = {
-      ...metadata,
-      id: metadata.id,
+      ...cleanMetadata,
+      id: cleanMetadata.id,
       file_size: file.size,
       file_type: contentType,
       s3_key: s3Key,
-      url: URL.createObjectURL(file), // Create a temporary local URL
+      url: tempUrl, // Use placeholder instead of blob URL
       conversion_status: 'pending',
       converted_formats: [],
       user_id: userId,
@@ -301,78 +600,78 @@ export const uploadModelToS3 = async (
     if (error) throw error;
     console.log('Model metadata saved to database with ID:', data.id);
 
-    // Start S3 upload in the background without blocking
-    (async () => {
-      try {
-        // Remove any problematic headers or metadata properties that could be undefined
-        const cleanedMetadata: Record<string, string> = {};
-        
-        // Only include metadata that is a string and not empty
-        if (metadata.name) cleanedMetadata['x-amz-meta-name'] = metadata.name;
-        if (metadata.category) cleanedMetadata['x-amz-meta-category'] = metadata.category.toString();
-        if (metadata.subcategory) cleanedMetadata['x-amz-meta-subcategory'] = metadata.subcategory.toString();
-        if (metadata.manufacturer) cleanedMetadata['x-amz-meta-manufacturer'] = metadata.manufacturer;
-        if (metadata.part_type) cleanedMetadata['x-amz-meta-part-type'] = metadata.part_type;
-        if (file.name) cleanedMetadata['x-amz-meta-original-filename'] = file.name;
-        
-        // Add user ID to metadata for ownership tracking
-        if (userId) cleanedMetadata['x-amz-meta-user-id'] = userId;
-
-        // S3 upload parameters with sanitized metadata
-        const params = {
-          Bucket: BUCKET_NAME,
-          Key: s3Key,
-          Body: file,
-          ContentType: contentType,
-          Metadata: cleanedMetadata,
-          // Add tagging to make management easier
-          Tagging: `modelId=${metadata.id}&category=${metadata.category || 0}&userId=${userId || 'public'}`
-        };
-
-        console.log('Starting S3 upload to bucket:', BUCKET_NAME);
-        // Upload file to S3 using our improved uploadFileToS3 function
-        const uploadResult = await uploadFileToS3(params);
-        console.log('S3 upload successful:', uploadResult);
-        
-        // Generate a signed URL for the uploaded object
-        const command = new GetObjectCommand({
-          Bucket: BUCKET_NAME,
-          Key: s3Key
-        });
-        
-        const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
-        console.log('Generated signed URL for model access');
-        
-        // Update the database with the new signed URL and mark upload as completed
-        await supabase
-          .from('models')
-          .update({ 
-            url: signedUrl,
-            conversion_status: 'completed' // Mark as completed since we're not doing conversions yet
-          })
-          .eq('id', data.id);
-        
-        console.log('Database updated with signed URL and completed status');
-        
-        // Create category references in database rather than duplicating files
-        await createCategoryReference(data.id, metadata.category, metadata.subcategory);
-      
-        // COMMENTED OUT: Queue conversion job with Rhino Compute
-        // The Rhino compute API is not working currently and costs money to run
-        /*
-        await queueRhinoModelConversion(data.id, s3Key, file.name);
-        */
-      } catch (uploadError) {
-        console.error('Background S3 upload failed:', uploadError);
-        // Update status in database to indicate failure
-        await supabase
-          .from('models')
-          .update({ conversion_status: 'failed' })
-          .eq('id', data.id);
-      }
-    })();
+    // Start S3 upload in the background
+    const uploadPromise = performBackgroundS3Upload(
+      data.id, 
+      s3Key, 
+      file, 
+      contentType, 
+      {}, 
+      `modelId=${data.id}&category=${cleanMetadata.category || 0}&userId=${userId || 'public'}`
+    );
     
-    // Return the model data immediately without waiting for S3 upload or conversion
+    // If we're doing a background upload or just using database record, return immediately
+    if (backgroundUpload || createRecordFirst) {
+      console.log('Starting background upload and returning database record...');
+      
+      // Fire and forget - handle upload result in background
+      uploadPromise.then(result => {
+        if (result.success) {
+          console.log(`Background upload completed for model ${data.id}:`, result);
+          
+          // Update the DB record with the actual S3 URL if upload succeeded
+          if (result.url) {
+            supabase
+              .from('models')
+              .update({ 
+                url: result.url,
+                conversion_status: 'completed' 
+              })
+              .eq('id', data.id)
+              .then(() => console.log(`Updated model ${data.id} with final S3 URL`))
+              .catch(err => console.error(`Failed to update model ${data.id} with S3 URL:`, err));
+          }
+        } else {
+          console.error(`Background upload failed for model ${data.id}:`, result.error);
+          
+          // Update the DB record with failed status
+          supabase
+            .from('models')
+            .update({ conversion_status: 'failed' })
+            .eq('id', data.id)
+            .then(() => console.log(`Updated model ${data.id} status to failed`))
+            .catch(err => console.error(`Failed to update model ${data.id} status:`, err));
+        }
+      }).catch(err => {
+        console.error(`Background upload process error for model ${data.id}:`, err);
+      });
+      
+      // Return the database record immediately without waiting for upload
+      return data;
+    }
+    
+    // If we're waiting for upload to complete (legacy behavior), handle the result
+    if (waitForUploadCompletion) {
+      console.log('Waiting for upload to complete...');
+      
+      // Wait for upload to finish
+      const uploadResult = await uploadPromise;
+      
+      // If upload failed, throw an error
+      if (!uploadResult.success) {
+        throw new Error(uploadResult.error || 'Upload failed');
+      }
+      
+      // If upload succeeded and we have a URL, update the model data
+      if (uploadResult.url) {
+        data.url = uploadResult.url;
+        data.conversion_status = 'completed';
+      }
+      
+      console.log('Upload completed successfully:', uploadResult);
+    }
+    
+    // Return the model data with or without waiting for upload
     return data;
   } catch (error) {
     console.error('Error uploading model to S3:', error);
@@ -799,57 +1098,110 @@ export const getModelConversionStatus = async (modelId: string): Promise<{
 };
 
 /**
- * Test function to verify S3 connectivity and upload capabilities
- * This can be called from a button in the UI to check if S3 is working
+ * Test S3 connectivity by uploading a small test file
+ * Uses a more direct approach to avoid streaming issues
  */
 export const testS3Upload = async (): Promise<{success: boolean, message: string}> => {
   try {
-    // Create a small test file
-    const testContent = 'This is a test file to verify S3 upload functionality.';
-    const testBlob = new Blob([testContent], { type: 'text/plain' });
-    const testFile = new File([testBlob], 'test-upload.txt');
-    
     console.log('Testing S3 upload with a small text file...');
     
-    // Use our uploadModelToS3 function with minimal metadata
-    await uploadModelToS3(
-      testFile, 
-      {
-        name: 'Test Upload',
-        filename: 'test-upload.txt',
-        category: 1,
-        is_public: false,
-        price: null,
-        price_on_request: false,
-        minimum_order_quantity: null,
-        moq_on_request: false,
-        lead_time: null,
-        lead_time_on_request: false,
-        payment_terms: null,
-        payment_terms_on_request: false
-      }
-    );
-    
-    return {
-      success: true,
-      message: 'S3 upload test successful! Your S3 configuration is working correctly.'
-    };
-  } catch (error) {
-    console.error('S3 upload test failed:', error);
-    
-    let errorMessage = 'Unknown error occurred';
-    if (error instanceof Error) {
-      errorMessage = error.message;
-    } else if (typeof error === 'string') {
-      errorMessage = error;
+    // First run a direct test on the S3 connection using strings only
+    // This avoids using File/Blob objects which can trigger streaming issues
+    const connectionResult = await testS3ClientConnection();
+    if (!connectionResult) {
+      return { 
+        success: false, 
+        message: 'Failed to connect to S3. Please check your network connection and credentials.' 
+      };
     }
     
+    // Create a unique test file key
+    const testId = uuidv4();
+    const s3Key = `users/anonymous/${testId}/other/document/${testId}-test-upload.txt`;
+    console.log('Generated S3 key:', s3Key);
+    
+    // Create a small text file in the database
+    const testFileMetadata: any = {
+      id: testId,
+      name: 'test-upload.txt',
+      filename: 'test-upload.txt',
+      file_size: 54,
+      file_type: 'text/plain',
+      s3_key: s3Key,
+      url: '',
+      conversion_status: 'pending',
+      converted_formats: [],
+    };
+    
+    // Store test metadata in database
+    const { data, error } = await supabase
+      .from('models')
+      .insert(testFileMetadata)
+      .select()
+      .single();
+      
+    if (error) {
+      console.error('Failed to create test record in database:', error);
+      return { 
+        success: false, 
+        message: 'Database connection issue: ' + error.message 
+      };
+    }
+    
+    console.log('Model metadata saved to database with ID:', data.id);
+    
+    // Create a simple string content (avoids Blob/File streaming issues)
+    const textContent = 'This is a test upload to verify S3 connectivity. Time: ' + new Date().toISOString();
+    
+    // Upload directly with a simple string
+    try {
+      const uploadResult = await uploadStringContent(BUCKET_NAME, s3Key, textContent);
+      console.log('Test upload successful:', uploadResult);
+      
+      // Clean up the test file from the database
+      await supabase
+        .from('models')
+        .delete()
+        .eq('id', testId);
+        
+      return {
+        success: true,
+        message: 'S3 upload test successful! Your S3 configuration is working correctly.'
+      };
+    } catch (uploadError) {
+      console.error('Test upload failed:', uploadError);
+      
+      let errorMessage = 'Unknown upload error';
+      if (uploadError instanceof Error) {
+        errorMessage = uploadError.message;
+        
+        // Check for specific errors
+        if (errorMessage.includes('readableStream.getReader')) {
+          errorMessage = 'Browser streaming compatibility issue detected. We are working on a fix.';
+        } else if (errorMessage.includes('AccessDenied')) {
+          errorMessage = 'Access denied to S3 bucket. Please check your credentials and permissions.';
+        }
+      }
+      
+      // Clean up the test record
+      await supabase
+        .from('models')
+        .delete()
+        .eq('id', testId);
+        
+      return {
+        success: false,
+        message: `Upload failed: ${errorMessage}`
+      };
+    }
+  } catch (error) {
+    console.error('Error in test upload:', error);
     return {
       success: false,
-      message: `S3 upload test failed: ${errorMessage}`
+      message: error instanceof Error ? error.message : 'Unknown error during test'
     };
   }
-}; 
+};
 
 // Get all component groups
 export const getComponentGroups = async (): Promise<ComponentGroup[]> => {

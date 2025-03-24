@@ -31,22 +31,33 @@ export class ProfileStorageService {
 
   static async createProfile(profile: Profile, token?: string): Promise<Profile> {
     try {
-      console.log(`Creating profile for user ID: ${profile.id}`);
+      console.log(`Creating or updating profile for user ID: ${profile.id}`);
       
       // Create headers if token is provided
       const config = token ? { headers: { Authorization: `Bearer ${token}` } } : undefined;
       
+      // This endpoint now handles both creating new profiles and updating existing ones
       const response = await api.post(`/api/profile`, profile, config);
+      
+      const status = response.status;
+      console.log(`Profile ${status === 201 ? 'created' : 'updated'} successfully`);
+      
       return response.data;
     } catch (error: any) {
       // Check if the error has a response (from the server)
       if (error.response) {
+        // Handle 409 conflict errors - might not be an actual error in our case
+        if (error.response.status === 409) {
+          console.log('Profile already exists, treating as successful update');
+          return profile; // Return the profile we tried to create
+        }
+        
         const errorMessage = error.response.data?.message || error.response.data?.error || error.message;
-        console.error(`Error creating profile: ${errorMessage}`);
-        throw new Error(errorMessage || 'Failed to create profile');
+        console.error(`Error creating/updating profile: ${errorMessage}`);
+        throw new Error(errorMessage || 'Failed to create or update profile');
       }
       
-      console.error('Error creating profile:', error);
+      console.error('Error creating/updating profile:', error);
       throw error;
     }
   }

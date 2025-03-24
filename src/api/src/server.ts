@@ -1112,18 +1112,63 @@ app.get('/api/profile/:id', optionalJwtCheck, async (req: Request, res: Response
 app.post('/api/profile', jwtCheck, async (req: Request, res: Response): Promise<void> => {
   try {
     const profile = req.body;
-    const { data, error } = await supabase
+    const userId = req.auth?.payload?.sub;
+
+    // Check if user ID in token matches the profile ID being created
+    if (userId && userId !== profile.id) {
+      res.status(403).json({ 
+        error: 'Forbidden', 
+        message: 'You can only create or update your own profile' 
+      });
+      return;
+    }
+
+    // Check if profile already exists
+    const { data: existingProfile, error: checkError } = await supabase
       .from('profiles')
-      .insert(profile)
-      .select()
-      .single();
+      .select('id')
+      .eq('id', profile.id)
+      .maybeSingle();
 
-    if (error) throw error;
+    if (checkError) {
+      console.error('Error checking for existing profile:', checkError);
+    }
 
-    res.status(201).json(data);
+    let result;
+    
+    if (existingProfile) {
+      // Profile exists, update it
+      console.log(`Profile ${profile.id} already exists, updating instead of creating`);
+      const { data, error } = await supabase
+        .from('profiles')
+        .update(profile)
+        .eq('id', profile.id)
+        .select()
+        .single();
+        
+      if (error) throw error;
+      result = data;
+    } else {
+      // Profile doesn't exist, create it
+      console.log(`Creating new profile for ${profile.id}`);
+      const { data, error } = await supabase
+        .from('profiles')
+        .insert(profile)
+        .select()
+        .single();
+        
+      if (error) throw error;
+      result = data;
+    }
+
+    res.status(existingProfile ? 200 : 201).json(result);
   } catch (error: any) {
-    console.error('Error creating profile:', error);
-    res.status(500).json({ error: 'Failed to create profile' });
+    console.error('Error creating/updating profile:', error);
+    res.status(500).json({ 
+      error: 'Database Error', 
+      message: 'Failed to create or update profile',
+      details: error.message 
+    });
   }
 });
 
@@ -1152,6 +1197,208 @@ app.patch('/api/profile', jwtCheck, async (req: Request, res: Response): Promise
   } catch (error: any) {
     console.error('Error updating profile:', error);
     res.status(500).json({ error: 'Failed to update profile' });
+  }
+});
+
+// Business Profile Routes
+app.post('/api/business-profile', jwtCheck, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const businessProfile = req.body;
+    const userId = req.auth?.payload.sub;
+
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized', message: 'User ID not found in token' });
+      return;
+    }
+
+    // Verify the user has a base profile first
+    const { data: existingProfile, error: profileError } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (profileError || !existingProfile) {
+      res.status(400).json({ 
+        error: 'Profile Required', 
+        message: 'You must have a base profile before creating a business profile' 
+      });
+      return;
+    }
+
+    // Check if business profile already exists
+    const { data: existingBusiness, error: existingError } = await supabase
+      .from('business_profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (existingBusiness) {
+      res.status(409).json({ 
+        error: 'Business Profile Exists', 
+        message: 'A business profile already exists for this user' 
+      });
+      return;
+    }
+
+    // Create the business profile
+    const { data, error } = await supabase
+      .from('business_profiles')
+      .insert([{
+        id: userId,
+        company_name: businessProfile.company_name,
+        business_type: businessProfile.business_type || 'manufacturer',
+        address: businessProfile.address,
+        city: businessProfile.city,
+        state: businessProfile.state,
+        zip: businessProfile.zip,
+        country: businessProfile.country,
+        phone: businessProfile.phone,
+        email: businessProfile.email || existingProfile.email,
+        website: businessProfile.website,
+        description: businessProfile.description,
+        logo: businessProfile.logo,
+        tax_id: businessProfile.tax_id,
+        is_verified: false,
+        created_at: new Date().toISOString()
+      }])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error creating business profile:', error);
+      res.status(500).json({ 
+        error: 'Database Error', 
+        message: 'Failed to create business profile',
+        details: error.message 
+      });
+      return;
+    }
+
+    res.status(201).json(data);
+  } catch (error: any) {
+    console.error('Error in POST /api/business-profile:', error);
+    res.status(500).json({ 
+      error: 'Server Error', 
+      message: error.message || 'An unexpected error occurred' 
+    });
+  }
+});
+
+// Get business profile
+app.get('/api/business-profile/:id', optionalJwtCheck, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const requestingUserId = req.auth?.payload?.sub;
+
+    // Get the business profile
+    const { data, error } = await supabase
+      .from('business_profiles')
+      .select(`
+        *,
+        profiles (
+          name,
+          avatar_url,
+          is_public
+        )
+      `)
+      .eq('id', id)
+      .single();
+
+    if (error) {
+      console.error('Error fetching business profile:', error);
+      res.status(500).json({ 
+        error: 'Database Error', 
+        message: 'Failed to fetch business profile' 
+      });
+      return;
+    }
+
+    if (!data) {
+      res.status(404).json({ 
+        error: 'Not Found', 
+        message: 'Business profile not found' 
+      });
+      return;
+    }
+
+    // Check if the profile is public or if the requester is the owner
+    if (!data.profiles.is_public && requestingUserId !== id) {
+      res.status(403).json({ 
+        error: 'Access Denied', 
+        message: 'This business profile is private' 
+      });
+      return;
+    }
+
+    res.json(data);
+  } catch (error: any) {
+    console.error('Error in GET /api/business-profile/:id:', error);
+    res.status(500).json({ 
+      error: 'Server Error', 
+      message: error.message || 'An unexpected error occurred' 
+    });
+  }
+});
+
+// Update business profile
+app.patch('/api/business-profile/:id', jwtCheck, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const updates = req.body;
+    const userId = req.auth?.payload.sub;
+
+    // Verify ownership
+    if (id !== userId) {
+      res.status(403).json({ 
+        error: 'Forbidden', 
+        message: 'You can only update your own business profile' 
+      });
+      return;
+    }
+
+    // Get existing profile to verify it exists
+    const { data: existing, error: existingError } = await supabase
+      .from('business_profiles')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (existingError || !existing) {
+      res.status(404).json({ 
+        error: 'Not Found', 
+        message: 'Business profile not found' 
+      });
+      return;
+    }
+
+    // Update the profile
+    const { data, error } = await supabase
+      .from('business_profiles')
+      .update({
+        ...updates,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error updating business profile:', error);
+      res.status(500).json({ 
+        error: 'Database Error', 
+        message: 'Failed to update business profile' 
+      });
+      return;
+    }
+
+    res.json(data);
+  } catch (error: any) {
+    console.error('Error in PATCH /api/business-profile/:id:', error);
+    res.status(500).json({ 
+      error: 'Server Error', 
+      message: error.message || 'An unexpected error occurred' 
+    });
   }
 });
 

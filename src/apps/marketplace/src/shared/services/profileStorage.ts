@@ -58,7 +58,7 @@ export class ProfileStorageService {
       // Create headers if token is provided
       const config = token ? { headers: { Authorization: `Bearer ${token}` } } : undefined;
       
-      const response = await api.patch(`/api/profile/${profile.id}`, profile, config);
+      const response = await api.patch(`/api/profile`, profile, config);
       return response.data;
     } catch (error: any) {
       // Check if the error has a response (from the server)

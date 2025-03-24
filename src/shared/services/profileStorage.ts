@@ -1,6 +1,6 @@
-import { Profile } from "@shared/types/Profile";
+import { Profile } from "../types/Profile";
 import { AuthService } from "./authService";
-import api from '@shared/config/api';
+import api from '../config/api';
 
 export class ProfileStorageService {
   static async getProfile(userId: string): Promise<Profile> {

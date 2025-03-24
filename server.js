@@ -44,8 +44,14 @@ app.use(helmet({
         "https://api.bazaar.it/*",
         "https://marketplace.bazaar.it",
         "https://auth.bazaar.it",
+        "https://auth.bazaar.it/*", 
         "https://*.auth0.com",
         "https://*.supabase.co",
+        "https://egvuknlirjkhhhoooecl.supabase.co",
+        "https://*.amazonaws.com",
+        "https://*.s3.amazonaws.com",
+        "https://*.s3.eu-north-1.amazonaws.com",
+        "https://3d-models-spinlio.s3.eu-north-1.amazonaws.com",
         "*" 
       ],
       frameSrc: [
@@ -59,8 +65,16 @@ app.use(helmet({
         "'self'",
         "blob:",
         "data:",
+        "https://res.cloudinary.com",
+        "https://*.shapediver.com",
+        "https://egvuknlirjkhhhoooecl.supabase.co",
+        "https://storage.googleapis.com",
+        "https://s.gravatar.com",
+        "https://lh3.googleusercontent.com",
+        "https://*.wp.com",
+        "https://cdn.auth0.com",
         "https:", 
-        "*",
+        "*"
       ],
       scriptSrc: [
         "'self'", 

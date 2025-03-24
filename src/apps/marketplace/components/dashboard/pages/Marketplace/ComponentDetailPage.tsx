@@ -180,7 +180,7 @@ const ComponentDetailPage: React.FC = () => {
       <Button
         variant="filled"
         color="dark"
-        className="w-full sm:w-auto"
+        className="w-full sm:w-auto mr-2"
         radius="xl"
       >
         Buy Now
@@ -188,10 +188,26 @@ const ComponentDetailPage: React.FC = () => {
       <Button
         variant="outline"
         color="dark"
-        className="w-full sm:w-auto"
+        className="w-full sm:w-auto mr-2"
         radius="xl"
       >
         Contact Supplier
+      </Button>
+      <Button
+        variant="light"
+        color="dark"
+        className="w-full sm:w-auto"
+        radius="xl"
+        onClick={() => {
+          // Redirect to design app with the component context
+          const designAppUrl = process.env.NODE_ENV === 'production' 
+            ? 'https://design.bazaar.it' 
+            : 'http://localhost:3001';
+          
+          window.open(`${designAppUrl}/component/${component.id}`, '_blank');
+        }}
+      >
+        Customize
       </Button>
     </>
   );
@@ -219,7 +235,9 @@ const ComponentDetailPage: React.FC = () => {
       reviewsContent={undefined}
       description={component.description || undefined}
       features={features.slice(0, 5).map(feature => feature.name)}
-    />
+    >
+      {actionButtons}
+    </ProductDetailLayout>
   );
 };
 

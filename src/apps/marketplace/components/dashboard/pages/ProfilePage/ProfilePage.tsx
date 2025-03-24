@@ -1,4 +1,4 @@
-import { AppShell, Badge, Card, Text, Grid, Image, Tabs, SimpleGrid, Title, Loader } from '@mantine/core';
+import { AppShell, Badge, Card, Text, Grid, Image, Tabs, SimpleGrid, Title, Loader, Button } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -39,15 +39,24 @@ const ProfileDesigns = ({ id }: { id: string | undefined }) => {
   const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [designs, setDesigns] = useState<SavedDesign[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (id) {
         const fetchDesigns = async () => {
-          setLoading(true);
-          const token = await getAccessTokenSilently();
-          const fetchedDesigns = await DesignStorageService.getDesignsByUser(id, token);
-          setDesigns(fetchedDesigns);
-          setLoading(false);
+          try {
+            setLoading(true);
+            setError(null);
+            const token = await getAccessTokenSilently();
+            const fetchedDesigns = await DesignStorageService.getDesignsByUser(id, token);
+            setDesigns(fetchedDesigns || []); // Handle null by providing empty array
+            setLoading(false);
+          } catch (err) {
+            console.error('Error fetching designs:', err);
+            setError('Failed to load designs');
+            setDesigns([]);
+            setLoading(false);
+          }
         };
       fetchDesigns();
      }
@@ -98,6 +107,13 @@ const ProfileDesigns = ({ id }: { id: string | undefined }) => {
                 className="loading-gif"
               />
             </div>
+          ) : error ? (
+            <div className="designs-error">
+              <Text color="red">{error}</Text>
+              <Button onClick={() => window.location.reload()} mt={10}>Retry</Button>
+            </div>
+          ) : designs.length === 0 ? (
+            <Text>No designs yet</Text>
           ) : designs.map((design: SavedDesign) => (
             <DesignCard
               design={design}
@@ -107,7 +123,7 @@ const ProfileDesigns = ({ id }: { id: string | undefined }) => {
               onChangeVisibility={() => setDesigns((prev) => prev.map((d) => d.id === design.id ? { ...d, is_public: !design.is_public } : d ))}
             />
           ))}
-          {!loading && designs.length === 0 && <Text>No designs yet</Text>}
+          {!loading && !error && designs.length === 0 && <Text>No designs yet</Text>}
         </SimpleGrid>
       </Grid.Col>
     </Grid>

@@ -20,7 +20,10 @@ const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ image, user, name, pr
       </Card.Section>
       <Card.Section className='bg-white p-2'>
         <Text fw={500}>{name}</Text>
-        <Group className='flex items-center gap-2 py-2 cursor-pointer' onClick={() => navigate(`/dashboard/profile/${user?.id}`)}>
+        <Group className='flex items-center gap-2 py-2 cursor-pointer' onClick={(e) => {
+          e.stopPropagation(); // Prevent triggering the card's onClick
+          navigate(`/profile/${user?.id}`);
+        }}>
           <Avatar src={user?.avatar_url} alt={user?.name} radius="xl" size="sm">
             {user?.name?.charAt(0)}
           </Avatar>

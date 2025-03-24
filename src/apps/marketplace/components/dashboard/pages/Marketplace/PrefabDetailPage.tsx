@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button, Loader, Text, Table } from '@mantine/core';
-import { BikeTemplate, bikeTemplates } from '@shared/constants/bikeTemplates';
+import { bikeTemplates, BikeTemplate } from '@shared/constants/bikeTemplates';
 import { CONFIGURATOR_PATHS } from '@shared/constants/configuratorTypes';
 import { ProfileStorageService } from '@shared/services/profileStorage';
 import { Profile } from '@shared/types/Profile';
@@ -285,7 +285,9 @@ const PrefabDetailPage: React.FC = () => {
           productType="prefab" 
         />
       }
-    />
+    >
+      {actionButtons}
+    </ProductDetailLayout>
   );
 };
 

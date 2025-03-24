@@ -206,3 +206,84 @@ export const useUser = (): UserContextType => {
   }
   return context;
 };
+
+// Add this function to the file, near other authentication functions
+const debugAuth0Token = async (token: string) => {
+  console.log('Debugging Auth0 token...');
+  
+  // Check if token exists
+  if (!token) {
+    console.error('Token is undefined or empty');
+    return;
+  }
+  
+  // Basic token format check
+  if (!token.includes('.') || token.split('.').length !== 3) {
+    console.error('Token does not appear to be in valid JWT format');
+    return;
+  }
+  
+  try {
+    // Basic decode to check the payload
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64).split('').map(c => {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join('')
+    );
+    
+    const payload = JSON.parse(jsonPayload);
+    console.log('Token payload:', {
+      sub: payload.sub,
+      aud: payload.aud,
+      iss: payload.iss,
+      exp: new Date(payload.exp * 1000).toISOString(),
+      iat: new Date(payload.iat * 1000).toISOString(),
+      azp: payload.azp,
+      scope: payload.scope
+    });
+    
+    // Check critical fields
+    if (!payload.sub) {
+      console.error('Token is missing "sub" claim (user ID)');
+    }
+    
+    if (!payload.aud) {
+      console.error('Token is missing "aud" claim (audience)');
+    } else if (Array.isArray(payload.aud) && !payload.aud.includes('http://localhost:3003')) {
+      console.error('Token audience does not include API URL:', payload.aud);
+    } else if (!Array.isArray(payload.aud) && payload.aud !== 'http://localhost:3003') {
+      console.error('Token audience does not match API URL:', payload.aud);
+    }
+    
+    // Check expiration
+    const now = Date.now() / 1000;
+    if (payload.exp < now) {
+      console.error('Token is expired');
+    }
+    
+    // Check the API with this token 
+    try {
+      const response = await fetch('http://localhost:3003/api/cors-test', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      console.log('API test response status:', response.status);
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('API test response data:', data);
+      } else {
+        console.error('API test failed with status:', response.status);
+      }
+    } catch (error) {
+      console.error('Error testing API with token:', error);
+    }
+    
+  } catch (error) {
+    console.error('Error decoding token:', error);
+  }
+};

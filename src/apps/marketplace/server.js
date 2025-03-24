@@ -39,7 +39,7 @@ app.use(limiter);
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
-      defaultSrc: ["'self'", "data:", "https://auth.bazaar.it"],
+      defaultSrc: ["'self'", "data:", "https://auth.bazaar.it", "https://*.auth0.com"],
       connectSrc: [
         "'self'", 
         "https://api.bazaar.it",
@@ -80,7 +80,8 @@ app.use(helmet({
         "https://egvuknlirjkhhhoooecl.supabase.in",
         "https://storage.googleapis.com",
         "https://*.wp.com",
-        "https://cdn.auth0.com"
+        "https://cdn.auth0.com",
+        "https://*.auth0.com"
       ],
       scriptSrc: [
         "'self'", 
@@ -94,13 +95,15 @@ app.use(helmet({
         "'self'", 
         "'unsafe-inline'",
         "https://fonts.googleapis.com",
-        "https://cdn.auth0.com"
+        "https://cdn.auth0.com",
+        "https://*.auth0.com"
       ],
       fontSrc: [
         "'self'", 
         "data:",
         "https://fonts.gstatic.com",
-        "https://cdn.auth0.com"
+        "https://cdn.auth0.com",
+        "https://*.auth0.com"
       ],
       mediaSrc: ["'self'", "data:", "blob:"],
       workerSrc: ["'self'", "blob:"],

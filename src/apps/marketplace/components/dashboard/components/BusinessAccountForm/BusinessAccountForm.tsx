@@ -56,9 +56,10 @@ const BusinessAccountForm: React.FC<BusinessAccountFormProps> = ({ userId, onSuc
       // Get Auth0 token for authentication with better error handling
       let token;
       try {
+        console.log('Auth0 audience:', process.env.REACT_APP_AUTH0_AUDIENCE);
         token = await getAccessTokenSilently({
           authorizationParams: {
-            audience: process.env.REACT_APP_AUTH0_AUDIENCE || 'http://localhost:3003',
+            audience: 'https://api.bazaar.it', // Hardcode the correct audience
             scope: 'openid profile email'
           }
         });

@@ -25,15 +25,25 @@ const TableConfigurator = lazy(() => import('../ConfiguratorPage/variants/TableC
 
 // Create a simple Auth Callback component that redirects
 const SimpleAuthCallback = () => {
-  const { isLoading, isAuthenticated } = useAuth0();
+  const { isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
   
   useEffect(() => {
     if (!isLoading) {
+      // Store access token in localStorage for XHR uploads
+      if (isAuthenticated) {
+        getAccessTokenSilently().then(token => {
+          console.log('Storing auth0_access_token in localStorage for XHR uploads');
+          localStorage.setItem('auth0_access_token', token);
+        }).catch(error => {
+          console.error('Failed to get access token:', error);
+        });
+      }
+      
       const redirectPath = localStorage.getItem('auth_redirect_path') || '/';
       localStorage.removeItem('auth_redirect_path');
       window.location.href = redirectPath;
     }
-  }, [isLoading, isAuthenticated]);
+  }, [isLoading, isAuthenticated, getAccessTokenSilently]);
   
   return (
     <div className="flex justify-center items-center h-screen">

@@ -47,6 +47,26 @@ root.render(
       cacheLocation="localstorage"
       useRefreshTokens={true}
       useRefreshTokensFallback={true}
+      onRedirectCallback={(appState, user) => {
+        console.log('Auth0 redirect callback executed');
+        
+        // Store token in localStorage for XHR uploads
+        if (user) {
+          try {
+            // @ts-ignore - Access the getTokenSilently method from auth0 client instance
+            if (window.auth0Client) {
+              window.auth0Client.getTokenSilently().then((token: string) => {
+                console.log('Storing auth0_access_token in localStorage');
+                localStorage.setItem('auth0_access_token', token);
+              }).catch((err: Error) => {
+                console.error('Error getting auth token:', err);
+              });
+            }
+          } catch (err) {
+            console.error('Could not retrieve authentication token:', err);
+          }
+        }
+      }}
     >
       <AuthProvider>
         <UserProvider>

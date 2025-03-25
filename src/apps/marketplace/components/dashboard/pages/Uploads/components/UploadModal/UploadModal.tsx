@@ -21,7 +21,20 @@ interface UploadModalProps {
   onUploadSuccess?: (model: any) => void;
 }
 
-const UploadModal = ({ uploadModalOpened, closeUploadModal, profileId, onUploadSuccess }: UploadModalProps) => {
+const UploadModal: React.FC<UploadModalProps> = ({ 
+  profileId, 
+  uploadModalOpened, 
+  closeUploadModal,
+  onUploadSuccess 
+}) => {
+  // Debug logging
+  console.log('UploadModal rendered with profileId:', {
+    profileId,
+    type: typeof profileId,
+    length: profileId?.length || 0,
+    isAuth0Format: profileId?.includes('auth0|')
+  });
+
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
 

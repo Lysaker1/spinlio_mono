@@ -99,6 +99,10 @@ const BusinessAccountForm: React.FC<BusinessAccountFormProps> = ({ userId, onSuc
           business_type: 'manufacturer',
           address: values.companyAddress,
           country: values.countryOfIncorporation,
+          city: "",
+          state: "",
+          zip: "",
+          phone: "",
           tax_id: values.registrationNumber,
           website: values.website,
           email: user?.email || '',
@@ -228,4 +232,4 @@ const BusinessAccountForm: React.FC<BusinessAccountFormProps> = ({ userId, onSuc
   );
 };
 
-export default BusinessAccountForm; 
+export default BusinessAccountForm;

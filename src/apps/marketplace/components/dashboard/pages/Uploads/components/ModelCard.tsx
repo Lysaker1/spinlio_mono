@@ -204,7 +204,7 @@ const ModelCard: React.FC<ModelCardProps> = ({ model,  onRefresh }) => {
             ))}
           </Menu.Dropdown>
         </Menu>
-        <Button leftSection={<IconPencil size={16} style={{ color: '#fff' }} />} size="sm" variant="filled" style={{ borderRadius: '8px', backgroundColor: '#000', color: '#fff', ':hover': { backgroundColor: '#218838' } }} onClick={() => navigate(`/dashboard/uploads/${model.id}`)}>
+        <Button leftSection={<IconPencil size={16} style={{ color: '#fff' }} />} size="sm" variant="filled" style={{ borderRadius: '8px', backgroundColor: '#000', color: '#fff', ':hover': { backgroundColor: '#218838' } }} onClick={() => navigate(`/uploads/${model.id}`)}>
           Edit
         </Button>
       </Group>

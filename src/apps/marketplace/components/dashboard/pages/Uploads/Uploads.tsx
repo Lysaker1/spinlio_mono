@@ -108,11 +108,10 @@ const Uploads: React.FC = () => {
   const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
   const [testing, setTesting] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
-  const [testingConnection, setTestingConnection] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
-  
   // Updated hooks usage
   const { user } = useUser();
+  const [testingConnection, setTestingConnection] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const { isAuthenticated } = useAuth();
 
   // Converted profile for backward compatibility
@@ -209,23 +208,91 @@ const Uploads: React.FC = () => {
     };
   }, [models]); // Depend on models to reset interval when models change
 
-  // Initial data load
+  // Extract user ID from any possible location
+  const extractUserId = () => {
+    // Log the full user object for debugging
+    console.log('User object debug:', {
+      userObject: user,
+      userProperties: user ? Object.keys(user) : [],
+      userString: user ? JSON.stringify(user) : 'null'
+    });
+
+    // For Auth0 users, the ID is in the "sub" property - this is highest priority
+    if (user && 'sub' in user) {
+      console.log('Using Auth0 sub as user ID:', (user as any).sub);
+      return (user as any).sub;
+    }
+
+    // Try all possible locations for the user ID
+    const possibleIds = [
+      user?.id,                         // Normal object property
+      localStorage.getItem('auth0Id'),  // Check localStorage for Auth0 ID
+      localStorage.getItem('userId'),   // Check localStorage for user ID
+    ];
+    
+    // Find the first non-empty value
+    const userId = possibleIds.find(id => id && typeof id === 'string' && id.length > 0);
+    
+    if (userId) {
+      console.log('Found user ID from alternative source:', userId);
+      return userId;
+    }
+    
+    // If all else fails and we have a user object, try to get something usable
+    if (user) {
+      // Log full user object for debugging
+      console.log('Auth debug - User object structure:', {
+        properties: Object.keys(user),
+        jsonUser: JSON.stringify(user)
+      });
+
+      // Try to extract from picture URL which sometimes contains the Auth0 ID
+      if ((user as any).picture && typeof (user as any).picture === 'string') {
+        const pictureUrl = (user as any).picture;
+        const match = pictureUrl.match(/auth0\|([0-9a-f]+)/i);
+        if (match && match[0]) {
+          console.log('Extracted Auth0 ID from picture URL:', match[0]);
+          // Store for future use
+          localStorage.setItem('auth0Id', match[0]);
+          return match[0];
+        }
+      }
+    }
+    
+    console.log('Failed to find a valid user ID');
+    return null;
+  };
+
+  // Initial data load - attempt loading immediately if user is available
   useEffect(() => {
-    loadModels();
-  }, []);
+    const userId = extractUserId();
+    
+    if (userId) {
+      console.log('Loading models for user ID:', userId);
+      loadModels();
+    } else {
+      console.log('User ID not available yet, will try again when user loads');
+      // Set loading to false so we see UI instead of loading indicator
+      setLoading(false);
+    }
+  }, [user]);
 
   const loadModels = async () => {
-    setLoading(true);
+    const userId = extractUserId();
+    if (!userId) {
+      console.error('Cannot load models - User ID not available');
+      setLoading(false);
+      return;
+    }
+  
     try {
-      // Don't wait for user profile to be fully loaded, just use the ID if available
-      const userId = user?.id || (user as any)?.sub || '';
+      setLoading(true);
       console.log('Loading models for user ID:', userId);
       const fetchedModels = await getModelsPerUser(userId);
+      console.log(`Fetched ${fetchedModels.length} models for user`);
       setModels(fetchedModels);
-      return fetchedModels; // Return the models for potential use, but never in a truthiness check
     } catch (error) {
-      console.error('Failed to load models:', error);
-      return [];
+      console.error('Error loading models:', error);
     } finally {
       setLoading(false);
     }
@@ -362,19 +429,33 @@ const Uploads: React.FC = () => {
     // This functionality would require additional state and a new modal component
   };
 
-  if (!user) {
-    return <div>Loading...</div>;
-  }
+  // Instead of returning early, we'll show the UI but disable actions that need the user
+  const isUserLoading = !user;
 
   return (
     <PageLayout {...pageLayoutProps}>
+      {isUserLoading && (
+        <Alert color="black" title="Loading user profile" mb="md" style={{ backgroundColor: 'white', color: 'black' }}>
+          . . . 
+        </Alert>
+      )}
+
       <div style={{ marginBottom: '1rem' }}>
         <Button 
-          onClick={() => openUploadModal()}
+          onClick={() => {
+            // Log authentication status
+            console.log('Auth status:', { 
+              isAuthenticated, 
+              hasUser: !!user, 
+              userId: extractUserId() 
+            });
+            // Force upload modal to open regardless of user status
+            openUploadModal();
+          }}
           style={{ 
-            backgroundColor: '#228be6', // Blue background
+            backgroundColor: 'black', // Black background
             color: 'white',            // White text
-            border: '1px solid #1c7ed6',
+            border: '1px solid rgb(0, 0, 0)',
             padding: '8px 16px',
             marginRight: '8px'
           }}
@@ -383,24 +464,25 @@ const Uploads: React.FC = () => {
         </Button>
         
         {/* S3 Test Button */}
-        <Button 
+        {/* <Button 
           onClick={testS3Connection}
           loading={testingConnection}
+          disabled={isUserLoading}
           style={{ 
-            backgroundColor: '#fd7e14', // Orange background
-            color: 'white',
-            border: '1px solid #f76707',
+            backgroundColor: 'white', // 
+            color: 'black',
+            border: '1px solidrgb(255, 255, 255)',
             padding: '8px 16px',
             marginRight: '8px'
           }}
         >
           Test S3 Connection
-        </Button>
+        </Button> */}
 
         <Button 
           variant="outline" 
           onClick={handleRefresh}
-          style={{ padding: '8px 16px' }}
+          style={{ padding: '8px 16px', backgroundColor: 'white', color: 'black', border: '1px solid rgb(0, 0, 0)' }}
         >
           Refresh
         </Button>
@@ -463,7 +545,7 @@ const Uploads: React.FC = () => {
       <UploadModal 
         uploadModalOpened={uploadModalOpened} 
         closeUploadModal={closeUploadModal} 
-        profileId={user.id} 
+        profileId={extractUserId() || ''} 
         onUploadSuccess={handleUploadSuccess}
       />
     </PageLayout>

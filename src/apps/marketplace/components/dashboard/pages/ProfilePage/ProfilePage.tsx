@@ -4,13 +4,15 @@ import { useParams } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import ProfileSidebar from '../../components/ProfileSidebar/ProfileSidebar';
 import './ProfilePage.css';
-import { DesignStorageService } from '@shared/services/designStorage';
 import { SavedDesign } from '@shared/types/SavedDesign';
 import { ProfileStorageService } from '@shared/services/profileStorage';
 import EditProfileForm from '../../components/EditProfileForm/EditProfileForm';
 import { useUser } from '@shared/hooks/useUser';
-import { Profile } from '@shared/types/Profile';
+import { BusinessProfile, BusinessProfile as BusinessProfileType, Profile } from '@shared/types/Profile';
 import DesignCard from '../../components/DesignCard/DesignCard';
+import PersonalProfilePage from './PersonalProfilePage';
+import BusinessProfilePage from './BusinessProfilePage';
+
 
 const mockProfiles: Profile[] = [
   {
@@ -35,7 +37,7 @@ const mockProfiles: Profile[] = [
   },
 ];
 
-const ProfileDesigns = ({ id }: { id: string | undefined }) => {
+export const ProfileDesigns = ({ id }: { id: string | undefined }) => {
   const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [designs, setDesigns] = useState<SavedDesign[]>([]);
   const [loading, setLoading] = useState(true);
@@ -44,7 +46,7 @@ const ProfileDesigns = ({ id }: { id: string | undefined }) => {
   useEffect(() => {
     if (id) {
         const fetchDesigns = async () => {
-          try {
+          /* try {
             setLoading(true);
             setError(null);
             const token = await getAccessTokenSilently();
@@ -56,7 +58,7 @@ const ProfileDesigns = ({ id }: { id: string | undefined }) => {
             setError('Failed to load designs');
             setDesigns([]);
             setLoading(false);
-          }
+          } */
         };
       fetchDesigns();
      }
@@ -135,9 +137,11 @@ const ProfilePage: React.FC = () => {
   const { id } = useParams();
   const { user: myProfile, isLoading: userLoading } = useUser();
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [ownProfile, setOwnProfile] = useState<boolean>(false);
+  const [businessProfile, setBusinessProfile] = useState<BusinessProfile | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [showBusinessProfile, setShowBusinessProfile] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -152,21 +156,27 @@ const ProfilePage: React.FC = () => {
         profileId = myProfile.id;
         // We'll set this manually since we're using the current user's profile
         setProfile(myProfile as unknown as Profile);
-        setOwnProfile(true);
         setLoading(false);
         return;
       }
       
       if (profileId) {
         try {
-          console.log(`Fetching profile for ID: ${profileId}`);
-          const profileResponse = await ProfileStorageService.getProfile(profileId);
-          
-          setProfile(profileResponse);
-          
-          // Check if this is the user's own profile
-          if (myProfile && profileResponse.id === myProfile.id) {
-            setOwnProfile(true);
+          try {
+            const businessProfileResponse = await ProfileStorageService.getBusinessProfile(profileId);
+            setBusinessProfile(businessProfileResponse);
+            setShowBusinessProfile(true);
+          } catch (error: any) {
+            console.error('Error fetching business profile:', error);
+            setBusinessProfile(null);
+          }
+
+          try {
+            const profileResponse = await ProfileStorageService.getProfile(profileId);
+            setProfile(profileResponse);
+          } catch (error: any) {
+            console.error('Error fetching profile:', error);
+            setProfile(null);
           }
         } catch (error: any) {
           console.error('Error fetching profile:', error);
@@ -193,7 +203,7 @@ const ProfilePage: React.FC = () => {
     );
   }
   
-  if (!profile) {
+  if (!profile && !businessProfile) {
     return (
       <div className='profile-not-found'>
         <Title order={1}>
@@ -208,27 +218,17 @@ const ProfilePage: React.FC = () => {
 
   return (
     <div>
-
-    <AppShell>
-      <AppShell.Navbar>
-        <ProfileSidebar profile={profile}/>
-      </AppShell.Navbar>
-    </AppShell>
-      <div className="profile-page-content">
-
-      <Tabs defaultValue="designs">
-        <Tabs.List>
-          <Tabs.Tab value="designs">{profile?.user_type === 'manufacturer' ? "Prefabs" : "Designs"}</Tabs.Tab>
-          {ownProfile && <Tabs.Tab value="edit-profile">Edit profile</Tabs.Tab>}
-        </Tabs.List>
-        <Tabs.Panel value="designs">
-          <ProfileDesigns id={profile?.id} />
-        </Tabs.Panel>
-        {ownProfile && <Tabs.Panel value="edit-profile">
-          <EditProfileForm profile={profile} onSubmit={(p) => {setProfile(p)}}/>
-        </Tabs.Panel>}
-      </Tabs>
-      </div>
+    {(showBusinessProfile && businessProfile) ? <BusinessProfilePage businessProfile={businessProfile} ownProfile={businessProfile.id === myProfile?.id} onSwitch={() => setShowBusinessProfile(false)} /> :
+    profile ? <PersonalProfilePage profile={profile} ownProfile={profile.id === myProfile?.id} setProfile={setProfile} onSwitch={()=>setShowBusinessProfile(true)} /> : 
+    <div>
+      <Title order={1}>
+        Profile not found
+      </Title>
+      <Title order={4}>
+        {error || 'This profile does not exist or might be private.'}
+      </Title>
+    </div>
+    }
     </div>
   );
 };

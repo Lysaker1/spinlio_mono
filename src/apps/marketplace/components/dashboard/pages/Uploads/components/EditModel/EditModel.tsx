@@ -204,7 +204,7 @@ const EditModel: React.FC = () => {
     }
     console.log("Deleting...");
     await deleteModel(id);
-    navigate('/dashboard/uploads');
+    navigate('/uploads');
     console.log("Deleted!");
   };
   

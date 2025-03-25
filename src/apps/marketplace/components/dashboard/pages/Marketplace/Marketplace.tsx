@@ -58,6 +58,13 @@ const Marketplace: React.FC = () => {
     if (users.has(userId)) return users.get(userId) || null;
     if (fetchedUserIdsRef.current.has(userId)) return null; // Skip already attempted fetches
     
+    // Skip likely non-user IDs (e.g., bike template IDs)
+    if (userId.includes(' ') || userId.includes('_')) {
+      console.warn(`Skipping profile fetch for likely non-user ID: ${userId}`);
+      fetchedUserIdsRef.current.add(userId);
+      return null;
+    }
+    
     // Mark this user as attempted even before the fetch completes
     fetchedUserIdsRef.current.add(userId);
     
@@ -89,57 +96,69 @@ const Marketplace: React.FC = () => {
 
   // Fetch user profiles
   useEffect(() => {
-    // Skip if already fetching profiles to prevent concurrent batch operations
     if (isFetchingProfilesRef.current) return;
-    
+
     const fetchUserProfiles = async () => {
-      // Get unique user IDs from components and prefabs
-      const uniqueComponentUserIds = Array.from(
-        new Set(components.map(c => c.user_id).filter((id): id is string => Boolean(id)))
+      isFetchingProfilesRef.current = true;
+
+      // Collect manufacturer_ids from prefabs and user_ids from components
+      const userIds = Array.from(
+        new Set([
+          ...components.map(c => c.user_id).filter((id): id is string => Boolean(id)),
+          ...prefabs
+            .map(p => p.manufacturer_id)
+            .filter((id): id is string => Boolean(id))
+        ])
       );
-      
-      const uniquePrefabManufacturerIds = Array.from(
-        new Set(prefabs.map(p => p.id).filter(Boolean))
+
+      // Filter out likely non-user IDs (bike names, template IDs, etc.)
+      const validUserIds = userIds.filter(id => {
+        // Skip IDs with spaces or underscores (likely bike names)
+        if (id.includes(' ') || id.includes('_')) {
+          console.warn(`Skipping likely non-user ID: ${id}`);
+          return false;
+        }
+        
+        // Only keep IDs that look like auth0 IDs or have a reasonable length for UUIDs
+        if (!id.startsWith('auth0|') && id.length < 20) {
+          console.warn(`Skipping unlikely user ID format: ${id}`);
+          return false;
+        }
+        
+        return true;
+      });
+
+      const idsToFetch = validUserIds.filter(
+        id => !users.has(id) && !fetchedUserIdsRef.current.has(id)
       );
-      
-      const uniqueUserIds = Array.from(new Set([...uniqueComponentUserIds, ...uniquePrefabManufacturerIds]));
-      
-      // Only fetch profiles we don't already have and haven't attempted to fetch
-      const userIdsToFetch = uniqueUserIds.filter(id => 
-        !users.has(id) && !fetchedUserIdsRef.current.has(id)
-      );
-      
-      // Skip if no new users to fetch
-      if (userIdsToFetch.length === 0) {
+
+      if (idsToFetch.length === 0) {
         isFetchingProfilesRef.current = false;
         return;
       }
-      
-      console.log(`Fetching ${userIdsToFetch.length} user profiles in batches`);
-      
-      // Process in small batches to avoid overwhelming the server
+
+      console.log(`Fetching ${idsToFetch.length} user profiles in batches`);
+
+      // Log the IDs we're about to fetch to aid in debugging
+      if (idsToFetch.length > 0) {
+        console.log('User IDs to fetch:', idsToFetch);
+      }
+
       const batchSize = 2;
-      let newUsers = new Map(users);
+      const updatedUsers = new Map(users);
       let updated = false;
-      
-      // Mark all these IDs as attempted to prevent future fetch attempts
-      userIdsToFetch.forEach(id => fetchedUserIdsRef.current.add(id));
-      
-      // Process each batch sequentially
-      for (let i = 0; i < userIdsToFetch.length; i += batchSize) {
-        const batch = userIdsToFetch.slice(i, i + batchSize);
-        
-        // Add delay between batches (except for first batch)
-        if (i > 0) {
-          await new Promise(resolve => setTimeout(resolve, 1000));
-        }
-        
-        // Process each user in the batch
+
+      for (let i = 0; i < idsToFetch.length; i += batchSize) {
+        const batch = idsToFetch.slice(i, i + batchSize);
+
+        if (i > 0) await new Promise(resolve => setTimeout(resolve, 1000));
+
         for (const userId of batch) {
+          fetchedUserIdsRef.current.add(userId);
           try {
-            const user = await ProfileStorageService.getProfile(userId);
-            if (user) {
-              newUsers.set(userId, user);
+            const profile = await ProfileStorageService.getProfile(userId);
+            if (profile) {
+              updatedUsers.set(userId, profile);
               updated = true;
             }
           } catch (error) {
@@ -147,22 +166,16 @@ const Marketplace: React.FC = () => {
           }
         }
       }
-      
-      // Only update state once at the end if we have new data
-      if (updated) {
-        setUsers(newUsers);
-      }
-      
+
+      if (updated) setUsers(updatedUsers);
       isFetchingProfilesRef.current = false;
     };
-    
-    isFetchingProfilesRef.current = true;
-    fetchUserProfiles().catch(error => {
-      console.error('Error fetching user profiles:', error);
+
+    fetchUserProfiles().catch(err => {
+      console.error('Error fetching user profiles:', err);
       isFetchingProfilesRef.current = false;
     });
-    
-  }, [components, prefabs]); // Remove 'users' from dependencies
+  }, [components]);
 
   // Filtered bike data based on search and category
   const filteredPrefabs = prefabs.filter(prefab => {
@@ -250,11 +263,11 @@ const Marketplace: React.FC = () => {
   };
 
   const handleViewAllPrefabs = () => {
-    navigate('/dashboard/marketplace/prefabs');
+    navigate('/marketplace/prefabs');
   };
 
   const handleViewAllComponents = () => {
-    navigate('/dashboard/marketplace/components');
+    navigate('/marketplace/components');
   };
 
   const handleViewCategoryBikes = (category: string) => {
@@ -286,7 +299,7 @@ const Marketplace: React.FC = () => {
         
         <SimpleGrid cols={{ base: 1, xs: 2, sm: 3, md: 5 }} spacing="lg">
           {bikes.slice(0, 5).map(prefab => {
-            const user = users.get(prefab.id);
+            const user = users.get(prefab.manufacturer_id || '');
             return (
               <ProductCard
                 key={prefab.id}
@@ -404,7 +417,7 @@ const Marketplace: React.FC = () => {
       {/* Show message if no bikes match the criteria */}
       {filteredPrefabs.length === 0 && (
         <div className="text-center py-8">
-          <Text size="lg" color="dimmed">No bikes match your search criteria</Text>
+          <Text size="lg" c="dimmed">No bikes match your search criteria</Text>
         </div>
       )}
 
@@ -427,7 +440,7 @@ const Marketplace: React.FC = () => {
       {/* Show message if no components match the criteria */}
       {filteredComponents.length === 0 && (
         <div className="text-center py-8">
-          <Text size="lg" color="dimmed">No components match your search criteria</Text>
+          <Text size="lg" c="dimmed">No components match your search criteria</Text>
         </div>
       )}
     </div>

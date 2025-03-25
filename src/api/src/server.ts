@@ -1402,6 +1402,92 @@ app.patch('/api/business-profile/:id', jwtCheck, async (req: Request, res: Respo
   }
 });
 
+// S3 Direct Upload Endpoint
+app.post('/api/s3/direct-upload', 
+  // Add enhanced logging middleware to debug auth header
+  (req: Request, res: Response, next: Function) => {
+    console.log('S3 Direct Upload - Request received');
+    console.log('S3 Direct Upload - Headers:', JSON.stringify(req.headers, null, 2));
+    console.log('S3 Direct Upload - Auth Header:', req.headers.authorization ? 
+      `${req.headers.authorization.substring(0, 20)}...` : 'NOT PRESENT');
+    
+    if (!req.headers.authorization) {
+      console.warn('S3 Direct Upload - Missing Authorization header. Authentication will fail.');
+    }
+    
+    next();
+  }, 
+  jwtCheck, 
+  async (req: Request, res: Response) => {
+  try {
+    console.log('S3 Direct Upload - JWT authentication successful');
+    const { 
+      S3Client, 
+      PutObjectCommand 
+    } = require('@aws-sdk/client-s3');
+    const multer = require('multer');
+    const upload = multer({ storage: multer.memoryStorage() }).single('file');
+
+    // Process the multipart form data
+    upload(req, res, async function(err: any) {
+      if (err) {
+        console.error('Multer error:', err);
+        return res.status(500).json({ error: 'File upload error' });
+      }
+
+      // Multer adds the file to req
+      const file = (req as any).file;
+      if (!file) {
+        return res.status(400).json({ error: 'No file provided' });
+      }
+
+      // Parse metadata from the form
+      const bucket = req.body.bucket || process.env.BUCKET_NAME;
+      const key = req.body.key;
+      const contentType = req.body.contentType || file.mimetype;
+      const metadata = req.body.metadata ? JSON.parse(req.body.metadata) : {};
+
+      // Create S3 client
+      const s3Client = new S3Client({
+        region: process.env.AWS_REGION || 'eu-north-1',
+        credentials: {
+          accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
+          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || ''
+        }
+      });
+
+      try {
+        // Upload to S3
+        const command = new PutObjectCommand({
+          Bucket: bucket,
+          Key: key,
+          Body: file.buffer,
+          ContentType: contentType,
+          Metadata: metadata
+        });
+
+        const result = await s3Client.send(command);
+        
+        console.log(`File uploaded successfully to S3: ${key}`);
+        res.status(200).json({
+          success: true,
+          key: key,
+          etag: result.ETag,
+          location: `https://${bucket}.s3.amazonaws.com/${key}`
+        });
+      } catch (s3Error: unknown) {
+        console.error('S3 upload error:', s3Error);
+        const errorMessage = s3Error instanceof Error ? s3Error.message : 'Unknown S3 error';
+        res.status(500).json({ error: 'Failed to upload to S3', details: errorMessage });
+      }
+    });
+  } catch (error: unknown) {
+    console.error('Direct upload error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    res.status(500).json({ error: 'Server error', details: errorMessage });
+  }
+});
+
 if (!process.env.RHINO_COMPUTE_ENDPOINT || !process.env.RHINO_COMPUTE_KEY) {
   throw new Error('Rhino Compute environment variables not configured');
 }

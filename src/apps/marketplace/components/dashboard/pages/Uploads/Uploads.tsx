@@ -3,7 +3,7 @@ import { useDisclosure } from '@mantine/hooks';
 import { useUser } from '@shared/hooks/useUser';
 import { useAuth } from '@shared/hooks/useAuth';
 import React, { useEffect, useState } from 'react';
-import { deleteModel, getModelsPerUser, ModelMetadata, testS3Upload, uploadModelToS3 } from '@shared/services/modelService';
+import { deleteModel, getModelsPerUser, ModelMetadata, testS3Upload, uploadModelToS3 } from '../../../../../marketplace/src/shared/services/modelService';
 import { isSupportedModelFormat } from '@shared/utils/fileTypeUtils';
 import PageLayout from '../../components/PageLayout/PageLayout';
 import './Uploads.css';
@@ -107,6 +107,7 @@ const Uploads: React.FC = () => {
   const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
   const [testing, setTesting] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
+
   
   // Updated hooks usage
   const { user } = useUser();

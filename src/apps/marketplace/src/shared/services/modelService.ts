@@ -122,7 +122,7 @@ export interface SubcategoryParameter {
  * This function tries to find the category name from the database
  * If the name cannot be found, it returns the default name
  */
-const getCategoryNameById = async (categoryId: number | string): Promise<string> => {
+export const getCategoryNameById = async (categoryId: number | string): Promise<string> => {
   if (!categoryId) return 'Uncategorized';
   
   try {
@@ -153,7 +153,7 @@ const getCategoryNameById = async (categoryId: number | string): Promise<string>
  * This function tries to find the subcategory name from the database
  * If the name cannot be found, it returns the default name
  */
-const getSubcategoryNameById = async (subcategoryId: number | string): Promise<string> => {
+export const getSubcategoryNameById = async (subcategoryId: number | string): Promise<string> => {
   if (!subcategoryId) return 'General';
   
   try {

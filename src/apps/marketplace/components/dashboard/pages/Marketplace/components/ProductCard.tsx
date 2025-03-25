@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, Image, Text, Group, Avatar, Badge, Rating } from '@mantine/core';
 import { Link } from 'react-router-dom';
-import { Profile } from '@shared/types/Profile';
+import { BusinessProfile, Profile } from '@shared/types/Profile';
 
 export interface ProductCardProps {
   id: string;
@@ -11,6 +11,7 @@ export interface ProductCardProps {
   price: number | null;
   priceOnRequest?: boolean;
   user?: Profile;
+  business?: BusinessProfile;
   rating?: number;
   features?: string[];
   onClick?: () => void; // Optional click handler for component preview
@@ -28,6 +29,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   price,
   priceOnRequest,
   user,
+  business,
   rating = 0,
   features = [],
   onClick,
@@ -100,6 +102,21 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 {user?.name?.charAt(0)}
               </Avatar>
               <Text size="sm" className="text-gray-600">Produced by {user?.name || 'Unknown'}</Text>
+            </div>
+          )}
+          {business && (
+            <div 
+              className="flex items-center gap-2 cursor-pointer" 
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                window.location.href = `/dashboard/profile/${business.id}`;
+              }}
+            >
+              <Avatar src={business.logo} alt={business.company_name} radius="xl" size="sm">
+                {business.company_name?.charAt(0)}
+              </Avatar>
+              <Text size="sm" className="text-gray-600">Produced by {business.company_name || 'Unknown'}</Text>
             </div>
           )}
         </Group>

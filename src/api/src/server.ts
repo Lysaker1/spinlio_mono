@@ -55,7 +55,7 @@ const app = express();
 // Rate limiting configuration
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 1000,
   legacyHeaders: false,
   standardHeaders: true,
   skip: (req) => {
@@ -1200,6 +1200,7 @@ app.patch('/api/profile', jwtCheck, async (req: Request, res: Response): Promise
   }
 });
 
+
 // Business Profile Routes
 app.post('/api/business-profile', jwtCheck, async (req: Request, res: Response): Promise<void> => {
   try {
@@ -1285,68 +1286,102 @@ app.post('/api/business-profile', jwtCheck, async (req: Request, res: Response):
   }
 });
 
-// Get business profile
+// Get business profile by id or custom url
 app.get('/api/business-profile/:id', optionalJwtCheck, async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const requestingUserId = req.auth?.payload?.sub;
+    // Safely extract the requesting user ID if available
+    const requestingUserId = req.auth?.payload?.sub || null;
 
-    // Get the business profile
-    const { data, error } = await supabase
+    console.log(`Business profile request for: ${id}, requesting user: ${requestingUserId || 'unauthenticated'}`);
+
+    if (!id) {
+      res.status(400).json({ error: 'Business Profile ID is required' });
+      return;
+    }
+
+    // First try to find by ID
+    let { data, error } = await supabase
       .from('business_profiles')
-      .select(`
-        *,
-        profiles (
-          name,
-          avatar_url,
-          is_public
-        )
-      `)
+      .select(`*`)
       .eq('id', id)
-      .single();
+      .maybeSingle();
 
     if (error) {
-      console.error('Error fetching business profile:', error);
+      console.error('Error fetching business profile by id:', {
+        error,
+        message: error.message,
+        details: error.details
+      });
       res.status(500).json({ 
-        error: 'Database Error', 
-        message: 'Failed to fetch business profile' 
+        error: 'Database error', 
+        message: 'An error occurred while fetching the business profile',
+        details: error.message
       });
       return;
     }
 
+    // If no error but also no data, it means no record was found
     if (!data) {
-      res.status(404).json({ 
-        error: 'Not Found', 
-        message: 'Business profile not found' 
-      });
-      return;
+      // Then try to find by custom_url
+      const { data: customUrlData, error: customUrlError } = await supabase
+        .from('business_profiles')
+        .select(`*`)
+        .eq('custom_url', id)
+        .maybeSingle();
+      
+      if (customUrlError) {
+        console.error('Error fetching business profile by custom_url:', customUrlError);
+        res.status(500).json({ 
+          error: 'Database error', 
+          message: 'An error occurred while fetching the business profile'
+        });
+        return;
+      }
+      console.log("Custom URL DATA: ", customUrlData);
+
+      if (customUrlData) {
+        res.status(200).json(customUrlData);
+        return;
+      }
+
+      if (!customUrlData) {
+        console.log(`Business profile not found for ID or custom_url: ${id}`);
+        res.status(404).json({ 
+          error: 'Business Profile not found',
+          message: 'This business profile does not exist or might be private.'
+        });
+        return;
+      }
     }
 
-    // Check if the profile is public or if the requester is the owner
-    if (!data.profiles.is_public && requestingUserId !== id) {
-      res.status(403).json({ 
-        error: 'Access Denied', 
-        message: 'This business profile is private' 
-      });
-      return;
-    }
-
-    res.json(data);
+    res.status(200).json(data);
   } catch (error: any) {
-    console.error('Error in GET /api/business-profile/:id:', error);
+    console.error('Error fetching business profile by id:', {
+      message: error.message || 'Unknown error',
+      details: error.stack || '',
+      hint: '',
+      code: error.code || ''
+    });
     res.status(500).json({ 
-      error: 'Server Error', 
-      message: error.message || 'An unexpected error occurred' 
+      error: 'Server error', 
+      message: error.message || 'An unexpected error occurred'
     });
   }
 });
 
 // Update business profile
 app.patch('/api/business-profile/:id', jwtCheck, async (req: Request, res: Response): Promise<void> => {
+  console.log("PATCHING BUSINESS PROFILE FROM SERVER");
   try {
     const { id } = req.params;
-    const updates = req.body;
+    const updates = req.body.profile;
     const userId = req.auth?.payload.sub;
+
+    const imageUrls = req.body.imageUrls;
+
+    console.log('updates', updates);
+    console.log('imageUrls', imageUrls);
 
     // Verify ownership
     if (id !== userId) {
@@ -1383,7 +1418,23 @@ app.patch('/api/business-profile/:id', jwtCheck, async (req: Request, res: Respo
       .select()
       .single();
 
+    // Update business images
+    if (imageUrls) {
+      const { error: existingImagesError } = await supabase
+        .from('business_images')
+        .insert(imageUrls.map((url: string) => ({
+          business_id: id,
+          url: url
+        })))
+        .select('*')  
+
+      if (existingImagesError) {
+       console.log('Error updating business images:', existingImagesError);
+      }
+    }
+    
     if (error) {
+      console.log('Error updating business profile:', error);
       console.error('Error updating business profile:', error);
       res.status(500).json({ 
         error: 'Database Error', 
@@ -1398,6 +1449,37 @@ app.patch('/api/business-profile/:id', jwtCheck, async (req: Request, res: Respo
     res.status(500).json({ 
       error: 'Server Error', 
       message: error.message || 'An unexpected error occurred' 
+    });
+  }
+});
+
+// Get business images
+app.get('/api/business-profile/images/:id', optionalJwtCheck, async (req: Request, res: Response): Promise<void> => {
+  try {
+    console.log(`Fetching business images FROM SERVER: ${req.params.id}`);
+    const { id } = req.params;
+    const { data, error } = await supabase
+      .from('business_images')
+      .select('url')
+      .eq('business_id', id);
+
+    if (error) {
+      console.error('Error fetching business images:', error);
+      res.status(500).json({ 
+        error: 'Database error', 
+        message: 'An error occurred while fetching the business images'
+      });
+      return;
+    }
+
+    // Transform data to return just an array of URLs
+    const urls = data.map(item => item.url);
+    res.status(200).json(urls);
+  } catch (error: any) {
+    console.error('Error fetching business images:', error);
+    res.status(500).json({ 
+      error: 'Server Error', 
+      message: error.message || 'An unexpected error occurred'
     });
   }
 });

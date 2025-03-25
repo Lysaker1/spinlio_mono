@@ -1,11 +1,11 @@
 import { Button, Image, Menu, SimpleGrid } from "@mantine/core";
-import { getCategoryNameById, getModelsPerUser } from "@shared/services/modelService";
-import { ModelMetadata } from "@shared/services/modelService";
-import { BusinessProfile as BusinessProfileType } from "@shared/types/Profile";
+import { getCategoryNameById, getModelsPerUser } from "@marketplace/shared/services/modelService";
+import { ModelMetadata } from "@marketplace/shared/services/modelService";
+import { BusinessProfile as BusinessProfileType } from "@marketplace/shared/types/Profile";
 import { IconArrowLeft, IconArrowRight, IconBrandFacebook, IconBrandInstagram, IconBrandLinkedin, IconBrandYoutube, IconCertificate, IconFlag, IconGlobe, IconInfoCircle, IconMail, IconMapPin, IconPhone, IconRefresh, IconSettings, IconStar, IconStarFilled, IconStarHalfFilled } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ProfileStorageService } from '@shared/services/profileStorage';
+import { ProfileStorageService } from '@marketplace/shared/services/profileStorage';
 import { ComponentModal } from "../../components/ComponentModal/ComponentModal";
 import ProductCard from "../Marketplace/components/ProductCard";
 

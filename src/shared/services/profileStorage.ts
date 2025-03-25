@@ -111,7 +111,7 @@ export class ProfileStorageService {
     try {
       console.log(`Fetching business profile for user ID: ${userId}`);
       // Use the axios instance which already handles auth headers
-      const response = await api.get(`/api/business-profiles/${userId}`);
+      const response = await api.get(`/api/business-profile/${userId}`);
       return response.data;
     } catch (error: any) {
       // Check if the error has a response (from the server)

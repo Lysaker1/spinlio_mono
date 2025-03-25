@@ -121,7 +121,8 @@ app.use(helmet({
         "'self'",
         "https://*.auth0.com", 
         "https://auth.bazaar.it"
-      ]
+      ],
+      'frame-src': ["'self'", "https://auth.bazaar.it", "https://*.auth0.com"],
     }
   },
   // Make sure to explicitly allow frames 

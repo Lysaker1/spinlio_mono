@@ -135,15 +135,7 @@ module.exports = (env) => {
       extensions: ['.tsx', '.ts', '.js'],
       alias: {
         '@marketplace': path.resolve(currentPath, 'src'),
-        '@shared': path.resolve(__dirname, '../../shared'),
-        '@shared/components': path.resolve(currentPath, 'src/shared/components'),
-        '@shared/hooks': path.resolve(currentPath, 'src/shared/hooks'),
-        '@shared/assets': path.resolve(currentPath, 'src/shared/assets'),
-        '@shared/utils': path.resolve(currentPath, 'src/shared/utils'),
-        ...(fs.existsSync(path.resolve(__dirname, './src/shared')) ? {
-          '@shared': path.resolve(__dirname, './src/shared')
-        } : {}),
-        'react': path.resolve(currentPath, 'node_modules/react'),
+        '@shared': path.resolve(currentPath, '../../shared'),        'react': path.resolve(currentPath, 'node_modules/react'),
         'react-dom': path.resolve(currentPath, 'node_modules/react-dom'),
       },
       fallback: {
@@ -196,11 +188,6 @@ module.exports = (env) => {
         patterns: [
           {
             from: path.resolve(currentPath, 'public/assets'),
-            to: 'assets',
-            noErrorOnMissing: true
-          },
-          {
-            from: path.resolve(currentPath, '../../shared/assets'),
             to: 'assets',
             noErrorOnMissing: true
           }
@@ -309,4 +296,4 @@ module.exports = (env) => {
   }
 
   return config;
-}; 
+};

@@ -18,9 +18,8 @@
     "baseUrl": ".",
     "paths": {
       "@marketplace/*": ["src/*"],
-      "@shared/*": ["../../shared/*"]
-    }
+      "@shared/*": ["../../shared/*"]    }
   },
   "include": ["./**/*.ts", "./**/*.tsx", "../../shared/**/*.ts", "../../shared/**/*.tsx"],
   "exclude": ["node_modules"]
-} 
+}

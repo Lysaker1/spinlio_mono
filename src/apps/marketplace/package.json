@@ -55,7 +55,9 @@
     "diff-shared": "node scripts/diff-shared.js",
     "sync-shared": "node scripts/sync-shared.js",
     "sync-shared:write": "node scripts/sync-shared.js --sync",
-    "setup-shared": "node scripts/setup-shared.js"
+    "setup-shared": "node scripts/setup-shared.js",
+    "copy-shared": "echo 'Skipping shared code copy step...'"
+
   },
   "devDependencies": {
     "@babel/core": "^7.25.8",

@@ -1,1 +1,1 @@
-web: npm start
+web: cd src/apps/marketplace && npm start

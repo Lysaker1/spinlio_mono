@@ -2,6 +2,7 @@ import React, { lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from '../Dashboard';
 import EditModel from '../pages/Uploads/components/EditModel/EditModel';
+import EditProfile from '../pages/ProfilePage/EditProfile';
 const Marketplace = lazy(() => import('../pages/Marketplace/Marketplace'));
 const Prefabs = lazy(() => import('../pages/Prefabs/Prefabs'));
 const Components = lazy(() => import('../pages/Components/Components'));
@@ -31,6 +32,7 @@ const DashboardRoutes: React.FC = () => {
         <Route path="/orders" element={<Orders />} />
         <Route path="/pedro" element={<Pedro />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/profile/edit" element={<EditProfile />} />
         <Route path="/profile/:id" element={<ProfilePage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

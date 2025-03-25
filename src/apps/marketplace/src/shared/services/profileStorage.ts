@@ -1,6 +1,7 @@
-import { Profile } from "@shared/types/Profile";
+import { BusinessProfile, Profile } from "@shared/types/Profile";
 import { AuthService } from "./authService";
 import api from '@shared/config/api';
+import { supabase } from "@shared/utils/supabaseClient";
 
 export class ProfileStorageService {
   static async getProfile(userId: string): Promise<Profile> {
@@ -25,6 +26,38 @@ export class ProfileStorageService {
       
       // Handle network errors or other issues
       console.error('Error fetching profile:', error);
+      throw error;
+    }
+  }
+
+  static async getBusinessProfile(userId: string): Promise<BusinessProfile> {
+    console.log(`Fetching business profile for user ID: ${userId}`);
+    try {
+      const response = await api.get(`/api/business-profile/${userId}`);
+      return response.data;
+    } catch (error: any) {
+      console.error('Error fetching business profile:', error);
+      throw error;
+    }
+  }
+
+  static async updateBusinessProfile(userId: string, profile: BusinessProfile, imageUrls?: string[], token?: string): Promise<BusinessProfile> {
+    try {
+      const response = await api.patch(`/api/business-profile/${userId}`, { profile, imageUrls }, { headers: { Authorization: `Bearer ${token}` } });
+      return response.data;
+    } catch (error: any) {
+      console.error('Error updating business profile:', error);
+      throw error;
+    }
+  }
+
+  static async getBusinessImages(userId: string): Promise<string[]> {
+    try {
+      console.log(`Fetching business images for user ID: ${userId}`);
+      const response = await api.get(`/api/business-profile/images/${userId}`);
+      return response.data;
+    } catch (error: any) {
+      console.error('Error fetching business images:', error);
       throw error;
     }
   }
@@ -69,6 +102,86 @@ export class ProfileStorageService {
       }
       
       console.error('Error updating profile:', error);
+      throw error;
+    }
+  }
+
+  static async uploadBusinessLogo(file: File): Promise<string> {
+    try {
+      const uniqueId = crypto.randomUUID();
+      const fileName = `${uniqueId}-${file.name}`;
+      const { data, error } = await supabase.storage
+        .from('business-images')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+      
+      if (error) {
+        throw error;
+      }
+  
+      const { data: { publicUrl }} = supabase.storage
+        .from('business-images')
+        .getPublicUrl(fileName);
+
+      return publicUrl;
+    } catch (error) {
+      console.error('Error uploading business logo:', error);
+      throw error;
+    }
+  }
+
+  static async uploadProfilePicture(file: File): Promise<string> {
+    try {
+      const uniqueId = crypto.randomUUID();
+      const fileName = `${uniqueId}-${file.name}`;
+      const { data, error } = await supabase.storage
+        .from('profile-pictures')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (error) {
+        throw error;
+      }
+
+      const { data: { publicUrl }} = supabase.storage
+        .from('profile-pictures')
+        .getPublicUrl(fileName);
+
+      return publicUrl;
+    } catch (error) {
+      console.error('Error uploading profile picture:', error);
+      throw error;
+    }
+  }
+
+  static async uploadBusinessImage(file: File): Promise<string> {
+    try {
+      const uniqueId = crypto.randomUUID();
+      const fileName = `${uniqueId}-${file.name}`;
+      const { data, error } = await supabase.storage
+        .from('business-images')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+  
+      if (error) {
+        console.error('Error uploading business image to Supabase:', error);
+        throw error;
+      }
+  
+      const { data: { publicUrl }} = supabase.storage
+        .from('business-images')
+        .getPublicUrl(fileName);
+  
+      return publicUrl;
+      
+    } catch (error) {
+      console.error('Error uploading business image to Supabase:', error);
       throw error;
     }
   }

@@ -1,9 +1,9 @@
-import { apiUrl } from '@shared/config/api';
+import { apiUrl } from '../config/api';
 import { DesignStorageService } from './designStorage';
-import { CONFIGURATOR_TYPES } from '@shared/constants/configuratorTypes';
-import { SavedDesign, NewDesign } from '@shared/types/SavedDesign';
+import { CONFIGURATOR_TYPES } from '../constants/configuratorTypes';
+import { SavedDesign, NewDesign } from '../types/SavedDesign';
 import { ErrorService } from './errorService';
-import { ApiResponse, SaveDesignResponse } from '@shared/types/api';
+import { ApiResponse, SaveDesignResponse } from '../types/api';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 
@@ -86,6 +86,8 @@ export class AuthService {
   // Set token in storage
   static setToken(token: string): void {
     localStorage.setItem(this.TOKEN_KEY, token);
+    // Also store in auth0_access_token for compatibility with XHR uploads
+    localStorage.setItem('auth0_access_token', token);
   }
 
   // Remove token from storage

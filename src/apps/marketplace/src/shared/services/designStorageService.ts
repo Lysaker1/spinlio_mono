@@ -1,4 +1,4 @@
-import api from '@shared/config/api';
+import api from '../config/api';
 
 // Design types
 export interface SavedDesign {

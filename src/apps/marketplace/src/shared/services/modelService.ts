@@ -1,13 +1,12 @@
 import { PutObjectCommand, GetObjectCommand, ListObjectsV2Command, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { s3Client, BUCKET_NAME, uploadFileToS3, testS3Connection as testS3ClientConnection } from '@shared/utils/s3Client';
-import { getFileExtension, getFileCategory, getMimeTypeFromExtension, isSupportedModelFormat } from '@shared/utils/fileTypeUtils';
-import { supabase } from '@shared/utils/supabaseClient';
+import { s3Client, BUCKET_NAME, uploadFileToS3, testS3Connection as testS3ClientConnection } from '../utils/s3Client';
+import { getFileExtension, getFileCategory, getMimeTypeFromExtension, isSupportedModelFormat } from '../utils/fileTypeUtils';
+import { supabase } from '../utils/supabaseClient';
 import { initiateModelConversion, checkConversionStatus } from './rhinoComputeService';
 import { v4 as uuidv4 } from 'uuid';
-import { logger, truncateKey } from '@shared/utils/logger';
-import { createClient } from '@supabase/supabase-js';
-import toast from 'react-hot-toast';
+import { logger, truncateKey } from '../utils/logger';
+
 
 // Define the uploadStringContent helper function since it's used but not imported
 const uploadStringContent = async (bucket: string, key: string, content: string): Promise<any> => {
@@ -122,7 +121,7 @@ export interface SubcategoryParameter {
  * This function tries to find the category name from the database
  * If the name cannot be found, it returns the default name
  */
-const getCategoryNameById = async (categoryId: number | string): Promise<string> => {
+export const getCategoryNameById = async (categoryId: number | string): Promise<string> => {
   if (!categoryId) return 'Uncategorized';
   
   try {
@@ -153,7 +152,7 @@ const getCategoryNameById = async (categoryId: number | string): Promise<string>
  * This function tries to find the subcategory name from the database
  * If the name cannot be found, it returns the default name
  */
-const getSubcategoryNameById = async (subcategoryId: number | string): Promise<string> => {
+export const getSubcategoryNameById = async (subcategoryId: number | string): Promise<string> => {
   if (!subcategoryId) return 'General';
   
   try {
@@ -496,7 +495,7 @@ export const uploadModelToS3 = async (
   metadata: Omit<ModelMetadata, 'file_size' | 'file_type' | 's3_key' | 'url'> & { 
     _waitForUploadCompletion?: boolean,
     _createRecordFirst?: boolean,
-    _backgroundUpload?: boolean
+    _backgroundupload?: boolean
   },
   userId?: string
 ): Promise<ModelMetadata> => {
@@ -504,7 +503,7 @@ export const uploadModelToS3 = async (
     // Check for special flags
     const waitForUploadCompletion = metadata._waitForUploadCompletion || false;
     const createRecordFirst = metadata._createRecordFirst || false;
-    const backgroundUpload = metadata._backgroundUpload || false;
+    const backgroundUpload = metadata._backgroundupload || false;
     
     // Remove the special flags from metadata before saving to database
     // Make a clean copy that removes underscore fields
@@ -725,7 +724,7 @@ export const getModelsByCategory = async (categoryId: number): Promise<ModelMeta
     }
     
     // Extract the model IDs
-    const modelIds = references.map(ref => ref.model_id);
+    const modelIds = references.map((ref: { model_id: string }) => ref.model_id);
     
     // Query the models table to get full model data
     const { data: models, error: modelError } = await supabase
@@ -771,20 +770,30 @@ export const uploadThumbnail = async (file: File, userId?: string): Promise<stri
 };
 
 export const getModelsPerUser = async (userId: string): Promise<ModelMetadata[]> => {
+  if (!userId) {
+    console.error('getModelsPerUser called with empty userId');
+    return [];
+  }
+  
+  console.log(`Fetching models for user ID: ${userId}`);
+  
   try {
     const { data, error } = await supabase
       .from('models')
       .select('*')
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
-
-    if (error) throw error;
-
-    return data;
-
+    
+    if (error) {
+      console.error('Error fetching models from Supabase:', error);
+      return [];
+    }
+    
+    console.log(`Successfully fetched ${data?.length || 0} models for user ${userId}`);
+    return data || [];
   } catch (error) {
-    console.error('Error fetching models for user:', error);
-    throw error;
+    console.error('Exception in getModelsPerUser:', error);
+    return [];
   }
 };
 
@@ -948,8 +957,8 @@ export const getModelParameterValues = async (modelId: string): Promise<Paramete
 
     // Combine all parameters
     const allParameterIds = [
-      ...(categoryParameters.data || []).map(p => p.parameter_id),
-      ...(subcategoryParameters.data || []).map(p => p.parameter_id)
+      ...(categoryParameters.data || []).map((p: { parameter_id: number }) => p.parameter_id),
+      ...(subcategoryParameters.data || []).map((p: { parameter_id: number }) => p.parameter_id)
     ];
 
     // Get parameter definitions
@@ -964,12 +973,12 @@ export const getModelParameterValues = async (modelId: string): Promise<Paramete
     }
 
     // Map parameter definitions to their values
-    return parameterDefinitions.map(def => {
+    return parameterDefinitions.map((def: ParameterDefinition) => {
       let value;
       if (def.type === 'number') {
-        value = modelParameterValues.data.find(mp => mp.parameter_id === def.id)?.numeric_value || null;
+        value = modelParameterValues.data.find((mp: { parameter_id: number }) => mp.parameter_id === def.id)?.numeric_value || null;
       } else {
-        value = modelParameterValues.data.find(mp => mp.parameter_id === def.id)?.[`${def.type}_value`] || null;
+        value = modelParameterValues.data.find((mp: { parameter_id: number }) => mp.parameter_id === def.id)?.[`${def.type}_value`] || null;
       }
       return {
         ...def,

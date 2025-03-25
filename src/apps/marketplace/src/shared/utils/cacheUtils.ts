@@ -1,4 +1,4 @@
-import { ComponentCategory, ComponentGroup, ComponentSubcategory } from "@shared/services/modelService";
+import { ComponentCategory, ComponentGroup, ComponentSubcategory } from "../services/modelService";
 
 const CACHE_KEYS = {
   COMPONENT_GROUPS: 'cached_component_groups',

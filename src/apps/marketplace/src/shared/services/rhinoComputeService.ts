@@ -1,6 +1,6 @@
 import { ModelMetadata } from './modelService';
 import { getConvertedModelS3Key } from './modelService';
-import { logger, truncateKey } from '@shared/utils/logger';
+import { logger, truncateKey } from '../utils/logger';
 
 // Define the Rhino Compute URL and key
 const RHINO_COMPUTE_URL = process.env.REACT_APP_RHINO_COMPUTE_URL || 'http://13.53.137.42:80';
